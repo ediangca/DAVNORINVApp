@@ -13,6 +13,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "allowedCommonJsDependencies": [
+              "jquery",
+              "sweetalert2",
+              "aos"
+            ],
             "outputPath": "dist/ddnaeinvapp",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -21,23 +26,50 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
+              "src/favicon.ico",
+              "src/assets",
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "public",
+                "output": "src/assets"
               }
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.css",
+              "src/assets/css/core/libs.min.css",
+              "node_modules/aos/dist/aos.css",
+              "src/assets/css/hope-ui.min.css",
+              "src/assets/css/custom.min.css",
+              "src/assets/css/dark.min.css",
+              "src/assets/css/customizer.min.css",
+              "src/assets/css/rtl.min.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "node_modules/@popperjs/core/dist/umd/popper.min.js",
+              "node_modules/aos/dist/aos.js",
+              "src/assets/js/core/libs.min.js",
+              "src/assets/js/core/external.min.js",
+              "src/assets/js/charts/widgetcharts.js",
+              "src/assets/js/charts/vectore-chart.js",
+              "src/assets/js/charts/dashboard.js",
+              "src/assets/js/plugins/fslightbox.js",
+              "src/assets/js/plugins/setting.js",
+              "src/assets/js/plugins/slider-tabs.js",
+              "src/assets/js/plugins/form-wizard.js",
+              "src/assets/js/hope-ui.js"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "4MB",
+                  "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",

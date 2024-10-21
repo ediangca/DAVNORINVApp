@@ -1,0 +1,150 @@
+<div class="container-xl">
+  <div class="table-responsive" data-aos="zoom-in">
+    <div class="table-wrapper">
+      <div class="table-title">
+
+        <div
+          class="row d-flex align-items-center">
+
+          <!-- <div class="col-12 col-sm-12 col-md-8 col-lg-8"> -->
+          <div
+            class="col-12 d-flex just justify-content-center align-items-center">
+            <div class="search" style="width: 60rem;">
+              <i
+                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search"
+                [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)"
+                placeholder="Search here.." aria-label="Search">
+              <a
+                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
+                type="button" (click)="searchPositions()"><i
+                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+            </div>
+            <a
+              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+              type="button" (click)="openAddEditModal()">
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                class="fs-6">NEW</span></a>
+          </div>
+
+        </div>
+
+      </div>
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <!-- <th>
+              <span class="custom-checkbox">
+                <input type="checkbox" id="selectAll">
+                <label for="selectAll"></label>
+              </span>
+            </th> -->
+            <!-- <th>#</th> -->
+            <th>Positon</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of positions">
+            <!-- <td>
+              <span class="custom-checkbox">
+                <input type="checkbox" id="checkbox1" name="options[]"
+                  [value]="p.ugid">
+                <label for="checkbox1"></label>
+              </span>
+            </td> -->
+            <!-- <td>{{p.positionID}}</td> -->
+            <td>{{p.positionName}}</td>
+            <td>
+              <form class="d-flex justify-content-end">
+                @if(p.positionName == "System Administrator" || p.positionName
+                == "Test"){
+                <span><i
+                    class="fa-sharp-duotone fa-solid fa-asterisk"
+                    data-toggle="tooltip" title="System Default"></i></span>
+                }@else{
+                <a class="edit"
+                  type="button"
+                  (click)="restoreData(p)"><i
+                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
+                    data-toggle="tooltip" title="Edit"></i></a>
+                <a class="delete"
+                  (click)="onDelete(p.positionID, p.positionName)"><i
+                    class="fa-sharp-duotone fa-solid fa-trash"
+                    data-toggle="tooltip" title="Delete"></i></a>
+                }
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="clearfix">
+        <div class="hint-text">Showing <b>5</b> out of
+          <b>{{positions.length}}</b> entries</div>
+        <ul class="pagination">
+          <li class="page-item disabled"><a href="#">Previous</a></li>
+          <li class="page-item"><a href="#" class="page-link">1</a></li>
+          <li class="page-item"><a href="#" class="page-link">2</a></li>
+          <li class="page-item active"><a href="#" class="page-link">3</a></li>
+          <li class="page-item"><a href="#" class="page-link">4</a></li>
+          <li class="page-item"><a href="#" class="page-link">5</a></li>
+          <li class="page-item"><a href="#" class="page-link">Next</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+
+<!-- ADD/EDIT -->
+<div #AddEditModalForm class="modal fade" id="AddEditModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form class [formGroup]="positionForm">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ isEditMode ?
+            'Edit' : 'Add New' }} Position </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="formGroup row">
+
+            <div class="col-lg col-security">
+
+              @if (positionForm.controls['positionName'].invalid &&
+              positionForm.hasError('required', 'positionName') &&
+              positionForm.get('positionName')?.touched ||
+              (positionForm.controls['positionName'].dirty &&
+              positionForm.hasError('required', 'positionName'))) {
+              <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
+              <small class="text-danger">* Position Name is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="positionForm.controls['positionName'].invalid &&
+                positionForm.hasError('required', 'positionName') &&  positionForm.get('positionName')?.touched || (positionForm.controls['positionName'].dirty &&
+                positionForm.hasError('required', 'positionName'))">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <input type="text" formControlName="positionName"
+                  name="positionName"
+                  id="positionName"
+                  placeholder="Enter Position Name">
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill"
+            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

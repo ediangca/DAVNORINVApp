@@ -1,0 +1,415 @@
+<div class="container-xl">
+
+  <div class="table-responsive" data-aos="zoom-in">
+    <div class="table-wrapper">
+      <div class="table-title">
+
+        <div
+          class="row d-flex align-items-center">
+
+          <!-- <div class="col-12 col-sm-12 col-md-8 col-lg-8"> -->
+          <div
+            class="col-12 d-flex just justify-content-center align-items-center">
+            <div class="search" style="width: 60rem;">
+              <i
+                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search"
+                [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)"
+                placeholder="Search here.." aria-label="Search">
+              <a
+                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
+                type="button" (click)="searchCompanies()"><i
+                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+            </div>
+            <a
+              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+              type="button" (click)="openAddEditModal()">
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                class="fs-6">NEW</span></a>
+            <!-- <a href="#deleteEmployeeModal"
+              class="btn btn-danger d-flex justify-content-center align-items-center rounded-pill"
+              data-toggle="modal"><i
+                class="fa-sharp-duotone fa-solid fa-trash-can"></i>
+              <span class="fs-6">Delete</span></a> -->
+          </div>
+        </div>
+
+      </div>
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <!-- <th>
+              <span class="custom-checkbox">
+                <input type="checkbox" id="selectAll">
+                <label for="selectAll"></label>
+              </span>
+            </th> -->
+            <!-- <th>#</th> -->
+            <th>Company/Barnch</th>
+            <th>Type/Nature</th>
+            <th>Department(s)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of companies">
+            <!-- <td>
+              <span class="custom-checkbox">
+                <input type="checkbox" id="checkbox1" name="options[]"
+                  [value]="c.branchID">
+                <label for="checkbox1"></label>
+              </span>
+            </td> -->
+            <!-- <td>{{c.branchID}}</td> -->
+            <td>{{c.branchName}}</td>
+            <td>{{c.type}}</td>
+            <td>{{c.noOfDepartment}} &nbsp;
+              <a class="info"
+                type="button"
+                (click)="openDepartment(c)">
+                <i
+                  class="fa-sharp-duotone fa-solid {{ c.noOfDepartment > 0 ? 'fa-eye' : 'fa-plus' }}"
+                  data-toggle="tooltip" title="Department"></i>
+              </a>
+            </td>
+            <td>
+              <form class="d-flex justify-content-end">
+                @if(c.branchID <= 2){
+                <span><i
+                    class="fa-sharp-duotone fa-solid fa-asterisk"
+                    data-toggle="tooltip" title="System Default"></i></span>
+                }
+                @else{
+                <a class="edit"
+                  type="button"
+                  (click)="restoreData(c)"><i
+                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
+                    data-toggle="tooltip" title="Edit"></i></a>
+                <a class="delete"
+                  (click)="onDelete(c.branchID, c.branchName)"><i
+                    class="fa-sharp-duotone fa-solid fa-trash"
+                    data-toggle="tooltip" title="Delete"></i></a>
+                }
+
+              </form>
+
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+      <div class="clearfix">
+        <div class="hint-text">Showing <b>5</b> out of
+          <b>{{companies.length}}</b> entries</div>
+        <ul class="pagination">
+          <li class="page-item disabled"><a href="#">Previous</a></li>
+          <li class="page-item"><a href="#" class="page-link">1</a></li>
+          <li class="page-item"><a href="#" class="page-link">2</a></li>
+          <li class="page-item active"><a href="#"
+              class="page-link">3</a></li>
+          <li class="page-item"><a href="#" class="page-link">4</a></li>
+          <li class="page-item"><a href="#" class="page-link">5</a></li>
+          <li class="page-item"><a href="#" class="page-link">Next</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- #################### -->
+
+</div>
+
+<!-- Modal -->
+
+<!-- ADD/EDIT -->
+<div #AddEditModalForm class="modal fade" id="AddEditModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form [formGroup]="companyForm">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
+            isEditMode ?
+            'Edit' : 'Add New' }} Company/Branch</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="formGroup row">
+            <div class="col-lg col-security">
+
+              <div
+                *ngIf="companyForm.controls['branchName'].invalid && companyForm.get('branchName')?.touched || companyForm.controls['branchName'].dirty &&
+                companyForm.hasError('required', 'branchName')">
+                <small class="text-danger">* Company/Branch is
+                  required</small>
+              </div>
+              <div class="form-field d-flex align-items-center"
+                [class.error]="companyForm.controls['branchName'].invalid && companyForm.get('branchName')?.touched  || companyForm.controls['branchName'].dirty &&
+                companyForm.hasError('required', 'branchName')">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <input type="text" formControlName="branchName"
+                  name="branchName"
+                  id="branchName"
+                  placeholder="Company/Branch Name">
+              </div>
+              <div
+                *ngIf="companyForm.controls['type'].invalid && companyForm.get('type')?.touched || companyForm.controls['type'].dirty &&
+                companyForm.hasError('required', 'type')">
+                <small class="text-danger">* Type/Nature is required</small>
+              </div>
+              <div class="form-field d-flex align-items-center"
+                [class.error]="companyForm.controls['type'].invalid && companyForm.get('type')?.touched || companyForm.controls['type'].dirty &&
+                companyForm.hasError('required', 'type')">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
+                <input type="text" class="form-control"
+                  id="navbarDropdown"
+                  formControlName="type"
+                  name="type"
+                  [(ngModel)]="typeKey"
+                  (keydown.enter)="onAutoSuggest()"
+                  (keyup)="onAutoSuggest()"
+                  placeholder="Type | Nature of Work "
+                  role="textbox">
+              </div>
+
+              <div class="recent-searches"
+                *ngIf="companiestype.length > 0 && typeKey!">
+                <ul class="list-group list-group-flush py-3"
+                  aria-labelledby="navbarDropdown">
+                  <li type="button" class="dropdown-item"
+                    class="list-group-item list-group-item-action px-3 rounded-pill"
+                    *ngFor="let t of companiestype" [value]="t"
+                    (click)="selectItem(t)">
+                    {{ t }}</li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill"
+            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save'
+            }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SHOW DEPATMENT -->
+<div #DeptAddEditModalForm class="modal fade" id="DeptAddEditModalForm">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form [formGroup]="departmentForm">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5"
+            id="staticBackdropLabel">
+            {{ departments.length < 1 ? 'No Department yet added.' :
+            'List of Department'}}</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div
+            class="row formGroup d-flex flex-row justify-content-center align-items-center">
+            <div class=" col-8 col-security">
+              <div
+                *ngIf="departmentForm.controls['departmentName'].invalid && departmentForm.get('departmentName')?.touched || departmentForm.controls['departmentName'].dirty &&
+                departmentForm.hasError('required', 'departmentName')">
+                <small class="text-danger">* Department is
+                  required</small>
+              </div>
+              <div
+                class="form-field d-flex justify-content-center align-items-center"
+                [class.error]="departmentForm.controls['departmentName'].invalid && departmentForm.get('departmentName')?.touched || departmentForm.controls['departmentName'].dirty &&
+                departmentForm.hasError('required', 'departmentName')">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <input type="text" formControlName="departmentName"
+                  name="departmentName"
+                  id="departmentName"
+                  placeholder="Department Name">
+              </div>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+              <button type="button" class="btn btn-primary rounded-pill"
+                (click)="onSubmitDept()">
+                <i class="fa-sharp-duotone fa-solid"
+                  [ngClass]="isEditMode ? 'fa-pen-to-square' : 'fa-plus'"></i>
+                {{isEditMode? 'UPDATE':'ADD'}}
+              </button>
+              <button type="button" id="cancelDeptEdit"
+                class="btn btn-secondary rounded-pill ms-2 d-none"
+                (click)="cancelEdit()">Cancel</button>
+            </div>
+          </div>
+
+          <div class="table-responsive" *ngIf="departments.length > 0">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <!-- <th>
+                    <span class="custom-checkbox">
+                      <input type="checkbox" id="selectAll">
+                      <label for="selectAll"></label>
+                    </span>
+                  </th> -->
+                  <!-- <th>#</th> -->
+                  <th>Department</th>
+                  <th>Section(s)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let d of departments">
+                  <!-- <td>
+                    <span class="custom-checkbox">
+                      <input type="checkbox" id="checkbox1" name="options[]"
+                        [value]="d.depID">
+                      <label for="checkbox1"></label>
+                    </span>
+                  </td> -->
+                  <!-- <td>{{d.depID}}</td> -->
+                  <td>{{d.departmentName}}</td>
+                  <td>{{d.noOfSection}} &nbsp;
+                    <a class="info"
+                      type="button"
+                      (click)="openSection(d)">
+                      <i
+                        class="fa-sharp-duotone fa-solid {{ d.noOfSection > 0 ? 'fa-eye' : 'fa-plus' }}"
+                        data-toggle="tooltip" title="Section"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <form action>
+                      <a class="edit"
+                        type="button"
+                        (click)="restoreDeptData(d)"><i
+                          class="fa-sharp-duotone fa-solid fa-pen-to-square"
+                          data-toggle="tooltip" title="Edit"></i></a>
+                      <a class="delete"
+                        (click)="onDeleteDept(d.depID, d.departmentName)"><i
+                          class="fa-sharp-duotone fa-solid fa-trash"
+                          data-toggle="tooltip" title="Delete"></i></a>
+                    </form>
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SHOW SECTION -->
+<div #SectAddEditModalForm class="modal fade" id="SectAddEditModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form [formGroup]="sectionForm">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5"
+            id="staticBackdropLabel">
+            {{ sections.length < 1 ? 'No Section yet added.' :
+            'List of Section'}}</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div
+            class="row formGroup d-flex flex-row justify-content-center align-items-center">
+            <div class=" col-8 col-security">
+              <div
+                *ngIf="sectionForm.controls['sectionName'].invalid && sectionForm.get('sectionName')?.touched || sectionForm.controls['sectionName'].dirty &&
+                sectionForm.hasError('required', 'sectionName')">
+                <small class="text-danger">* Section is
+                  required</small>
+              </div>
+              <div class="form-field d-flex align-items-center"
+                [class.error]="sectionForm.controls['sectionName'].invalid && sectionForm.get('sectionName')?.touched || sectionForm.controls['sectionName'].dirty &&
+                sectionForm.hasError('required', 'sectionName')">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <input type="text" formControlName="sectionName"
+                  name="sectionName"
+                  id="sectionName"
+                  placeholder="Section Name">
+              </div>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+              <button type="button" class="btn btn-primary rounded-pill"
+                (click)="onSubmitSect()">
+                <i class="fa-sharp-duotone fa-solid"
+                  [ngClass]="isEditMode ? 'fa-pen-to-square' : 'fa-plus'"></i>
+                {{isEditMode? 'UPDATE':'ADD'}}
+              </button>
+              <button type="button" id="cancelSectEdit"
+                class="btn btn-secondary rounded-pill ms-2 d-none"
+                (click)="cancelEdit()">Cancel</button>
+            </div>
+          </div>
+
+          <div class="table-responsive" *ngIf="sections.length > 0">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <!-- <th>
+                    <span class="custom-checkbox">
+                      <input type="checkbox" id="selectAll">
+                      <label for="selectAll"></label>
+                    </span>
+                  </th> -->
+                  <!-- <th>#</th> -->
+                  <th>Section(s)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let s of sections">
+                  <!-- <td>
+                    <span class="custom-checkbox">
+                      <input type="checkbox" id="checkbox1" name="options[]"
+                        [value]="s.secID">
+                      <label for="checkbox1"></label>
+                    </span>
+                  </td> -->
+                  <!-- <td>{{s.secID}}</td> -->
+                  <td>{{s.sectionName}}</td>
+                  <td>
+                    <form class="d-flex justify-content-end">
+                      <a class="edit"
+                        type="button"
+                        (click)="restoreSectData(s)"><i
+                          class="fa-sharp-duotone fa-solid fa-pen-to-square"
+                          data-toggle="tooltip" title="Edit"></i></a>
+                      <a class="delete"
+                        (click)="onDeleteSect(s.secID, s.sectionName)"><i
+                          class="fa-sharp-duotone fa-solid fa-trash"
+                          data-toggle="tooltip" title="Delete"></i></a>
+                    </form>
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

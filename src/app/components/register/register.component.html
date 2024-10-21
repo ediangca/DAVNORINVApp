@@ -1,0 +1,270 @@
+
+<div class="container-fluid bg p-0">
+  <div class="outer d-flex align-items-center justify-content-center">
+    <div class="panel">
+      <div class="panel-heading col d-flex align-items-center ">
+        <a [routerLink]="['/']" routerLinkActive="router-link-active" href
+          class="link">
+          <img class="img img-fluid" [src]="ac.logoPath"
+            alt="ddnaeinv-Logo"></a>
+        <h2 class="m-0">DDN AEINV</h2>
+        <p class="m-0"><em>Asset and Equipement Inventory System</em></p>
+      </div>
+      <div class="row">
+        <div class="col-lg">
+          <form class="p-3 mt-3" [formGroup]="registerForm">
+            <div class="formGroup row">
+              <!--
+                <div class="col-lg col-information">
+                  <div class="text-center mt-4 mb-4 name">
+                    <h4>BASIC INFORMATION</h4>
+                  </div>
+
+                  @if (registerForm.controls['lastname'].invalid &&
+                  registerForm.hasError('required', 'lastname') &&
+                  registerForm.get('lastname')?.touched ||
+                  (registerForm.controls['lastname'].dirty &&
+                  registerForm.hasError('required', 'lastname'))) {
+                  <small class="text-danger">* Lastname is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="registerForm.controls['lastname'].invalid &&
+              registerForm.hasError('required', 'lastname') &&  registerForm.get('lastname')?.touched || (registerForm.controls['lastname'].dirty &&
+              registerForm.hasError('required', 'lastname'))">
+                    <span class="far fa-asterisk"></span>
+                    <input type="text" formControlName="lastname"
+                      name="lastname"
+                      id="lastname"
+                      placeholder="Lastname">
+                  </div>
+
+                  @if (registerForm.controls['firstname'].invalid &&
+                  registerForm.hasError('required', 'firstname') &&
+                  registerForm.get('firstname')?.touched ||
+                  (registerForm.controls['firstname'].dirty &&
+                  registerForm.hasError('required', 'firstname'))) {
+                  <small class="text-danger">* Firstname is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="registerForm.controls['firstname'].invalid &&
+              registerForm.hasError('required', 'firstname') &&  registerForm.get('firstname')?.touched || (registerForm.controls['firstname'].dirty &&
+              registerForm.hasError('required', 'firstname'))">
+                    <span class="far fa-asterisk"></span>
+                    <input type="text" formControlName="firstname"
+                      name="firstname"
+                      id="firstname"
+                      placeholder="Firstname">
+                  </div>
+
+                  @if (registerForm.controls['middlename'].invalid &&
+                  registerForm.hasError('required', 'middlename') &&
+                  registerForm.get('middlename')?.touched ||
+                  (registerForm.controls['middlename'].dirty &&
+                  registerForm.hasError('required', 'middlename'))) {
+                  <small class="text-danger">* Middlename is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="registerForm.controls['middlename'].invalid &&
+              registerForm.hasError('required', 'middlename') &&  registerForm.get('middlename')?.touched || (registerForm.controls['middlename'].dirty &&
+              registerForm.hasError('required', 'middlename'))">
+                    <span class="far fa-asterisk"></span>
+                    <input type="text" formControlName="middlename"
+                      name="middlename"
+                      id="middlename"
+                      placeholder="Middlename">
+                  </div>
+                </div>
+
+                <div class="col-lg col-assignment">
+                  <div class="text-center mt-4 mb-4 name">
+                    <h4>ASSIGNMENT</h4>
+                  </div>
+
+                  @if (registerForm.controls['bran'].invalid &&
+                  registerForm.hasError('required', 'bran') &&
+                  registerForm.get('bran')?.touched ||
+                  (registerForm.controls['bran'].dirty &&
+                  registerForm.hasError('required', 'bran'))) {
+                  <small class="text-danger">* User Group is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="registerForm.controls['bran'].invalid && registerForm.hasError('required', 'bran') &&  registerForm.get('bran')?.touched || (registerForm.controls['bran'].dirty &&
+              registerForm.hasError('required', 'bran'))">
+                    <span class="far fa-asterisk"></span>
+                    <select class="form-select" formControlName="bran"
+                      name="bran"
+                      id="bran">
+                      <option value>Select Company or Branch</option>
+                      <option value="option1">Company 1</option>
+                      <option value="option2">Company 2</option>
+                      <option value="option3">Company 3</option>
+                    </select>
+                  </div>
+                  @if (registerForm.controls['dept'].invalid &&
+                  registerForm.hasError('required', 'dept') &&
+                  registerForm.get('dept')?.touched ||
+                  (registerForm.controls['dept'].dirty &&
+                  registerForm.hasError('required', 'dept'))) {
+                  <small class="text-danger">* User Group is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="registerForm.controls['dept'].invalid && registerForm.hasError('required', 'dept') &&  registerForm.get('dept')?.touched || (registerForm.controls['dept'].dirty &&
+              registerForm.hasError('required', 'dept'))">
+                    <span class="far fa-asterisk"></span>
+                    <select class="form-select" formControlName="dept"
+                      name="dept"
+                      id="dept">
+                      <option value>Select Department</option>
+                      <option value="option1">Department 1</option>
+                      <option value="option2">Department 2</option>
+                      <option value="option3">Department 3</option>
+                    </select>
+                  </div>
+                  @if (registerForm.controls['sect'].invalid &&
+                  registerForm.hasError('required', 'sect') &&
+                  registerForm.get('sect')?.touched ||
+                  (registerForm.controls['sect'].dirty &&
+                  registerForm.hasError('required', 'sect'))) {
+                  <small class="text-danger">* User Group is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="registerForm.controls['sect'].invalid && registerForm.hasError('required', 'sect') &&  registerForm.get('sect')?.touched || (registerForm.controls['sect'].dirty &&
+              registerForm.hasError('required', 'sect'))">
+                    <span class="far fa-asterisk"></span>
+                    <select class="form-select" formControlName="sect"
+                      name="sect"
+                      id="sect">
+                      <option value>Select Section</option>
+                      <option value="option1">Section 1</option>
+                      <option value="option2">Section 2</option>
+                      <option value="option3">Section 3</option>
+                    </select>
+                  </div>
+                </div>
+                -->
+              <div class="col-lg col-security">
+
+                <!-- @if (registerForm.controls['accid'].invalid &&
+                registerForm.hasError('required', 'accid') &&
+                registerForm.get('accid')?.touched ||
+                (registerForm.controls['accid'].dirty &&
+                registerForm.hasError('required', 'accid'))) {
+                <small class="text-danger">* Account ID is required</small>
+                }
+                <div class="form-field d-flex align-items-center"
+                  [class.error]="registerForm.controls['accid'].invalid &&
+              registerForm.hasError('required', 'accid') &&  registerForm.get('accid')?.touched || (registerForm.controls['accid'].dirty &&
+              registerForm.hasError('required', 'accid'))">
+                  <span class="far fa-id-badge"></span>
+                  <input type="text" formControlName="accid" name="accid"
+                    id="accid"
+                    placeholder="Account ID">
+                </div> -->
+
+                @if (registerForm.controls['username'].invalid &&
+                registerForm.hasError('required', 'username') &&
+                registerForm.get('username')?.touched ||
+                (registerForm.controls['username'].dirty &&
+                registerForm.hasError('required', 'username'))) {
+                <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
+                <small class="text-danger">* Username is required</small>
+                }
+                <div class="form-field d-flex align-items-center"
+                  [class.error]="registerForm.controls['username'].invalid &&
+              registerForm.hasError('required', 'username') &&  registerForm.get('username')?.touched || (registerForm.controls['username'].dirty &&
+              registerForm.hasError('required', 'username'))">
+                  <span class="far fa-user"></span>
+                  <input type="text" formControlName="username"
+                    name="username"
+                    id="username"
+                    placeholder="Username">
+                </div>
+
+                @if (registerForm.controls['password'].invalid &&
+                registerForm.hasError('required', 'password') &&
+                registerForm.get('password')?.touched ||
+                (registerForm.controls['password'].dirty &&
+                registerForm.hasError('required', 'password'))) {
+                <small class="text-danger">* Password is required</small>
+                }@else if(registerForm.hasError('minlength', 'password') &&
+                registerForm.get('password')?.touched){
+                <small class="text-danger">* Password must be at least 6
+                  characters long.</small>
+                }@else if (passwordMismatch &&
+                registerForm.get('confirmPassword')?.touched) {
+                <small class="text-danger">* Confirm Password not match</small>
+                }
+                <!-- @else if (passwordStrength && registerForm.get('confirmPassword')?.touched) {
+                  <small class="text-danger">* Password must contain upper and lower case letters, a number, and a special character.</small>
+                } -->
+                <div class="form-field d-flex align-items-center"
+                  [class.error]="registerForm.controls['password'].invalid &&
+              registerForm.hasError('required', 'password') &&  registerForm.get('password')?.touched || (registerForm.controls['password'].dirty &&
+              registerForm.hasError('required', 'password')) || registerForm.hasError('minlength', 'password') || passwordMismatch">
+                  <span class="fas fa-key"></span>
+                  <input type="password" formControlName="password"
+                    name="password"
+                    id="password"
+                    placeholder="Password">
+                </div>
+
+                @if (registerForm.controls['confirmPassword'].invalid &&
+                registerForm.hasError('required', 'confirmPassword') &&
+                registerForm.get('confirmPassword')?.touched ||
+                (registerForm.controls['confirmPassword'].dirty &&
+                registerForm.hasError('required', 'confirmPassword'))) {
+                <small class="text-danger">* Confirmation Password is
+                  required</small>
+                }@else if (passwordMismatch &&
+                registerForm.get('confirmPassword')?.touched) {
+                <small class="text-danger">* Confirm Password not match</small>
+                }
+                <div class="form-field d-flex align-items-center"
+                  [class.error]="registerForm.controls['confirmPassword'].invalid &&
+              registerForm.hasError('required', 'confirmPassword') &&  registerForm.get('confirmPassword')?.touched || (registerForm.controls['confirmPassword'].dirty &&
+              registerForm.hasError('required', 'confirmPassword') || passwordMismatch)">
+                  <span class="fas fa-key"></span>
+                  <input type="password" formControlName="confirmPassword"
+                    name="confirmPassword"
+                    id="confirmPassword"
+                    placeholder="Confirm Password">
+                </div>
+
+                @if (registerForm.controls['ug'].invalid &&
+                registerForm.hasError('required', 'ug') &&
+                registerForm.get('ug')?.touched ||
+                (registerForm.controls['ug'].dirty &&
+                registerForm.hasError('required', 'ug'))) {
+                <small class="text-danger">* User Group is required</small>
+                }
+                <div class="form-field d-flex align-items-center"
+                  [class.error]="registerForm.controls['ug'].invalid && registerForm.hasError('required', 'ug')  && registerForm.get('ug')?.touched || (registerForm.controls['ug'].dirty &&
+                 registerForm.hasError('required', 'ug'))">
+                  <span class="far fa-user"></span>
+                  <select class="form-select" formControlName="ug" name="ug"
+                    id="ug">
+                    <option value>Select User Group</option>
+                    <option *ngFor="let group of userGroups"
+                      [value]="group.ugid">{{ group.userGroupName }}</option>
+                  </select>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="panel-footer">
+              <!-- <button [disabled]="loginForm.invalid" (click)="onSubmit()" class="btn mt-3">Login</button> -->
+              <!-- <a href="#">Forget password?</a> or <a href="#">Sign up</a> -->
+              <button (click)="onSubmit()" class="btn mt-3">Register</button>
+            </div>
+          </form>
+          <div class="text-center">
+            Already have Account? <a class="fs-6"
+              [routerLink]="['/login']"
+              routerLinkActive="router-link-active">Login here!</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

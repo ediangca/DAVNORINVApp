@@ -1,0 +1,174 @@
+<div class="container-xl">
+  <div class="table-responsive" data-aos="zoom-in">
+    <div class="table-wrapper">
+      <div class="table-title">
+
+        <div
+          class="row d-flex align-items-center">
+
+          <div
+            class="col-12 d-flex just justify-content-center align-items-center">
+            <div class="search" style="width: 60rem;">
+              <i
+                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search"
+                [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)"
+                placeholder="Search here.." aria-label="Search">
+              <a
+                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
+                type="button" (click)="searchUserGroups()"><i
+                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+            </div>
+            <a
+              *ngIf="roleNoFromToken=='System Administrator'"
+              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+              type="button" (click)="openAddEditModal()">
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                class="fs-6">NEW</span></a>
+          </div>
+
+        </div>
+
+      </div>
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <!-- <th>
+              <span class="custom-checkbox">
+                <input type="checkbox" id="selectAll">
+                <label for="selectAll"></label>
+              </span>
+            </th> -->
+            <!-- <th>#</th> -->
+            <th>User Group</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ug of userGroups">
+            <!-- <td>
+              <span class="custom-checkbox">
+                <input type="checkbox" id="checkbox1" name="options[]"
+                  [value]="ug.ugid">
+                <label for="checkbox1"></label>
+              </span>
+            </td> -->
+            <!-- <td>{{ug.ugid}}</td> -->
+            <td>{{ug.userGroupName}}</td>
+            <td>{{ug.notes}}</td>
+            <td>
+              <form class="d-flex justify-content-end">
+                @if(ug.userGroupName.includes("System")||
+                ug.userGroupName
+                == "Test"){
+                <span><i
+                    class="fa-sharp-duotone fa-solid fa-asterisk"
+                    data-toggle="tooltip" title="System Default"></i></span>
+                }@else{
+                <a class="edit"
+                  *ngIf="roleNoFromToken=='System Administrator'"
+                  type="button" (click)="restoreData(ug)"><i
+                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
+                    data-toggle="tooltip" title="Edit"></i></a>
+                <a class="delete"
+                  *ngIf="roleNoFromToken=='System Administrator'"
+                  (click)="onDelete(ug.ugid, ug.userGroupName)"><i
+                    class="fa-sharp-duotone fa-solid fa-trash"
+                    data-toggle="tooltip" title="Delete"></i></a>
+                }
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="clearfix">
+        <div class="hint-text">Showing <b>5</b> out of
+          <b>{{userGroups.length}}</b> entries</div>
+        <ul class="pagination">
+          <li class="page-item disabled"><a href="#">Previous</a></li>
+          <li class="page-item"><a href="#" class="page-link">1</a></li>
+          <li class="page-item"><a href="#" class="page-link">2</a></li>
+          <li class="page-item active"><a href="#" class="page-link">3</a></li>
+          <li class="page-item"><a href="#" class="page-link">4</a></li>
+          <li class="page-item"><a href="#" class="page-link">5</a></li>
+          <li class="page-item"><a href="#" class="page-link">Next</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+
+<!-- ADD/EDIT -->
+<div #AddEditModalForm class="modal fade" id="AddEditModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form class [formGroup]="userGroupForm">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ isEditMode ?
+            'Edit' : 'Add New' }} User
+            Group</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="formGroup row">
+
+            <div class="col-lg col-security">
+
+              @if (userGroupForm.controls['userGroupName'].invalid &&
+              userGroupForm.hasError('required', 'userGroupName') &&
+              userGroupForm.get('userGroupName')?.touched ||
+              (userGroupForm.controls['userGroupName'].dirty &&
+              userGroupForm.hasError('required', 'userGroupName'))) {
+              <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
+              <small class="text-danger">* User Group is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userGroupForm.controls['userGroupName'].invalid &&
+                userGroupForm.hasError('required', 'userGroupName') &&  userGroupForm.get('userGroupName')?.touched || (userGroupForm.controls['userGroupName'].dirty &&
+                userGroupForm.hasError('required', 'userGroupName'))">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <input type="text" formControlName="userGroupName"
+                  name="userGroupName"
+                  id="userGroupName"
+                  placeholder="User Group Name">
+              </div>
+
+              @if (userGroupForm.controls['notes'].invalid &&
+              userGroupForm.hasError('required', 'notes') &&
+              userGroupForm.get('notes')?.touched ||
+              (userGroupForm.controls['notes'].dirty &&
+              userGroupForm.hasError('required', 'notes'))) {
+              <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
+              <small class="text-danger">* Notes is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userGroupForm.controls['notes'].invalid &&
+                userGroupForm.hasError('required', 'notes') &&  userGroupForm.get('notes')?.touched || (userGroupForm.controls['notes'].dirty &&
+                userGroupForm.hasError('required', 'notes'))">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <textarea type="text" formControlName="notes"
+                  name="notes" style="height: 150px;"
+                  id="notes"
+                  placeholder="Notes"></textarea>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill"
+            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

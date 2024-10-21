@@ -1,0 +1,31 @@
+.data-scrollbar {
+  height: 100vh ;
+  overflow-y: hidden;
+  /* Hide overflow initially */
+}
+
+/* When focused, allow scrolling */
+.data-scrollbar.focused {
+  overflow-y: auto;
+  /* Enable vertical scrolling on focus */
+}
+
+.data-scrollbar:hover {
+  transition: overflow 0.3s ease-in-out;
+  overflow-y: auto;
+  /* Enable vertical scrolling on focus */
+}
+
+.data-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.data-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--bs-primary);
+  border-radius: 4px;
+}
+
+/* Enable scrolling when any child element is focused */
+.data-scrollbar:focus-within {
+  overflow-y: auto;
+}

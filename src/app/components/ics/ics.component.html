@@ -1,0 +1,1176 @@
+<div class="container-xl">
+  <div class="table-responsive scrollable" data-aos="zoom-in">
+    <div class="table-wrapper">
+      <div class="table-title">
+
+        <div
+          class="row d-flex align-items-center">
+
+          <div
+            class="col-12 d-flex just justify-content-center align-items-center">
+            <div class="search" style="width: 100%;">
+              <i
+                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search"
+                [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)"
+                placeholder="Search here.." aria-label="Search">
+              <a
+                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
+                type="button" (click)="onSearchPAR()"><i
+                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+            </div>
+            <a
+              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+              type="button" (click)="openPARModal(AddEditModal)">
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                class="fs-6">NEW</span></a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div *ngIf="isLoading" class="text-center my-3 align-content-center"
+        style="height: 50vh;">
+        <img src="../../../assets/images/loading.gif" alt="Loading..."
+          width="100" style="height: 80px;">
+        <span class="loading-text text-dark">Loading<span class="dot">.</span>
+          <span class="dot">.</span><span class="dot">.</span></span>
+
+        <!-- <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div> -->
+      </div>
+
+      <table class="table table-striped table-hover" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Date Created</th>
+            <th>ICS No.</th>
+            <th>Created By</th>
+            <th>Recieved By</th>
+            <th>Issued By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let i of icss">
+            <td>
+              <a class="success"
+                type="button"
+                (click)="onViewICS(i)">
+                <i class="fa-sharp-duotone fa-solid fa-eye"
+                  data-toggle="tooltip" title="View"></i>
+              </a>
+            </td>
+            <td>{{formatDate(i.date_Created)}}</td>
+            <td>{{i.icsNo}}</td>
+            <td>{{i.created}}</td>
+            <td>{{i.received}}</td>
+            <td>{{i.issued}}</td>
+            <td>
+              <form class="d-flex justify-content-end align-items-center">
+                @if(i.userName == "admin"){
+                <span><i
+                    class="fa-sharp-duotone fa-solid fa-asterisk"
+                    data-toggle="tooltip" title="System Default"></i></span>
+                }@else{
+                <a class="edit"
+                  type="button"
+                  (click)="onEditICS(i)"><i
+                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
+                    data-toggle="tooltip" title="Edit"></i></a>
+                <a class="delete"
+                  type="button"
+                  (click)="onDelete(i)"><i
+                    class="fa-sharp-duotone fa-solid fa-trash"
+                    data-toggle="tooltip" title="Delete"></i></a>
+                <a [ngClass]="i.postFlag ? 'primary' : 'secondary'"
+                  type="button"
+                  (click)="onPostICS(i)">
+                  <i class="fa-sharp-duotone fa-solid fa-thumbtack"
+                    data-toggle="tooltip"
+                    [title]="i.postFlag ? 'Posted' : 'Not yet Posted'"></i>
+                </a>
+                <a class="seconadry"
+                  type="button"
+                  (click)="onPrintICS(i.icsNo!)">
+                  <i class="fa-sharp-duotone fa-solid fa-print"
+                    data-toggle="tooltip" title="Print"></i>
+                </a>
+                <a class="btn btn-outline-primary btn-sm"
+                  type="button"
+                  (click)="onRepar(i)">ITR</a>
+                }
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="clearfix" *ngIf="!isLoading">
+        <div class="hint-text">Showing <b>{{icss.length}}</b> out of
+          <b>{{icss.length}}</b>
+          entries</div>
+        <!-- <ul class="pagination">
+          <li class="page-item disabled"><a href="#">Previous</a></li>
+          <li class="page-item"><a href="#" class="page-link">1</a></li>
+          <li class="page-item"><a href="#" class="page-link">2</a></li>
+          <li class="page-item active"><a href="#" class="page-link">3</a></li>
+          <li class="page-item"><a href="#" class="page-link">4</a></li>
+          <li class="page-item"><a href="#" class="page-link">5</a></li>
+          <li class="page-item"><a href="#" class="page-link">Next</a></li>
+        </ul> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+
+<!-- ADD/EDIT -->
+<div #AddEditModalForm class="modal fade" id="AddEditModalForm">
+  <div class="modal-dialog modal-dialog-centered  modal-xl">
+    <div class="modal-content formGroup">
+      <form class [formGroup]="icsForm"
+        class="ng-untouched ng-pristine ng-invalid">
+        <div class="modal-header">
+          <div class="d-flex flex-column">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
+              isEditMode
+              ?
+              'Edit' : 'Add New '}} ICS</h1>
+            <span><em> Inventory Custodian Slip</em></span>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="closeModal(AddEditModal)"></button>
+        </div>
+
+        <div class="modal-body p-0 m-0">
+
+          <div class="card m-0">
+            <div class="card-header py-2">
+              <div class="row">
+                <div class="col-lg">
+
+                  @if(!(icsForm.controls['entityName'].invalid &&
+                  icsForm.hasError('required', 'entityName') &&
+                  icsForm.get('entityName')?.touched ||
+                  (icsForm.controls['entityName'].dirty &&
+                  icsForm.hasError('required', 'entityName')))){
+                  <small class="text-info">*
+                    Entity Name</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="icsForm.controls['entityName'].invalid &&
+                      icsForm.hasError('required', 'entityName') &&
+                      icsForm.get('entityName')?.touched ||
+                      (icsForm.controls['entityName'].dirty &&
+                      icsForm.hasError('required', 'entityName'))">*
+                    Entity Name is required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="icsForm.controls['entityName'].invalid &&
+              icsForm.hasError('required', 'entityName') &&  icsForm.get('entityName')?.touched || (icsForm.controls['entityName'].dirty &&
+              icsForm.hasError('required', 'entityName'))">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="icsForm.controls['entityName'].invalid &&
+                      icsForm.hasError('required', 'entityName') &&  icsForm.get('entityName')?.touched || (icsForm.controls['entityName'].dirty &&
+                      icsForm.hasError('required', 'entityName'))"></i>
+
+                    <input type="text" formControlName="entityName"
+                      name="entityName"
+                      id="entityName"
+                      placeholder="Entity Name">
+                  </div>
+
+                </div>
+              </div>
+              <div class="row d-flex flex-row">
+                <div class="col">
+                  @if(!(icsForm.controls['fund'].invalid &&
+                  icsForm.hasError('required', 'fund') &&
+                  icsForm.get('fund')?.touched ||
+                  (icsForm.controls['fund'].dirty &&
+                  icsForm.hasError('required', 'fund')))){
+                  <small class="text-info">*
+                    FUND</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="icsForm.controls['fund'].invalid && icsForm.hasError('required', 'fund') && icsForm.get('fund')?.touched ||
+                        (icsForm.controls['fund'].dirty && icsForm.hasError('required', 'fund'))">*
+                    FUND is required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="icsForm.controls['fund'].invalid && icsForm.hasError('required', 'fund') &&  icsForm.get('fund')?.touched ||
+                    (icsForm.controls['fund'].dirty && icsForm.hasError('required', 'fund'))">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="icsForm.controls['fund'].invalid && icsForm.hasError('required', 'fund') &&  icsForm.get('fund')?.touched ||
+                      (icsForm.controls['fund'].dirty && icsForm.hasError('required', 'fund'))"></i>
+
+                    <input type="text" formControlName="fund"
+                      name="fund"
+                      id="fund"
+                      placeholder="FUND">
+                  </div>
+                </div>
+                <div class="col">
+
+                  @if(!(icsForm.controls['icsNo'].invalid &&
+                  icsForm.hasError('required', 'icsNo') &&
+                  icsForm.get('icsNo')?.touched ||
+                  (icsForm.controls['icsNo'].dirty &&
+                  icsForm.hasError('required', 'icsNo')))){
+                  <small class="text-info">*
+                    ICS No.</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="icsForm.controls['icsNo'].invalid && icsForm.hasError('required', 'icsNo') && icsForm.get('icsNo')?.touched ||
+                          (icsForm.controls['icsNo'].dirty && icsForm.hasError('required', 'icsNo'))">*
+                    ICS No. is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="icsForm.controls['icsNo'].invalid && icsForm.hasError('required', 'icsNo') &&  icsForm.get('icsNo')?.touched ||
+                    (icsForm.controls['icsNo'].dirty && icsForm.hasError('required', 'icsNo'))">
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="icsForm.controls['icsNo'].invalid && icsForm.hasError('required', 'icsNo') &&  icsForm.get('icsNo')?.touched ||
+                    (icsForm.controls['icsNo'].dirty && icsForm.hasError('required', 'icsNo'))"></i>
+
+                    <input class="form-control is-invalid"
+                      type="text" formControlName="icsNo"
+                      name="icsNo"
+                      id="icsNo"
+                      placeholder="ICS No.">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body py-0">
+
+              <!-- ITEM TABLE -->
+              <div class="row m-0">
+                <div class="col py-0">
+                  <div class="row py-3 bg-primary">
+                    <div
+                      class="col">
+                      <h5 class="ms-3 text-light">
+                        List of Item
+                      </h5>
+                    </div>
+                  </div>
+                  <div
+                    class="row table-responsive scrollable p-0 m-0">
+                    <div class="col p-0 m-0 table-body  ">
+                      <table
+                        class="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th class="sticky-header"></th>
+                            <th class="sticky-header">#</th>
+                            <th class="sticky-header">QTY</th>
+                            <th class="sticky-header">UNIT</th>
+                            <th class="sticky-header">DESCRIPTION</th>
+                            <th class="sticky-header">AMOUNT</th>
+                            <th class="sticky-header">TOTAL</th>
+                            <th class="sticky-header">ACTION</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngIf="icsItems.length<1">
+                            <td colspan="9" class="text-danger text-center">*
+                              Item list required! Add at least one!</td>
+                          </tr>
+                          <tr *ngFor="let p of icsItems; let i = index">
+                            <td>
+                              <a class="success"
+                                type="button"
+                                (click)="onViewItem(p)">
+                                <i class="fa-sharp-duotone fa-solid fa-eye"
+                                  data-toggle="tooltip" title="View"></i>
+                              </a></td>
+                            <td>{{i+1}}</td>
+                            <td>{{p.qty}}</td>
+                            <td>{{p.unit}}</td>
+                            <td>{{p.description}}</td>
+                            <td>{{p.amount}}</td>
+                            <td>{{( p.qty || 0) * (p.amount || 0)}}</td>
+                            <td>
+                              <form class="d-flex justify-content-end">
+                                <a class="edit"
+                                  type="button"><i
+                                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
+                                    data-toggle="tooltip" title="Edit"
+                                    (click)="onEditItem(p)"></i></a>
+                                <a class="secondary"
+                                  type="button"
+                                  (click)="onCopyItem(p)"><i
+                                    class="fa-sharp-duotone fa-solid fa-copy"
+                                    data-toggle="tooltip" title="Copy"></i></a>
+                                <a class="delete"
+                                  type="button"
+                                  (click)="onDeleteItem(p)"><i
+                                    class="fa-sharp-duotone fa-solid fa-trash"
+                                    data-toggle="tooltip"
+                                    title="Delete"></i></a>
+                              </form>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- END OF ITEM TABLE -->
+            </div>
+            <div class="card-footer py-2">
+              <a
+                class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+                type="button"
+                (click)="onAddPARItem()">
+                <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                  class="fs-6">NEW</span></a>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+
+          <div class="row d-flex flex-row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+
+              @if(!(icsForm.controls['userID1'].invalid &&
+              icsForm.hasError('required', 'userID1') &&
+              icsForm.get('userID1')?.touched ||
+              (icsForm.controls['userID1'].dirty &&
+              icsForm.hasError('required', 'userID1')))){
+              <small class="text-info">*
+                Received By</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="icsForm.controls['userID1'].invalid &&
+                    icsForm.hasError('required', 'userID1') &&
+                    icsForm.get('userID1')?.touched ||
+                    (icsForm.controls['userID1'].dirty &&
+                    icsForm.hasError('required', 'userID1'))">* Received By is
+                required</small>
+              }
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="icsForm.controls['userID1'].invalid && icsForm.hasError('required', 'userID1')  && icsForm.get('userID1')?.touched || (icsForm.controls['userID1'].dirty &&
+                icsForm.hasError('required', 'userID1'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                  *ngIf="!(icsForm.controls['userID1'].invalid &&
+                icsForm.hasError('required', 'userID1') &&
+                icsForm.get('userID1')?.touched ||
+                (icsForm.controls['userID1'].dirty &&
+                icsForm.hasError('required', 'userID1')))"></i>
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="icsForm.controls['userID1'].invalid && icsForm.hasError('required', 'userID1') &&  icsForm.get('userID1')?.touched ||
+                (icsForm.controls['userID1'].dirty && icsForm.hasError('required', 'userID1'))"></i>
+
+                <select class="form-select" formControlName="userID1"
+                  name="userID1"
+                  id="userID1">
+                  <option value>Received By</option>
+                  <option class="text-dark" *ngFor="let up of userProfiles"
+                    [value]="up.userID">{{ up.fullName }}</option>
+                </select>
+              </div>
+
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+
+              @if(!(icsForm.controls['userID2'].invalid &&
+              icsForm.hasError('required', 'userID2') &&
+              icsForm.get('userID2')?.touched ||
+              (icsForm.controls['userID2'].dirty &&
+              icsForm.hasError('required', 'userID2')))){
+              <small class="text-info">*
+                Issued By</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="icsForm.controls['userID2'].invalid &&
+                  icsForm.hasError('required', 'userID2') &&
+                  icsForm.get('userID2')?.touched ||
+                  (icsForm.controls['userID2'].dirty &&
+                  icsForm.hasError('required', 'userID2'))">* Issued By is
+                required</small>
+              }
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2')  && icsForm.get('userID2')?.touched || (icsForm.controls['userID2'].dirty &&
+                icsForm.hasError('required', 'userID2'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                  *ngIf="!(icsForm.controls['userID2'].invalid &&
+                icsForm.hasError('required', 'userID2') &&
+                icsForm.get('userID2')?.touched ||
+                (icsForm.controls['userID2'].dirty &&
+                icsForm.hasError('required', 'userID2')))"></i>
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2') &&  icsForm.get('userID2')?.touched ||
+                (icsForm.controls['userID2'].dirty && icsForm.hasError('required', 'userID2'))"></i>
+
+                <select class="form-select" formControlName="userID2"
+                  name="userID2"
+                  id="userID2">
+                  <option value>Issued By</option>
+                  <option class="text-dark" *ngFor="let up of userProfiles"
+                    [value]="up.userID">{{ up.fullName }}</option>
+                </select>
+
+              </div>
+            </div>
+            <div
+              class="col-12 col-sm-12 col-md-12 col-lg-4 d-flex align-items-center justify-content-center">
+              <button id="closeBut" type="button"
+                class="btn btn-secondary rounded-pill me-2"
+                data-bs-dismiss="modal"
+                (click)="closeModal(AddEditModal)">Close</button>
+              <button type="button" class="btn btn-primary rounded-pill"
+                (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save'
+                }}</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ICS VIEW -->
+<div #ViewModalForm class="modal fade" id="ViewModalForm">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content formGroup">
+      <form class [formGroup]="itrForm">
+        <div class="modal-header">
+
+          <div class="d-flex flex-column">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">
+              {{(isITR? 'ITR' : 'ICS') }}
+            </h1>
+            <span><em> Inventory {{(isITR? 'Transfer Report' :
+                'Custodian Slip') }}</em></span>
+          </div>
+
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="closeModal(ViewModal)"></button>
+        </div>
+
+        <div class="modal-body p-0 m-0">
+          <div class="card m-0">
+            <!-- CARD HEADER -->
+            <div class="card-header py-2">
+
+              <div class="row">
+                <div class="col">
+                  <div class="simple-accordion">
+                    <button class="accordion-header"
+                      (click)="toggleAccordion()"
+                      [attr.aria-expanded]="isOpen">
+                      INFORMATION
+                      <i
+                        class="fa-sharp-duotone fa-solid {{ isOpen? 'fa-caret-up' : 'fa-caret-down' }} "></i>
+                    </button>
+                    <div class="accordion-content" [class.show]="isOpen">
+
+                      <div class="row">
+                        <div class="col-lg">
+                          <small class="text-info">LGU</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i
+                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                              *ngIf="false"></i>
+                            <input type="text"
+                              [value]="ics?.entityName"
+                              class="form-control" placeholder="LGU" readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row d-flex flex-row">
+                        <div class="col">
+                          <small class="text-info">FUND</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i
+                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                              *ngIf="false"></i>
+                            <input type="text"
+                              [value]="ics?.fund"
+                              class="form-control" placeholder="FUND" readonly>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <small class="text-info">PAR No.</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i
+                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                              *ngIf="false"></i>
+                            <input type="text"
+                              [value]="ics?.icsNo"
+                              class="form-control" placeholder="PAR No."
+                              readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row d-flex flex-row">
+                        <div class="col">
+                          <small class="text-info">RECEIVED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i
+                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                              *ngIf="false"></i>
+                            <input type="text" [value]="ics?.received"
+                              class="form-control" placeholder="RECEIVED"
+                              readonly>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <small class="text-info">ISSUED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i
+                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                              *ngIf="false"></i>
+                            <input type="text" [value]="ics?.issued"
+                              class="form-control" placeholder="Issued"
+                              readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- END OF CARD HEADER -->
+            <div class="card-body py-0">
+              <!-- ITEM TABLE -->
+              <div class="row m-0">
+                <div class="col py-0">
+                  <div class="row py-3 bg-primary">
+
+                    <div class="col-3 d-flex align-items-center">
+                      <h5 class="ms-3 text-light">List of Items</h5>
+                    </div>
+
+                    <div
+                      class="col d-flex justify-content-end align-items-center h-100">
+                      <div class="searchbar">
+                        <input class="search_input" type="text"
+                          name="searchPARItemKey"
+                          formControlName="searchPARItemKey"
+                          (keyup)="searchPARItem()"
+                          placeholder="Search...">
+                        <a type="button" class="search_icon"
+                          (click)="searchPARItem()">
+                          <i class="fas fa-search"></i>
+                        </a>
+                      </div>
+                    </div>
+
+                  </div>
+                  <!-- table-responsive -->
+                  <div class="row table-responsive scrollable p-0 m-0">
+                    <div class="col p-0 m-0 table-body ">
+                      <table class="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th class="sticky-header"></th>
+                            <th class="sticky-header">#</th>
+                            <th class="sticky-header">QTY</th>
+                            <th class="sticky-header">UNIT</th>
+                            <th class="sticky-header">DESCRIPTION</th>
+                            <th class="sticky-header">AMOUNT</th>
+                            <th class="sticky-header">TOTAL</th>
+                            <th class="sticky-header">
+                              <!-- "Select All" Checkbox in the Header -->
+                              @if(isITR && noOfParItems > 1 ){
+                              <div
+                                class="form-check form-switch form-check-inline">
+                                <input class="form-check-input" type="checkbox"
+                                  id="selectAll"
+                                  (change)="toggleAllSelection($event)" />
+                                <label class="form-check-label"
+                                  for="selectAll">ITR</label>
+                              </div>
+                              }@else{
+                              ITR
+                              }
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-container
+                            *ngFor="let p of icsItems; let i = index">
+                            <!-- *ngIf="(!isITR) || (isITR && !p.reparFlag)" -->
+                            <!-- <tr [class.border-warning]="item?.qrCode == p.qrCode"> -->
+                            <tr>
+                              <td>
+                                <a class="success" type="button"
+                                  (click)="onViewItem(p)">
+                                  <i class="fa-sharp-duotone fa-solid fa-eye"
+                                    data-toggle="tooltip" title="View"></i>
+                                </a>
+                              </td>
+                              <td>{{ i + 1 }}</td>
+                              <td>1</td>
+                              <td>{{ p.unit }}</td>
+                              <td>{{ p.description }}</td>
+                              <td>{{ p.amount }}</td>
+                              <td>{{( p.qty || 0) * (p.amount || 0)}}</td>
+                              <td class="d-flex justify-content-center">
+
+                                <div
+                                  class="form-check form-switch form-check-inline">
+                                  <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    [checked]="p.itrFlag"
+                                    (change)="toggleSelection(p, $event)"
+                                    [disabled]="!isITR" />
+                                </div>
+
+                              </td>
+                            </tr>
+                          </ng-container>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- END OF ITEM TABLE -->
+            </div>
+            <!-- END OF CARD BODY -->
+            <div class="card-footer">
+              <div class="row d-flex flex-row"
+                *ngIf="noOfParItems > 0 && isITR">
+
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+
+                  <small class="text-info">*
+                    Issued By</small>
+
+                  <div class="form-field d-flex align-items-center">
+
+                    <select class="form-select" formControlName="userID2"
+                      name="userID2"
+                      id="userID2" readonly>
+                      <option [value]="ics.receivedBy ">{{ ics.received
+                        }}</option>
+                    </select>
+                  </div>
+
+                  <small class="text-info">*
+                    Approve By</small>
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="itrForm.controls['userID3'].invalid && itrForm.hasError('required', 'userID3')  && itrForm.get('userID3')?.touched ||
+                    (itrForm.controls['userID3'].dirty && itrForm.hasError('required', 'userID3'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(itrForm.controls['userID3'].invalid && itrForm.hasError('required', 'userID3') &&
+                      itrForm.get('userID3')?.touched || (itrForm.controls['userID3'].dirty &&
+                      itrForm.hasError('required', 'userID3')))"></i>
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="itrForm.controls['userID3'].invalid && itrForm.hasError('required', 'userID3') &&  itrForm.get('userID3')?.touched ||
+                      (itrForm.controls['userID3'].dirty && itrForm.hasError('required', 'userID3'))"></i>
+
+                    <select class="form-select" formControlName="userID3"
+                      name="userID3"
+                      id="userID3">
+                      <option value>Approved By</option>
+                      <ng-container *ngFor="let up of userProfiles">
+                        <option
+                          class="text-dark"
+                          [value]="up.userID"
+                          *ngIf="up.userID !== ics.receivedBy">
+                          {{ up.fullName }}
+                        </option>
+                      </ng-container>
+                    </select>
+                  </div>
+
+                  <small class="text-info">*
+                    Issue To</small>
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1')  && itrForm.get('userID1')?.touched ||
+                    (itrForm.controls['userID1'].dirty && itrForm.hasError('required', 'userID1'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1') &&
+                      itrForm.get('userID1')?.touched || (itrForm.controls['userID1'].dirty &&
+                      itrForm.hasError('required', 'userID1')))"></i>
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1') &&  itrForm.get('userID1')?.touched ||
+                      (itrForm.controls['userID1'].dirty && itrForm.hasError('required', 'userID1'))"></i>
+
+                    <select class="form-select" formControlName="userID1"
+                      name="userID1"
+                      id="userID1">
+                      <option value>Issue To</option>
+                      <ng-container *ngFor="let up of userProfiles">
+                        <option
+                          class="text-dark"
+                          [value]="up.userID"
+                          *ngIf="up.userID !== ics.receivedBy">
+                          {{ up.fullName }}
+                        </option>
+                      </ng-container>
+                    </select>
+                  </div>
+
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+
+                  <!-- Transfer type -->
+
+                  @if(!(itrForm.controls['type'].invalid &&
+                  itrForm.hasError('required', 'type') &&
+                  itrForm.get('type')?.touched ||
+                  (itrForm.controls['type'].dirty &&
+                  itrForm.hasError('required', 'type')))){
+                  <small class="text-info">* Transfer Type</small>
+                  }@else{
+                  <small class="text-danger"
+                    *ngIf="itrForm.controls['type'].invalid &&
+                    itrForm.hasError('required', 'type') &&
+                    itrForm.get('type')?.touched ||
+                    (itrForm.controls['type'].dirty &&
+                    itrForm.hasError('required', 'type')) ||
+                    (isCustomType && ((itrForm.controls['type'].invalid &&
+                  itrForm.hasError('required', 'type') &&
+                  itrForm.get('type')?.touched) || (itrForm.controls['others'].dirty && itrForm.hasError('required', 'others'))))">*
+                    Transfer Type is required</small>
+                  }
+
+                  <!-- Other Transfer type -->
+
+                  <small class="text-danger"
+                    *ngIf="isCustomType && itrForm.controls['others'].invalid && itrForm.get('others')?.touched">
+                    Specify 'Others' is required.
+                  </small>
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="itrForm.controls['type'].invalid && itrForm.hasError('required', 'type')  && itrForm.get('type')?.touched ||
+                    (itrForm.controls['type'].dirty && itrForm.hasError('required', 'type')) ||
+                    (isCustomType && itrForm.controls['others'].invalid && itrForm.hasError('required', 'others')  && itrForm.get('others')?.touched ||
+                  (itrForm.controls['others'].dirty && itrForm.hasError('required', 'others'))) ||
+                    (isCustomType && itrForm.get('others')?.invalid && itrForm.get('others')?.touched)">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="(itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1')  && itrForm.get('userID1')?.touched ||
+                      (itrForm.controls['userID1'].dirty && itrForm.hasError('required', 'userID1'))) ||
+                        (isCustomType && itrForm.get('others')?.invalid && itrForm.get('others')?.touched)">
+                    </i>
+
+                    <select formControlName="type" name="type" id="type"
+                      class="form-select" (change)="onTypeChange($event)">
+                      <option value>Transfer Type</option>
+                      <option *ngFor="let option of typeOptions"
+                        [value]="option">{{option}}</option>
+                      <option value="Others">Others</option>
+                    </select>
+
+                    <input *ngIf="isCustomType" type="text" id="others"
+                      #othersInput
+                      value="N/A"
+                      formControlName="others"
+                      placeholder="Specify" class="form-control">
+                  </div>
+
+                  <!-- Reason -->
+
+                  @if(!(itrForm.controls['reason'].invalid &&
+                  itrForm.hasError('required', 'reason') &&
+                  itrForm.get('reason')?.touched ||
+                  (itrForm.controls['reason'].dirty &&
+                  itrForm.hasError('required', 'reason')))){
+                  <small class="text-info">* Reason for Transfer</small>
+                  }@else{
+                  <small class="text-danger"
+                    *ngIf="itrForm.controls['reason'].invalid &&
+                itrForm.hasError('required', 'reason') &&
+                itrForm.get('reason')?.touched ||
+                (itrForm.controls['reason'].dirty &&
+                itrForm.hasError('required', 'reason'))">*
+                    Reason for Transfer is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="itrForm.controls['reason'].invalid &&
+                  itrForm.hasError('required', 'reason') && itrForm.get('reason')?.touched ||
+                  (itrForm.controls['reason'].dirty && itrForm.hasError('required', 'reason'))">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="itrForm.controls['reason'].invalid &&
+                    itrForm.hasError('required', 'reason') && itrForm.get('reason')?.touched ||
+                    (itrForm.controls['reason'].dirty && itrForm.hasError('required', 'reason'))"></i>
+
+                    <textarea formControlName="reason" name="reason" id="reason"
+                      placeholder="Reason/s for Transfer" rows="4"
+                      cols="50"></textarea>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="row"
+                *ngIf="noOfParItems < 1 && isITR">
+                <div class="col">
+                  <h6 class="p-3 text-center text-danger">ITEM(s) FULLY
+                    TRANSFERED.</h6>
+                </div>
+              </div>
+            </div>
+            <!-- END OF CARD FOOTER -->
+          </div>
+          <!-- END OF CARD -->
+        </div><!-- END OF MODAL BODY -->
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning rounded-pill"
+            *ngIf="!ics?.postFlag || false"
+            (click)="onEditICS(ics)">Edit</button>
+          <button type="button" class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal"
+            (click)="closeModal(ViewModal)">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill"
+            *ngIf="isITR && noOfParItems > 0"
+            (click)="onSubmitREPAR()">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ITEM ADD/EDIT -->
+<div #ItemModalForm class="modal fade" id="ItemModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form class [formGroup]="itemForm"
+        ng-reflect-form="[object Object]"
+        class="ng-untouched ng-pristine ng-invalid">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
+            isEditItemMode ?
+            'Edit' : 'Add New' }} Item</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="closeModal(ItemModal)"></button>
+        </div>
+        <div class="modal-body item-body scrollable">
+          <div class="formGroup row">
+            <div class="col-lg ">
+
+              @if(itemForm.controls['iid'].invalid &&
+              itemForm.hasError('required', 'iid') &&
+              itemForm.get('iid')?.touched ||
+              (itemForm.controls['iid'].dirty && itemForm.hasError('required',
+              'iid'))) {
+              <small class="text-danger">* Item is required</small>
+              }@else if (iid == null && itemForm.get('iid')?.touched) {
+              <small class="text-danger">* Item not Found</small>
+              }@else{
+              <small class="text-info">* Item</small>
+              }
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="((itemForm.controls['iid'].invalid && itemForm.hasError('required', 'iid') && iid==null) &&  itemForm.get('iid')?.touched)  ||
+             (itemForm.controls['iid'].dirty && itemForm.hasError('required', 'iid'))">
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="((itemForm.controls['iid'].invalid && itemForm.hasError('required', 'iid') || iid==null) && itemForm.get('iid')?.touched) ||
+             (itemForm.controls['iid'].dirty && itemForm.hasError('required', 'iid'))"></i>
+                <input type="text" class="form-control"
+                  id="navbarDropdown"
+                  formControlName="iid"
+                  name="iid"
+                  [(ngModel)]="IIDKey"
+                  placeholder=" Item"
+                  (keydown.enter)="onAutoSuggest()"
+                  (keyup)="onAutoSuggest()"
+                  placeholder="Item"
+                  role="textbox">
+
+              </div>
+
+              <div class="recent-searches"
+                *ngIf="items.length > 0 && IIDKey!">
+                <ul class="list-group list-group-flush py-3">
+                  <li type="button"
+                    class="list-group-item list-group-item-action px-3 rounded-pill"
+                    *ngFor="let i of items" (click)="selectItem(i)">
+                    {{ i.description }}</li>
+                </ul>
+              </div>
+
+              <!-- DESCRIPTION -->
+              @if(!(itemForm.controls['description'].invalid &&
+              itemForm.hasError('required', 'description') &&
+              itemForm.get('description')?.touched ||
+              (itemForm.controls['description'].dirty &&
+              itemForm.hasError('required', 'description')))){
+              <small class="text-info">*
+                Description</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="itemForm.controls['description'].invalid && itemForm.hasError('required', 'description') && itemForm.get('description')?.touched ||
+                    (itemForm.controls['description'].dirty && itemForm.hasError('required', 'description'))">*
+                Description No. is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['description'].invalid && itemForm.hasError('required', 'description') &&  itemForm.get('description')?.touched ||
+                (itemForm.controls['description'].dirty && itemForm.hasError('required', 'description'))">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['description'].invalid && itemForm.hasError('required', 'description') &&  itemForm.get('description')?.touched ||
+                  (itemForm.controls['description'].dirty && itemForm.hasError('required', 'description'))"></i>
+
+                <textarea type="text" formControlName="description"
+                  [ngModel]="parItemKey"
+                  name="description"
+                  id="description"
+                  placeholder="Description"></textarea>
+              </div>
+
+              <!-- UNIT -->
+              @if(!(itemForm.controls['unit'].invalid &&
+              itemForm.hasError('required', 'unit') &&
+              itemForm.get('unit')?.touched ||
+              (itemForm.controls['unit'].dirty &&
+              itemForm.hasError('required', 'unit')))){
+              <small class="text-info">*
+                Unit</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="itemForm.controls['unit'].invalid && itemForm.hasError('required', 'unit') && itemForm.get('unit')?.touched ||
+                (itemForm.controls['unit'].dirty && itemForm.hasError('required', 'unit'))">*
+                Unit is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['unit'].invalid && itemForm.hasError('required', 'unit')  && itemForm.get('unit')?.touched || (itemForm.controls['unit'].dirty &&
+                itemForm.hasError('required', 'unit'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                  *ngIf="!(itemForm.controls['unit'].invalid &&
+                  itemForm.hasError('required', 'unit') &&
+                itemForm.get('unit')?.touched ||
+                (itemForm.controls['unit'].dirty &&
+                itemForm.hasError('required', 'unit')))"></i>
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['unit'].invalid && itemForm.hasError('required', 'unit') &&  itemForm.get('unit')?.touched ||
+                (itemForm.controls['unit'].dirty && itemForm.hasError('required', 'unit'))"></i>
+
+                <select class="form-select" formControlName="unit"
+                  name="unit"
+                  id="unit">
+                  <option value>Select Unit</option>
+                  <option value="pcs">pcs</option>
+                  <option value="ml">ml</option>
+                  <option value="kl">kl</option>
+                </select>
+              </div>
+
+              <!-- COST/AMOUNT -->
+
+              <small class="text-info"
+                *ngIf="!itemForm.controls['amount'].invalid || !itemForm.controls['amount'].touched">*
+                Cost/Amount</small>
+
+              <small class="text-danger"
+                *ngIf="itemForm.controls['amount'].invalid && (itemForm.controls['amount'].touched || itemForm.controls['amount'].dirty)">
+                * Cost/Amount
+                <span
+                  *ngIf="itemForm.controls['amount'].hasError('required')">
+                  is required</span>
+                <span *ngIf="itemForm.controls['amount'].hasError('min')">
+                  cannot be less than 1</span>
+              </small>
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['amount'].invalid && (itemForm.controls['amount'].touched || itemForm.controls['amount'].dirty)">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['amount'].invalid && (itemForm.controls['amount'].touched || itemForm.controls['amount'].dirty)"></i>
+
+                <input type="text" formControlName="amount"
+                  name="amount"
+                  id="amount"
+                  placeholder="Unit Cost/Amount">
+              </div>
+
+              <!-- Quantiy -->
+              <small class="text-info"
+                *ngIf="!itemForm.controls['qty'].invalid || !itemForm.controls['qty'].touched">*
+                Quantity</small>
+
+              <small class="text-danger"
+                *ngIf="itemForm.controls['qty'].invalid && (itemForm.controls['qty'].touched || itemForm.controls['qty'].dirty)">
+                * Quantity
+                <span
+                  *ngIf="itemForm.controls['qty'].hasError('required')">
+                  is required</span>
+                <span *ngIf="itemForm.controls['qty'].hasError('min')">
+                  cannot be less than 1</span>
+              </small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['qty'].invalid && (itemForm.controls['qty'].touched || itemForm.controls['qty'].dirty)">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['qty'].invalid && (itemForm.controls['qty'].touched || itemForm.controls['qty'].dirty)"></i>
+
+                <input type="number" formControlName="qty"
+                  name="qty"
+                  id="qty"
+                  value="1"
+                  min="1"
+                  placeholder="1">
+              </div>
+
+              <!-- Estimated Useful Life -->
+              <small class="text-info"
+                *ngIf="!itemForm.controls['eul'].invalid || !itemForm.controls['eul'].touched">*
+                Estimated Useful Life</small>
+
+              <small class="text-danger"
+                *ngIf="itemForm.controls['eul'].invalid && (itemForm.controls['eul'].touched || itemForm.controls['eul'].dirty)">
+                * Estimated Useful Life
+                <span
+                  *ngIf="itemForm.controls['eul'].hasError('required')">
+                  is required</span>
+                <span *ngIf="itemForm.controls['eul'].hasError('min')">
+                  cannot be less than 1</span>
+              </small>
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['eul'].invalid && (itemForm.controls['eul'].touched || itemForm.controls['eul'].dirty)">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['eul'].invalid && (itemForm.controls['eul'].touched || itemForm.controls['eul'].dirty)"></i>
+
+                <input
+                  type="number" formControlName="eul"
+                  id="eul"
+                  value="1"
+                  min="1"
+                  max="50"
+                  step="any"
+                  placeholder="Estimated Life-span" />
+                <span class="me-3">year(s)</span>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal"
+            (click)="closeModal(ItemModal)">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill"
+            (click)="onAddItem()">{{ isEditItemMode ? 'Update' :
+            'Add' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ITEM VIEW MODAL -->
+<div #ViewItemModalForm class="modal fade" id="ViewItemModalForm" tabindex="-1"
+  aria-labelledby="ItemModalFormLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="ItemModalFormLabel">Item
+          Details</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close" (click)="closeModal(ViewItemModal)"></button>
+      </div>
+      <div class="modal-body item-body scrollable">
+        <!-- ITEM DETAILS --><div class="row">
+          <div class="col-lg-12">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td class="fw-bold">Item:</td>
+                  <td>{{ itemName || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Description:</td>
+                  <td>{{ item?.description || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Unit:</td>
+                  <td>{{ item?.unit || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Quantity:</td>
+                  <td>{{ item?.qty || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Cost/Amount:</td>
+                  <td>{{ item?.amount || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Life-span in years:</td>
+                  <td>{{ item?.eul || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Total Cost:</td>
+                  <td>{{ (item?.qty || 0) * (item?.amount || 0 )}}</td>
+                </tr>
+                <tr *ngIf="item?.itrFlag">
+                  <td class="fw-bold">ITR No.:</td>
+                  <td>{{ item?.itrNo || 'N/A' }}</td>
+                </tr>
+                <tr *ngIf="item?.itrFlag">
+                  <td class="fw-bold">Issued to:</td>
+                  <td>{{ itr?.received! || 'N/A' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning rounded-pill"
+          *ngIf="!ics?.postFlag || false"
+          (click)="onEditItem(item!)">Edit</button>
+        <button type="button" class="btn btn-secondary rounded-pill"
+          data-bs-dismiss="modal"
+          (click)="closeModal(ViewItemModal)">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

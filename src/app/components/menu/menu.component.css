@@ -1,0 +1,25 @@
+
+.collapse {
+  transition: height 0.3s  ease-in-out, opacity 0.3s ease;
+}
+
+.collapsing {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: height 0.3s ease, opacity 0.3s ease;
+}
+
+.collapse.show {
+  height: auto;
+  opacity: 1;
+  transition: height 3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.collapse:not(.show) {
+  display: block;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+

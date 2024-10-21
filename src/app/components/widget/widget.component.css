@@ -1,0 +1,94 @@
+/* ######################## CAROUSEL ###################### */
+.card-carousel {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel-container {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.4s ease-in-out;
+}
+
+.card {
+  min-width: 355px;
+  margin-right: 20px !important;
+  background-color: #fff;
+  border-radius: 15px;
+  border: none;
+  margin: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease-in-out;
+}
+
+.carousel-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 1;
+  color: #333;
+}
+
+.carousel-btn.prev {
+  position: absolute;
+  left: 10px;
+}
+
+.carousel-btn.next {
+  position: absolute;
+  right: 10px;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.l-bg-cherry {
+  background: linear-gradient(45deg, #e93a8c, #f09);
+}
+
+.l-bg-blue-dark {
+  background: linear-gradient(45deg, #2c3e50, #4ca1af);
+}
+
+.l-bg-green-dark {
+  background: linear-gradient(45deg, #43cea2, #185a9d);
+}
+
+.l-bg-orange-dark {
+  background: linear-gradient(45deg, #f7b733, #fc4a1a);
+}
+
+.card-icon {
+  font-size: 90px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.card-statistic-3 h2 {
+  font-size: 36px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.card-statistic-3 span {
+  font-size: 12px;
+  color: #fff;
+}

@@ -1,0 +1,87 @@
+
+<div class="container-fluid bg p-0">
+  <div class="outer d-flex align-items-center justify-content-center vh-100">
+    <div class="panel">
+      <!-- data-aos="fade-up" data-aos-delay="1000" -->
+      <!-- <div class="logo"></div> -->
+      <div class="panel-heading d-flex align-items-center ">
+        <a [routerLink]="['/']" routerLinkActive="router-link-active" href
+          class="link">
+          <img class="img img-fluid" [src]="ac.logoPath"
+            alt="ddnaeinv-Logo">
+        </a>
+      </div>
+      <div class="panel-body">
+        <div class="text-center mt-4 name">
+          <h2>DDN AEINV</h2>
+          <p><em>Asset and Equipement Inventory System</em></p>
+        </div>
+        <form class="p-3 mt-3" [formGroup]="loginForm"
+          ng-reflect-form="[object Object]"
+          class="ng-untouched ng-pristine ng-invalid">
+
+
+          @if (loginForm.controls['username'].dirty &&
+          loginForm.hasError('required', 'username')) {
+          <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
+          <small class="text-danger">* Username is required</small>
+          }
+          <div class="form-field d-flex align-items-center"
+            [class.error]="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')">
+            <span class="far fa-user"></span>
+            <input type="text" formControlName="username" name="username"
+              id="username"
+              placeholder="Username"
+              class="ng-untouched ng-pristine ng-invalid password"
+              autocomplete="username">
+          </div>
+
+          @if (loginForm.controls['password'].dirty &&
+          loginForm.hasError('required', 'password')) {
+          <small class="text-danger">* Password is required</small>
+          }
+          <div class="form-field d-flex align-items-center"
+            [class.error]="loginForm.controls['password'].dirty && loginForm.hasError('required', 'password')">
+            <span class="fas fa-key"></span>
+            <input type="password" formControlName="password" name="password"
+              id="password"
+              placeholder="Password"
+              class="ng-untouched ng-pristine ng-invalid password"
+              autocomplete="password">
+          </div>
+          <!-- Display Error -->
+          <!-- @if(errorMessage){
+          <div class="alert alert-danger" role="alert">
+            {{errorMessage}}
+          </div>
+          } -->
+          <div class="panel-footer">
+            <button (click)="onSubmit()" class="btn mt-3">Login</button>
+          </div>
+        </form>
+        <div class="text-center">
+          <!-- <a href="#">Forget password?</a> or <a href="#">Sign up</a> -->
+          Don't have Account? <a class="fs-6" [routerLink]="['/register']"
+            routerLinkActive="router-link-active">Register here!</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Transparent Loading Modal -->
+
+
+<div  #loadingModal class="modal fade" id="loadingModal"
+id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content transparent-bg">
+      <div class="modal-body text-center">
+
+        <img src="../../../assets/images/loading.gif" alt="Loading..."  width="100"  style="height: 80px;">
+        <p>Validating credentials, please wait...</p>
+      </div>
+    </div>
+  </div>
+</div>

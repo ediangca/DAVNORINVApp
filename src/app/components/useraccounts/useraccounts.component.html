@@ -1,0 +1,478 @@
+<div class="container-xl">
+  <div class="table-responsive" data-aos="zoom-in">
+    <div class="table-wrapper">
+      <div class="table-title">
+
+        <div
+          class="row d-flex align-items-center">
+
+          <!-- <div class="col-12 col-sm-12 col-md-8 col-lg-8"> -->
+          <div
+            class="col-12 d-flex just justify-content-center align-items-center">
+            <div class="search" style="width: 100%;">
+              <i
+                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search"
+                [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)"
+                placeholder="Search here.." aria-label="Search">
+              <a
+                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
+                type="button" (click)="searchUserAccount()"><i
+                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+            </div>
+            <a
+              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+              type="button" (click)="openAddEditModal()">
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                class="fs-6">ACCOUNT</span></a>
+            <a
+              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+              type="button" (click)="openAProfileModal()">
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                class="fs-6">PROFILE</span></a>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div *ngIf="isLoading" class="text-center my-3 align-content-center"
+        style="height: 50vh;">
+        <img src="../../../assets/images/loading.gif" alt="Loading..."
+          width="100" style="height: 80px;">
+        <span class="loading-text text-dark">Loading<span class="dot">.</span>
+          <span class="dot">.</span><span class="dot">.</span></span>
+
+      </div>
+
+      <table class="table table-striped table-hover" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <!-- <th>
+              <span class="custom-checkbox">
+                <input type="checkbox" id="selectAll">
+                <label for="selectAll"></label>
+              </span>
+            </th> -->
+            <th>ACCOUNT ID</th>
+            <th>Username</th>
+            <th>User Group</th>
+            <th>Verified</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ua of userAccounts">
+            <!-- <td>
+              <span class="custom-checkbox">
+                <input type="checkbox" id="checkbox1" name="options[]"
+                  [value]="ua.userID">
+                <label for="checkbox1"></label>
+              </span>
+            </td> -->
+            <td>{{ua.userID}}</td>
+            <td>{{ua.userName}}</td>
+            <td>{{ua.userGroupName}}</td>
+            <td>
+              <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input" type="checkbox" id="switch2"
+                  [checked]="ua.isVerified"
+                  (change)="toggleVerification($event, ua.userID, ua.userName)"
+                  [disabled]="ua.userName === 'admin'" />
+              </div>
+              <!-- @if (ua.isVerified) {
+              <svg class="me-2 text-primary icon-24" width="24"
+                viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path>
+              </svg>
+              }@else{
+              <span class="fw-bold text-danger">X</span>
+              } -->
+            </td>
+            <td>
+              <form class="d-flex justify-content-end">
+                @if(ua.userName == "admin"){
+                <span><i
+                    class="fa-sharp-duotone fa-solid fa-asterisk"
+                    data-toggle="tooltip" title="System Default"></i></span>
+                }@else{
+                <a class="edit"
+                  type="button"
+                  (click)="restoreData(ua)"><i
+                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
+                    data-toggle="tooltip" title="Edit"></i></a>
+                <a class="delete"
+                  (click)="onDelete(ua.userID, ua.userName)"><i
+                    class="fa-sharp-duotone fa-solid fa-trash"
+                    data-toggle="tooltip" title="Delete"></i></a>
+                }
+                <a class="info"
+                  type="button"
+                  (click)="getProfileByUserID(ua)"><i
+                    class="fa-sharp-duotone fa-solid fa-id-card"
+                    data-toggle="tooltip" title="Profile"></i></a>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="clearfix" *ngIf="!isLoading">
+        <div class="hint-text">Showing <b>5</b> out of <b>{{userAccounts.length
+            }}</b> entries</div>
+        <ul class="pagination">
+          <li class="page-item disabled"><a href="#">Previous</a></li>
+          <li class="page-item"><a href="#" class="page-link">1</a></li>
+          <li class="page-item"><a href="#" class="page-link">2</a></li>
+          <li class="page-item active"><a href="#" class="page-link">3</a></li>
+          <li class="page-item"><a href="#" class="page-link">4</a></li>
+          <li class="page-item"><a href="#" class="page-link">5</a></li>
+          <li class="page-item"><a href="#" class="page-link">Next</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+
+<!-- ADD/EDIT -->
+<div #AddEditModalForm class="modal fade" id="AddEditModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form class [formGroup]="userAccountForm"
+        ng-reflect-form="[object Object]"
+        class="ng-untouched ng-pristine ng-invalid">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ isEditMode ?
+            'Edit' : 'Add New' }} User
+            Account</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="formGroup row">
+
+            <div class="col-lg col-security">
+
+              @if (userAccountForm.controls['username'].invalid &&
+              userAccountForm.hasError('required', 'username') &&
+              userAccountForm.get('username')?.touched ||
+              (userAccountForm.controls['username'].dirty &&
+              userAccountForm.hasError('required', 'username'))) {
+              <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
+              <small class="text-danger">* Username is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userAccountForm.controls['username'].invalid &&
+            userAccountForm.hasError('required', 'username') &&  userAccountForm.get('username')?.touched || (userAccountForm.controls['username'].dirty &&
+            userAccountForm.hasError('required', 'username'))">
+                <span class="far fa-user"></span>
+                <input type="text" formControlName="username"
+                  name="username"
+                  id="username"
+                  placeholder="Username">
+              </div>
+
+              <div class="row" *ngIf="!isEditMode">
+                <div class="col">
+
+                  @if (userAccountForm.controls['password'].invalid &&
+                  userAccountForm.hasError('required', 'password') &&
+                  userAccountForm.get('password')?.touched ||
+                  (userAccountForm.controls['password'].dirty &&
+                  userAccountForm.hasError('required', 'password'))) {
+                  <small class="text-danger">* Password is required</small>
+                  }@else if(userAccountForm.hasError('minlength', 'password') &&
+                  userAccountForm.get('password')?.touched){
+                  <small class="text-danger">* Password must be at least 6
+                    characters long.</small>
+                  }@else if (passwordMismatch &&
+                  userAccountForm.get('confirmPassword')?.touched) {
+                  <small class="text-danger">* Confirm Password not
+                    match</small>
+                  }
+                  <!-- @else if (passwordStrength && userAccountForm.get('confirmPassword')?.touched) {
+                        <small class="text-danger">* Password must contain upper and lower case letters, a number, and a special character.</small>
+                      } -->
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="userAccountForm.controls['password'].invalid &&
+                    userAccountForm.hasError('required', 'password') &&  userAccountForm.get('password')?.touched || (userAccountForm.controls['password'].dirty &&
+                    userAccountForm.hasError('required', 'password')) || userAccountForm.hasError('minlength', 'password') || passwordMismatch">
+                    <span class="fas fa-key"></span>
+                    <input type="password" formControlName="password"
+                      name="password"
+                      id="password"
+                      placeholder="Password"
+                      class="ng-untouched ng-pristine ng-invalid password"
+                      autocomplete="password">
+                  </div>
+
+                  @if (userAccountForm.controls['confirmPassword'].invalid &&
+                  userAccountForm.hasError('required', 'confirmPassword') &&
+                  userAccountForm.get('confirmPassword')?.touched ||
+                  (userAccountForm.controls['confirmPassword'].dirty &&
+                  userAccountForm.hasError('required', 'confirmPassword'))) {
+                  <small class="text-danger">* Confirmation Password is
+                    required</small>
+                  }@else if (passwordMismatch &&
+                  userAccountForm.get('confirmPassword')?.touched) {
+                  <small class="text-danger">* Confirm Password not
+                    match</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="userAccountForm.controls['confirmPassword'].invalid &&
+                    userAccountForm.hasError('required', 'confirmPassword') &&  userAccountForm.get('confirmPassword')?.touched || (userAccountForm.controls['confirmPassword'].dirty &&
+                    userAccountForm.hasError('required', 'confirmPassword') || passwordMismatch)">
+                    <span class="fas fa-key"></span>
+                    <input type="password" formControlName="confirmPassword"
+                      name="confirmPassword"
+                      id="confirmPassword"
+                      placeholder="Confirm Password"
+                      class="ng-untouched ng-pristine ng-invalid confirmPassword"
+                      autocomplete="confirmPassword">
+                  </div>
+                </div>
+              </div>
+
+              @if (userAccountForm.controls['ug'].invalid &&
+              userAccountForm.hasError('required', 'ug') &&
+              userAccountForm.get('ug')?.touched ||
+              (userAccountForm.controls['ug'].dirty &&
+              userAccountForm.hasError('required', 'ug'))) {
+              <small class="text-danger">* User Group is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userAccountForm.controls['ug'].invalid && userAccountForm.hasError('required', 'ug')  && userAccountForm.get('ug')?.touched || (userAccountForm.controls['ug'].dirty &&
+            userAccountForm.hasError('required', 'ug'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
+                <select class="form-select" formControlName="ug" name="ug"
+                  id="ug">
+                  <option value>Select User Group</option>
+                  <option *ngFor="let group of userGroups"
+                    [value]="group.ugid">{{ group.userGroupName }}</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill"
+            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE SHOW/EDIT -->
+<div #ProfileModalForm class="modal fade" id="ProfileModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form class [formGroup]="userProfileForm"
+        ng-reflect-form="[object Object]"
+        class="ng-untouched ng-pristine ng-invalid">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ isEditMode ?
+            'Edit' : 'Add New' }} Profile
+            Account</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="formGroup row">
+
+            <div class="col-lg col-security">
+
+              <!-- LASTNAME -->
+              <small *ngIf="userProfileForm.controls['lastname'].invalid &&
+              userProfileForm.hasError('required', 'lastname') &&
+              userProfileForm.get('lastname')?.touched ||
+              (userProfileForm.controls['lastname'].dirty &&
+              userProfileForm.hasError('required', 'lastname'))"
+                class="text-danger">* Lastname is required</small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userProfileForm.controls['lastname'].invalid &&
+            userProfileForm.hasError('required', 'lastname') &&  userProfileForm.get('lastname')?.touched || (userProfileForm.controls['lastname'].dirty &&
+            userProfileForm.hasError('required', 'lastname'))">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <input type="text" formControlName="lastname"
+                  name="lastname"
+                  id="lastname"
+                  placeholder="Lastname">
+              </div>
+
+              <!-- FIRSTNAME -->
+              <small *ngIf="userProfileForm.controls['firstname'].invalid &&
+              userProfileForm.hasError('required', 'firstname') &&
+              userProfileForm.get('firstname')?.touched ||
+              (userProfileForm.controls['firstname'].dirty &&
+              userProfileForm.hasError('required', 'firstname'))"
+                class="text-danger">* Firstname is required</small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userProfileForm.controls['firstname'].invalid &&
+            userProfileForm.hasError('required', 'firstname') &&  userProfileForm.get('firstname')?.touched || (userProfileForm.controls['firstname'].dirty &&
+            userProfileForm.hasError('required', 'firstname'))">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <input type="text" formControlName="firstname"
+                  name="firstname"
+                  id="firstname"
+                  placeholder="Firstname">
+              </div>
+
+              <!-- MIDDLENAME -->
+              <small *ngIf="userProfileForm.controls['middlename'].invalid &&
+              userProfileForm.hasError('required', 'middlename') &&
+              userProfileForm.get('firstname')?.touched ||
+              (userProfileForm.controls['middlename'].dirty &&
+              userProfileForm.hasError('required', 'middlename'))"
+                class="text-danger">* Middlename is required</small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userProfileForm.controls['middlename'].invalid &&
+            userProfileForm.hasError('required', 'middlename') &&  userProfileForm.get('middlename')?.touched || (userProfileForm.controls['middlename'].dirty &&
+            userProfileForm.hasError('required', 'middlename'))">
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                <input type="text" formControlName="middlename"
+                  name="middlename"
+                  id="middlename"
+                  placeholder="Middlename">
+              </div>
+
+              <!-- BRANCH -->
+              <small *ngIf="userProfileForm.controls['sex'].invalid &&
+              userProfileForm.hasError('required', 'sex') &&
+              userProfileForm.get('branchID')?.touched ||
+              (userProfileForm.controls['sex'].dirty &&
+              userProfileForm.hasError('required', 'sex'))"
+                class="text-danger">* Sex is required</small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userProfileForm.controls['sex'].invalid && userProfileForm.hasError('required', 'sex')
+                && userProfileForm.get('sex')?.touched || (userProfileForm.controls['sex'].dirty &&
+                userProfileForm.hasError('required', 'sex'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
+                <select class="form-select" formControlName="sex"
+                  name="sex"
+                  id="sex">
+                  <option value>Select Sex</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                </select>
+              </div>
+
+              <!-- BRANCH -->
+              <small *ngIf="userProfileForm.controls['branchID'].invalid &&
+              userProfileForm.hasError('required', 'branchID') &&
+              userProfileForm.get('branchID')?.touched ||
+              (userProfileForm.controls['branchID'].dirty &&
+              userProfileForm.hasError('required', 'branchID'))"
+                class="text-danger">* Branch is required</small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userProfileForm.controls['branchID'].invalid && userProfileForm.hasError('required', 'branchID')
+                && userProfileForm.get('branchID')?.touched || (userProfileForm.controls['branchID'].dirty &&
+                userProfileForm.hasError('required', 'branchID'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
+                <select class="form-select" formControlName="branchID"
+                  name="branchID"
+                  id="branchID"
+                  (change)="onBranchChange($event)">
+                  <option value>Select Company/Branch</option>
+                  <option *ngFor="let b of branches"
+                    [value]="b.branchID">{{ b.branchName }}</option>
+                </select>
+              </div>
+
+              <!-- DEPARTMENT -->
+              <small *ngIf="userProfileForm.controls['depID'].invalid &&
+              userProfileForm.hasError('required', 'depID') &&
+              userProfileForm.get('depID')?.touched ||
+              (userProfileForm.controls['depID'].dirty &&
+              userProfileForm.hasError('required', 'depID'))"
+                class="text-danger">* Deparment is required</small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userProfileForm.controls['depID'].invalid && userProfileForm.hasError('required', 'depID')
+                && userProfileForm.get('depID')?.touched || (userProfileForm.controls['depID'].dirty &&
+                userProfileForm.hasError('required', 'depID'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
+                <select class="form-select" formControlName="depID"
+                  name="depID"
+                  id="depID"
+                  (change)="onDepartmentChange($event)">
+                  <option value>Select Deparment</option>
+                  <option *ngFor="let d of departments"
+                    [value]="d.depID">{{ d.departmentName }}</option>
+                </select>
+              </div>
+
+              <!-- SECTION -->
+              <small *ngIf="userProfileForm.controls['secID'].invalid &&
+              userProfileForm.hasError('required', 'secID') &&
+              userProfileForm.get('secID')?.touched ||
+              (userProfileForm.controls['secID'].dirty &&
+              userProfileForm.hasError('required', 'secID'))"
+                class="text-danger">* Section is required</small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userProfileForm.controls['secID'].invalid && userProfileForm.hasError('required', 'secID')
+                && userProfileForm.get('secID')?.touched || (userProfileForm.controls['secID'].dirty &&
+                userProfileForm.hasError('required', 'secID'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
+                <select class="form-select" formControlName="secID"
+                  name="secID"
+                  id="secID">
+                  <option value>Select Section</option>
+                  <option *ngFor="let s of sections"
+                    [value]="s.secID">{{ s.sectionName }}</option>
+                </select>
+              </div>
+
+              <!-- POSITION -->
+              <small *ngIf="userProfileForm.controls['positionID'].invalid &&
+              userProfileForm.hasError('required', 'positionID') &&
+              userProfileForm.get('positionID')?.touched ||
+              (userProfileForm.controls['positionID'].dirty &&
+              userProfileForm.hasError('required', 'positionID'))"
+                class="text-danger">* Position is required</small>
+
+              <div class="form-field d-flex align-items-center"
+                [class.error]="userProfileForm.controls['positionID'].invalid && userProfileForm.hasError('required', 'positionID')
+                && userProfileForm.get('positionID')?.touched || (userProfileForm.controls['secID'].dirty &&
+                userProfileForm.hasError('required', 'positionID'))">
+                <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
+                <select class="form-select" formControlName="positionID"
+                  name="positionID"
+                  id="positionID">
+                  <option value>Select Position</option>
+                  <option *ngFor="let p of positions"
+                    [value]="p.positionID">{{ p.positionName }}</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill"
+            (click)="onSubmitProfile()">{{ isEditMode ? 'Update' :
+            'Save' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

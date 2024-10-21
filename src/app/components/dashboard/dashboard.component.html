@@ -1,0 +1,214 @@
+
+<aside
+  class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all " [class.sidebar-mini]="isMinimizeSideBar">
+  <div
+    class="sidebar-header d-flex align-items-center justify-content-start">
+    <a class="navbar-brand" [routerLink]="['dashboard']"
+      routerLinkActive="router-link-active">
+      <!--Logo start-->
+      <!--logo End-->
+
+      <!--Logo start-->
+      <div class="logo-main">
+        <div class="logo-normal">
+          <img class=" icon-30" [src]="ac.logoPath"
+            alt="ddnaeinv-Logo">
+        </div>
+        <div class="logo-mini">
+          <img class=" icon-30" [src]="ac.logoPath"
+            alt="ddnaeinv-Logo">
+        </div>
+      </div>
+      <!--logo End-->
+      <h4 class="logo-title">DDN AEINV</h4>
+    </a>
+    <a class="sidebar-toggle" id="sidebarToggle" data-toggle="sidebar"
+      type="button" (click)="toggleSidebarItems()"
+      data-active="true">
+      <i class="icon">
+        <svg width="20" height="20" viewBox="0 0 24 24"
+          fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.25 12.2744L19.25 12.2744"
+            stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+          <path
+            d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976"
+            stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </i>
+    </a>
+  </div>
+  <div class="sidebar-body pt-0 data-scrollbar">
+    <div class="sidebar-list">
+      <app-menu></app-menu>
+    </div>
+  </div>
+  <div class="sidebar-footer"> </div>
+</aside>
+
+<!-- Main content area -->
+<main class="main-content">
+  <div class="position-relative iq-banner">
+    <!--Nav Start-->
+    <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar navs-sticky">
+      <div class="container-fluid navbar-inner">
+        <a [routerLink]="['dashboard']" routerLinkActive="router-link-active"
+          class="navbar-brand">
+          <!--Logo start-->
+          <!--logo End-->
+
+          <!--Logo start-->
+          <div class="logo-main">
+            <div class="logo-normal">
+              <img class=" icon-30" [src]="ac.logoPath"
+                alt="ddnaeinv-Logo">
+            </div>
+            <div class="logo-mini">
+              <img class=" icon-30" [src]="ac.logoPath"
+                alt="ddnaeinv-Logo">
+            </div>
+          </div>
+          <!--logo End-->
+          <h4 class="logo-title">DDN AEINV</h4>
+        </a>
+        <a class="sidebar-toggle" id="sidebar-Toggle" data-toggle="sidebar"
+          type="button" (click)="toggleSidebarItems()"
+          data-active="true">
+          <i class="icon">
+            <svg width="20px" class="icon-20" viewBox="0 0 24 24">
+              <path fill="currentColor"
+                d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"></path>
+            </svg>
+          </i>
+        </a>
+        <div class="input-group search-input">
+          <span class="input-group-text" id="search-input">
+            <svg class="icon-18" width="18" viewBox="0 0 24 24" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11.7669" cy="11.7666" r="8.98856"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"></circle>
+              <path d="M18.0186 18.4851L21.5426 22" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+          </span>
+          <input type="search" class="form-control" placeholder="Search...">
+        </div>
+        <!-- <button class="navbar-toggler collapsed" type="button"
+          data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon">
+            <span class="mt-2 navbar-toggler-bar bar1"></span>
+            <span class="navbar-toggler-bar bar2"></span>
+            <span class="navbar-toggler-bar bar3"></span>
+          </span>
+        </button> -->
+        <div class="navbar" id="navbarSupportedContent" style>
+          <ul
+            class="mb-2 navbar-nav ms-auto align-items-center navbar-list mb-lg-0">
+            <li class="nav-item dropdown">
+              <a class="py-0 nav-link d-flex align-items-center" href="#"
+                id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <i class="fa-duotone fa-solid fa-user"></i>
+                <div class="caption ms-3 d-none d-md-block ">
+                  <h6 class="mb-0 caption-title">{{fullname}}</h6>
+                  <p class="mb-0 caption-sub-title">{{role}}</p>
+                </div>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" [routerLink]="['profile']"
+                    routerLinkActive="router-link-active">Profile</a></li>
+                <li><hr class="hr-horizontal"></li>
+                <li><a class="dropdown-item" type="button"
+                    (click)="logout()">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!--Nav End-->
+    <!-- Nav Header Component Start -->
+    <div class="header iq-navbar-header bg-primary" style="height: 215px;">
+      <div class="container-fluid iq-container">
+        <div class="row">
+          <div class="col-md-12">
+            <div
+              class="flex-wrap d-flex justify-content-between align-items-center">
+              <div>
+                <h1>Hey Yow, Whats Up!</h1>
+                <p>We are on a mission to help
+                  you monitor your Asset and Equipement Inventory.</p>
+              </div>
+              <div>
+                <a href
+                  class="btn btn-link btn-soft-light">
+                  <svg class="icon-20" width="20"
+                    viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M11.8251 15.2171H12.1748C14.0987 15.2171 15.731 13.985 16.3054 12.2764C16.3887 12.0276 16.1979 11.7713 15.9334 11.7713H14.8562C14.5133 11.7713 14.2362 11.4977 14.2362 11.16C14.2362 10.8213 14.5133 10.5467 14.8562 10.5467H15.9005C16.2463 10.5467 16.5263 10.2703 16.5263 9.92875C16.5263 9.58722 16.2463 9.31075 15.9005 9.31075H14.8562C14.5133 9.31075 14.2362 9.03619 14.2362 8.69849C14.2362 8.35984 14.5133 8.08528 14.8562 8.08528H15.9005C16.2463 8.08528 16.5263 7.8088 16.5263 7.46728C16.5263 7.12575 16.2463 6.84928 15.9005 6.84928H14.8562C14.5133 6.84928 14.2362 6.57472 14.2362 6.23606C14.2362 5.89837 14.5133 5.62381 14.8562 5.62381H15.9886C16.2483 5.62381 16.4343 5.3789 16.3645 5.13113C15.8501 3.32401 14.1694 2 12.1748 2H11.8251C9.42172 2 7.47363 3.92287 7.47363 6.29729V10.9198C7.47363 13.2933 9.42172 15.2171 11.8251 15.2171Z"
+                      fill="currentColor"></path>
+                    <path opacity="0.4"
+                      d="M19.5313 9.82568C18.9966 9.82568 18.5626 10.2533 18.5626 10.7823C18.5626 14.3554 15.6186 17.2627 12.0005 17.2627C8.38136 17.2627 5.43743 14.3554 5.43743 10.7823C5.43743 10.2533 5.00345 9.82568 4.46872 9.82568C3.93398 9.82568 3.5 10.2533 3.5 10.7823C3.5 15.0873 6.79945 18.6413 11.0318 19.1186V21.0434C11.0318 21.5715 11.4648 22.0001 12.0005 22.0001C12.5352 22.0001 12.9692 21.5715 12.9692 21.0434V19.1186C17.2006 18.6413 20.5 15.0873 20.5 10.7823C20.5 10.2533 20.066 9.82568 19.5313 9.82568Z"
+                      fill="currentColor"></path>
+                  </svg>
+                  Announcements
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Nav Header Component End -->
+      </div>
+    </div>
+
+  </div>
+  <div class="conatiner-fluid content-inner py-0">
+
+
+    <app-widget class="widget"></app-widget>
+
+    <router-outlet>
+      <div class="row mt-5"></div></router-outlet>
+  </div>
+
+  <!-- Footer Section Start -->
+  <footer class="footer">
+    <div class="footer-body">
+
+      <!--
+        <ul class="left-panel list-inline mb-0 p-0">
+          <li class="list-inline-item"><a
+              href="../dashboard/extra/privacy-policy.html">Privacy
+              Policy</a></li>
+          <li class="list-inline-item"><a
+              href="../dashboard/extra/terms-of-service.html">Terms
+              of Use</a></li>
+        Copyright © 2024 - 2025 Human Resource Information System.
+        </ul>
+        -->
+      <div class="right-panel">
+        © {{curYear}} Asset and Inventory System, Made with
+        <span class>
+          <svg class="icon-15" width="15" viewBox="0 0 24 24"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M15.85 2.50065C16.481 2.50065 17.111 2.58965 17.71 2.79065C21.401 3.99065 22.731 8.04065 21.62 11.5806C20.99 13.3896 19.96 15.0406 18.611 16.3896C16.68 18.2596 14.561 19.9196 12.28 21.3496L12.03 21.5006L11.77 21.3396C9.48102 19.9196 7.35002 18.2596 5.40102 16.3796C4.06102 15.0306 3.03002 13.3896 2.39002 11.5806C1.26002 8.04065 2.59002 3.99065 6.32102 2.76965C6.61102 2.66965 6.91002 2.59965 7.21002 2.56065H7.33002C7.61102 2.51965 7.89002 2.50065 8.17002 2.50065H8.28002C8.91002 2.51965 9.52002 2.62965 10.111 2.83065H10.17C10.21 2.84965 10.24 2.87065 10.26 2.88965C10.481 2.96065 10.69 3.04065 10.89 3.15065L11.27 3.32065C11.3618 3.36962 11.4649 3.44445 11.554 3.50912C11.6104 3.55009 11.6612 3.58699 11.7 3.61065C11.7163 3.62028 11.7329 3.62996 11.7496 3.63972C11.8354 3.68977 11.9247 3.74191 12 3.79965C13.111 2.95065 14.46 2.49065 15.85 2.50065ZM18.51 9.70065C18.92 9.68965 19.27 9.36065 19.3 8.93965V8.82065C19.33 7.41965 18.481 6.15065 17.19 5.66065C16.78 5.51965 16.33 5.74065 16.18 6.16065C16.04 6.58065 16.26 7.04065 16.68 7.18965C17.321 7.42965 17.75 8.06065 17.75 8.75965V8.79065C17.731 9.01965 17.8 9.24065 17.94 9.41065C18.08 9.58065 18.29 9.67965 18.51 9.70065Z"
+              fill="currentColor"></path>
+          </svg>
+        </span> by <a aria-current="page"
+          target="_blank" href="https://davnorsystems.gov.ph/">Province of
+          Davao del Norte - PEEDO Admin</a>.
+      </div>
+    </div>
+  </footer>
+
+</main>
