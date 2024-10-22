@@ -146,7 +146,7 @@
               <div class="row">
                 <div class="col-lg">
 
-                  @if(!(icsForm.controls['lgu'].invalid &&
+                  <!-- @if(!(icsForm.controls['lgu'].invalid &&
                   icsForm.hasError('required', 'lgu') &&
                   icsForm.get('lgu')?.touched ||
                   (icsForm.controls['lgu'].dirty &&
@@ -161,8 +161,10 @@
                       (icsForm.controls['lgu'].dirty &&
                       icsForm.hasError('required', 'lgu'))">*
                     ENTITY NAME is required</small>
-                  }
+                  } -->
 
+                  <small class="text-info">*
+                    ENTITY NAME</small>
                   <div class="form-field d-flex align-items-center"
                     [class.error]="icsForm.controls['lgu'].invalid &&
               icsForm.hasError('required', 'lgu') &&  icsForm.get('lgu')?.touched || (icsForm.controls['lgu'].dirty &&
@@ -184,7 +186,7 @@
               </div>
               <div class="row d-flex flex-row">
                 <div class="col">
-                  @if(!(icsForm.controls['fund'].invalid &&
+                  <!-- @if(!(icsForm.controls['fund'].invalid &&
                   icsForm.hasError('required', 'fund') &&
                   icsForm.get('fund')?.touched ||
                   (icsForm.controls['fund'].dirty &&
@@ -196,8 +198,10 @@
                     *ngIf="icsForm.controls['fund'].invalid && icsForm.hasError('required', 'fund') && icsForm.get('fund')?.touched ||
                         (icsForm.controls['fund'].dirty && icsForm.hasError('required', 'fund'))">*
                     FUND is required</small>
-                  }
+                  } -->
 
+                  <small class="text-info">*
+                    FUND</small>
                   <div class="form-field d-flex align-items-center"
                     [class.error]="icsForm.controls['fund'].invalid && icsForm.hasError('required', 'fund') &&  icsForm.get('fund')?.touched ||
                     (icsForm.controls['fund'].dirty && icsForm.hasError('required', 'fund'))">
@@ -214,7 +218,7 @@
                   </div>
                 </div>
                 <div class="col">
-
+                  <!--
                   @if(!(icsForm.controls['icsNo'].invalid &&
                   icsForm.hasError('required', 'icsNo') &&
                   icsForm.get('icsNo')?.touched ||
@@ -228,8 +232,10 @@
                           (icsForm.controls['icsNo'].dirty && icsForm.hasError('required', 'icsNo'))">*
                     ICS No. is
                     required</small>
-                  }
+                  } -->
 
+                  <small class="text-info">*
+                    ICS No.</small>
                   <div class="form-field d-flex align-items-center"
                     [class.error]="icsForm.controls['icsNo'].invalid && icsForm.hasError('required', 'icsNo') &&  icsForm.get('icsNo')?.touched ||
                     (icsForm.controls['icsNo'].dirty && icsForm.hasError('required', 'icsNo'))">
@@ -365,9 +371,11 @@
 
                     <i
                       class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="(icsForm.controls['userID1'].invalid && icsForm.hasError('required', 'userID1')  && icsForm.get('userID1')?.touched ||
-                      (icsForm.controls['userID1'].dirty && icsForm.hasError('required', 'userID1'))) ||
-                        (isCustomType && icsForm.get('others')?.invalid && icsForm.get('others')?.touched)">
+                      *ngIf="icsForm.controls['type'].invalid && icsForm.hasError('required', 'type')  && icsForm.get('type')?.touched ||
+                      (icsForm.controls['type'].dirty && icsForm.hasError('required', 'type')) ||
+                      (isCustomType && icsForm.controls['others'].invalid && icsForm.hasError('required', 'others')  && icsForm.get('others')?.touched ||
+                    (icsForm.controls['others'].dirty && icsForm.hasError('required', 'others'))) ||
+                      (isCustomType && icsForm.get('others')?.invalid && icsForm.get('others')?.touched)">
                     </i>
 
                     <select formControlName="type" name="type" id="type"
@@ -378,7 +386,8 @@
                       <option value="Others">Others</option>
                     </select>
 
-                    <input *ngIf="isCustomType" type="text" id="others"
+                    <input *ngIf="isCustomType || itr?.ttype == 'Others'"
+                      type="text" id="others"
                       #othersInput
                       value="N/A"
                       formControlName="others"
@@ -421,6 +430,8 @@
                 </div>
               </div>
               <div class="row d-flex flex-row">
+
+                <!-- Approved By -->
                 <div class="col">
                   @if(!(icsForm.controls['userID3'].invalid &&
                   icsForm.hasError('required', 'userID3') &&
@@ -465,6 +476,7 @@
                 </div>
                 <div class="col">
 
+                  <!-- Received By -->
                   @if(!(icsForm.controls['userID1'].invalid &&
                   icsForm.hasError('required', 'userID1') &&
                   icsForm.get('userID1')?.touched ||
@@ -507,7 +519,8 @@
                 </div>
                 <div class="col">
 
-                  @if(!(icsForm.controls['userID2'].invalid &&
+                  <!-- Received By -->
+                  <!-- @if(!(icsForm.controls['userID2'].invalid &&
                   icsForm.hasError('required', 'userID2') &&
                   icsForm.get('userID2')?.touched ||
                   (icsForm.controls['userID2'].dirty &&
@@ -522,31 +535,27 @@
                   (icsForm.controls['userID2'].dirty &&
                   icsForm.hasError('required', 'userID2'))">* Issued By is
                     required</small>
-                  }
+                  } -->
 
+                  <small class="text-info">*
+                    Issued By</small>
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2')  && icsForm.get('userID2')?.touched || (icsForm.controls['userID2'].dirty &&
-                icsForm.hasError('required', 'userID2'))">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(icsForm.controls['userID2'].invalid &&
-                icsForm.hasError('required', 'userID2') &&
-                icsForm.get('userID2')?.touched ||
-                (icsForm.controls['userID2'].dirty &&
-                icsForm.hasError('required', 'userID2')))"></i>
+                    [class.error]="icsForm.controls['userID2'].invalid &&
+              icsForm.hasError('required', 'userID2') &&  icsForm.get('userID2')?.touched || (icsForm.controls['userID2'].dirty &&
+              icsForm.hasError('required', 'userID2'))">
+
                     <i
                       class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2') &&  icsForm.get('userID2')?.touched ||
-                (icsForm.controls['userID2'].dirty && icsForm.hasError('required', 'userID2'))"></i>
+                      *ngIf="icsForm.controls['userID2'].invalid &&
+                      icsForm.hasError('required', 'userID2') &&  icsForm.get('userID2')?.touched || (icsForm.controls['userID2'].dirty &&
+                      icsForm.hasError('required', 'userID2'))"></i>
 
-                    <select class="form-select" formControlName="userID2"
+                    <input type="text" formControlName="userID2"
                       name="userID2"
-                      id="userID2">
-                      <option value>Issued By</option>
-                      <option class="text-dark" *ngFor="let up of userProfiles"
-                        [value]="up.userID">{{ up.fullName }}</option>
-                    </select>
-
+                      id="userID2"
+                      placeholder="Issued By" readonly>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -643,13 +652,42 @@
                         </div>
                       </div>
 
+                      <!-- Transfer type && Reason -->
+                      <div class="row d-flex flex-row">
+                        <div class="col-4">
+                          <!-- Transfer type -->
+                          <small class="text-info">Transfer Type</small>
+
+                          <div class="form-field d-flex align-items-center">
+
+                            <input type="text" [value]="itr?.ttype" name="type"
+                              id="type"
+                              class="form-control" placeholder="Transfer type"
+                              readonly>
+
+                            <input type="text" *ngIf="itr?.ttype == 'Others'"
+                              [value]="itr?.otype" name="type" id="type"
+                              class="form-control" placeholder="Others"
+                              readonly>
+                          </div>
+                        </div>
+                        <div class="col-8">
+                          <!-- Reason -->
+                          <small class="text-info">Reason for Transfer</small>
+                          <div class="form-field d-flex align-items-center">
+
+                            <textarea formControlName="reason" name="reason"
+                              id="reason" [value]="itr?.reason"
+                              placeholder="Reason/s for Transfer" rows="1"
+                              cols="50"></textarea>
+                          </div>
+                        </div>
+                      </div>
+
                       <div class="row d-flex flex-row">
                         <div class="col">
                           <small class="text-info">APPROVED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <i
-                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                              *ngIf="false"></i>
                             <input type="text" [value]="itr?.approved"
                               class="form-control" placeholder="APPROVED"
                               readonly>
@@ -658,9 +696,6 @@
                         <div class="col">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <i
-                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                              *ngIf="false"></i>
                             <input type="text" [value]="itr?.received"
                               class="form-control" placeholder="RECEIVED"
                               readonly>
@@ -669,9 +704,6 @@
                         <div class="col">
                           <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <i
-                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                              *ngIf="false"></i>
                             <input type="text" [value]="itr?.issued"
                               class="form-control" placeholder="Issued"
                               readonly>

@@ -116,12 +116,12 @@ export class ItrComponent implements OnInit, AfterViewInit {
       lgu: ['', Validators.required],
       fund: ['', Validators.required],
       icsNo: ['', Validators.required],
+      type: ['', Validators.required],
+      others: ['', Validators.required],
+      reason: ['', Validators.required],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
       userID3: ['', Validators.required],
-      reason: ['', Validators.required],
-      others: ['', Validators.required],
-      type: ['', Validators.required],
     });
 
     this.itrForm = this.fb.group({
@@ -410,11 +410,14 @@ export class ItrComponent implements OnInit, AfterViewInit {
       this.logger.printLogs('i', 'ITR Form', this.icsForm.value);
 
       this.itr = {
-        parNo: this.icsForm.value['parNo'],
-        lgu: this.icsForm.value['lgu'],
-        fund: this.icsForm.value['fund'],
+        itrNo: this.currentEditId,
+        icsNo: this.icsForm.value['icsNo'],
+        ttype: this.icsForm.value['type'],
+        otype: this.icsForm.value['others'],
+        reason: this.icsForm.value['reason'],
         receivedBy: this.icsForm.value['userID1'],
         issuedBy: this.icsForm.value['userID2'],
+        approvedBy: this.icsForm.value['userID3'],
         postFlag: false,
         voidFlag: false,
         createdBy: this.userAccount.userID,
@@ -582,16 +585,16 @@ export class ItrComponent implements OnInit, AfterViewInit {
       if (modalInstance && modalInstance._isShown) {
         this.closeModal(this.ViewModal)
         isViewNotVisible = true;
-      }else{
+      } else {
         isViewNotVisible = true;
       }
-    }else{
+    } else {
       isViewNotVisible = true;
     }
 
     setTimeout(() => {
 
-      if(isViewNotVisible){
+      if (isViewNotVisible) {
         this.isEditMode = true;
         this.itr = itr;
         this.currentEditId = itr.itrNo;
@@ -602,15 +605,18 @@ export class ItrComponent implements OnInit, AfterViewInit {
           lgu: itr.entityName,
           fund: itr.fund,
           icsNo: itr.icsNo,
+          type: itr.ttype,
+          others: itr.otype,
+          reason: itr.reason,
           userID1: itr.receivedBy,
           userID2: itr.issuedBy,
           userID3: itr.approvedBy
         });
 
         // Now handle the disabled state separately
-        if (this.isEditMode) {
-          this.icsForm.get('userID2')?.disable(); // Disable the control if needed
-        }
+        // if (this.isEditMode) {
+        //   this.icsForm.get('userID2')?.disable(); // Disable the control if needed
+        // }
 
         this.api.retrieveITR(this.currentEditId!)
           .subscribe({
@@ -1008,51 +1014,53 @@ export class ItrComponent implements OnInit, AfterViewInit {
     this.isCustomType = selectedValue === 'Others';
     if (!this.isCustomType) {
       this.itrForm.get('type')?.setValue(selectedValue);
-      this.itrForm.get('others')?.setValue('N/A');
+      this.itrForm?.get('others')?.setValue('N/A');
+      this.icsForm?.get('others')?.setValue('N/A');
     } else {
+      this.itrForm?.get('others')?.setValue(null);
+      this.icsForm?.get('others')?.setValue(null);
       // Wait for Angular to render the input field before focusing
       this.itrForm.get('type')?.markAsUntouched();
       this.itrForm.get('others')?.markAsTouched();
-      this.itrForm.get('others')?.setValue(null);
     }
   }
 
-  onPrintITR(reparNo: string) {
+  onPrintITR(itrNo: string) {
 
-    this.api.retrieveITR(reparNo)
+    this.printService.setFooter('ITR');
+
+    this.api.retrieveITR(itrNo)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving REPAR', res);
-          const repar = res.details;
+          this.logger.printLogs('i', 'Retrieving ITR AND ITEMS', res);
+          const itr = res.details;
+          const itrItems = res.itrItems;
+          this.searchPARItems = this.icsItems;
 
-
-          this.printService.setReceivedBy(res.details.receivedBy);
-          this.printService.setIssuedBy(res.details.issuedBy);
-
-          const icsItem = res.icsItem;
-
-          // Ensure par.icsItem is an array or default to an empty array
-          const items = Array.isArray(icsItem) ? icsItem : [];
+          // Ensure ics.itrItems is an array or default to an empty array
+          const items = Array.isArray(itrItems) ? itrItems : [];
           // Use forkJoin to wait for both observables to complete
           forkJoin([
             this.printService.setReceivedBy(res.details.receivedBy),
-            this.printService.setIssuedBy(res.details.issuedBy)
+            this.printService.setIssuedBy(res.details.issuedBy),
+            this.printService.setApprovedBy(res.details.approvedBy)
           ] as Observable<any>[]).subscribe(() => {
             // Once both services complete, continue with the report generation
-            const icsItem = res.icsItem;
-            this.searchPARItems = this.icsItems;
-            const items = Array.isArray(icsItem) ? icsItem : [];
 
-            const rows = items.map((item: any, index: number) => `
-              <tr ${item.qrCode ? `class="${item.qrCode}"` : ''}>
-                <td style="font-size: small;">${index + 1}</td>
-                <td style="font-size: small;">${item.qty || '1'}</td>
-                <td style="font-size: small;">${item.unit || 'pcs'}</td>
-                <td style="font-size: small;">${item.description || 'N/A'}</td>
-                <td style="font-size: small;">${this.formatDate(item.date_Acquired) || 'N/A'}</td>
-                <td style="font-size: small;">${item.propertyNo || 'N/A'}</td>
-                <td style="font-size: small;">${item.amount || '0'}</td>
-              </tr>`).join('');
+            const items = Array.isArray(itrItems) ? itrItems : [];
+
+
+            const rows = items.map((item: any) => `
+            <tr ${item.qrCode ? `class="${item.qrCode}"` : ''}>
+              <td style="font-size: small;">${item.qty || '1'}</td>
+              <td style="font-size: small;">${item.unit || 'pcs'}</td>
+              <td style="font-size: small;">${item.amount || '0'}</td>
+              <td style="font-size: small;">${(item?.qty || 0) * (item?.amount || 0)}</td>
+              <td style="font-size: small;">${item.description || 'N/A'}</td>
+              <td style="font-size: small;">${item.icsItemNo || item.iid || 'N/A'}</td>
+              <td style="font-size: small;">${item.eul || 'N/A'}</td>
+            </tr>
+          `).join('');
 
 
 
@@ -1060,27 +1068,27 @@ export class ItrComponent implements OnInit, AfterViewInit {
             const reportContent = `
           <div class="row mb-3">
             <div class="col text-center">
-                <h5>PROPERTY ACKNOWLEDGEMENT RECEIPT</h5>
+                <h5>INVENTORY TRANFER REPORT</h5>
             </div>
           </div>
 
-          <div class="watermark">REPAR</div>
+          <div class="watermark">ITR</div>
 
           <table class="table">
             <tbody>
                 <tr style="border-color: transparent;">
                     <td><strong>LGU:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${repar.lgu || 'Default LGU'} </p></td>
+                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.entityName || 'Default LGU'} </p></td>
                     <td></td>
                     <td</td>
 
                 </tr>
                 <tr style="border-color: transparent;">
                     <td><strong>LGU:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${repar.fund || 'Default FUND'}  </p></td>
+                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.fund || 'Default FUND'}  </p></td>
 
-                    <td><strong>PAR No.:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${repar.parNo || 'N/A'} </p></td>
+                    <td><strong>ICS No.:</strong></td>
+                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.ics || 'N/A'} </p></td>
                 </tr>
             </tbody>
           </table>
@@ -1089,14 +1097,19 @@ export class ItrComponent implements OnInit, AfterViewInit {
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th style="font-size: small;">#</th>
-                        <th style="font-size: small;">QTY</th>
-                        <th style="font-size: small;">UNIT</th>
-                        <th style="font-size: small;">DESCRIPTION</th>
-                        <th style="font-size: small;">DATE ACQUIRED</th>
-                        <th style="font-size: small;">PROPERTY NUMBER</th>
-                        <th style="font-size: small;">AMOUNT</th>
+                        <th class="text-center align-middle" style="font-size: small;" rowspan="2">QTY</th>
+                        <th class="text-center align-middle" style="font-size: small;" rowspan="2">UNIT</th>
+                        <th class="text-center align-middle" style="font-size: small;" colspan="2" >Amount</th>
+                        <th class="text-center align-middle" style="font-size: small; "rowspan="2">DESCRIPTION</th>
+                        <th class="text-center align-middle" style="font-size: small; "rowspan="2">ITEM NO</th>
+                        <th class="text-center align-middle" style="font-size: small; "rowspan="2">ESTIMATED USEFUL LIFE</th>
                     </tr>
+
+                    <tr>
+                      <th class="text-center" style="font-size: small;">Unit Cost</th>
+                      <th class="text-center" style="font-size: small;">Total Cost</th>
+                    </tr>
+
                 </thead>
                 <tbody>
                     ${rows}
@@ -1104,7 +1117,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
             </table>`;
 
             // Print the report
-            this.printService.printReport('RE-PAR', reportContent);
+            this.printService.printReport('ITR', reportContent);
 
           });
         },

@@ -255,7 +255,7 @@ table tbody tr:nth-child(even) {
 
 /* Show content when open */
 .accordion-content.show {
-  max-height: 280px;
+  max-height: 360px;
   /* Set a reasonable max-height or adjust as needed */
   padding: 15px;
 }
