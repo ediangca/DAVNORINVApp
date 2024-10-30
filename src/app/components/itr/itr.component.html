@@ -529,23 +529,47 @@
                 </div>
                 <div class="col">
 
+                  <!-- Issued By -->
+
+                  @if(!(icsForm.controls['userID2'].invalid &&
+                  icsForm.hasError('required', 'userID2') &&
+                  icsForm.get('userID2')?.touched ||
+                  (icsForm.controls['userID2'].dirty &&
+                  icsForm.hasError('required', 'userID2')))){
                   <small class="text-info">*
                     Issued By</small>
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="icsForm.controls['userID2'].invalid &&
-              icsForm.hasError('required', 'userID2') &&  icsForm.get('userID2')?.touched || (icsForm.controls['userID2'].dirty &&
-              icsForm.hasError('required', 'userID2'))">
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="icsForm.controls['userID2'].invalid &&
+                  icsForm.hasError('required', 'userID2') &&
+                  icsForm.get('userID2')?.touched ||
+                  (icsForm.controls['userID2'].dirty &&
+                  icsForm.hasError('required', 'userID2'))">* Issued By is
+                    required</small>
+                  }
 
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2')  && icsForm.get('userID2')?.touched || (icsForm.controls['userID2'].dirty &&
+                icsForm.hasError('required', 'userID2'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(icsForm.controls['userID2'].invalid &&
+                icsForm.hasError('required', 'userID2') &&
+                icsForm.get('userID2')?.touched ||
+                (icsForm.controls['userID2'].dirty &&
+                icsForm.hasError('required', 'userID2')))"></i>
                     <i
                       class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="icsForm.controls['userID2'].invalid &&
-                      icsForm.hasError('required', 'userID2') &&  icsForm.get('userID2')?.touched || (icsForm.controls['userID2'].dirty &&
-                      icsForm.hasError('required', 'userID2'))"></i>
+                      *ngIf="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2') &&  icsForm.get('userID2')?.touched ||
+                (icsForm.controls['userID2'].dirty && icsForm.hasError('required', 'userID2'))"></i>
 
-                    <input type="text" formControlName="userID2"
+                    <select class="form-select" formControlName="userID2"
                       name="userID2"
-                      id="userID2"
-                      placeholder="Issued By" readonly>
+                      id="userID2">
+                      <option value>Issued By</option>
+                      <option class="text-dark" *ngFor="let up of userProfiles"
+                        [value]="up.userID">{{ up.fullName }}</option>
+                    </select>
+
                   </div>
 
                 </div>

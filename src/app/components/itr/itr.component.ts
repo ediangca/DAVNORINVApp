@@ -389,15 +389,20 @@ export class ItrComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.icsItems = res;
+
+          this.icsItems = this.icsItems.filter(
+            item => !this.itrItems.some(itrItem => itrItem.icsItemNo === item.icsItemNo) &&
+              item.itrFlag === false
+          );
           this.logger.printLogs('i', 'LIST OF ICS ITEM', this.icsItems);
 
+          this.icsItems.length < 1 ? Swal.fire('Information', 'No Items can be transfer.', 'info') : this.openItemModal(this.ListItemModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Groups', err);
         }
       });
 
-    this.openItemModal(this.ListItemModal);
   }
 
   // ADD ICS ITEM
@@ -405,15 +410,26 @@ export class ItrComponent implements OnInit, AfterViewInit {
     this.logger.printLogs('i', 'ADD ICS ITEMS', this.itrItems);
 
     Swal.fire({
-      title: 'Save',
+      title: 'Confirm',
       text: 'Do you want to ITR the selected Item?',
-      icon: 'success',
+      icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
     }).then(result => {
-      if (!result.isConfirmed) {
+      if (result.isConfirmed) {
+        item.itrFlag = true;
+        item.itrNo = this.itr.itrNo;
         this.itrItems.push(item);
+
+        this.logger.printLogs('i', 'TO UPDATE ITR ITEMS', this.itrItems);
+
+        this.logger.printLogs('i', 'UPDATED ICS ITEMS', this.icsItems);
+
+
+        this.icsItems = this.icsItems.filter(item => item.itrFlag === false);
+
+        this.icsItems.length < 1 ? this.closeModal(this.ListItemModal) : '';
       }
     });
 
