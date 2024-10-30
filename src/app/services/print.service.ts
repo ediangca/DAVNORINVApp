@@ -17,10 +17,17 @@ export class PrintService {
   issuedByProfile: any = [];
   footer: string = "";
 
+  model: any;
+
 
 
   constructor(private api: ApiService) {
     this.logger = new LogsService();
+  }
+
+  setModel(model: any) {
+    this.model = model;
+    this.logger.printLogs('i', 'model => ', model);
   }
 
   setReceivedBy(accID: string): Observable<any> {
@@ -95,7 +102,7 @@ export class PrintService {
   setFooter(title: string) {
     // Normalize title
     title = title.toLocaleLowerCase();
-    title = (title === "repar" || title === "ics") ? 'par' : title;
+    title = (title === "re-par" || title === "ics") ? 'par' : title;
 
     switch (title.toLowerCase()) {
       case 'par':
@@ -122,18 +129,22 @@ export class PrintService {
             </div>
             <div class="col-6 border py-2">
               <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
-              <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
+              <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
               <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
             </div>
           </div>`;
         break;
 
       case 'itr':
-        this.footer  = `
+        this.footer = `
           <div class="row mt-3">
-            <div class="col-12 border">
-              <p>Please note: COA circular no. 92-386 Section 149.
-                 Measure of liability of the Persons Accountable for supplies or property.</p>
+            <div class="col-4 border">
+              <p class="m-0">Transfer Type: <br>
+              <span class="fw-bold"> <em> ${((this.model && (this.model.ttype + '').toString().toLowerCase() == "Others") ? this.model.otype : this.model.ttype) || ''} </em> </span></p>
+            </div>
+            <div class="col-8 border">
+              <p class="m-0">Reason: <br>
+              <span class="fw-bold"> <em> ${this.model ? this.model.reason : ''} </em> </span> </p>
             </div>
             <div class="col-4 border">
               <p class="mb-5">Approved by:</p>
@@ -162,14 +173,14 @@ export class PrintService {
             </div>
             <div class="col-4 border py-2">
               <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
-              <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
+              <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
               <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
             </div>
           </div>`;
         break;
 
       default:
-        this.footer  = ``;
+        this.footer = ``;
         break;
     }
   }

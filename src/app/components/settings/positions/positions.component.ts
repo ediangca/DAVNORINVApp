@@ -200,7 +200,7 @@ export class PositionsComponent implements OnInit {
 
   restoreData(position: any) {
     this.isEditMode = true;
-    this.currentEditId = position.postionID;
+    this.currentEditId = position.positionID;
 
     console.log("Retreive Position: ", position);
     this.positionForm.patchValue({

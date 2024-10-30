@@ -1292,8 +1292,11 @@ export class ReparComponent implements OnInit, AfterViewInit {
                 <td style="font-size: small;">${item.unit || 'pcs'}</td>
                 <td style="font-size: small;">${item.description || 'N/A'}</td>
                 <td style="font-size: small;">${this.formatDate(item.date_Acquired) || 'N/A'}</td>
-                <td style="font-size: small;">${item.propertyNo || 'N/A'}</td>
-                <td style="font-size: small;">${item.amount || '0'}</td>
+                <td style="font-size: small;">${item.propertyNo || 'N/A'}
+                </td><td style="font-size: small;">
+                ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
+
               </tr>`).join('');
 
 
@@ -1302,7 +1305,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
             const reportContent = `
           <div class="row mb-3">
             <div class="col text-center">
-                <h5>PROPERTY ACKNOWLEDGEMENT RECEIPT</h5>
+                <h5>RE-PROPERTY ACKNOWLEDGEMENT RECEIPT</h5>
             </div>
           </div>
 
@@ -1318,7 +1321,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
                 </tr>
                 <tr style="border-color: transparent;">
-                    <td><strong>LGU:</strong></td>
+                    <td><strong>FUND:</strong></td>
                     <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${repar.fund || 'Default FUND'}  </p></td>
 
                     <td><strong>PAR No.:</strong></td>

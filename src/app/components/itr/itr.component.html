@@ -284,12 +284,12 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr *ngIf="icsItems.length < 1">
+                          <tr *ngIf="itrItems.length < 1">
                             <td colspan="10" class="text-danger text-center">*
                               Item
                               list required! Add at least one!</td>
                           </tr>
-                          <tr *ngFor="let p of icsItems; let i = index">
+                          <tr *ngFor="let p of itrItems; let i = index">
                             <td>
                               <a class="success"
                                 type="button"
@@ -332,6 +332,16 @@
               <!-- END OF ITEM TABLE -->
             </div>
             <div class="card-footer py-2">
+              <div class="row">
+                <div class="col">
+                  <a
+                    class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+                    type="button"
+                    (click)="onAddITRItem()">
+                    <i class="fa-sharp-duotone fa-solid fa-plus"></i>&nbsp;
+                    <span class="fs-6">ADD</span></a>
+                </div>
+              </div>
               <div class="row d-flex flex-row">
                 <div class="col-4">
                   <!-- Transfer type -->
@@ -386,7 +396,7 @@
                       <option value="Others">Others</option>
                     </select>
 
-                    <input *ngIf="isCustomType || itr?.ttype == 'Others'"
+                    <input *ngIf="isCustomType"
                       type="text" id="others"
                       #othersInput
                       value="N/A"
@@ -518,24 +528,6 @@
                   </div>
                 </div>
                 <div class="col">
-
-                  <!-- Received By -->
-                  <!-- @if(!(icsForm.controls['userID2'].invalid &&
-                  icsForm.hasError('required', 'userID2') &&
-                  icsForm.get('userID2')?.touched ||
-                  (icsForm.controls['userID2'].dirty &&
-                  icsForm.hasError('required', 'userID2')))){
-                  <small class="text-info">*
-                    Issued By</small>
-                  }@else {
-                  <small class="text-danger"
-                    *ngIf="icsForm.controls['userID2'].invalid &&
-                  icsForm.hasError('required', 'userID2') &&
-                  icsForm.get('userID2')?.touched ||
-                  (icsForm.controls['userID2'].dirty &&
-                  icsForm.hasError('required', 'userID2'))">* Issued By is
-                    required</small>
-                  } -->
 
                   <small class="text-info">*
                     Issued By</small>
@@ -766,7 +758,7 @@
                         </thead>
                         <tbody>
                           <ng-container
-                            *ngFor="let p of icsItems; let i = index">
+                            *ngFor="let p of itrItems; let i = index">
                             <tr>
                               <td>
                                 <a class="success"
@@ -854,7 +846,7 @@
                 *ngIf="noOfParItems < 1 && isRepar">
                 <div class="col">
                   <h6 class="p-3 text-center text-danger">ITEM(s) FULLY
-                    REPARED.</h6>
+                    ITR.</h6>
                 </div>
               </div>
             </div>
@@ -1238,7 +1230,8 @@
           aria-label="Close" (click)="closeModal(ViewItemModal)"></button>
       </div>
       <div class="modal-body item-body scrollable">
-        <!-- ITEM DETAILS --><div class="row">
+        <!-- ITEM DETAILS -->
+        <div class="row">
           <div class="col-lg-12">
             <table class="table table-bordered">
               <tbody>
@@ -1275,7 +1268,64 @@
               </table>
             </div>
           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary rounded-pill"
+            data-bs-dismiss="modal"
+            (click)="closeModal(ViewItemModal)">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- ITEM LIST VIEW MODAL -->
+  <div #ListItemModalForm class="modal fade" id="ListItemModalForm"
+    tabindex="-1"
+    aria-labelledby="ItemModalFormLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ItemModalFormLabel">List of ICS
+            Item</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close" (click)="closeModal(ViewItemModal)"></button>
+        </div>
+        <div class="modal-body item-body scrollable">
+          <!-- ITEM DETAILS -->
+          <div class="row">
+            <div class="col-lg-12">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>ICS No.</th>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Cost</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container
+                    *ngFor="let ii of icsItems; let i = index">
+                    <tr *ngIf="ii.itrFlag==false">
+                      <td>{{ii.icsNo}}</td>
+                      <td>{{ii.description}}</td>
+                      <td>{{ii.qty}}</td>
+                      <td>{{ii.amount}}</td>
+                      <td>
+                        <a class="delete"
+                          type="button"
+                          (click)="onAddItem(ii)"><i
+                            class="fa-sharp-duotone  fa-solid fa-plus"
+                            data-toggle="tooltip"
+                            title="Delete"></i></a>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary rounded-pill"

@@ -742,8 +742,7 @@ export class IcsComponent implements OnInit {
   }
 
 
-  // PAR ITEM
-
+  // ICS ITEM
   async onAddItem() {
     if (!this.itemForm.valid) {
       this.validateFormFields(this.itemForm);
@@ -1223,7 +1222,9 @@ export class IcsComponent implements OnInit {
                   <tr ${item.qrCode ? `class="${item.qrCode}"` : ''}>
                     <td style="font-size: small;">${item.qty || '1'}</td>
                     <td style="font-size: small;">${item.unit || 'pcs'}</td>
-                    <td style="font-size: small;">${item.amount || '0'}</td>
+                    <td style="font-size: small;">
+                    ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
                     <td style="font-size: small;">${(item?.qty || 0) * (item?.amount || 0)}</td>
                     <td style="font-size: small;">${item.description || 'N/A'}</td>
                     <td style="font-size: small;">${item.ICSItemNo || 'N/A'}</td>

@@ -32,6 +32,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   @ViewChild('ViewModalForm') ViewModal!: ElementRef;
   @ViewChild('ItemModalForm') ItemModal!: ElementRef;
   @ViewChild('ViewItemModalForm') ViewItemModal!: ElementRef;
+  @ViewChild('ListItemModalForm') ListItemModal!: ElementRef;
 
   roleNoFromToken: string = "Role";
 
@@ -39,8 +40,10 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   itrs: any = [];
   itr!: any;
+  itrItems: ICSItem[] = [];
+  selectedITRItems: ICSItem[] = []; // Array to track selected items from repar
+
   icsItems: ICSItem[] = [];
-  selectedParItems: ICSItem[] = []; // Array to track selected items from repar
   userProfiles: any = [];
   items: any = [];
   searchKey: string = '';
@@ -69,7 +72,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
   noOfParItems: number = 0;
 
   icsItemNo: number | null = null;
-  propertyNo: string | null = null;
 
 
   typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
@@ -77,7 +79,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   isRepar: boolean = false;
   itrForm!: FormGroup;
-  searchPARItems: ICSItem[] = [];
+  searchITRItems: ICSItem[] = [];
 
   isNewItem: boolean = false;
   accID: string = "unknown";
@@ -109,7 +111,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
     private printService: PrintService
   ) {
     this.logger = new LogsService();
-
     this.today = new Date().toISOString().split('T')[0];
 
     this.icsForm = this.fb.group({
@@ -296,11 +297,11 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
     // Populate all items if the search key is empty
     if (!this.parItemKey || this.parItemKey.trim() === "") {
-      this.icsItems = [...this.searchPARItems];  // Reset to full list
+      this.itrItems = [...this.searchITRItems];  // Reset to full list
     } else {
       const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
 
-      this.icsItems = this.searchPARItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
+      this.itrItems = this.searchITRItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
         item.icsNo!.toLowerCase().includes(searchKey) ||
         item.itrNo!.toLowerCase().includes(searchKey)
       );
@@ -382,13 +383,40 @@ export class ItrComponent implements OnInit, AfterViewInit {
   onKeyUp($event: KeyboardEvent) {
   }
 
-  onAddPARItem() {
-    const ICSNo: string = this.icsForm.value['icsNo'];
-    if (!ICSNo) {
-      Swal.fire('INFORMATION!', 'Please input ICS No. first before adding item', 'warning');
-      return;
-    }
-    this.openItemModal(this.ItemModal);
+  onAddITRItem() {
+
+    this.api.getAllICSItems()
+      .subscribe({
+        next: (res) => {
+          this.icsItems = res;
+          this.logger.printLogs('i', 'LIST OF ICS ITEM', this.icsItems);
+
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching User Groups', err);
+        }
+      });
+
+    this.openItemModal(this.ListItemModal);
+  }
+
+  // ADD ICS ITEM
+  onAddItem(item: ICSItem) {
+    this.logger.printLogs('i', 'ADD ICS ITEMS', this.itrItems);
+
+    Swal.fire({
+      title: 'Save',
+      text: 'Do you want to ITR the selected Item?',
+      icon: 'success',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then(result => {
+      if (!result.isConfirmed) {
+        this.itrItems.push(item);
+      }
+    });
+
   }
 
   onSubmit() {
@@ -398,14 +426,14 @@ export class ItrComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.icsItems.length < 1) {
+    if (this.itrItems.length < 1) {
       Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
       return;
     }
 
     this.currentEditId = this.itr.itrNo;
 
-    if (this.icsForm.valid && this.icsItems.length > 0) {
+    if (this.icsForm.valid && this.itrItems.length > 0) {
 
       this.logger.printLogs('i', 'ITR Form', this.icsForm.value);
 
@@ -442,12 +470,12 @@ export class ItrComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.selectedParItems.length < 1) {
+    if (this.selectedITRItems.length < 1) {
       Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
       return;
     }
 
-    if (this.itrForm.valid && this.icsItems.length > 0) {
+    if (this.itrForm.valid && this.itrItems.length > 0) {
 
       this.logger.printLogs('i', 'REPAR Form', this.itr);
       this.Save(this.itr);
@@ -460,7 +488,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   Save(itr: any) {
     if (!this.isRepar) {
       this.logger.printLogs('i', 'Saving ITR', itr);
-      this.api.createITR(itr, this.icsItems)
+      this.api.createITR(itr, this.itrItems)
         .subscribe({
           next: (res) => {
             this.logger.printLogs('i', 'Saved Success', itr);
@@ -495,7 +523,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
         if (result.isConfirmed) {
           this.logger.printLogs('i', 'Saving REPAR', this.itr);
 
-          this.api.createITR(this.itr, this.selectedParItems)
+          this.api.createITR(this.itr, this.selectedITRItems)
             .subscribe({
               next: (res) => {
                 this.logger.printLogs('i', 'Saved Success', res);
@@ -518,13 +546,13 @@ export class ItrComponent implements OnInit, AfterViewInit {
   Update(itr: any) {
     this.logger.printLogs('i', 'Updating ITR', itr);
 
-    this.api.updateITR(this.itr, this.icsItems)
+    this.api.updateITR(this.itr, this.itrItems)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', res);
           Swal.fire('Saved', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
-
+          this.getALLITR();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
@@ -598,6 +626,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
         this.isEditMode = true;
         this.itr = itr;
         this.currentEditId = itr.itrNo;
+        this.isCustomType = itr.ttype == 'Others';
+
 
         this.logger.printLogs('i', 'Restoring ITR', itr);
 
@@ -613,22 +643,22 @@ export class ItrComponent implements OnInit, AfterViewInit {
           userID3: itr.approvedBy
         });
 
+
         // Now handle the disabled state separately
         // if (this.isEditMode) {
         //   this.icsForm.get('userID2')?.disable(); // Disable the control if needed
         // }
 
-        this.api.retrieveITR(this.currentEditId!)
+        this.api.retrieveICSItemByITRNo(this.currentEditId!)
           .subscribe({
             next: (res) => {
               this.logger.printLogs('i', 'Retrieving ITR Item', res);
-              this.itr = res.details;
-              this.icsItems = res.itrItems;
+              this.itrItems = res;
               this.openPARModal(this.AddEditModal);
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error Retreiving ITR Item', err);
-              Swal.fire('Error', 'Failure to Retrieve ITR Item.', 'error');
+              Swal.fire('Warning', err, 'error');
             }
           });
 
@@ -641,6 +671,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
   onViewITR(itr: any) {
     this.itr = itr;
     this.currentEditId = itr.itrNo;
+    this.isCustomType = itr.ttype == 'Others';
+
     this.logger.printLogs('i', 'Viewing ITR', itr);
 
     if (!this.onItemFound) {
@@ -652,8 +684,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving ITR Item', res);
           this.itr = res.details;
-          this.icsItems = res.itrItems;
-          this.searchPARItems = this.icsItems;
+          this.itrItems = res.itrItems;
+          this.searchITRItems = this.itrItems;
 
           this.openPARModal(this.ViewModal);
         },
@@ -698,98 +730,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
     });
 
   }
-
-
-  // PAR ITEM
-
-  // async onAddItem() {
-  //   if (!this.itemForm.valid) {
-  //     this.validateFormFields(this.itemForm);
-  //     Swal.fire('Information!', 'Please check all fields.', 'warning');
-  //     return;
-  //   }
-
-  //   const PARNo: string = this.parForm.value['parNo'];
-  //   const IID: string = this.itemForm.value['iid'];
-  //   const Brand: string = this.itemForm.value['brand'];
-  //   const Model: string = this.itemForm.value['model'];
-  //   const Description: string = this.itemForm.value['description'];
-  //   const SerialNo: string = this.itemForm.value['serialNo'];
-  //   const PropertyNo: string = this.itemForm.value['propertyNo'];
-  //   const QRCode: string = this.itemForm.value['qrCode'];
-  //   const Unit: string = this.itemForm.value['unit'];
-  //   const Amount: number = this.itemForm.value['amount'];
-  //   const Date_Acquired: Date = this.itemForm.value['date_Acquired'];
-
-
-
-  //   if (!(await this.isItemFound())) {
-  //     Swal.fire('Information!', 'Item not available!', 'warning');
-  //     return;
-  //   }
-
-  //   if (!this.isEditItemMode) {
-
-  //     if (await this.isExist(PropertyNo)) {
-  //       Swal.fire('Information!', 'Property No. already exists!', 'warning');
-  //       return;
-  //     }
-
-  //     if (await this.isExist(SerialNo)) {
-  //       Swal.fire('Information!', 'Serial No. already exists!', 'warning');
-  //       return;
-  //     }
-
-  //     if (await this.isExist(QRCode)) {
-  //       Swal.fire('Information!', 'QRCode already exists!', 'warning');
-  //       return;
-  //     }
-
-  //     this.item = new Item(null, PARNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
-  //     this.icsItem.push(this.item);
-  //     this.logger.printLogs('i', 'PAR ITEMS', this.icsItem);
-  //     this.resetItemForm();
-
-  //     Swal.fire({
-  //       title: 'Saved',
-  //       text: 'Do you want to add new Item?',
-  //       icon: 'success',
-  //       showCancelButton: true,
-  //       confirmButtonText: 'Yes',
-  //       cancelButtonText: 'No',
-  //     }).then(result => {
-  //       if (!result.isConfirmed) {
-  //         this.closeModal(this.ItemModal);
-  //       }
-  //     });
-
-  //   } else {
-
-  //     if (await this.isExistOnUpdate(this.parINo, PropertyNo)) {
-  //       Swal.fire('Information!', 'Property No. already exists!', 'warning');
-  //       return;
-  //     }
-
-  //     if (await this.isExistOnUpdate(this.parINo, SerialNo)) {
-  //       Swal.fire('Information!', 'Serial No. already exists!', 'warning');
-  //       return;
-  //     }
-
-  //     if (await this.isExistOnUpdate(this.parINo, QRCode)) {
-  //       Swal.fire('Information!', 'QRCode already exists!', 'warning');
-  //       return;
-  //     }
-
-  //     const index = this.icsItem.findIndex(i => i.propertyNo === this.item!.propertyNo);
-  //     if (index !== -1) {
-  //       this.icsItem[index] = new Item(this.parINo, PARNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
-  //       Swal.fire('Success!', 'Item updated successfully!', 'success');
-  //       this.resetItemForm();
-  //       this.closeModal(this.ItemModal);
-  //     }
-  //   }
-  // }
-
 
   isExist(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -906,11 +846,12 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   onDeleteItem(item: ICSItem) {
     this.item = item;
-    this.propertyNo = item.description;
+
+    let description = item.description;
 
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Remove Property #' + this.propertyNo,
+      text: 'Remove Property #' + description,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes',
@@ -918,8 +859,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
     }).then((result) => {
       if (result.isConfirmed) {
         // Execute delete Item where propertyNo matches to list
-        if (this.propertyNo) {
-          this.icsItems = this.icsItems.filter(item => item.description !== this.propertyNo);
+        if (description) {
+          this.itrItems = this.itrItems.filter(item => item.description !== description);
           Swal.fire('Deleted!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid Item.', 'warning');
@@ -933,21 +874,21 @@ export class ItrComponent implements OnInit, AfterViewInit {
     const input = event.target as HTMLInputElement;
     const isChecked: boolean = input.checked;
 
-    const index = this.selectedParItems.indexOf(item);
+    const index = this.selectedITRItems.indexOf(item);
 
     if (isChecked && index === -1) {
       // If checked and item is not in the list, add it
-      this.selectedParItems.push(item);
+      this.selectedITRItems.push(item);
     } else if (!isChecked && index > -1) {
       // If unchecked and item is in the list, remove it
-      this.selectedParItems.splice(index, 1);
+      this.selectedITRItems.splice(index, 1);
     }
     this.displaySelectedItems();
   }
 
   // Optional function to get the currently selected items
   displaySelectedItems() {
-    this.logger.printLogs('i', 'List of selected PAR Items', this.selectedParItems!);
+    this.logger.printLogs('i', 'List of selected PAR Items', this.selectedITRItems!);
   }
 
   //Common Method - Advice to add in Helpers
@@ -969,6 +910,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
     this.isRepar = false;
     this.item = null;
     this.isOpen = false;
+    this.isCustomType = false;
     this.icsForm.reset({
       userID1: '',
       userID2: ''
@@ -977,8 +919,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
       userID1: '',
       userID2: ''
     });
-    this.icsItems = [];
-    this.selectedParItems = [];
+    this.itrItems = [];
+    this.selectedITRItems = [];
     this.parItemKey = '';
     this.searchKey = '';
   }
@@ -999,7 +941,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
       date_Acquired: this.today,
     });
     // Clear related data
-    this.propertyNo = null;
     this.IIDKey = null;
     this.iid = null;
     // this.item = null;
@@ -1011,7 +952,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   onTypeChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
-    this.isCustomType = selectedValue === 'Others';
+    this.isCustomType = selectedValue == 'Others';
     if (!this.isCustomType) {
       this.itrForm.get('type')?.setValue(selectedValue);
       this.itrForm?.get('others')?.setValue('N/A');
@@ -1027,15 +968,15 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   onPrintITR(itrNo: string) {
 
-    this.printService.setFooter('ITR');
-
     this.api.retrieveITR(itrNo)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving ITR AND ITEMS', res);
           const itr = res.details;
           const itrItems = res.itrItems;
-          this.searchPARItems = this.icsItems;
+          this.searchITRItems = this.itrItems;
+
+          this.printService.setModel(itr);
 
           // Ensure ics.itrItems is an array or default to an empty array
           const items = Array.isArray(itrItems) ? itrItems : [];
@@ -1054,11 +995,13 @@ export class ItrComponent implements OnInit, AfterViewInit {
             <tr ${item.qrCode ? `class="${item.qrCode}"` : ''}>
               <td style="font-size: small;">${item.qty || '1'}</td>
               <td style="font-size: small;">${item.unit || 'pcs'}</td>
-              <td style="font-size: small;">${item.amount || '0'}</td>
+              <td style="font-size: small;">
+              ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </td>
               <td style="font-size: small;">${(item?.qty || 0) * (item?.amount || 0)}</td>
               <td style="font-size: small;">${item.description || 'N/A'}</td>
-              <td style="font-size: small;">${item.icsItemNo || item.iid || 'N/A'}</td>
-              <td style="font-size: small;">${item.eul || 'N/A'}</td>
+              <td style="font-size: small;">${item.icsNo || item.icsItemNo || item.iid || 'N/A'}</td>
+              <td style="font-size: small;">${item.eul + ' year(s)' || 'N/A'}</td>
             </tr>
           `).join('');
 
@@ -1084,11 +1027,11 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
                 </tr>
                 <tr style="border-color: transparent;">
-                    <td><strong>LGU:</strong></td>
+                    <td><strong>FUND:</strong></td>
                     <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.fund || 'Default FUND'}  </p></td>
 
-                    <td><strong>ICS No.:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.ics || 'N/A'} </p></td>
+                    <td><strong>ITR No.:</strong></td>
+                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.itrNo || 'N/A'} </p></td>
                 </tr>
             </tbody>
           </table>
@@ -1101,7 +1044,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
                         <th class="text-center align-middle" style="font-size: small;" rowspan="2">UNIT</th>
                         <th class="text-center align-middle" style="font-size: small;" colspan="2" >Amount</th>
                         <th class="text-center align-middle" style="font-size: small; "rowspan="2">DESCRIPTION</th>
-                        <th class="text-center align-middle" style="font-size: small; "rowspan="2">ITEM NO</th>
+                        <th class="text-center align-middle" style="font-size: small; "rowspan="2">ICS NO</th>
                         <th class="text-center align-middle" style="font-size: small; "rowspan="2">ESTIMATED USEFUL LIFE</th>
                     </tr>
 

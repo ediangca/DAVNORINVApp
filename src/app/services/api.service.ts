@@ -829,7 +829,15 @@ export class ApiService {
 
   /*----------------------- ICS ITEMS -----------------------*/
 
-  //ICSITEM List
+  //ICSITEM List By ICS No.
+  getAllICSItems(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}ICSItem`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //ICSITEM List By ICS No.
   getAllICSItem(icsNo: String): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}ICSItem/Search?key=` + icsNo)
       .pipe(
@@ -854,7 +862,16 @@ export class ApiService {
       .pipe(
         catchError(this.handleError)
       );
+  }
 
+  //Retrieve By ICS No.
+  retrieveICSItemByITRNo(itrNo: string): Observable<ICSItem[]> {
+    console.log("Retrieve ICS Item by ITR No.: ", itrNo);
+
+    return this.http.get<ICSItem[]>(`${this.apiUrl}ICSITEM/ITRNO/` + itrNo)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   scanExistingUniqueICSItem(icsItemNo: number, key: string): Observable<any> {

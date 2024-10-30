@@ -1344,7 +1344,9 @@ export class ParComponent implements OnInit, AfterViewInit {
                   <td style="font-size: small;">${item.description || 'N/A'}</td>
                   <td style="font-size: small;">${this.formatDate(item.date_Acquired) || 'N/A'}</td>
                   <td style="font-size: small;">${item.propertyNo || 'N/A'}</td>
-                  <td style="font-size: small;">${item.amount || '0'}</td>
+                  </td><td style="font-size: small;">
+                  ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
                 </tr>`).join('');
 
 
@@ -1369,7 +1371,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
                         </tr>
                         <tr style="border-color: transparent;">
-                            <td><strong>LGU:</strong></td>
+                            <td><strong>FUND:</strong></td>
                             <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${par.fund || 'Default FUND'}  </p></td>
 
                             <td><strong>PAR No.:</strong></td>
