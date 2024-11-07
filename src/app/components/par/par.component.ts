@@ -138,12 +138,12 @@ export class ParComponent implements OnInit, AfterViewInit {
 
     this.itemForm = this.fb.group({
       iid: ['', Validators.required],
-      qrCode: ['', Validators.required],
-      description: ['', Validators.required],
       brand: ['', Validators.required],
       model: ['', Validators.required],
+      description: ['', Validators.required],
       serialNo: ['', Validators.required],
       propertyNo: ['', Validators.required],
+      qrCode: ['', Validators.required],
       unit: ['', Validators.required],
       amount: ['', Validators.required],
       date_Acquired: [this.today, Validators.required],
@@ -954,12 +954,12 @@ export class ParComponent implements OnInit, AfterViewInit {
 
           this.itemForm.patchValue({
             iid: res.description,
-            qrCode: item.qrCode,
-            description: item.description,
             brand: item.brand,
             model: item.model,
+            description: item.description,
             serialNo: item.serialNo,
             propertyNo: item.propertyNo,
+            qrCode: item.qrCode,
             unit: item.unit,
             amount: item.amount,
             date_Acquired: this.formatDate(item.date_Acquired),
@@ -1027,12 +1027,12 @@ export class ParComponent implements OnInit, AfterViewInit {
 
           this.itemForm.patchValue({
             iid: res.description,
-            qrCode: '',
-            description: item.description,
             brand: item.brand,
             model: item.model,
+            description: item.description,
             serialNo: '',
             propertyNo: '',
+            qrCode: '',
             unit: item.unit,
             amount: item.amount,
             date_Acquired: this.formatDate(item.date_Acquired),

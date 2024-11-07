@@ -874,6 +874,14 @@ export class ApiService {
       );
   }
 
+  scanUniqueICSItem(key: string,): Observable<any> {
+    console.log("Update ICS Item Key >>> : ", key);
+    return this.http.get<any>(`${this.apiUrl}ICSITEM/ScanUnique?key=${key}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
   scanExistingUniqueICSItem(icsItemNo: number, key: string): Observable<any> {
     console.log("Update ICS Item No. >>> : ", icsItemNo);
     console.log("Update ICS Item Key >>> : ", key);

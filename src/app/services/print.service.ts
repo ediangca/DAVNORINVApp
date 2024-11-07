@@ -138,21 +138,19 @@ export class PrintService {
       case 'itr':
         this.footer = `
           <div class="row mt-3">
-            <div class="col-4 border">
-              <p class="m-0">Transfer Type: <br>
-              <span class="fw-bold"> <em> ${((this.model && (this.model.ttype + '').toString().toLowerCase() == "Others") ? this.model.otype : this.model.ttype) || ''} </em> </span></p>
+            <div class="col-2 border">
+              <p class="fw-bold mb-3">Reason:</p>
             </div>
-            <div class="col-8 border">
-              <p class="m-0">Reason: <br>
-              <span class="fw-bold"> <em> ${this.model ? this.model.reason : ''} </em> </span> </p>
+            <div class="col-10 border">
+              <p class="m-0"><em> ${this.model ? this.model.reason : ''} </em></p>
             </div>
             <div class="col-4 border">
-              <p class="mb-5">Approved by:</p>
+              <p class="fw-bold mb-5">Approved by:</p>
               <p class="text-center fs-6 fw-bold m-0">${this.approvedByProfile?.fullName || ''}</p>
               <p class="text-center border-top">Signature over Printed Name of End User</p>
             </div>
             <div class="col-4 border">
-              <p class="mb-5">Issued by:</p>
+              <p class="fw-bold mb-5">Issued by:</p>
               <p class="text-center fs-6 fw-bold m-0">${this.issuedByProfile?.fullName || ''}</p>
               <p class="text-center border-top">Signature over Printed Name and/or Property Custodian</p>
             </div>

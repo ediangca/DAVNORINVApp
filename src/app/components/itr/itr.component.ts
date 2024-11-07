@@ -1007,16 +1007,16 @@ export class ItrComponent implements OnInit, AfterViewInit {
             const items = Array.isArray(itrItems) ? itrItems : [];
 
 
-            const rows = items.map((item: any) => `
+            const rows = items.map((item: any, index: number) => `
             <tr ${item.qrCode ? `class="${item.qrCode}"` : ''}>
               <td style="font-size: small;">${item.qty || '1'}</td>
               <td style="font-size: small;">${item.unit || 'pcs'}</td>
               <td style="font-size: small;">
               ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
-              <td style="font-size: small;">${(item?.qty || 0) * (item?.amount || 0)}</td>
+                    <td style="font-size: small;">${((item?.qty || 0) * (item?.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
               <td style="font-size: small;">${item.description || 'N/A'}</td>
-              <td style="font-size: small;">${item.icsNo || item.icsItemNo || item.iid || 'N/A'}</td>
+              <td style="font-size: small;">${index + 1 || item.icsNo || item.icsItemNo || item.iid || 'N/A'}</td>
               <td style="font-size: small;">${item.eul + ' year(s)' || 'N/A'}</td>
             </tr>
           `).join('');
@@ -1036,18 +1036,21 @@ export class ItrComponent implements OnInit, AfterViewInit {
           <table class="table">
             <tbody>
                 <tr style="border-color: transparent;">
-                    <td><strong>LGU:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.entityName || 'Default LGU'} </p></td>
-                    <td></td>
-                    <td</td>
-
+                    <td class="p-0 m-0"><strong>LGU:</strong></td>
+                    <td colspan="3"> <p class="fs-6 m-0 border-bottom">asdasdasd ${itr.entityName || 'Default LGU'} </p></td>
                 </tr>
                 <tr style="border-color: transparent;">
-                    <td><strong>FUND:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.fund || 'Default FUND'}  </p></td>
+                    <td class="p-0 m-0"><strong>Fund Cluster:</strong></td>
+                    <td> <p class="fs-6 m-0 border-bottom"> ${itr.fund || 'Default FUND'}  </p></td>
 
-                    <td><strong>ITR No.:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${itr.itrNo || 'N/A'} </p></td>
+                    <td class="p-0 m-0"><strong>ITR No.:</strong></td>
+                    <td> <p class="fs-6 m-0 border-bottom"> ${itr.itrNo || 'N/A'} </p></td>
+                </tr>
+                <tr style="border-color: transparent;">
+                    <td class="p-0 m-0"><strong>Transfer type:</strong></td>
+                    <td colspan="3"> <p class="fs-6 m-0 border-bottom">
+                    ${(((itr.ttype + '').toString().toLowerCase() == "others") ?  itr.ttype +' - '+ itr.otype : itr.ttype) || ''}
+                    </p></td>
                 </tr>
             </tbody>
           </table>

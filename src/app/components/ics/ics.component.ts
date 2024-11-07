@@ -83,6 +83,8 @@ export class IcsComponent implements OnInit {
   accID: string = "unknown";
   IIDKey: string | null = null;
   iid: string | null = null;
+  brand: string = '';
+  model: string = '';
 
   isLoading: boolean = true;
   onItemFound: boolean = false;
@@ -143,7 +145,12 @@ export class IcsComponent implements OnInit {
 
     this.itemForm = this.fb.group({
       iid: ['', Validators.required],
+      brand: ['', Validators.required],
+      model: ['', Validators.required],
       description: ['', Validators.required],
+      serialNo: ['', Validators.required],
+      propertyNo: ['', Validators.required],
+      qrCode: ['', Validators.required],
       qty: [1, [Validators.required, Validators.min(1)]],
       unit: ['', Validators.required],
       amount: ['', [Validators.required, Validators.min(1)]],
@@ -356,10 +363,10 @@ export class IcsComponent implements OnInit {
 
     // this.IIDKey = this.itemForm.value['iid'];
 
-    this.logger.printLogs('i', 'ICS ITEMS DESCRIPTION', [(!(this.IIDKey == '') ? this.IIDKey : '')]);
+    this.logger.printLogs('i', 'ICS ITEMS DESCRIPTION', [(!(this.IIDKey == '') ? this.IIDKey : '') + " " + (!(this.brand == '') ? this.brand : '') + " " + (!(this.model == '') ? this.model : '')]);
 
     this.itemForm.patchValue({
-      description: (!(this.IIDKey == '') ? this.IIDKey : '')
+      description: (!(this.IIDKey == '') ? this.IIDKey : '') + " " + (!(this.brand == '') ? this.brand : '') + " " + (!(this.model == '') ? this.model : '')
     });
   }
 
@@ -410,7 +417,7 @@ export class IcsComponent implements OnInit {
 
     if (this.icsForm.valid && this.icsItems.length > 0) {
 
-      this.logger.printLogs('i', 'PAR Form', this.icsForm.value);
+      this.logger.printLogs('i', 'ICS Form', this.icsForm.value);
 
       this.ics = {
         icsNo: this.icsForm.value['icsNo'],
@@ -449,7 +456,7 @@ export class IcsComponent implements OnInit {
 
     if (this.itrForm.valid && this.icsItems.length > 0) {
 
-      this.logger.printLogs('i', 'REPAR Form', this.ics);
+      this.logger.printLogs('i', 'ITR Form', this.ics);
       this.Save(this.ics);
 
     }
@@ -459,7 +466,7 @@ export class IcsComponent implements OnInit {
 
   Save(ics: any) {
     if (!this.isITR) {
-      this.logger.printLogs('i', 'Saving PAR', ics);
+      this.logger.printLogs('i', 'Saving ICS', ics);
 
       this.api.createICS(ics, this.icsItems)
         .subscribe({
@@ -752,7 +759,12 @@ export class IcsComponent implements OnInit {
 
     const ICSNo: string = this.icsForm.value['icsNo'];
     const IID: string = this.itemForm.value['iid'];
+    const Brand: string = this.itemForm.value['brand'];
+    const Model: string = this.itemForm.value['model'];
     const Description: string = this.itemForm.value['description'];
+    const SerialNo: string = this.itemForm.value['serialNo'];
+    const PropertyNo: string = this.itemForm.value['propertyNo'];
+    const QRCode: string = this.itemForm.value['qrCode'];
     const Qty: number = this.itemForm.value['qty'];
     const Unit: string = this.itemForm.value['unit'];
     const Amount: number = this.itemForm.value['amount'];
@@ -767,15 +779,25 @@ export class IcsComponent implements OnInit {
 
     if (!this.isEditItemMode) {
 
-      if (await this.isExist(Description)) {
-        Swal.fire('Information!', 'Item Description No. already exists!', 'warning');
+      if (await this.isExist(PropertyNo)) {
+        Swal.fire('Information!', 'Property No. already exists!', 'warning');
+        return;
+      }
+
+      if (await this.isExist(SerialNo)) {
+        Swal.fire('Information!', 'Serial No. already exists!', 'warning');
+        return;
+      }
+
+      if (await this.isExist(QRCode)) {
+        Swal.fire('Information!', 'QRCode already exists!', 'warning');
         return;
       }
 
 
       // icsItemNo, icsNo, iid, description, qty, unit, amount: number, itrFlag, ITRNo
 
-      this.item = new ICSItem(null, ICSNo, this.iid!, Description, Qty, Unit, Amount, Eul, false, null);
+      this.item = new ICSItem(null, ICSNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Qty, Unit, Amount, Eul, false, null);
       this.icsItems.push(this.item);
       this.logger.printLogs('i', 'PAR ITEMS', this.icsItems);
       this.resetItemForm();
@@ -795,14 +817,28 @@ export class IcsComponent implements OnInit {
 
     } else {
 
-      if (await this.isExistOnUpdate(this.ICSItemNo, Description)) {
-        Swal.fire('Information!', 'Description already exists!', 'warning');
+
+
+      if (await this.isExistOnUpdate(this.ICSItemNo, PropertyNo)) {
+        Swal.fire('Information!', 'Property No. already exists!', 'warning');
         return;
       }
 
+      if (await this.isExistOnUpdate(this.ICSItemNo, SerialNo)) {
+        Swal.fire('Information!', 'Serial No. already exists!', 'warning');
+        return;
+      }
+
+      if (await this.isExistOnUpdate(this.ICSItemNo, QRCode)) {
+        Swal.fire('Information!', 'QRCode already exists!', 'warning');
+        return;
+      }
+
+
       const index = this.icsItems.findIndex(i => i.description === this.item!.description);
       if (index !== -1) {
-        this.icsItems[index] = new ICSItem(this.ICSItemNo, ICSNo, this.iid!, Description, Qty, Unit, Amount, Eul, false, null);
+        this.icsItems[index] = new  ICSItem(this.ICSItemNo, ICSNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Qty, Unit, Amount, Eul, false, null);
+
         Swal.fire('Success!', 'Item updated successfully!', 'success');
         this.resetItemForm();
         this.closeModal(this.ItemModal);
@@ -813,7 +849,7 @@ export class IcsComponent implements OnInit {
 
   isExist(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.api.scanUniquePARItem(key!)
+      this.api.scanUniqueICSItem(key!)
         .subscribe({
           next: (res) => {
             res.length > 0 ? resolve(true) : resolve(false);
@@ -889,7 +925,12 @@ export class IcsComponent implements OnInit {
 
           this.itemForm.patchValue({
             iid: res.description,
+            brand: item.brand,
+            model: item.model,
             description: item.description,
+            serialNo: item.serialNo,
+            propertyNo: item.propertyNo,
+            qrCode: item.qrCode,
             qty: item.qty,
             unit: item.unit,
             amount: item.amount,
@@ -957,7 +998,12 @@ export class IcsComponent implements OnInit {
 
           this.itemForm.patchValue({
             iid: res.description,
+            brand: item.brand,
+            model: item.model,
             description: item.description,
+            serialNo: '',
+            propertyNo: '',
+            qrCode: '',
             qty: item.qty,
             unit: item.unit,
             amount: item.amount,
@@ -1218,17 +1264,17 @@ export class IcsComponent implements OnInit {
 
                   // Create the table rows dynamically
 
-                  const rows = items.map((item: any) => `
+                  const rows = items.map((item: any, index: number) => `
                   <tr ${item.qrCode ? `class="${item.qrCode}"` : ''}>
                     <td style="font-size: small;">${item.qty || '1'}</td>
                     <td style="font-size: small;">${item.unit || 'pcs'}</td>
                     <td style="font-size: small;">
                     ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td style="font-size: small;">${(item?.qty || 0) * (item?.amount || 0)}</td>
+                    <td style="font-size: small;">${ ((item?.qty || 0) * (item?.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }</td>
                     <td style="font-size: small;">${item.description || 'N/A'}</td>
-                    <td style="font-size: small;">${item.ICSItemNo || 'N/A'}</td>
-                    <td style="font-size: small;">${item.eul || 'N/A'}</td>
+                    <td style="font-size: small;">${index + 1 || item.icsNo || item.icsItemNo || item.iid || 'N/A'}</td>
+              <td style="font-size: small;">${item.eul + ' year(s)' || 'N/A'}</td>
                   </tr>
                 `).join('');
 

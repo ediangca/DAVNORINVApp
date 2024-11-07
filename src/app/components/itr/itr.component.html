@@ -1276,86 +1276,105 @@
                   <td>{{ item?.amount || 'N/A' }}</td>
                 </tr>
                 <tr>
-                  <tr>
-                    <td class="fw-bold">Total:</td>
-                    <td>{{ (item?.qty || 0) * (item?.amount || 0 )}}</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Description:</td>
-                    <td>{{ item?.description || 'N/A' }}</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Estimated Useful Life:</td>
-                    <td>{{ item?.eul || 'N/A' }} year(s)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                  <td class="fw-bold">Total:</td>
+                  <td>{{ (item?.qty || 0) * (item?.amount || 0 )}}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Brand:</td>
+                  <td>{{ item?.brand || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Model:</td>
+                  <td>{{ item?.model || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Description:</td>
+                  <td>{{ item?.description || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Serial No.:</td>
+                  <td>{{ item?.serialNo || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Property No.:</td>
+                  <td>{{ item?.propertyNo || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">QR Code:</td>
+                  <td>{{ item?.qrCode || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Estimated Useful Life:</td>
+                  <td>{{ item?.eul || 'N/A' }} year(s)</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary rounded-pill"
-            data-bs-dismiss="modal"
-            (click)="closeModal(ViewItemModal)">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill"
+          data-bs-dismiss="modal"
+          (click)="closeModal(ViewItemModal)">Close</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ITEM LIST VIEW MODAL -->
-  <div #ListItemModalForm class="modal fade" id="ListItemModalForm"
-    tabindex="-1"
-    aria-labelledby="ItemModalFormLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="ItemModalFormLabel">List of ICS
-            Item</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-            aria-label="Close" (click)="closeModal(ViewItemModal)"></button>
-        </div>
-        <div class="modal-body item-body scrollable">
-          <!-- ITEM DETAILS -->
-          <div class="row">
-            <div class="col-lg-12">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>ICS No.</th>
-                    <th>Description</th>
-                    <th>Qty</th>
-                    <th>Cost</th>
-                    <th>Action</th>
+<!-- ITEM LIST VIEW MODAL -->
+<div #ListItemModalForm class="modal fade" id="ListItemModalForm"
+  tabindex="-1"
+  aria-labelledby="ItemModalFormLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="ItemModalFormLabel">List of ICS
+          Item</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close" (click)="closeModal(ViewItemModal)"></button>
+      </div>
+      <div class="modal-body item-body scrollable">
+        <!-- ITEM DETAILS -->
+        <div class="row">
+          <div class="col-lg-12">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>ICS No.</th>
+                  <th>Description</th>
+                  <th>Qty</th>
+                  <th>Cost</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="let ii of icsItems; let i = index">
+                  <tr *ngIf="ii.itrFlag==false">
+                    <td>{{ii.icsNo}}</td>
+                    <td>{{ii.description}}</td>
+                    <td>{{ii.qty}}</td>
+                    <td>{{ii.amount}}</td>
+                    <td>
+                      <a class="delete"
+                        type="button"
+                        (click)="onAddItem(ii)"><i
+                          class="fa-sharp-duotone  fa-solid fa-plus"
+                          data-toggle="tooltip"
+                          title="Delete"></i></a>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  <ng-container
-                    *ngFor="let ii of icsItems; let i = index">
-                    <tr *ngIf="ii.itrFlag==false">
-                      <td>{{ii.icsNo}}</td>
-                      <td>{{ii.description}}</td>
-                      <td>{{ii.qty}}</td>
-                      <td>{{ii.amount}}</td>
-                      <td>
-                        <a class="delete"
-                          type="button"
-                          (click)="onAddItem(ii)"><i
-                            class="fa-sharp-duotone  fa-solid fa-plus"
-                            data-toggle="tooltip"
-                            title="Delete"></i></a>
-                      </td>
-                    </tr>
-                  </ng-container>
-                </tbody>
-              </table>
-            </div>
+                </ng-container>
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary rounded-pill"
-            data-bs-dismiss="modal"
-            (click)="closeModal(ViewItemModal)">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill"
+          data-bs-dismiss="modal"
+          (click)="closeModal(ViewItemModal)">Close</button>
       </div>
     </div>
   </div>
+</div>

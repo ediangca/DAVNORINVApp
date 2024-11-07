@@ -928,6 +928,68 @@
                 </ul>
               </div>
 
+              <!-- BRAND -->
+              @if(!(itemForm.controls['brand'].invalid &&
+              itemForm.hasError('required', 'brand') &&
+              itemForm.get('brand')?.touched ||
+              (itemForm.controls['brand'].dirty &&
+              itemForm.hasError('required', 'brand')))){
+              <small class="text-info">*
+                Brand</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="itemForm.controls['brand'].invalid && itemForm.hasError('required', 'brand') && itemForm.get('brand')?.touched ||
+                   (itemForm.controls['brand'].dirty && itemForm.hasError('required', 'brand'))">*
+                Brand is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['brand'].invalid && itemForm.hasError('required', 'brand') &&  itemForm.get('brand')?.touched ||
+               (itemForm.controls['brand'].dirty && itemForm.hasError('required', 'brand'))">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['brand'].invalid && itemForm.hasError('required', 'brand') &&  itemForm.get('brand')?.touched ||
+                 (itemForm.controls['brand'].dirty && itemForm.hasError('required', 'brand'))"></i>
+
+                <input type="text" formControlName="brand"
+                  [(ngModel)]="brand"
+                  name="brand"
+                  id="brand"
+                  (keyup)="updateDescription()"
+                  placeholder="Brand">
+              </div>
+
+              <!-- MODEL -->
+              @if(!(itemForm.controls['model'].invalid &&
+              itemForm.hasError('required', 'model') &&
+              itemForm.get('model')?.touched ||
+              (itemForm.controls['model'].dirty &&
+              itemForm.hasError('required', 'model')))){
+              <small class="text-info">*
+                Model</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="itemForm.controls['model'].invalid && itemForm.hasError('required', 'model') && itemForm.get('model')?.touched ||
+                   (itemForm.controls['model'].dirty && itemForm.hasError('required', 'model'))">*
+                Model is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['model'].invalid && itemForm.hasError('required', 'model') &&  itemForm.get('model')?.touched ||
+               (itemForm.controls['model'].dirty && itemForm.hasError('required', 'model'))">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['model'].invalid && itemForm.hasError('required', 'model') &&  itemForm.get('model')?.touched ||
+                 (itemForm.controls['model'].dirty && itemForm.hasError('required', 'model'))"></i>
+
+                <input type="text" formControlName="model"
+                  [(ngModel)]="model"
+                  name="model"
+                  id="model"
+                  (keyup)="updateDescription()"
+                  placeholder="Model">
+              </div>
+
               <!-- DESCRIPTION -->
               @if(!(itemForm.controls['description'].invalid &&
               itemForm.hasError('required', 'description') &&
@@ -956,6 +1018,93 @@
                   name="description"
                   id="description"
                   placeholder="Description"></textarea>
+              </div>
+
+              <!-- SERIAL NO. -->
+              @if(!(itemForm.controls['serialNo'].invalid &&
+              itemForm.hasError('required', 'serialNo') &&
+              itemForm.get('serialNo')?.touched ||
+              (itemForm.controls['serialNo'].dirty &&
+              itemForm.hasError('required', 'serialNo')))){
+              <small class="text-info">*
+                Serial No.</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="itemForm.controls['serialNo'].invalid && itemForm.hasError('required', 'serialNo') && itemForm.get('serialNo')?.touched ||
+                   (itemForm.controls['serialNo'].dirty && itemForm.hasError('required', 'serialNo'))">*
+                Serial No. is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['serialNo'].invalid && itemForm.hasError('required', 'serialNo') &&  itemForm.get('serialNo')?.touched ||
+               (itemForm.controls['serialNo'].dirty && itemForm.hasError('required', 'serialNo'))">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['serialNo'].invalid && itemForm.hasError('required', 'serialNo') &&  itemForm.get('serialNo')?.touched ||
+                 (itemForm.controls['serialNo'].dirty && itemForm.hasError('required', 'serialNo'))"></i>
+
+                <input type="text" formControlName="serialNo"
+                  name="serialNo"
+                  id="serialNo"
+                  placeholder="Serial No.">
+              </div>
+
+              <!-- QR Code -->
+              @if(!(itemForm.controls['qrCode'].invalid &&
+              itemForm.hasError('required', 'qrCode') &&
+              itemForm.get('qrCode')?.touched ||
+              (itemForm.controls['qrCode'].dirty &&
+              itemForm.hasError('required', 'qrCode')))){
+              <small class="text-info">*
+                QR Code</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="itemForm.controls['qrCode'].invalid && itemForm.hasError('required', 'qrCode') && itemForm.get('qrCode')?.touched ||
+                (itemForm.controls['qrCode'].dirty && itemForm.hasError('required', 'qrCode'))">*
+                QR Code is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['qrCode'].invalid && itemForm.hasError('required', 'qrCode') &&  itemForm.get('qrCode')?.touched ||
+                (itemForm.controls['qrCode'].dirty && itemForm.hasError('required', 'qrCode'))">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['qrCode'].invalid && itemForm.hasError('required', 'qrCode') &&  itemForm.get('qrCode')?.touched ||
+                  (itemForm.controls['qrCode'].dirty && itemForm.hasError('required', 'qrCode'))"></i>
+
+                <input type="text" formControlName="qrCode"
+                  name="qrCode"
+                  id="qrCode"
+                  placeholder="QR Code">
+              </div>
+
+              <!-- PROPERTY NO. -->
+              @if(!(itemForm.controls['propertyNo'].invalid &&
+              itemForm.hasError('required', 'propertyNo') &&
+              itemForm.get('propertyNo')?.touched ||
+              (itemForm.controls['propertyNo'].dirty &&
+              itemForm.hasError('required', 'propertyNo')))){
+              <small class="text-info">*
+                Property No.</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="itemForm.controls['propertyNo'].invalid && itemForm.hasError('required', 'propertyNo') && itemForm.get('propertyNo')?.touched ||
+                (itemForm.controls['propertyNo'].dirty && itemForm.hasError('required', 'propertyNo'))">*
+                Property No. is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['propertyNo'].invalid && itemForm.hasError('required', 'propertyNo') &&  itemForm.get('propertyNo')?.touched ||
+                (itemForm.controls['propertyNo'].dirty && itemForm.hasError('required', 'propertyNo'))">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['propertyNo'].invalid && itemForm.hasError('required', 'propertyNo') &&  itemForm.get('propertyNo')?.touched ||
+                  (itemForm.controls['propertyNo'].dirty && itemForm.hasError('required', 'propertyNo'))"></i>
+
+                <input type="text" formControlName="propertyNo"
+                  name="propertyNo"
+                  id="propertyNo"
+                  placeholder="Property No.">
               </div>
 
               <!-- UNIT -->
@@ -1126,8 +1275,28 @@
                   <td>{{ itemName || 'N/A' }}</td>
                 </tr>
                 <tr>
+                  <td class="fw-bold">Brand:</td>
+                  <td>{{ item?.brand || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Model:</td>
+                  <td>{{ item?.model || 'N/A' }}</td>
+                </tr>
+                <tr>
                   <td class="fw-bold">Description:</td>
                   <td>{{ item?.description || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Serial No.:</td>
+                  <td>{{ item?.serialNo || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Property No.:</td>
+                  <td>{{ item?.propertyNo || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">QR Code:</td>
+                  <td>{{ item?.qrCode || 'N/A' }}</td>
                 </tr>
                 <tr>
                   <td class="fw-bold">Unit:</td>
