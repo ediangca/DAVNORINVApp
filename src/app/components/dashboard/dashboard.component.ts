@@ -46,6 +46,13 @@ export class DashboardComponent implements OnInit {
   isMinimizeSideBar = false;
 
 
+  prevBtn!: HTMLButtonElement;
+  nextBtn!: HTMLButtonElement;
+  track!: HTMLElement;
+  cards!: HTMLElement[];
+  currentIndex = 0;
+
+
   constructor(
     public ac: AppComponent,
     private titleService: Title,
@@ -89,7 +96,6 @@ export class DashboardComponent implements OnInit {
     // this.setupSidebarToggle();
     this.logger.printLogs('i', 'Hide Header and Widget:', [this.header]);
   }
-
 
 
   private getTitle(route: ActivatedRouteSnapshot): string {

@@ -101,9 +101,11 @@
                   <i class="fa-sharp-duotone fa-solid fa-print"
                     data-toggle="tooltip" title="Print"></i>
                 </a>
-                <a class="btn btn-outline-primary btn-sm"
+                <a class="primary"
                   type="button"
-                  (click)="onRepar(i)">ITR</a>
+                  (click)="onRepar(i)"><i class="fa-solid fa-share-from-square"
+                    data-toggle="tooltip"
+                    title="ITR"></i></a>
                 }
               </form>
             </td>
@@ -812,11 +814,8 @@
                   <small class="text-info">* Reason for Transfer</small>
                   }@else{
                   <small class="text-danger"
-                    *ngIf="itrForm.controls['reason'].invalid &&
-                itrForm.hasError('required', 'reason') &&
-                itrForm.get('reason')?.touched ||
-                (itrForm.controls['reason'].dirty &&
-                itrForm.hasError('required', 'reason'))">*
+                    *ngIf="itrForm.controls['reason'].invalid && itrForm.hasError('required', 'reason') &&
+                    itrForm.get('reason')?.touched || (itrForm.controls['reason'].dirty && itrForm.hasError('required', 'reason'))">*
                     Reason for Transfer is required</small>
                   }
                   <div class="form-field d-flex align-items-center"
@@ -1334,7 +1333,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-warning rounded-pill"
-          *ngIf="!ics?.postFlag || false"
+          *ngIf="!ics?.postFlag && isEditMode"
           (click)="onEditItem(item!)">Edit</button>
         <button type="button" class="btn btn-secondary rounded-pill"
           data-bs-dismiss="modal"

@@ -102,14 +102,14 @@ export class PrintService {
   setFooter(title: string) {
     // Normalize title
     title = title.toLocaleLowerCase();
-    title = (title === "re-par" || title === "ics") ? 'par' : title;
+    title = (title === "ptr" || title === "ics") ? 'par' : title;
 
     switch (title.toLowerCase()) {
       case 'par':
         this.footer = `
           <div class="row mt-3">
             <div class="col-12 border">
-              <p>Please note: COA circular no. 92-386 Section 149.
+              <p class="fw-bold">Please note: COA circular no. 92-386 Section 149.
                  Measure of liability of the Persons Accountable for supplies or property.</p>
             </div>
             <div class="col-6 border">
@@ -202,6 +202,9 @@ export class PrintService {
                   left: 0;
                   right: 0;
                 }
+                .item-row > th, .item-row > td{
+                  font-size: 12px;
+                }
                 p{
                   font-size: 12px;
                 }
@@ -235,9 +238,13 @@ export class PrintService {
               <img src="../../../assets/images/logo/logo-lg.png" alt="Logo Left" style="height: 80px;">
             </div>
 
+            <div class="row mb-3">
+              <div class="col text-center">
+                <h5>${this.getTitleDetail(title)}</h5>
+              </div>
+            </div>
+
               ${reportContent}
-
-
 
 
             <!-- Footer -->
@@ -269,4 +276,22 @@ export class PrintService {
 
     }
   }
+
+
+  getTitleDetail(title: string): String {
+
+    switch (title.toLowerCase()) {
+      case 'par':
+        return 'PROPERTY ACKNOWLEDGEMENT RECEIPT'
+      case 're-':
+        return 'PROPERTY TRANSFER RECEIPT'
+      case 'itr':
+        return 'INVENTORY TRANFER REPORT'
+      case 'ptr':
+        return 'PROPERTY TRANSFER RECEIPT'
+      default:
+        return 'TITLE'
+    }
+  }
 }
+

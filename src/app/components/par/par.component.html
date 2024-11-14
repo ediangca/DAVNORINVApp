@@ -111,9 +111,11 @@
                   <i class="fa-sharp-duotone fa-solid fa-print"
                     data-toggle="tooltip" title="Print"></i>
                 </a>
-                <a class="btn btn-outline-primary btn-sm"
+                <a class="primary"
                   type="button"
-                  (click)="onRepar(p)">REPAR</a>
+                  (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
+                  data-toggle="tooltip"
+                  title="PTR"></i></a>
                 }
               </form>
             </td>
@@ -122,7 +124,8 @@
       </table>
 
       <div class="clearfix" *ngIf="!isLoading">
-        <div class="hint-text">Showing <b>{{pars.length}}</b> out of <b>{{pars.length}}</b>entries</div>
+        <div class="hint-text">Showing <b>{{pars.length}}</b> out of
+          <b>{{pars.length}}</b>entries</div>
         <!-- <ul class="pagination">
           <li class="page-item disabled"><a href="#">Previous</a></li>
           <li class="page-item"><a href="#" class="page-link">1</a></li>
@@ -316,7 +319,9 @@
                             <td>{{p.description}}</td>
                             <td>{{formatDate(p.date_Acquired)}}</td>
                             <td>{{p.propertyNo}}</td>
-                            <td>{{p.amount}}</td>
+                            <td>{{ (p.amount || 0).toLocaleString('en-US', {
+                              minimumFractionDigits: 2, maximumFractionDigits: 2
+                              }) }}</td>
                             <td>
                               <form class="d-flex justify-content-end">
                                 <a class="edit"
@@ -474,11 +479,10 @@
 
           <div class="d-flex flex-column">
             <h1 class="modal-title fs-5" id="staticBackdropLabel">
-              {{(isRepar? 'RE-PAR' : 'PAR') }}
+              {{(isRepar? 'PTR' : 'PAR') }}
             </h1>
-            <span><em> {{(isRepar? 'Re-property' : 'Property') }}
-                Acknowledgement
-                Receipt</em></span>
+            <span><em> Property {{(isRepar? 'Transfer Report' : ' Acknowledgement Receipt') }}
+               </em></span>
           </div>
 
           <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -617,14 +621,14 @@
                             <th class="sticky-header">
                               <!-- "Select All" Checkbox in the Header -->
 
-                              @if(isRepar &&  noOfParItems > 1){
+                              @if(isRepar && noOfParItems > 1){
                               <div
                                 class="form-check form-switch form-check-inline">
                                 <input class="form-check-input" type="checkbox"
                                   id="selectAll"
                                   (change)="toggleAllSelection($event)" />
                                 <label class="form-check-label"
-                                  for="selectAll">REPAR</label>
+                                  for="selectAll">PTR</label>
                               </div>
                               }@else{
                               REPAR
@@ -651,7 +655,9 @@
                               <td>{{ p.description }}</td>
                               <td>{{ formatDate(p.date_Acquired) }}</td>
                               <td>{{ p.propertyNo }}</td>
-                              <td>{{ p.amount }}</td>
+                              <td>{{ (p.amount || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2, maximumFractionDigits:
+                                2 }) }}</td>
                               <td class="d-flex justify-content-center">
 
                                 <div
@@ -678,9 +684,8 @@
             </div>
             <!-- END OF CARD BODY -->
             <div class="card-footer">
-              <div class="row d-flex flex-row"
-                *ngIf="noOfParItems > 0 && isRepar">
 
+              <div class="row d-flex flex-row" *ngIf="noOfParItems > 0 && isRepar">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
 
                   <small class="text-info">*
@@ -695,26 +700,51 @@
                         }}</option>
                     </select>
                   </div>
-                </div>
 
-                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                  <small class="text-info">*
+                    Approve By</small>
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="reparForm.controls['userID3'].invalid && reparForm.hasError('required', 'userID3')  && reparForm.get('userID3')?.touched ||
+                    (reparForm.controls['userID3'].dirty && reparForm.hasError('required', 'userID3'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(reparForm.controls['userID3'].invalid && reparForm.hasError('required', 'userID3') &&
+                      reparForm.get('userID3')?.touched || (reparForm.controls['userID3'].dirty &&
+                      reparForm.hasError('required', 'userID3')))"></i>
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="reparForm.controls['userID3'].invalid && reparForm.hasError('required', 'userID3') &&  reparForm.get('userID3')?.touched ||
+                      (reparForm.controls['userID3'].dirty && reparForm.hasError('required', 'userID3'))"></i>
+
+                    <select class="form-select" formControlName="userID3"
+                      name="userID3"
+                      id="userID3">
+                      <option value>Approved By</option>
+                      <ng-container *ngFor="let up of userProfiles">
+                        <option
+                          class="text-dark"
+                          [value]="up.userID"
+                          *ngIf="up.userID !== par.receivedBy">
+                          {{ up.fullName }}
+                        </option>
+                      </ng-container>
+                    </select>
+                  </div>
 
                   <small class="text-info">*
                     Issue To</small>
 
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1')  && reparForm.get('userID1')?.touched || (reparForm.controls['userID1'].dirty &&
-                  reparForm.hasError('required', 'userID1'))">
+                    [class.error]="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1')  && reparForm.get('userID1')?.touched ||
+                    (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1'))">
                     <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(reparForm.controls['userID1'].invalid &&
-                  reparForm.hasError('required', 'userID1') &&
-                  reparForm.get('userID1')?.touched ||
-                  (reparForm.controls['userID1'].dirty &&
-                  reparForm.hasError('required', 'userID1')))"></i>
+                      *ngIf="!(reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&
+                      reparForm.get('userID1')?.touched || (reparForm.controls['userID1'].dirty &&
+                      reparForm.hasError('required', 'userID1')))"></i>
                     <i
                       class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
                       *ngIf="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&  reparForm.get('userID1')?.touched ||
-                  (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1'))"></i>
+                      (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1'))"></i>
 
                     <select class="form-select" formControlName="userID1"
                       name="userID1"
@@ -730,14 +760,106 @@
                       </ng-container>
                     </select>
                   </div>
+
                 </div>
+
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+
+                  <!-- Transfer type -->
+
+                  @if(!(reparForm.controls['type'].invalid &&
+                  reparForm.hasError('required', 'type') &&
+                  reparForm.get('type')?.touched ||
+                  (reparForm.controls['type'].dirty &&
+                  reparForm.hasError('required', 'type')))){
+                  <small class="text-info">* Transfer Type</small>
+                  }@else{
+                  <small class="text-danger"
+                    *ngIf="reparForm.controls['type'].invalid &&
+                    reparForm.hasError('required', 'type') &&
+                    reparForm.get('type')?.touched ||
+                    (reparForm.controls['type'].dirty &&
+                    reparForm.hasError('required', 'type')) ||
+                    (isCustomType && ((reparForm.controls['type'].invalid &&
+                  reparForm.hasError('required', 'type') &&
+                  reparForm.get('type')?.touched) || (reparForm.controls['others'].dirty && reparForm.hasError('required', 'others'))))">*
+                    Transfer Type is required</small>
+                  }
+
+                  <!-- Other Transfer type -->
+
+                  <small class="text-danger"
+                    *ngIf="isCustomType && reparForm.controls['others'].invalid && reparForm.get('others')?.touched">
+                    Specify 'Others' is required.
+                  </small>
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="reparForm.controls['type'].invalid && reparForm.hasError('required', 'type')  && reparForm.get('type')?.touched ||
+                    (reparForm.controls['type'].dirty && reparForm.hasError('required', 'type')) ||
+                    (isCustomType && reparForm.controls['others'].invalid && reparForm.hasError('required', 'others')  && reparForm.get('others')?.touched ||
+                  (reparForm.controls['others'].dirty && reparForm.hasError('required', 'others'))) ||
+                    (isCustomType && reparForm.get('others')?.invalid && reparForm.get('others')?.touched)">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="(reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1')  && reparForm.get('userID1')?.touched ||
+                      (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1'))) ||
+                        (isCustomType && reparForm.get('others')?.invalid && reparForm.get('others')?.touched)">
+                    </i>
+
+                    <select formControlName="type" name="type" id="type"
+                      class="form-select" (change)="onTypeChange($event)">
+                      <option value>Transfer Type</option>
+                      <option *ngFor="let option of typeOptions"
+                        [value]="option">{{option}}</option>
+                      <option value="Others">Others</option>
+                    </select>
+
+                    <input *ngIf="isCustomType" type="text" id="others"
+                      #othersInput
+                      value="N/A"
+                      formControlName="others"
+                      placeholder="Specify" class="form-control">
+                  </div>
+
+                  <!-- Reason -->
+
+                  @if(!(reparForm.controls['reason'].invalid &&
+                  reparForm.hasError('required', 'reason') &&
+                  reparForm.get('reason')?.touched ||
+                  (reparForm.controls['reason'].dirty &&
+                  reparForm.hasError('required', 'reason')))){
+                  <small class="text-info">* Reason for Transfer</small>
+                  }@else{
+                  <small class="text-danger"
+                    *ngIf="reparForm.controls['reason'].invalid && reparForm.hasError('required', 'reason') &&
+                    reparForm.get('reason')?.touched || (reparForm.controls['reason'].dirty && reparForm.hasError('required', 'reason'))">*
+                    Reason for Transfer is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="reparForm.controls['reason'].invalid &&
+                  reparForm.hasError('required', 'reason') && reparForm.get('reason')?.touched ||
+                  (reparForm.controls['reason'].dirty && reparForm.hasError('required', 'reason'))">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="reparForm.controls['reason'].invalid &&
+                    reparForm.hasError('required', 'reason') && reparForm.get('reason')?.touched ||
+                    (reparForm.controls['reason'].dirty && reparForm.hasError('required', 'reason'))"></i>
+
+                    <textarea formControlName="reason" name="reason" id="reason"
+                      placeholder="Reason/s for Transfer" rows="4"
+                      cols="50"></textarea>
+                  </div>
+
+                </div>
+
               </div>
 
               <div class="row"
                 *ngIf="noOfParItems < 1 && isRepar">
                 <div class="col">
-                  <h6 class="p-3 text-center text-danger">ITEM(s) FULLY
-                    REPARED.</h6>
+                  <h6 class="p-3 text-center text-danger">ITEM(s) FULLY TRASFERED.</h6>
                 </div>
               </div>
             </div>
@@ -1165,11 +1287,14 @@
                 </tr>
                 <tr>
                   <td class="fw-bold">Cost/Amount:</td>
-                  <td>{{ item?.amount || 'N/A' }}</td>
+                  <td>{{ (item?.amount || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    }}</td>
                 </tr>
                 <tr>
                   <td class="fw-bold">Date Acquired:</td>
-                  <td>{{ item?.date_Acquired | date:'shortDate' || 'N/A' }}</td>
+                  <td>{{ (item?.date_Acquired | date:'shortDate') || 'N/A'
+                    }}</td>
                 </tr>
                 <tr *ngIf="item?.reparFlag">
                   <td class="fw-bold">Repar No.:</td>
@@ -1187,7 +1312,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-warning rounded-pill"
-          *ngIf="!par?.postFlag || false"
+          *ngIf="!par?.postFlag && isEditMode"
           (click)="onEditItem(item!)">Edit</button>
         <button type="button" class="btn btn-secondary rounded-pill"
           data-bs-dismiss="modal"

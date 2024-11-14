@@ -71,6 +71,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
   parINo: number | null = null;
   propertyNo: string | null = null;
 
+  typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
+  isCustomType = false;
 
   isRepar: boolean = false;
   reparForm!: FormGroup;
@@ -114,8 +116,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
       lgu: ['', Validators.required],
       fund: ['', Validators.required],
       parNo: ['', Validators.required],
+      type: ['', Validators.required],
+      others: ['', Validators.required],
+      reason: ['', Validators.required],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
+      userID3: ['', Validators.required],
     });
 
     this.reparForm = this.fb.group({
@@ -419,24 +425,26 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
       this.logger.printLogs('i', 'PAR Form', this.parForm.value);
 
-      this.par = {
-        parNo: this.parForm.value['parNo'],
-        lgu: this.parForm.value['lgu'],
-        fund: this.parForm.value['fund'],
-        receivedBy: this.parForm.value['userID1'],
-        issuedBy: this.parForm.value['userID2'],
-        postFlag: false,
-        voidFlag: false,
-        createdBy: this.userAccount.userID,
-      }
+      // this.par = {
+      //   parNo: this.parForm.value['parNo'],
+      //   lgu: this.parForm.value['lgu'],
+      //   fund: this.parForm.value['fund'],
+      //   receivedBy: this.parForm.value['userID1'],
+      //   issuedBy: this.parForm.value['userID2'],
+      //   postFlag: false,
+      //   voidFlag: false,
+      //   createdBy: this.userAccount.userID,
+      // }
 
       this.repar = {
         reparNo: this.currentEditId,
         parNo: this.parForm.value['parNo'],
-        lgu: this.parForm.value['lgu'],
-        fund: this.parForm.value['fund'],
+        ttype: this.parForm.value['type'],
+        otype: this.parForm.value['others'],
+        reason: this.parForm.value['reason'],
         receivedBy: this.parForm.value['userID1'],
         issuedBy: this.parForm.value['userID2'],
+        approvedBy: this.parForm.value['userID3'],
         postFlag: false,
         voidFlag: false,
         createdBy: this.userAccount.userID,
@@ -445,9 +453,10 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
       if (this.isEditMode) {
         this.Update(this.repar)
-      } else {
-        this.Save(this.par);
       }
+      // else {
+      //   this.Save(this.par);
+      // }
 
     }
 
@@ -662,8 +671,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
       lgu: par.lgu,
       fund: par.fund,
       parNo: par.parNo,
-      userID1: par.receivedBy, // These will now be patched correctly
-      userID2: par.issuedBy
+      type: par.ttype,
+      others: par.otype,
+      reason: par.reason,
+      userID1: par.receivedBy,
+      userID2: par.issuedBy,
+      userID3: par.approvedBy
     });
 
     this.api.retrieveREPAR(this.currentEditId!)
@@ -1108,7 +1121,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.isOpen = false;
     this.parForm.reset({
       userID1: '',
-      userID2: ''
+      userID2: '',
+      userID3: ''
     });
     this.reparForm.reset({
       userID1: '',
@@ -1259,6 +1273,19 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
   }
 
+  onTypeChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.isCustomType = selectedValue == 'Others';
+    if (!this.isCustomType) {
+      this.parForm.get('type')?.setValue(selectedValue);
+      this.parForm?.get('others')?.setValue('N/A');
+    } else {
+      this.parForm?.get('others')?.setValue(null);
+      this.parForm.get('type')?.markAsUntouched();
+      this.parForm.get('others')?.markAsTouched();
+    }
+  }
+
   onPrintREPAR(reparNo: string) {
 
     this.api.retrieveREPAR(reparNo)
@@ -1286,14 +1313,15 @@ export class ReparComponent implements OnInit, AfterViewInit {
             const items = Array.isArray(parItems) ? parItems : [];
 
             const rows = items.map((item: any, index: number) => `
-              <tr ${item.qrCode ? `class="${item.qrCode}"` : ''}>
-                <td style="font-size: small;">${index + 1}</td>
-                <td style="font-size: small;">${item.qty || '1'}</td>
-                <td style="font-size: small;">${item.unit || 'pcs'}</td>
-                <td style="font-size: small;">${item.description || 'N/A'}</td>
-                <td style="font-size: small;">${this.formatDate(item.date_Acquired) || 'N/A'}</td>
-                <td style="font-size: small;">${item.propertyNo || 'N/A'}
-                </td><td style="font-size: small;">
+              <tr ${item.qrCode ? `class="${item.qrCode}  item-row"` : ''}>
+                <td>${index + 1}</td>
+                <td>${item.qty || '1'}</td>
+                <td>${item.unit || 'pcs'}</td>
+                <td>${item.description || 'N/A'}</td>
+                <td>${this.formatDate(item.date_Acquired) || 'N/A'}</td>
+                <td>${item.propertyNo || 'N/A'}
+                </td>
+                <td>
                 ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </td>
 
@@ -1303,45 +1331,33 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
             // Generate the full report content
             const reportContent = `
-          <div class="row mb-3">
-            <div class="col text-center">
-                <h5>RE-PROPERTY ACKNOWLEDGEMENT RECEIPT</h5>
+
+          <div class="watermark">PTR</div>
+
+          <div class="row">
+            <div class="col-12">
+              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${repar.lgu || 'Default LGU'}</span></p>
+            </div>
+            <div class="col-6">
+              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${repar.fund || 'Default LGU'}</span></p>
+            </div>
+            <div class="col-6">
+              <p class="text-end fs-6">PTR No.: <span class="fw-bold border-bottom ms-1">${repar.reparNo || 'Default PTR No.'}</span></p>
             </div>
           </div>
-
-          <div class="watermark">REPAR</div>
-
-          <table class="table">
-            <tbody>
-                <tr style="border-color: transparent;">
-                    <td><strong>LGU:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${repar.lgu || 'Default LGU'} </p></td>
-                    <td></td>
-                    <td</td>
-
-                </tr>
-                <tr style="border-color: transparent;">
-                    <td><strong>FUND:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${repar.fund || 'Default FUND'}  </p></td>
-
-                    <td><strong>PAR No.:</strong></td>
-                    <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${repar.parNo || 'N/A'} </p></td>
-                </tr>
-            </tbody>
-          </table>
 
           <!-- Table with List of Items -->
             <table class="table table-bordered table-striped">
                 <thead>
-                    <tr>
-                        <th style="font-size: small;">#</th>
-                        <th style="font-size: small;">QTY</th>
-                        <th style="font-size: small;">UNIT</th>
-                        <th style="font-size: small;">DESCRIPTION</th>
-                        <th style="font-size: small;">DATE ACQUIRED</th>
-                        <th style="font-size: small;">PROPERTY NUMBER</th>
-                        <th style="font-size: small;">AMOUNT</th>
-                    </tr>
+                  <tr class="item-row">
+                    <th>#</th>
+                    <th>QTY</th>
+                    <th>UNIT</th>
+                    <th>DESCRIPTION</th>
+                    <th>DATE ACQUIRED</th>
+                    <th>PROPERTY NUMBER</th>
+                    <th>AMOUNT</th>
+                  </tr>
                 </thead>
                 <tbody>
                     ${rows}
@@ -1349,7 +1365,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
             </table>`;
 
             // Print the report
-            this.printService.printReport('RE-PAR', reportContent);
+            this.printService.printReport('PTR', reportContent);
 
           });
         },

@@ -76,7 +76,12 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.resetForm();
+    this.getAllUserAccounts();
+
+    this.loadUserGroups();
+    this.loadBranches();
+    this.loadPositions();
+
   }
 
   openAddEditModal() {
@@ -151,7 +156,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       data => {
         this.departments = data;
         console.log("Load Department", this.departments);
-        if(this.userProfile){
+        if (this.userProfile) {
           this.loadSections(this.userProfile.depID);
         }
       },
@@ -208,17 +213,17 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.isLoading = true; // Stop showing the loading spinner
     // Simulate an API call with a delay
     setTimeout(() => {
-    //Populate all User Groups
-    this.api.getAllUserAccounts()
-      .subscribe({
-        next: (res) => {
-          this.userAccounts = res;
-          this.isLoading = false; // Stop showing the loading spinner
-        },
-        error: (err: any) => {
-          console.log("Error Fetching User Groups:", err);
-        }
-      });
+      //Populate all User Groups
+      this.api.getAllUserAccounts()
+        .subscribe({
+          next: (res) => {
+            this.userAccounts = res;
+            this.isLoading = false; // Stop showing the loading spinner
+          },
+          error: (err: any) => {
+            console.log("Error Fetching User Groups:", err);
+          }
+        });
 
     }, 3000); // Simulate a 2-second delay
   }
@@ -356,13 +361,9 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         next: (res) => {
           console.info("Success: ", res.message);
 
-          this.getAllUserAccounts();
 
-          Swal.fire({
-            title: 'Saved!',
-            text: res.message,
-            icon: 'success'
-          });
+          Swal.fire('Saved!', res.message, 'success');
+          this.getAllUserAccounts();
           this.resetForm();
         },
         error: (err: any) => {
@@ -423,14 +424,12 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             next: (res) => {
               console.info("Success: ", res.message);
 
+
+              Swal.fire('Saved!', res.message, 'success');
+
               // this.closeModal()
               this.getAllUserAccounts();
 
-              Swal.fire({
-                title: 'Saved!',
-                text: res.message,
-                icon: 'success'
-              });
             },
             error: (err: any) => {
               console.log('Error response:', err);
@@ -463,13 +462,9 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             next: (res) => {
               // console.info("Success: ", res.message);
 
-              this.getAllUserAccounts();
 
-              Swal.fire({
-                title: 'Success!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Success!', res.message, 'success');
+              this.getAllUserAccounts();
             },
             error: (err: any) => {
               console.log('Error response:', err);
@@ -511,7 +506,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         console.log("Update Profile", this.userProfileForm.value);
         this.UpdateProfile(userProfile)
       } else {
-        if(this.userAccount){
+        if (this.userAccount) {
           console.log("Create Profile for UserID ", this.userAccount.userID);
         }
         console.log("Save Profile ", this.userProfileForm.value);
@@ -533,11 +528,9 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
           this.resetForm();
 
-          Swal.fire({
-            title: 'Saved!',
-            text: res.message,
-            icon: 'success'
-          });
+          Swal.fire('Saved!', res.message, 'success');
+
+          this.getAllUserAccounts();
           this.resetForm();
         },
         error: (err: any) => {
@@ -568,6 +561,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
               console.info("Success: ", res.message);
 
               Swal.fire('Success', res.message, 'success');
+              this.getAllUserAccounts();
               this.resetForm();
             },
             error: (err: any) => {
@@ -613,7 +607,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           });
       }
 
-      this.getAllUserAccounts();
+      // this.getAllUserAccounts();
     });
   }
 
@@ -648,7 +642,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.departments = [];
     this.sections = [];
 
-    this.getAllUserAccounts();
+    // this.getAllUserAccounts();
 
     this.loadUserGroups();
     this.loadBranches();

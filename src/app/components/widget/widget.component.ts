@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { ApiService } from '../../services/api.service';
 
@@ -9,7 +9,7 @@ import { ApiService } from '../../services/api.service';
   templateUrl: './widget.component.html',
   styleUrls: ['./widget.component.css']
 })
-export class WidgetComponent implements OnInit {
+export class WidgetComponent implements OnInit, AfterViewInit, OnChanges  {
   totalPAR: number = 0;
   totalREPAR: number = 0;
   totalITR: number = 0;
@@ -21,21 +21,30 @@ export class WidgetComponent implements OnInit {
   cards!: HTMLElement[];
   currentIndex = 0;
 
-  constructor(private api: ApiService) {}
+
+  constructor(private api: ApiService) {
+
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+
+    this.getTotalParCencus();
+  }
 
   ngOnInit(): void {
     // Fetch data from API
     this.getTotalParCencus();
+  }
 
+  ngAfterViewInit(): void {
     // Query DOM elements after view initialization
-    this.prevBtn = document.querySelector('.prev') as HTMLButtonElement;
-    this.nextBtn = document.querySelector('.next') as HTMLButtonElement;
-    this.track = document.querySelector('.carousel-track') as HTMLElement;
+    this.prevBtn = document.getElementById("next") as HTMLButtonElement;
+    this.nextBtn = document.getElementById('prev') as HTMLButtonElement;
+    this.track = document.getElementById("carousel-track") as HTMLElement;
     this.cards = Array.from(this.track.children) as HTMLElement[];
 
     // Add event listeners
-    this.nextBtn.addEventListener('click', () => this.moveToNext());
-    this.prevBtn.addEventListener('click', () => this.moveToPrev());
+    this.prevBtn.addEventListener('click', () => this.moveToNext());
+    this.nextBtn.addEventListener('click', () => this.moveToPrev());
 
     // Add resize event listener
     window.addEventListener('resize', () => this.updateCarousel());
@@ -60,7 +69,7 @@ export class WidgetComponent implements OnInit {
     const cardWidth = this.cards[0].offsetWidth + 30;
 
     // Calculate the total width of all cards
-    const totalWidth = this.cards.length * cardWidth;
+    const totalWidth = this.cards.length * this.cards[0].offsetWidth;
 
     // Get the width of the carousel container (visible area)
     const containerWidth = this.track.offsetWidth;

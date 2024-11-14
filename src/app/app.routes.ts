@@ -32,7 +32,7 @@ export const routes: Routes = [
     children: [
       { path: 'items', component: ItemsComponent, data: { title: 'Items' } },
       { path: 'par', component: ParComponent, data: { title: 'PAR' } },
-      { path: 'repar', component: ReparComponent, data: { title: 'REPAR' } },
+      { path: 'repar', component: ReparComponent, data: { title: 'PTR' } },
       { path: 'itr', component: ItrComponent, data: { title: 'ITR' } },
       { path: 'rrsp', component: RrspComponent, data: { title: 'RRSP' } },
       { path: 'prs', component: PrsComponent, data: { title: 'PRS' } },

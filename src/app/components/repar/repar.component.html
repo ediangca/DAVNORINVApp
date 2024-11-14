@@ -119,7 +119,8 @@
       </table>
 
       <div class="clearfix" *ngIf="!isLoading">
-        <div class="hint-text">Showing <b>{{pars.length}}</b> out of <b>{{pars.length}}</b> entries</div>
+        <div class="hint-text">Showing <b>{{pars.length}}</b> out of
+          <b>{{pars.length}}</b> entries</div>
         <!-- <ul class="pagination">
           <li class="page-item disabled"><a href="#">Previous</a></li>
           <li class="page-item"><a href="#" class="page-link">1</a></li>
@@ -315,7 +316,9 @@
                             <td>{{p.description}}</td>
                             <td>{{formatDate(p.date_Acquired)}}</td>
                             <td>{{p.propertyNo}}</td>
-                            <td>{{p.amount}}</td>
+                            <td>{{ (p.amount || 0).toLocaleString('en-US', {
+                              minimumFractionDigits: 2, maximumFractionDigits: 2
+                              }) }}</td>
                             <td>
                               <form class="d-flex justify-content-end">
                                 <!--
@@ -352,110 +355,256 @@
                 <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
                   class="fs-6">NEW</span></a>
                   -->
+
+              <div class="row d-flex flex-row">
+                <div class="col-4">
+                  <!-- Transfer type -->
+
+                  @if(!(parForm.controls['type'].invalid &&
+                  parForm.hasError('required', 'type') &&
+                  parForm.get('type')?.touched ||
+                  (parForm.controls['type'].dirty &&
+                  parForm.hasError('required', 'type')))){
+                  <small class="text-info">* Transfer Type</small>
+                  }@else{
+                  <small class="text-danger"
+                    *ngIf="parForm.controls['type'].invalid &&
+                    parForm.hasError('required', 'type') &&
+                    parForm.get('type')?.touched ||
+                    (parForm.controls['type'].dirty &&
+                    parForm.hasError('required', 'type')) ||
+                    (isCustomType && ((parForm.controls['type'].invalid &&
+                  parForm.hasError('required', 'type') &&
+                  parForm.get('type')?.touched) || (parForm.controls['others'].dirty && parForm.hasError('required', 'others'))))">*
+                    Transfer Type is required</small>
+                  }
+
+                  <!-- Other Transfer type -->
+
+                  <small class="text-danger"
+                    *ngIf="isCustomType && parForm.controls['others'].invalid && parForm.get('others')?.touched">
+                    Specify 'Others' is required.
+                  </small>
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="parForm.controls['type'].invalid && parForm.hasError('required', 'type')  && parForm.get('type')?.touched ||
+                    (parForm.controls['type'].dirty && parForm.hasError('required', 'type')) ||
+                    (isCustomType && parForm.controls['others'].invalid && parForm.hasError('required', 'others')  && parForm.get('others')?.touched ||
+                  (parForm.controls['others'].dirty && parForm.hasError('required', 'others'))) ||
+                    (isCustomType && parForm.get('others')?.invalid && parForm.get('others')?.touched)">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="parForm.controls['type'].invalid && parForm.hasError('required', 'type')  && parForm.get('type')?.touched ||
+                      (parForm.controls['type'].dirty && parForm.hasError('required', 'type')) ||
+                      (isCustomType && parForm.controls['others'].invalid && parForm.hasError('required', 'others')  && parForm.get('others')?.touched ||
+                    (parForm.controls['others'].dirty && parForm.hasError('required', 'others'))) ||
+                      (isCustomType && parForm.get('others')?.invalid && parForm.get('others')?.touched)">
+                    </i>
+
+                    <select formControlName="type" name="type" id="type"
+                      class="form-select" (change)="onTypeChange($event)">
+                      <option value>Transfer Type</option>
+                      <option *ngFor="let option of typeOptions"
+                        [value]="option">{{option}}</option>
+                      <option value="Others">Others</option>
+                    </select>
+
+                    <input *ngIf="isCustomType"
+                      type="text" id="others"
+                      #othersInput
+                      value="N/A"
+                      formControlName="others"
+                      placeholder="Specify" class="form-control">
+                  </div>
+                </div>
+                <div class="col-8">
+                  <!-- Reason -->
+
+                  @if(!(parForm.controls['reason'].invalid &&
+                  parForm.hasError('required', 'reason') &&
+                  parForm.get('reason')?.touched ||
+                  (parForm.controls['reason'].dirty &&
+                  parForm.hasError('required', 'reason')))){
+                  <small class="text-info">* Reason for Transfer</small>
+                  }@else{
+                  <small class="text-danger"
+                    *ngIf="parForm.controls['reason'].invalid &&
+                parForm.hasError('required', 'reason') &&
+                parForm.get('reason')?.touched ||
+                (parForm.controls['reason'].dirty &&
+                parForm.hasError('required', 'reason'))">*
+                    Reason for Transfer is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="parForm.controls['reason'].invalid &&
+                  parForm.hasError('required', 'reason') && parForm.get('reason')?.touched ||
+                  (parForm.controls['reason'].dirty && parForm.hasError('required', 'reason'))">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="parForm.controls['reason'].invalid &&
+                    parForm.hasError('required', 'reason') && parForm.get('reason')?.touched ||
+                    (parForm.controls['reason'].dirty && parForm.hasError('required', 'reason'))"></i>
+
+                    <textarea formControlName="reason" name="reason" id="reason"
+                      placeholder="Reason/s for Transfer" rows="1"
+                      cols="50"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row d-flex flex-row">
+
+                <!-- Approved By -->
+                <div class="col">
+                  @if(!(parForm.controls['userID3'].invalid &&
+                  parForm.hasError('required', 'userID3') &&
+                  parForm.get('userID3')?.touched ||
+                  (parForm.controls['userID3'].dirty &&
+                  parForm.hasError('required', 'userID3')))){
+                  <small class="text-info">*
+                    Approved By</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="parForm.controls['userID3'].invalid &&
+                        parForm.hasError('required', 'userID3') &&
+                        parForm.get('userID3')?.touched ||
+                        (parForm.controls['userID3'].dirty &&
+                        parForm.hasError('required', 'userID3'))">* Approved By
+                    is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="parForm.controls['userID3'].invalid && parForm.hasError('required', 'userID3')  && parForm.get('userID3')?.touched || (parForm.controls['userID3'].dirty &&
+                    parForm.hasError('required', 'userID3'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(parForm.controls['userID3'].invalid &&
+                    parForm.hasError('required', 'userID3') &&
+                    parForm.get('userID3')?.touched ||
+                    (parForm.controls['userID3'].dirty &&
+                    parForm.hasError('required', 'userID3')))"></i>
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="parForm.controls['userID3'].invalid && parForm.hasError('required', 'userID3') &&  parForm.get('userID3')?.touched ||
+                    (parForm.controls['userID3'].dirty && parForm.hasError('required', 'userID3'))"></i>
+
+                    <select class="form-select" formControlName="userID3"
+                      name="userID3"
+                      id="userID3">
+                      <option value>Approved By</option>
+                      <option class="text-dark" *ngFor="let up of userProfiles"
+                        [value]="up.userID">{{ up.fullName }}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Issued By -->
+                <div class="col">
+
+                  @if(!(parForm.controls['userID2'].invalid &&
+                  parForm.hasError('required', 'userID2') &&
+                  parForm.get('userID2')?.touched ||
+                  (parForm.controls['userID2'].dirty &&
+                  parForm.hasError('required', 'userID2')))){
+                  <small class="text-info">*
+                    Issued By</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="parForm.controls['userID2'].invalid &&
+                  parForm.hasError('required', 'userID2') &&
+                  parForm.get('userID2')?.touched ||
+                  (parForm.controls['userID2'].dirty &&
+                  parForm.hasError('required', 'userID2'))">* Issued By is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="parForm.controls['userID2'].invalid && parForm.hasError('required', 'userID2')  && parForm.get('userID2')?.touched || (parForm.controls['userID2'].dirty &&
+                parForm.hasError('required', 'userID2'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(parForm.controls['userID2'].invalid &&
+                parForm.hasError('required', 'userID2') &&
+                parForm.get('userID2')?.touched ||
+                (parForm.controls['userID2'].dirty &&
+                parForm.hasError('required', 'userID2')))"></i>
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="parForm.controls['userID2'].invalid && parForm.hasError('required', 'userID2') &&  parForm.get('userID2')?.touched ||
+                (parForm.controls['userID2'].dirty && parForm.hasError('required', 'userID2'))"></i>
+
+                    <select class="form-select" formControlName="userID2"
+                      name="userID2"
+                      id="userID2">
+                      <option value>Issued By</option>
+                      <option class="text-dark" *ngFor="let up of userProfiles"
+                        [value]="up.userID">{{ up.fullName }}</option>
+                    </select>
+
+                  </div>
+
+                </div>
+
+                <!-- Received By -->
+                <div class="col">
+
+                  @if(!(parForm.controls['userID1'].invalid &&
+                  parForm.hasError('required', 'userID1') &&
+                  parForm.get('userID1')?.touched ||
+                  (parForm.controls['userID1'].dirty &&
+                  parForm.hasError('required', 'userID1')))){
+                  <small class="text-info">*
+                    Received By</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="parForm.controls['userID1'].invalid &&
+                    parForm.hasError('required', 'userID1') &&
+                    parForm.get('userID1')?.touched ||
+                    (parForm.controls['userID1'].dirty &&
+                    parForm.hasError('required', 'userID1'))">* Received By is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="parForm.controls['userID1'].invalid && parForm.hasError('required', 'userID1')  && parForm.get('userID1')?.touched || (parForm.controls['userID1'].dirty &&
+                parForm.hasError('required', 'userID1'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(parForm.controls['userID1'].invalid &&
+                parForm.hasError('required', 'userID1') &&
+                parForm.get('userID1')?.touched ||
+                (parForm.controls['userID1'].dirty &&
+                parForm.hasError('required', 'userID1')))"></i>
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="parForm.controls['userID1'].invalid && parForm.hasError('required', 'userID1') &&  parForm.get('userID1')?.touched ||
+                (parForm.controls['userID1'].dirty && parForm.hasError('required', 'userID1'))"></i>
+
+                    <select class="form-select" formControlName="userID1"
+                      name="userID1"
+                      id="userID1">
+                      <option value>Received By</option>
+                      <option class="text-dark" *ngFor="let up of userProfiles"
+                        [value]="up.userID">{{ up.fullName }}</option>
+                    </select>
+                  </div>
+                </div>
+
+
+              </div>
             </div>
           </div>
 
         </div>
         <div class="modal-footer">
 
-          <div class="row d-flex flex-row">
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-
-              @if(!(parForm.controls['userID1'].invalid &&
-              parForm.hasError('required', 'userID1') &&
-              parForm.get('userID1')?.touched ||
-              (parForm.controls['userID1'].dirty &&
-              parForm.hasError('required', 'userID1')))){
-              <small class="text-info">*
-                Received By</small>
-              }@else {
-              <small class="text-danger"
-                *ngIf="parForm.controls['userID1'].invalid &&
-                    parForm.hasError('required', 'userID1') &&
-                    parForm.get('userID1')?.touched ||
-                    (parForm.controls['userID1'].dirty &&
-                    parForm.hasError('required', 'userID1'))">* Received By is
-                required</small>
-              }
-
-              <div class="form-field d-flex align-items-center"
-                [class.error]="parForm.controls['userID1'].invalid && parForm.hasError('required', 'userID1')  && parForm.get('userID1')?.touched || (parForm.controls['userID1'].dirty &&
-                parForm.hasError('required', 'userID1'))">
-                <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                  *ngIf="!(parForm.controls['userID1'].invalid &&
-                parForm.hasError('required', 'userID1') &&
-                parForm.get('userID1')?.touched ||
-                (parForm.controls['userID1'].dirty &&
-                parForm.hasError('required', 'userID1')))"></i>
-                <i
-                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                  *ngIf="parForm.controls['userID1'].invalid && parForm.hasError('required', 'userID1') &&  parForm.get('userID1')?.touched ||
-                (parForm.controls['userID1'].dirty && parForm.hasError('required', 'userID1'))"></i>
-
-                <select class="form-select" formControlName="userID1"
-                  name="userID1"
-                  id="userID1">
-                  <option value>Received By</option>
-                  <option class="text-dark" *ngFor="let up of userProfiles"
-                    [value]="up.userID">{{ up.fullName }}</option>
-                </select>
-              </div>
-
-            </div>
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-
-              @if(!(parForm.controls['userID2'].invalid &&
-              parForm.hasError('required', 'userID2') &&
-              parForm.get('userID2')?.touched ||
-              (parForm.controls['userID2'].dirty &&
-              parForm.hasError('required', 'userID2')))){
-              <small class="text-info">*
-                Issued By</small>
-              }@else {
-              <small class="text-danger"
-                *ngIf="parForm.controls['userID2'].invalid &&
-                  parForm.hasError('required', 'userID2') &&
-                  parForm.get('userID2')?.touched ||
-                  (parForm.controls['userID2'].dirty &&
-                  parForm.hasError('required', 'userID2'))">* Issued By is
-                required</small>
-              }
-
-              <div class="form-field d-flex align-items-center"
-                [class.error]="parForm.controls['userID2'].invalid && parForm.hasError('required', 'userID2')  && parForm.get('userID2')?.touched || (parForm.controls['userID2'].dirty &&
-                parForm.hasError('required', 'userID2'))">
-                <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                  *ngIf="!(parForm.controls['userID2'].invalid &&
-                parForm.hasError('required', 'userID2') &&
-                parForm.get('userID2')?.touched ||
-                (parForm.controls['userID2'].dirty &&
-                parForm.hasError('required', 'userID2')))"></i>
-                <i
-                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                  *ngIf="parForm.controls['userID2'].invalid && parForm.hasError('required', 'userID2') &&  parForm.get('userID2')?.touched ||
-                (parForm.controls['userID2'].dirty && parForm.hasError('required', 'userID2'))"></i>
-
-                <select class="form-select" formControlName="userID2"
-                  name="userID2"
-                  id="userID2">
-                  <option value>Issued By</option>
-                  <option class="text-dark" *ngFor="let up of userProfiles"
-                    [value]="up.userID">{{ up.fullName }}</option>
-                </select>
-
-              </div>
-            </div>
-            <div
-              class="col-12 col-sm-12 col-md-12 col-lg-4 d-flex align-items-center justify-content-center">
-              <button id="closeBut" type="button"
-                class="btn btn-secondary rounded-pill me-2"
-                data-bs-dismiss="modal"
-                (click)="closeModal(AddEditModal)">Close</button>
-              <button type="button" class="btn btn-primary rounded-pill"
-                (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save'
-                }}</button>
-            </div>
-          </div>
+          <button id="closeBut" type="button"
+            class="btn btn-secondary rounded-pill me-2"
+            data-bs-dismiss="modal"
+            (click)="closeModal(AddEditModal)">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill"
+            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save'
+            }}</button>
         </div>
       </form>
     </div>
@@ -638,7 +787,9 @@
                               <td>{{p.description}}</td>
                               <td>{{formatDate(p.date_Acquired)}}</td>
                               <td>{{p.propertyNo}}</td>
-                              <td>{{p.amount}}</td>
+                              <td>{{ (p.amount || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2, maximumFractionDigits:
+                                2 }) }}</td>
                             </tr>
                           </ng-container>
                         </tbody>
@@ -1138,11 +1289,14 @@
                 </tr>
                 <tr>
                   <td class="fw-bold">Cost/Amount:</td>
-                  <td>{{ item?.amount || 'N/A' }}</td>
+                  <td>{{ (item?.amount || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    }}</td>
                 </tr>
                 <tr>
                   <td class="fw-bold">Date Acquired:</td>
-                  <td>{{ item?.date_Acquired | date:'shortDate' || 'N/A' }}</td>
+                  <td>{{ (item?.date_Acquired | date:'shortDate') || 'N/A'
+                    }}</td>
                 </tr>
               </tbody>
             </table>
@@ -1152,7 +1306,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-warning rounded-pill"
-          *ngIf="!par?.postFlag || false"
+          *ngIf="!par?.postFlag && isEditMode"
           (click)="onEditItem(item!)">Edit</button>
         <button type="button" class="btn btn-secondary rounded-pill"
           data-bs-dismiss="modal"

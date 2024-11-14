@@ -70,6 +70,8 @@ export class ParComponent implements OnInit, AfterViewInit {
   parINo: number | null = null;
   propertyNo: string | null = null;
 
+  typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
+  isCustomType = false;
 
   isRepar: boolean = false;
   reparForm!: FormGroup;
@@ -134,6 +136,10 @@ export class ParComponent implements OnInit, AfterViewInit {
       searchPARItemKey: [''],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
+      userID3: ['', Validators.required],
+      reason: ['', Validators.required],
+      others: ['', Validators.required],
+      type: ['', Validators.required],
     });
 
     this.itemForm = this.fb.group({
@@ -1309,6 +1315,19 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   }
 
+  onTypeChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.isCustomType = selectedValue === 'Others';
+    if (!this.isCustomType) {
+      this.reparForm.get('type')?.setValue(selectedValue);
+      this.reparForm.get('others')?.setValue('N/A');
+    } else {
+      // Wait for Angular to render the input field before focusing
+      this.reparForm.get('type')?.markAsUntouched();
+      this.reparForm.get('others')?.markAsTouched();
+      this.reparForm.get('others')?.setValue(null);
+    }
+  }
 
   onPrintPAR(parNo: string) {
 
@@ -1337,14 +1356,15 @@ export class ParComponent implements OnInit, AfterViewInit {
 
                   // Create the table rows dynamically
                   const rows = items.map((item: any, index: number) => `
-                <tr ${item.qrCode ? `class="${item.qrCode}"` : ''}>
-                  <td style="font-size: small;">${index + 1}</td>
-                  <td style="font-size: small;">${item.qty || '1'}</td>
-                  <td style="font-size: small;">${item.unit || 'pcs'}</td>
-                  <td style="font-size: small;">${item.description || 'N/A'}</td>
-                  <td style="font-size: small;">${this.formatDate(item.date_Acquired) || 'N/A'}</td>
-                  <td style="font-size: small;">${item.propertyNo || 'N/A'}</td>
-                  </td><td style="font-size: small;">
+                <tr ${item.qrCode ? `class="${item.qrCode} item-row"` : ''}>
+                  <td>${index + 1}</td>
+                  <td>${item.qty || '1'}</td>
+                  <td>${item.unit || 'pcs'}</td>
+                  <td>${item.description || 'N/A'}</td>
+                  <td>${this.formatDate(item.date_Acquired) || 'N/A'}</td>
+                  <td>${item.propertyNo || 'N/A'}</td>
+                  </td>
+                  <td>
                   ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                 </tr>`).join('');
@@ -1353,44 +1373,32 @@ export class ParComponent implements OnInit, AfterViewInit {
 
                   // Generate the full report content
                   const reportContent = `
-                  <div class="row mb-3">
-                    <div class="col text-center">
-                        <h5>PROPERTY ACKNOWLEDGEMENT RECEIPT</h5>
-                    </div>
-                  </div>
 
                   <div class="watermark">PAR</div>
 
-                  <table class="table">
-                    <tbody>
-                        <tr style="border-color: transparent;">
-                            <td><strong>LGU:</strong></td>
-                            <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${par.lgu || 'Default LGU'} </p></td>
-                            <td></td>
-                            <td</td>
-
-                        </tr>
-                        <tr style="border-color: transparent;">
-                            <td><strong>FUND:</strong></td>
-                            <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${par.fund || 'Default FUND'}  </p></td>
-
-                            <td><strong>PAR No.:</strong></td>
-                            <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${par.parNo || 'N/A'} </p></td>
-                        </tr>
-                    </tbody>
-                  </table>
+                  <div class="row">
+                    <div class="col-12">
+                      <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${par.lgu || 'Default LGU'}</span></p>
+                    </div>
+                    <div class="col-6">
+                      <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${par.fund || 'Default LGU'}</span></p>
+                    </div>
+                    <div class="col-6">
+                      <p class="text-end fs-6">FUND: <span class="fw-bold border-bottom ms-1">${par.parNo || 'Default PAR No.'}</span></p>
+                    </div>
+                  </div>
 
                       <!-- Table with List of Items -->
                         <table class="table table-bordered table-striped">
                             <thead>
-                                <tr>
-                                    <th style="font-size: small;">#</th>
-                                    <th style="font-size: small;">QTY</th>
-                                    <th style="font-size: small;">UNIT</th>
-                                    <th style="font-size: small;">DESCRIPTION</th>
-                                    <th style="font-size: small;">DATE ACQUIRED</th>
-                                    <th style="font-size: small;">PROPERTY NUMBER</th>
-                                    <th style="font-size: small;">AMOUNT</th>
+                                <tr class="item-row">
+                                    <th>#</th>
+                                    <th>QTY</th>
+                                    <th>UNIT</th>
+                                    <th>DESCRIPTION</th>
+                                    <th>DATE ACQUIRED</th>
+                                    <th>PROPERTY NUMBER</th>
+                                    <th>AMOUNT</th>
                                 </tr>
                             </thead>
                             <tbody>

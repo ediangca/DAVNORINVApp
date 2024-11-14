@@ -73,7 +73,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   icsItemNo: number | null = null;
 
-
   typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
   isCustomType = false;
 
@@ -929,7 +928,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
     this.isCustomType = false;
     this.icsForm.reset({
       userID1: '',
-      userID2: ''
+      userID2: '',
+      userID3: ''
     });
     this.itrForm.reset({
       userID1: '',
