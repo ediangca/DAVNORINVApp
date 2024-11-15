@@ -102,84 +102,78 @@ export class PrintService {
   setFooter(title: string) {
     // Normalize title
     title = title.toLocaleLowerCase();
-    title = (title === "ptr" || title === "ics") ? 'par' : title;
+    title = (title === "par" || title === "ics") ? 'par' : title;
 
-    switch (title.toLowerCase()) {
-      case 'par':
-        this.footer = `
-          <div class="row mt-3">
+    if (title === "par" || title === "ics") {
+      this.footer = `
+        <div class="row mt-3">
             <div class="col-12 border">
               <p class="fw-bold">Please note: COA circular no. 92-386 Section 149.
                  Measure of liability of the Persons Accountable for supplies or property.</p>
             </div>
             <div class="col-6 border">
-              <p class="mb-5">Received by:</p>
+              <p class="fw-bold mb-5">Received by:</p>
               <p class="text-center fs-6 fw-bold m-0">${this.receivedByProfile?.fullName || ''}</p>
               <p class="text-center border-top">Signature over Printed Name of End User</p>
             </div>
             <div class="col-6 border">
-              <p class="mb-5">Issued by:</p>
-              <p class="text-center fs-6 fw-bold m-0">${this.issuedByProfile?.fullName || ''}</p>
-              <p class="text-center border-top">Signature over Printed Name and/or Property Custodian</p>
-            </div>
-            <div class="col-6 border py-2">
-              <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
-              <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p>
-              <p class="mb-0">Date:</p>
-            </div>
-            <div class="col-6 border py-2">
-              <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
-              <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
-              <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
-            </div>
-          </div>`;
-        break;
-
-      case 'itr':
-        this.footer = `
-          <div class="row mt-3">
-            <div class="col-2 border">
-              <p class="fw-bold mb-3">Reason:</p>
-            </div>
-            <div class="col-10 border">
-              <p class="m-0"><em> ${this.model ? this.model.reason : ''} </em></p>
-            </div>
-            <div class="col-4 border">
-              <p class="fw-bold mb-5">Approved by:</p>
-              <p class="text-center fs-6 fw-bold m-0">${this.approvedByProfile?.fullName || ''}</p>
-              <p class="text-center border-top">Signature over Printed Name of End User</p>
-            </div>
-            <div class="col-4 border">
               <p class="fw-bold mb-5">Issued by:</p>
               <p class="text-center fs-6 fw-bold m-0">${this.issuedByProfile?.fullName || ''}</p>
               <p class="text-center border-top">Signature over Printed Name and/or Property Custodian</p>
             </div>
-            <div class="col-4 border">
-              <p class="mb-5">Received by:</p>
-              <p class="text-center fs-6 fw-bold m-0">${this.receivedByProfile?.fullName || ''}</p>
-              <p class="text-center border-top">Signature over Printed Name of End User</p>
-            </div>
-            <div class="col-4 border py-2">
-              <p class="mb-0">Position: <strong>${this.approvedByProfile?.position || ''}</strong></p>
-              <p class="mb-0 py-2">Office: <strong>${this.approvedByProfile?.branch || ''} - ${this.approvedByProfile?.department || ''}</strong></p>
-              <p class="mb-0">Date:</p>
-            </div>
-            <div class="col-4 border py-2">
+            <div class="col-6 border py-2">
               <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
               <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p>
               <p class="mb-0">Date:</p>
             </div>
-            <div class="col-4 border py-2">
+            <div class="col-6 border py-2">
               <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
               <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
               <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
             </div>
           </div>`;
-        break;
-
-      default:
-        this.footer = ``;
-        break;
+    } else if (title === "ptr" || title === "itr") {
+      this.footer = `
+        <div class="row mt-3">
+          <div class="col-2 border">
+            <p class="fw-bold mb-3">Reason:</p>
+          </div>
+          <div class="col-10 border">
+            <p class="m-0"><em> ${this.model ? this.model.reason : ''} </em></p>
+          </div>
+          <div class="col-4 border">
+            <p class="fw-bold mb-5">Approved by:</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.approvedByProfile?.fullName || ''}</p>
+            <p class="text-center border-top">Signature over Printed Name of End User</p>
+          </div>
+          <div class="col-4 border">
+            <p class="fw-bold mb-5">Issued by:</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.issuedByProfile?.fullName || ''}</p>
+            <p class="text-center border-top">Signature over Printed Name and/or Property Custodian</p>
+          </div>
+          <div class="col-4 border">
+            <p class="fw-bold  mb-5">Received by:</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.receivedByProfile?.fullName || ''}</p>
+            <p class="text-center border-top">Signature over Printed Name of End User</p>
+          </div>
+          <div class="col-4 border py-2">
+            <p class="mb-0">Position: <strong>${this.approvedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.approvedByProfile?.branch || ''} - ${this.approvedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Date:</p>
+          </div>
+          <div class="col-4 border py-2">
+            <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Date:</p>
+          </div>
+          <div class="col-4 border py-2">
+            <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
+          </div>
+        </div>`;
+    } else {
+      this.footer = ``;
     }
   }
 
@@ -288,7 +282,7 @@ export class PrintService {
       case 'itr':
         return 'INVENTORY TRANFER REPORT'
       case 'ptr':
-        return 'PROPERTY TRANSFER RECEIPT'
+        return 'PROPERTY TRANSFER REPORT'
       default:
         return 'TITLE'
     }

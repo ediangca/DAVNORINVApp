@@ -69,11 +69,12 @@
         <tbody>
           <tr *ngFor="let p of pars">
             <td>
-              <a class="success"
+              <a [ngClass]="p.postFlag ? 'primary' : 'secondary'"
                 type="button"
-                (click)="onViewREPAR(p)">
-                <i class="fa-sharp-duotone fa-solid fa-eye"
-                  data-toggle="tooltip" title="View"></i>
+                (click)="onPostREPAR(p)">
+                <i class="fa-sharp-duotone fa-solid fa-thumbtack"
+                  data-toggle="tooltip"
+                  [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
               </a>
             </td>
             <td>{{formatDate(p.date_Created)}}</td>
@@ -98,12 +99,11 @@
                   (click)="onDelete(p)"><i
                     class="fa-sharp-duotone fa-solid fa-trash"
                     data-toggle="tooltip" title="Delete"></i></a>
-                <a [ngClass]="p.postFlag ? 'primary' : 'secondary'"
+                <a class="success"
                   type="button"
-                  (click)="onPostREPAR(p)">
-                  <i class="fa-sharp-duotone fa-solid fa-thumbtack"
-                    data-toggle="tooltip"
-                    [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
+                  (click)="onViewREPAR(p)">
+                  <i class="fa-sharp-duotone fa-solid fa-eye"
+                    data-toggle="tooltip" title="View"></i>
                 </a>
                 <a class="seconadry"
                   type="button"
@@ -589,7 +589,6 @@
                     </select>
                   </div>
                 </div>
-
 
               </div>
             </div>

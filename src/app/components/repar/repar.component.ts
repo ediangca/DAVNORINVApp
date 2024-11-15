@@ -583,7 +583,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'Saved Success', res);
           Swal.fire('Saved', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
-
+          this.getALLREPAR();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
@@ -674,9 +674,9 @@ export class ReparComponent implements OnInit, AfterViewInit {
       type: par.ttype,
       others: par.otype,
       reason: par.reason,
+      userID3: par.approvedBy,
       userID1: par.receivedBy,
       userID2: par.issuedBy,
-      userID3: par.approvedBy
     });
 
     this.api.retrieveREPAR(this.currentEditId!)
@@ -1293,19 +1293,17 @@ export class ReparComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving REPAR', res);
           const repar = res.details;
-
-
-          this.printService.setReceivedBy(res.details.receivedBy);
-          this.printService.setIssuedBy(res.details.issuedBy);
-
           const parItems = res.parItems;
+
+          this.printService.setModel(repar);
 
           // Ensure par.parItems is an array or default to an empty array
           const items = Array.isArray(parItems) ? parItems : [];
           // Use forkJoin to wait for both observables to complete
           forkJoin([
             this.printService.setReceivedBy(res.details.receivedBy),
-            this.printService.setIssuedBy(res.details.issuedBy)
+            this.printService.setIssuedBy(res.details.issuedBy),
+            this.printService.setApprovedBy(res.details.issuedBy)
           ] as Observable<any>[]).subscribe(() => {
             // Once both services complete, continue with the report generation
             const parItems = res.parItems;

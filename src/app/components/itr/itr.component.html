@@ -51,11 +51,12 @@
         <tbody>
           <tr *ngFor="let i of itrs">
             <td>
-              <a class="success"
+              <a [ngClass]="i.postFlag ? 'primary' : 'secondary'"
                 type="button"
-                (click)="onViewITR(i)">
-                <i class="fa-sharp-duotone fa-solid fa-eye"
-                  data-toggle="tooltip" title="View"></i>
+                (click)="onPostREPAR(i)">
+                <i class="fa-sharp-duotone fa-solid fa-thumbtack"
+                  data-toggle="tooltip"
+                  [title]="i.postFlag ? 'Posted' : 'Not yet Posted'"></i>
               </a>
             </td>
             <td>{{formatDate(i.date_Created)}}</td>
@@ -80,12 +81,11 @@
                   (click)="onDelete(i)"><i
                     class="fa-sharp-duotone fa-solid fa-trash"
                     data-toggle="tooltip" title="Delete"></i></a>
-                <a [ngClass]="i.postFlag ? 'primary' : 'secondary'"
+                <a class="success"
                   type="button"
-                  (click)="onPostREPAR(i)">
-                  <i class="fa-sharp-duotone fa-solid fa-thumbtack"
-                    data-toggle="tooltip"
-                    [title]="i.postFlag ? 'Posted' : 'Not yet Posted'"></i>
+                  (click)="onViewITR(i)">
+                  <i class="fa-sharp-duotone fa-solid fa-eye"
+                    data-toggle="tooltip" title="View"></i>
                 </a>
                 <a class="seconadry"
                   type="button"

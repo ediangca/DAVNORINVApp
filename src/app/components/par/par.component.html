@@ -69,11 +69,12 @@
         <tbody>
           <tr *ngFor="let p of pars">
             <td>
-              <a class="success"
+              <a [ngClass]="p.postFlag ? 'primary' : 'secondary'"
                 type="button"
-                (click)="onViewPAR(p)">
-                <i class="fa-sharp-duotone fa-solid fa-eye"
-                  data-toggle="tooltip" title="View"></i>
+                (click)="onPostPAR(p)">
+                <i class="fa-sharp-duotone fa-solid fa-thumbtack"
+                  data-toggle="tooltip"
+                  [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
               </a>
             </td>
             <td>{{formatDate(p.date_Created)}}</td>
@@ -98,12 +99,11 @@
                   (click)="onDelete(p)"><i
                     class="fa-sharp-duotone fa-solid fa-trash"
                     data-toggle="tooltip" title="Delete"></i></a>
-                <a [ngClass]="p.postFlag ? 'primary' : 'secondary'"
+                <a class="success"
                   type="button"
-                  (click)="onPostPAR(p)">
-                  <i class="fa-sharp-duotone fa-solid fa-thumbtack"
-                    data-toggle="tooltip"
-                    [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
+                  (click)="onViewPAR(p)">
+                  <i class="fa-sharp-duotone fa-solid fa-eye"
+                    data-toggle="tooltip" title="View"></i>
                 </a>
                 <a class="seconadry"
                   type="button"
@@ -114,8 +114,8 @@
                 <a class="primary"
                   type="button"
                   (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
-                  data-toggle="tooltip"
-                  title="PTR"></i></a>
+                    data-toggle="tooltip"
+                    title="PTR"></i></a>
                 }
               </form>
             </td>
@@ -481,8 +481,9 @@
             <h1 class="modal-title fs-5" id="staticBackdropLabel">
               {{(isRepar? 'PTR' : 'PAR') }}
             </h1>
-            <span><em> Property {{(isRepar? 'Transfer Report' : ' Acknowledgement Receipt') }}
-               </em></span>
+            <span><em> Property {{(isRepar? 'Transfer Report' :
+                ' Acknowledgement Receipt') }}
+              </em></span>
           </div>
 
           <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -685,7 +686,8 @@
             <!-- END OF CARD BODY -->
             <div class="card-footer">
 
-              <div class="row d-flex flex-row" *ngIf="noOfParItems > 0 && isRepar">
+              <div class="row d-flex flex-row"
+                *ngIf="noOfParItems > 0 && isRepar">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
 
                   <small class="text-info">*
@@ -859,7 +861,8 @@
               <div class="row"
                 *ngIf="noOfParItems < 1 && isRepar">
                 <div class="col">
-                  <h6 class="p-3 text-center text-danger">ITEM(s) FULLY TRASFERED.</h6>
+                  <h6 class="p-3 text-center text-danger">ITEM(s) FULLY
+                    TRASFERED.</h6>
                 </div>
               </div>
             </div>

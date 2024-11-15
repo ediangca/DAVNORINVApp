@@ -399,10 +399,31 @@ export class ParComponent implements OnInit, AfterViewInit {
 
 
   onSearchPAR() {
+    //Populate all User Groups
+    if (!this.searchKey) {
+      this.getALLPAR();
+    } else
 
+      if (this.searchKey.trim()) {
+        this.api.searchPAR(this.searchKey)
+          .subscribe({
+            next: (res) => {
+              this.pars = res;
+              this.logger.printLogs('i', 'SEARCH PARS', this.pars);
+            },
+            error: (err: any) => {
+              console.log("Error Fetching User Groups:", err);
+            }
+          });
+      }
   }
 
-  onKeyUp($event: KeyboardEvent) {
+  onKeyUp(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.onSearchPAR();
+    } else {
+      this.onSearchPAR();
+    }
   }
 
 
@@ -501,8 +522,12 @@ export class ParComponent implements OnInit, AfterViewInit {
 
       this.repar = {
         parNo: par.parNo,
+        ttype: this.reparForm.value['type'],
+        otype: this.reparForm.value['others'],
+        reason: this.reparForm.value['reason'],
         receivedBy: this.reparForm.value['userID1'],
         issuedBy: par.receivedBy,
+        approvedBy: this.reparForm.value['userID3'],
         postFlag: false,
         voidFlag: false,
         createdBy: this.userAccount.userID,

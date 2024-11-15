@@ -219,6 +219,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           next: (res) => {
             this.userAccounts = res;
             this.isLoading = false; // Stop showing the loading spinner
+            this.logger.printLogs('i', 'LIST OF USERT ACCOUTNS', this.userAccounts);
           },
           error: (err: any) => {
             console.log("Error Fetching User Groups:", err);
