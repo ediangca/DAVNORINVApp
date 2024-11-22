@@ -13,14 +13,13 @@ import { AuthService } from '../../services/auth.service';
 import { PrintService } from '../../services/print.service';
 import { forkJoin, Observable } from 'rxjs';
 
-
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-par',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxScannerQrcodeModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxScannerQrcodeModule ],
   templateUrl: './par.component.html',
   styleUrl: './par.component.css'
 })
@@ -92,6 +91,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   today: string | undefined;
   private logger: LogsService;
+  legend : string | undefined | null;
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
@@ -158,10 +158,9 @@ export class ParComponent implements OnInit, AfterViewInit {
     // this.getALLPAR();
     // this.getUserAccount();
     this.roleNoFromToken = this.auth.getRoleFromToken();
+
   }
 
-  ngAfterViewInit(): void {
-  }
 
   ngOnInit(): void {
     this.getALLPAR();
@@ -178,6 +177,20 @@ export class ParComponent implements OnInit, AfterViewInit {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
+  }
+
+
+  ngAfterViewInit(): void {
+    window.addEventListener('load', () => {
+      this.initializeTooltips();
+    });
+  }
+
+  private initializeTooltips() {
+    requestAnimationFrame(() => {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    });
   }
 
   setupModalClose() {
@@ -247,6 +260,18 @@ export class ParComponent implements OnInit, AfterViewInit {
     // setTimeout(() => {
     //   this.isOpen = !this.isOpen; // Toggle the accordion state
     // }, 3000); // Simulate a 2-second delay
+  }
+
+  togglePopover() {
+    const popover = document.querySelector('[ngbPopover]');
+    if (popover) {
+      const isOpen = popover.classList.contains('show');
+      if (isOpen) {
+        popover.classList.remove('show');
+      } else {
+        popover.classList.add('show');
+      }
+    }
   }
 
   getUserAccount() {

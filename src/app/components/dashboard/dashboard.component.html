@@ -1,6 +1,7 @@
 
 <aside
-  class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all " [class.sidebar-mini]="isMinimizeSideBar">
+  class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all "
+  [class.sidebar-mini]="isMinimizeSideBar">
   <div
     class="sidebar-header d-flex align-items-center justify-content-start">
     <a class="navbar-brand" [routerLink]="['dashboard']"
@@ -171,30 +172,33 @@
     </div>
 
   </div>
-  <div class="conatiner-fluid content-inner py-0">
-
+  <div class="conatiner-fluid content-inner p-0">
 
     <app-widget class="widget"></app-widget>
+    <div class="row">
+      <div class="col mt-5">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
 
-    <router-outlet>
-      <div class="row mt-5"></div></router-outlet>
   </div>
 
   <!-- Footer Section Start -->
+
   <footer class="footer">
     <div class="footer-body">
 
       <!--
-        <ul class="left-panel list-inline mb-0 p-0">
-          <li class="list-inline-item"><a
-              href="../dashboard/extra/privacy-policy.html">Privacy
-              Policy</a></li>
-          <li class="list-inline-item"><a
-              href="../dashboard/extra/terms-of-service.html">Terms
-              of Use</a></li>
-        Copyright © 2024 - 2025 Human Resource Information System.
-        </ul>
-        -->
+      <ul class="left-panel list-inline mb-0 p-0">
+        <li class="list-inline-item"><a
+            href="../dashboard/extra/privacy-policy.html">Privacy
+            Policy</a></li>
+        <li class="list-inline-item"><a
+            href="../dashboard/extra/terms-of-service.html">Terms
+            of Use</a></li>
+      Copyright © 2024 - 2025 Human Resource Information System.
+      </ul>
+      -->
       <div class="right-panel">
         © {{curYear}} Asset and Inventory System, Made with
         <span class>

@@ -44,6 +44,18 @@
         </div> -->
       </div>
 
+      <!-- <i class="icon text-info float-end" *ngIf="!isLoading" data-bs-toggle="tooltip" data-bs-html="true"
+        data-bs-placement="bottom"
+        data-bs-custom-class="custom-tooltip"  [title]="legend">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none"
+          xmlns="http://www.w3.org/2000/svg"> <path opacity="0.4"
+            d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
+            fill="currentColor"></path> <path fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
+            fill="currentColor"></path> </svg>
+      </i> -->
+
       <table class="table table-striped table-hover" *ngIf="!isLoading">
         <thead>
           <tr>
@@ -53,7 +65,7 @@
             <th>Created By</th>
             <th>Recieved By</th>
             <th>Issued By</th>
-            <th>Actions</th>
+            <th class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -279,14 +291,13 @@
                         class="table table-striped table-hover">
                         <thead>
                           <tr>
-                            <th class="sticky-header"></th>
                             <th class="sticky-header">#</th>
                             <th class="sticky-header">QTY</th>
                             <th class="sticky-header">UNIT</th>
                             <th class="sticky-header">DESCRIPTION</th>
                             <th class="sticky-header">AMOUNT</th>
                             <th class="sticky-header">TOTAL</th>
-                            <th class="sticky-header">ACTION</th>
+                            <th class="sticky-header text-center">ACTION</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -295,13 +306,6 @@
                               Item list required! Add at least one!</td>
                           </tr>
                           <tr *ngFor="let p of icsItems; let i = index">
-                            <td>
-                              <a class="success"
-                                type="button"
-                                (click)="onViewItem(p)">
-                                <i class="fa-sharp-duotone fa-solid fa-eye"
-                                  data-toggle="tooltip" title="View"></i>
-                              </a></td>
                             <td>{{i+1}}</td>
                             <td>{{p.qty}}</td>
                             <td>{{p.unit}}</td>
@@ -314,18 +318,27 @@
                                   type="button"><i
                                     class="fa-sharp-duotone fa-solid fa-pen-to-square"
                                     data-toggle="tooltip" title="Edit"
-                                    (click)="onEditItem(p)"></i></a>
+                                    (click)="onEditItem(p)"></i>
+                                </a>
                                 <a class="secondary"
                                   type="button"
                                   (click)="onCopyItem(p)"><i
                                     class="fa-sharp-duotone fa-solid fa-copy"
-                                    data-toggle="tooltip" title="Copy"></i></a>
+                                    data-toggle="tooltip" title="Copy"></i>
+                                </a>
                                 <a class="delete"
                                   type="button"
                                   (click)="onDeleteItem(p)"><i
                                     class="fa-sharp-duotone fa-solid fa-trash"
                                     data-toggle="tooltip"
-                                    title="Delete"></i></a>
+                                    title="Delete"></i>
+                                </a>
+                                <a class="success"
+                                  type="button"
+                                  (click)="onViewItem(p)">
+                                  <i class="fa-sharp-duotone fa-solid fa-eye"
+                                    data-toggle="tooltip" title="View"></i>
+                                </a>
                               </form>
                             </td>
                           </tr>
@@ -596,13 +609,6 @@
                       <table class="table table-striped table-hover">
                         <thead>
                           <tr>
-                            <th class="sticky-header"></th>
-                            <th class="sticky-header">#</th>
-                            <th class="sticky-header">QTY</th>
-                            <th class="sticky-header">UNIT</th>
-                            <th class="sticky-header">DESCRIPTION</th>
-                            <th class="sticky-header">AMOUNT</th>
-                            <th class="sticky-header">TOTAL</th>
                             <th class="sticky-header">
                               <!-- "Select All" Checkbox in the Header -->
                               @if(isITR && noOfParItems > 1 ){
@@ -616,7 +622,14 @@
                               </div>
                               }@else{
                               ITR
-                              }
+                              }</th>
+                            <th class="sticky-header">#</th>
+                            <th class="sticky-header">QTY</th>
+                            <th class="sticky-header">UNIT</th>
+                            <th class="sticky-header">DESCRIPTION</th>
+                            <th class="sticky-header">AMOUNT</th>
+                            <th class="sticky-header">TOTAL</th>
+                            <th class="sticky-header">
                             </th>
                           </tr>
                         </thead>
@@ -627,19 +640,6 @@
                             <!-- <tr [class.border-warning]="item?.qrCode == p.qrCode"> -->
                             <tr>
                               <td>
-                                <a class="success" type="button"
-                                  (click)="onViewItem(p)">
-                                  <i class="fa-sharp-duotone fa-solid fa-eye"
-                                    data-toggle="tooltip" title="View"></i>
-                                </a>
-                              </td>
-                              <td>{{ i + 1 }}</td>
-                              <td>1</td>
-                              <td>{{ p.unit }}</td>
-                              <td>{{ p.description }}</td>
-                              <td>{{ p.amount }}</td>
-                              <td>{{( p.qty || 0) * (p.amount || 0)}}</td>
-                              <td class="d-flex justify-content-center">
 
                                 <div
                                   class="form-check form-switch form-check-inline">
@@ -650,6 +650,19 @@
                                     (change)="toggleSelection(p, $event)"
                                     [disabled]="!isITR" />
                                 </div>
+                              </td>
+                              <td>{{ i + 1 }}</td>
+                              <td>1</td>
+                              <td>{{ p.unit }}</td>
+                              <td>{{ p.description }}</td>
+                              <td>{{ p.amount }}</td>
+                              <td>{{( p.qty || 0) * (p.amount || 0)}}</td>
+                              <td>
+                                <a class="success" type="button"
+                                  (click)="onViewItem(p)">
+                                  <i class="fa-sharp-duotone fa-solid fa-eye"
+                                    data-toggle="tooltip" title="View"></i>
+                                </a>
 
                               </td>
                             </tr>

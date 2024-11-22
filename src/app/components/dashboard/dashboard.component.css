@@ -29,3 +29,69 @@
 .data-scrollbar:focus-within {
   overflow-y: auto;
 }
+
+
+
+/* Accordion container */
+.accordion {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  max-width: 400px;
+  /* Optional: set a max width */
+  margin: 20px auto;
+  /* Center align with margin */
+}
+
+/* Accordion header */
+.accordion-header {
+  width: 100%;
+  background: linear-gradient(135deg, #011841, #2575fc);
+  /* Initial gradient */
+  color: #f8f9fa;
+  border: none;
+  padding: 15px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  outline: none;
+  transition: background 0.5s ease;
+}
+
+.accordion-header:hover {
+  background: linear-gradient(135deg, #2575fc, #011841);
+  /* Initial gradient */
+  transition: background 1s ease;
+  /* Smooth transition effect */
+}
+
+/* Arrow indicator */
+.arrow {
+  transition: transform 0.5s ease;
+  font-size: 12px;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+  /* Rotate arrow when accordion is open */
+}
+
+/* Accordion content */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+  background-color: #fff;
+  padding: 0 15px;
+}
+
+/* Show content when open */
+.accordion-content.show {
+  max-height: 380px;
+  /* Set a reasonable max-height or adjust as needed */
+  padding: 15px;
+}
+

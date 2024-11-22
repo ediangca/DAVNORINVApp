@@ -44,7 +44,7 @@ export class DashboardComponent implements OnInit {
   logger: LogsService;
 
   isMinimizeSideBar = false;
-
+  isOpen = false;
 
   prevBtn!: HTMLButtonElement;
   nextBtn!: HTMLButtonElement;
@@ -96,7 +96,12 @@ export class DashboardComponent implements OnInit {
     // this.setupSidebarToggle();
     this.logger.printLogs('i', 'Hide Header and Widget:', [this.header]);
   }
-
+  toggleAccordion() {
+    this.isOpen = !this.isOpen; // Toggle the accordion state
+    // setTimeout(() => {
+    //   this.isOpen = !this.isOpen; // Toggle the accordion state
+    // }, 3000); // Simulate a 2-second delay
+  }
 
   private getTitle(route: ActivatedRouteSnapshot): string {
     let title = route.data['title'];

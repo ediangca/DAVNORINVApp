@@ -24,7 +24,7 @@ declare var bootstrap: any;
   templateUrl: './ics.component.html',
   styleUrl: './ics.component.css'
 })
-export class IcsComponent implements OnInit {
+export class IcsComponent implements OnInit, AfterViewInit  {
 
 
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
@@ -93,6 +93,7 @@ export class IcsComponent implements OnInit {
 
   today: string | undefined;
   private logger: LogsService;
+  legend : string | undefined | null;
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
@@ -122,6 +123,7 @@ export class IcsComponent implements OnInit {
   constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef, private printService: PrintService) {
     this.logger = new LogsService();
+    this.legend = store.legend;
 
     this.today = new Date().toISOString().split('T')[0];
 
@@ -177,7 +179,12 @@ export class IcsComponent implements OnInit {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
+
   }
+
+  ngAfterViewInit(): void {
+  }
+
 
   setupModalClose() {
     const modal = document.getElementById('AddEditModalForm')!;
@@ -229,7 +236,7 @@ export class IcsComponent implements OnInit {
     const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
     if (modal) {
       modal.hide();
-      this.isITR = false;
+      // this.isITR = false;
     }
   }
 
