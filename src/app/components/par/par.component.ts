@@ -19,7 +19,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-par',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxScannerQrcodeModule ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxScannerQrcodeModule],
   templateUrl: './par.component.html',
   styleUrl: './par.component.css'
 })
@@ -44,8 +44,20 @@ export class ParComponent implements OnInit, AfterViewInit {
   searchKey: string = '';
   parItemKey: string = '';
 
+  activeInput: 'received' | 'issued' | 'approved' | null = null;
+  receivedByID: string | null = null;
+  issuedByID: string | null = null;
+  approvedByID: string | null = null;
+
+  receivedID: string | null = null;
+  issuedID: string | null = null;
+  approvedID: string | null = null;
   receivedBy: string = '';
   issuedBy: string = '';
+  approvedBy: string = '';
+
+  filteredItems: string[] = [];
+  showDropdown: boolean = false;
 
   errorMessage: string = '';
 
@@ -91,7 +103,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   today: string | undefined;
   private logger: LogsService;
-  legend : string | undefined | null;
+  legend: string | undefined | null;
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
@@ -234,14 +246,7 @@ export class ParComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openPARModal(modalElement: ElementRef) {
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement.nativeElement);
-      modal.show();
-    }
-  }
-
-  openItemModal(modalElement: ElementRef) {
+  openModal(modalElement: ElementRef) {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement.nativeElement);
       modal.show();
@@ -295,6 +300,7 @@ export class ParComponent implements OnInit, AfterViewInit {
           next: (res) => {
             this.pars = res;
             this.logger.printLogs('i', 'LIST OF PARS', this.pars);
+            this.pars = this.pars.slice(0, 10);
             this.isLoading = false; // Stop showing the loading spinner
           },
           error: (err: any) => {
@@ -310,6 +316,7 @@ export class ParComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userProfiles = res;
+          this.userProfiles = this.userProfiles.slice(0, 10);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Profiles', err);
@@ -332,9 +339,145 @@ export class ParComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onAutoSuggest(): void {
+  onAddPAR(){
+    this.resetForm();
+    this.openModal(this.AddEditModal);
+  }
+
+  onAutoSuggestItem(): void {
     this.iid = null;
     this.searchItem();
+  }
+
+  onAutoSuggestReceived() {
+    this.receivedID = null;
+    if (!this.receivedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'received';
+      if (this.receivedByID.trim()) {
+        this.api.searchProfile(this.receivedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.receivedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Received By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Received By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Received By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectReceived(userProfile: any): void {
+
+    this.receivedID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Received', userProfile);
+
+    if (this.parForm!) {
+      this.parForm.patchValue({
+        userID1: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    if (this.reparForm!) {
+      this.reparForm.patchValue({
+        userID1: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+  onAutoSuggestIssued() {
+    this.issuedID = null;
+    if (!this.issuedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'issued';
+      if (this.issuedByID.trim()) {
+        this.api.searchProfile(this.issuedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.issuedByID) {
+                this.selectIssued(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Issued By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Issued By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Issued By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectIssued(userProfile: any): void {
+    this.issuedID = userProfile.userID;
+
+    this.logger.printLogs('i', 'Selected to Issued', userProfile);
+
+    this.parForm.patchValue({
+      userID2: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+
+  onAutoSuggestApproved() {
+    if (!this.approvedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'approved';
+      if (this.approvedByID.trim()) {
+        this.api.searchProfile(this.approvedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.approvedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Approved By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Approved By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Approved By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectApproved(userProfile: any): void {
+
+    this.approvedID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Approved', userProfile);
+
+    this.reparForm.patchValue({
+      userID3: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
   }
 
   searchPARItem() {
@@ -355,11 +498,11 @@ export class ParComponent implements OnInit, AfterViewInit {
   }
 
 
-
   searchItem() {
     //Populate all Item
     if (!this.IIDKey) {
-      this.getAllItems();
+      // this.getAllItems();
+      this.items = [];
     } else {
       if (this.IIDKey.trim()) {
         this.api.searchItem(this.IIDKey)
@@ -370,7 +513,7 @@ export class ParComponent implements OnInit, AfterViewInit {
                 this.logger.printLogs('i', 'Fetch Specific Item', res[0]);
               } else {
                 this.items = res;
-                this.items = this.items.slice(0, 3)
+                this.items = this.items.slice(0, 5)
                 this.logger.printLogs('i', 'Fetching Items', res);
               }
             },
@@ -407,40 +550,38 @@ export class ParComponent implements OnInit, AfterViewInit {
     });
   }
 
-
-  onAutoSuggestProfileBy(event: KeyboardEvent) {
-    const key = (event.target as HTMLInputElement).value;
-    this.api.searchProfile(key)
-      .subscribe({
-        next: (res) => {
-          this.userProfiles = res;
-        },
-        error: (err: any) => {
-          this.logger.printLogs('e', 'Error Fetching Profiles:', err);
-        }
-      });
-  }
-
-
+  // onAutoSuggestProfileBy(event: KeyboardEvent) {
+  //   const key = (event.target as HTMLInputElement).value;
+  //   this.api.searchProfile(key)
+  //     .subscribe({
+  //       next: (res) => {
+  //         this.userProfiles = res;
+  //       },
+  //       error: (err: any) => {
+  //         this.logger.printLogs('e', 'Error Fetching Profiles:', err);
+  //       }
+  //     });
+  // }
 
   onSearchPAR() {
     //Populate all User Groups
     if (!this.searchKey) {
       this.getALLPAR();
-    } else
-
+    } else {
       if (this.searchKey.trim()) {
         this.api.searchPAR(this.searchKey)
           .subscribe({
             next: (res) => {
               this.pars = res;
               this.logger.printLogs('i', 'SEARCH PARS', this.pars);
+              this.pars = this.pars.slice(0, 10);
             },
             error: (err: any) => {
-              console.log("Error Fetching User Groups:", err);
+              console.log("Error Fetching PARS:", err);
             }
           });
       }
+    }
   }
 
   onKeyUp(event: KeyboardEvent): void {
@@ -464,12 +605,13 @@ export class ParComponent implements OnInit, AfterViewInit {
       Swal.fire('INFORMATION!', 'Please input PAR No. first before adding item', 'warning');
       return;
     }
-    this.openItemModal(this.ItemModal);
+    this.openModal(this.ItemModal);
   }
 
   onSubmit() {
 
     if (!this.parForm.valid) {
+      Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
       this.vf.validateFormFields(this.parForm);
       return;
     }
@@ -487,8 +629,8 @@ export class ParComponent implements OnInit, AfterViewInit {
         parNo: this.parForm.value['parNo'],
         lgu: this.parForm.value['lgu'],
         fund: this.parForm.value['fund'],
-        receivedBy: this.parForm.value['userID1'],
-        issuedBy: this.parForm.value['userID2'],
+        receivedBy: this.receivedID,
+        issuedBy: this.issuedID,
         postFlag: false,
         voidFlag: false,
         createdBy: this.userAccount.userID,
@@ -510,6 +652,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
     if (!this.reparForm.valid) {
       this.vf.validateFormFields(this.reparForm);
+      Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
       return;
     }
 
@@ -544,15 +687,14 @@ export class ParComponent implements OnInit, AfterViewInit {
         });
     } else {
 
-
       this.repar = {
         parNo: par.parNo,
         ttype: this.reparForm.value['type'],
         otype: this.reparForm.value['others'],
         reason: this.reparForm.value['reason'],
-        receivedBy: this.reparForm.value['userID1'],
-        issuedBy: par.receivedBy,
-        approvedBy: this.reparForm.value['userID3'],
+        receivedBy: this.receivedID,
+        issuedBy: this.issuedByID,
+        approvedBy: this.approvedID,
         postFlag: false,
         voidFlag: false,
         createdBy: this.userAccount.userID,
@@ -560,7 +702,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
       Swal.fire({
         title: 'Confirmation',
-        text: 'Do you want to REPAR Selected Item(s)?',
+        text: 'Do you want to PTR Selected Item(s)?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -708,6 +850,8 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.isEditMode = true;
     this.par = par;
     this.currentEditId = par.parNo;
+    this.receivedID = par.receivedBy
+    this.issuedID = par.issuedBy
 
     this.logger.printLogs('i', 'Restoring PAR', par);
 
@@ -715,8 +859,8 @@ export class ParComponent implements OnInit, AfterViewInit {
       lgu: par.lgu,
       fund: par.fund,
       parNo: par.parNo,
-      userID1: par.receivedBy, // These will now be patched correctly
-      userID2: par.issuedBy
+      userID1: par.received, // These will now be patched correctly
+      userID2: par.issued
     });
 
     this.api.retrievePARItemByParNo(this.currentEditId!)
@@ -731,7 +875,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         }
       });
 
-    this.openPARModal(this.AddEditModal); // Open the modal after patching
+    this.openModal(this.AddEditModal); // Open the modal after patching
 
   }
 
@@ -767,7 +911,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         }
       });
 
-    this.openPARModal(this.ViewModal); // Open the modal after patching
+    this.openModal(this.ViewModal); // Open the modal after patching
 
   }
 
@@ -781,8 +925,13 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.par = par;
     this.logger.printLogs('i', 'Restoring PAR', par);
 
+    this.issuedByID = par.receivedBy;
+
     this.reparForm.patchValue({
       userID2: par.receivedBy,
+      userID1: '', //Received BY
+      userID3: '', //Approved BY
+      type: '',
       searchPARItemKey: [''],
     });
 
@@ -802,7 +951,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         }
       });
 
-    this.openPARModal(this.ViewModal); // Open the modal after patching
+    this.openModal(this.ViewModal); // Open the modal after patching
 
   }
 
@@ -1021,7 +1170,7 @@ export class ParComponent implements OnInit, AfterViewInit {
             date_Acquired: this.formatDate(item.date_Acquired),
           });
 
-          this.openItemModal(this.ItemModal)
+          this.openModal(this.ItemModal)
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error', err);
@@ -1052,7 +1201,7 @@ export class ParComponent implements OnInit, AfterViewInit {
                 next: (res) => {
                   this.repar = res.details;
                   this.logger.printLogs('i', 'Retreived REPAR No: ' + item.reparNo!, res.details);
-                  this.openItemModal(this.ViewItemModal)
+                  this.openModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
                   this.logger.printLogs('e', 'Error Retreiving REPAR', err);
@@ -1060,7 +1209,7 @@ export class ParComponent implements OnInit, AfterViewInit {
                 }
               });
           } else {
-            this.openItemModal(this.ViewItemModal)
+            this.openModal(this.ViewItemModal)
           }
 
         },
@@ -1094,7 +1243,7 @@ export class ParComponent implements OnInit, AfterViewInit {
             date_Acquired: this.formatDate(item.date_Acquired),
           });
 
-          this.openItemModal(this.ItemModal)
+          this.openModal(this.ItemModal)
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving Item', err);
@@ -1211,14 +1360,9 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.isRepar = false;
     this.item = null;
     this.isOpen = false;
-    this.parForm.reset({
-      userID1: '',
-      userID2: ''
-    });
-    this.reparForm.reset({
-      userID1: '',
-      userID2: ''
-    });
+    this.parForm.reset();
+    this.reparForm.reset();
+    this.userProfiles = [];
     this.parItems = [];
     this.searchPARItems = [];
     this.selectedParItems = [];
@@ -1428,13 +1572,13 @@ export class ParComponent implements OnInit, AfterViewInit {
 
                   <div class="row">
                     <div class="col-12">
-                      <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${par.lgu || 'Default LGU'}</span></p>
+                      <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${par.lgu || 'Default N/A'}</span></p>
                     </div>
                     <div class="col-6">
-                      <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${par.fund || 'Default LGU'}</span></p>
+                      <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${par.fund || 'Default N/A'}</span></p>
                     </div>
                     <div class="col-6">
-                      <p class="text-end fs-6">FUND: <span class="fw-bold border-bottom ms-1">${par.parNo || 'Default PAR No.'}</span></p>
+                      <p class="text-end fs-6">PAR NO.: <span class="fw-bold border-bottom ms-1">${par.parNo || 'Default N/A'}</span></p>
                     </div>
                   </div>
 

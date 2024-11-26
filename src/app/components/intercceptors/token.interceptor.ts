@@ -13,6 +13,8 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   const myToken = authService.getToken();
 
+
+
   if (myToken) {
     // console.log("Token: ", myToken);
     req = req.clone({
@@ -25,6 +27,9 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((err: any) => {
+
+      let messages: any | null = null;
+
       console.log("Error Status: " + err.status);
       if (err instanceof HttpErrorResponse) {
         console.log("Pipe Error Status: " + err.status);
@@ -32,14 +37,25 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         if (err.status == 0) {
           toast.warning("Failed to establish connection!", "Error!", 5000);
           // authService.exit();
-        }else if (err.status == 400) {
-          toast.warning(err.error?.message + "", "Denied!", 5000);
+        } else if (err.status == 400) {
+          // Handle validation errors
+          const validationErrors = err.error?.errors;
+          if (validationErrors) {
+            for (const key in validationErrors) {
+              if (validationErrors.hasOwnProperty(key)) {
+                messages = validationErrors[key];
+                messages.forEach((message: string) => {
+                  toast.warning(message, "Validation Error!", 5000);
+                });
+              }
+            }
+          }
         } else if (err.status === 401) {
-          toast.warning("Token is Expired!, Please login again! " +err.status, "Warning!", 5000);
+          toast.warning("Token is Expired!, Please login again! " + err.status, "Warning!", 5000);
           authService.exit();
         }
       }
-      return throwError(() => new Error(err.error?.message || "Something went wrong."));
+      return throwError(() => new Error(messages! || err?.message || err.error?.message || "Something went wrong."));
     })
   );
 };

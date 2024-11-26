@@ -272,6 +272,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userProfiles = res;
+          this.logger.printLogs('i', 'LIST OF USER PROFILES', this.userProfiles);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Profiles', err);

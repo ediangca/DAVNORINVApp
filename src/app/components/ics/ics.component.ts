@@ -47,9 +47,17 @@ export class IcsComponent implements OnInit, AfterViewInit  {
   searchKey: string = '';
   parItemKey: string = '';
 
+  activeInput: 'received' | 'issued' | 'approved' | null = null;
+  receivedByID: string | null = null;
+  issuedByID: string | null = null;
+  approvedByID: string | null = null;
+
+  receivedID: string | null = null;
+  issuedID: string | null = null;
+  approvedID: string | null = null;
   receivedBy: string = '';
   issuedBy: string = '';
-
+  approvedBy: string = '';
   errorMessage: string = '';
 
   descriptions: any[] = [];
@@ -218,14 +226,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
   }
 
-  openPARModal(modalElement: ElementRef) {
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement.nativeElement);
-      modal.show();
-    }
-  }
-
-  openItemModal(modalElement: ElementRef) {
+  openModal(modalElement: ElementRef) {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement.nativeElement);
       modal.show();
@@ -236,7 +237,6 @@ export class IcsComponent implements OnInit, AfterViewInit  {
     const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
     if (modal) {
       modal.hide();
-      // this.isITR = false;
     }
   }
 
@@ -290,8 +290,6 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       });
   }
 
-
-
   getAllItems() {
     //Populate all User Profile
     this.api.getAllItems()
@@ -305,9 +303,147 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       });
   }
 
+  onAddICS(){
+    this.resetForm();
+    this.openModal(this.AddEditModal);
+  }
+
   onAutoSuggest(): void {
     this.iid = null;
     this.searchItem();
+  }
+
+
+  onAutoSuggestReceived() {
+    this.receivedID = null;
+    if (!this.receivedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'received';
+      if (this.receivedByID.trim()) {
+        this.api.searchProfile(this.receivedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.receivedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Received By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Received By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Received By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectReceived(userProfile: any): void {
+
+    this.receivedID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Received', userProfile);
+
+    if (this.icsForm!) {
+      this.icsForm.patchValue({
+        userID1: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    if (this.itrForm!) {
+      this.itrForm.patchValue({
+        userID1: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+  onAutoSuggestIssued() {
+    this.issuedID = null;
+    if (!this.issuedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'issued';
+      if (this.issuedByID.trim()) {
+        this.api.searchProfile(this.issuedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.issuedByID) {
+                this.selectIssued(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Issued By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Issued By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Issued By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectIssued(userProfile: any): void {
+    this.issuedID = userProfile.userID;
+
+    this.logger.printLogs('i', 'Selected to Issued', userProfile);
+
+    this.icsForm.patchValue({
+      userID2: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+
+  onAutoSuggestApproved() {
+    this.approvedID = null;
+    if (!this.approvedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'approved';
+      if (this.approvedByID.trim()) {
+        this.api.searchProfile(this.approvedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.approvedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Approved By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Approved By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Approved By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectApproved(userProfile: any): void {
+
+    this.approvedID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Approved', userProfile);
+
+    this.itrForm.patchValue({
+      userID3: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
   }
 
   searchPARItem() {
@@ -329,7 +465,8 @@ export class IcsComponent implements OnInit, AfterViewInit  {
   searchItem() {
     //Populate all Item
     if (!this.IIDKey) {
-      this.getAllItems();
+      // this.getAllItems();
+      this.items = [];
     } else {
       if (this.IIDKey.trim()) {
         this.api.searchItem(this.IIDKey)
@@ -391,8 +528,6 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       });
   }
 
-
-
   onSearchPAR() {
 
   }
@@ -407,13 +542,14 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       Swal.fire('INFORMATION!', 'Please input ICS No. first before adding item', 'warning');
       return;
     }
-    this.openItemModal(this.ItemModal);
+    this.openModal(this.ItemModal);
   }
 
   onSubmit() {
 
     if (!this.icsForm.valid) {
       this.vf.validateFormFields(this.icsForm);
+      Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
       return;
     }
 
@@ -430,8 +566,8 @@ export class IcsComponent implements OnInit, AfterViewInit  {
         icsNo: this.icsForm.value['icsNo'],
         entityName: this.icsForm.value['entityName'],
         fund: this.icsForm.value['fund'],
-        receivedBy: this.icsForm.value['userID1'],
-        issuedBy: this.icsForm.value['userID2'],
+        receivedBy: this.receivedID,
+        issuedBy: this.issuedID,
         postFlag: false,
         voidFlag: false,
         createdBy: this.userAccount.userID,
@@ -453,6 +589,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
     if (!this.itrForm.valid) {
       this.vf.validateFormFields(this.itrForm);
+      Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
       return;
     }
 
@@ -620,6 +757,8 @@ export class IcsComponent implements OnInit, AfterViewInit  {
     this.isEditMode = true;
     this.ics = ics;
     this.currentEditId = ics.icsNo;
+    this.receivedID = ics.receivedBy
+    this.issuedID = ics.issuedBy
 
     this.logger.printLogs('i', 'Restoring ICS', ics);
 
@@ -627,8 +766,8 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       icsNo: ics.icsNo,
       entityName: ics.entityName,
       fund: ics.fund,
-      userID1: ics.receivedBy,
-      userID2: ics.issuedBy
+      userID1: ics.received,
+      userID2: ics.issued
     });
 
     this.api.retrieveICSItemByICSNo(this.currentEditId!)
@@ -636,7 +775,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving ICS Item', res);
           this.icsItems = res;
-          this.openPARModal(this.AddEditModal);
+          this.openModal(this.AddEditModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving ICS Item', err);
@@ -650,6 +789,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
   onViewICS(ics: any) {
     this.ics = ics;
+    this.isITR = false;
     this.currentEditId = ics.icsNo;
     this.logger.printLogs('i', 'Viewingggggggggggggggggg ICS', ics);
 
@@ -678,7 +818,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
         }
       });
 
-    this.openPARModal(this.ViewModal); // Open the modal after patching
+    this.openModal(this.ViewModal); // Open the modal after patching
 
   }
 
@@ -718,7 +858,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
         }
       });
 
-    this.openPARModal(this.ViewModal); // Open the modal after patching
+    this.openModal(this.ViewModal); // Open the modal after patching
 
   }
 
@@ -944,7 +1084,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
             eul: item.eul,
           });
 
-          this.openItemModal(this.ItemModal)
+          this.openModal(this.ItemModal)
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error', err);
@@ -974,7 +1114,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
                 next: (res) => {
                   this.itr = res.details;
                   this.logger.printLogs('i', 'Retreived ITR No: ' + item.itrNo!, res.details);
-                  this.openItemModal(this.ViewItemModal)
+                  this.openModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
                   this.logger.printLogs('e', 'Error Retreiving ITR', err);
@@ -982,7 +1122,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
                 }
               });
           } else {
-            this.openItemModal(this.ViewItemModal)
+            this.openModal(this.ViewItemModal)
           }
 
         },
@@ -1017,7 +1157,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
             eul: item.eul
           });
 
-          this.openItemModal(this.ItemModal)
+          this.openModal(this.ItemModal)
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving Item', err);
@@ -1128,25 +1268,22 @@ export class IcsComponent implements OnInit, AfterViewInit  {
   }
 
   resetForm() {
-    this.isITR = false;
     this.isEditMode = false;
     this.currentEditId = null;
     this.isModalOpen = false;
+    this.isITR = false;
     this.item = null;
     this.isOpen = false;
-    this.icsForm.reset({
-      userID1: '',
-      userID2: ''
-    });
-    this.itrForm.reset({
-      userID1: '',
-      userID2: ''
-    });
+    this.icsForm.reset();
+    this.itrForm.reset();
+    this.userProfiles = [];
     this.icsItems = [];
     this.searchPARItems = [];
     this.selectedICSItems = [];
     this.parItemKey = '';
     this.searchKey = '';
+
+
   }
 
   resetItemForm() {
@@ -1288,32 +1425,20 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
                   // Generate the full report content
                   const reportContent = `
-                  <div class="row mb-3">
-                    <div class="col text-center">
-                        <h5>INVENTORY CUSTODIAN SLIP</h5>
-                    </div>
-                  </div>
 
                   <div class="watermark">ICS</div>
 
-                  <table class="table">
-                    <tbody>
-                        <tr style="border-color: transparent;">
-                            <td><strong>Entity Name:</strong></td>
-                            <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${par.entityName || 'Default LGU'} </p></td>
-                            <td></td>
-                            <td</td>
-
-                        </tr>
-                        <tr style="border-color: transparent;">
-                            <td><strong>Fund Cluster:</strong></td>
-                            <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${par.fund || 'Default FUND'}  </p></td>
-
-                            <td><strong>ICS No.:</strong></td>
-                            <td> <p class="fs-6 m-0 pe-3 border-bottom"> ${par.icsNo || 'N/A'} </p></td>
-                        </tr>
-                    </tbody>
-                  </table>
+                  <div class="row">
+                    <div class="col-12">
+                      <p class="fs-6">ENTITY NAME: <span class="fw-bold border-bottom ms-1">${par.entityName || 'Default N/A'}</span></p>
+                    </div>
+                    <div class="col-6">
+                      <p class="fs-6">FUND CLUSTER: <span class="fw-bold border-bottom ms-1">${par.fund || 'Default N/A'}</span></p>
+                    </div>
+                    <div class="col-6">
+                      <p class="text-end fs-6">ICS NO.: <span class="fw-bold border-bottom ms-1">${par.icsNo || 'Default N/A'}</span></p>
+                    </div>
+                  </div>
 
                       <!-- Table with List of Items -->
                         <table class="table table-bordered table-striped">

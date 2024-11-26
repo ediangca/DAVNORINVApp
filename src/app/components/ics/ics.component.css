@@ -108,20 +108,23 @@ table tbody tr:nth-child(even) {
 }
 
 
-/* ############### SEARCH ############### */
 
+/* ############### AUTO SUGGEST ############### */
 
 .recent-searches {
+  position: absolute;
+  z-index: 1;
   margin-top: 20px;
+  overflow-y: auto !important;
+  width: calc(100%-1rem);
   padding: 10px;
   border: 1px solid #dfe1e5;
   border-radius: 24px;
   box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
   background-color: white;
-  width: 100%;
-  max-width: 500px;
   margin: 0 auto;
 }
+
 
 .recent-searches ul {
   list-style-type: none;
@@ -130,6 +133,7 @@ table tbody tr:nth-child(even) {
 }
 
 .recent-searches li {
+  border-width: 0px;
   padding: 10px;
   font-size: 16px;
   cursor: pointer;
@@ -142,6 +146,7 @@ table tbody tr:nth-child(even) {
 }
 
 
+/* ############### SEARCH ############### */
 
 .searchbar {
   margin-bottom: auto;

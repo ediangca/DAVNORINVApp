@@ -277,6 +277,8 @@ export class PrintService {
     switch (title.toLowerCase()) {
       case 'par':
         return 'PROPERTY ACKNOWLEDGEMENT RECEIPT'
+      case 'ics':
+        return 'INVENTORY CUSTODIAN SLIP'
       case 're-':
         return 'PROPERTY TRANSFER RECEIPT'
       case 'itr':
