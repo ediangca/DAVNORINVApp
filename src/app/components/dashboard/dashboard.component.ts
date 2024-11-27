@@ -14,6 +14,8 @@ import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { LogsService } from '../../services/logs.service';
 
+import AOS from 'aos';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -21,7 +23,7 @@ import { LogsService } from '../../services/logs.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
 
 
   accID: string | undefined;
@@ -70,22 +72,10 @@ export class DashboardComponent implements OnInit {
       map(() => this.router.routerState.snapshot.root)
     ).subscribe(route => {
       const title: string = this.getTitle(route);
-
       this.logger.printLogs('i', 'Title', [title]);
-
-      this.header = title.toLowerCase() == "dashboard" ? true : false;
-
-      this.logger.printLogs('i', 'Hide Header and Widget', [this.header]);
-
-      const items = document.querySelectorAll('.header, .widget');
-      items.forEach(item => {
-        const htmlElement = item as HTMLElement;
-        if (this.header) {
-          htmlElement.style.display = 'block';
-        } else {
-          htmlElement.style.display = 'none';
-        }
-      });
+      this.header = title.toLowerCase() === "dashboard";
+      this.toggleHeaderAndWidgetDisplay(this.header);
+      this.setTitle(title);
 
 
       this.setTitle(title);  // Or false, based on your requirement
@@ -94,13 +84,24 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     // this.setupSidebarToggle();
+
     this.logger.printLogs('i', 'Hide Header and Widget:', [this.header]);
   }
+
+  ngAfterViewInit(): void {
+    AOS.init();
+  }
+
+  toggleHeaderAndWidgetDisplay(show: boolean) {
+    const items = document.querySelectorAll('.header, .widget');
+    items.forEach(item => {
+      const htmlElement = item as HTMLElement;
+      htmlElement.style.display = show ? 'block' : 'none';
+    });
+  }
+
   toggleAccordion() {
     this.isOpen = !this.isOpen; // Toggle the accordion state
-    // setTimeout(() => {
-    //   this.isOpen = !this.isOpen; // Toggle the accordion state
-    // }, 3000); // Simulate a 2-second delay
   }
 
   private getTitle(route: ActivatedRouteSnapshot): string {
@@ -201,27 +202,15 @@ export class DashboardComponent implements OnInit {
   // }
 
   toggleSidebarItems() {
-
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-      // Check if the 'sidebar-mini' class exists
-      if (sidebar.classList.contains('sidebar-mini')) {
-        // If the class exists, remove it
-        sidebar.classList.remove('sidebar-mini');
-        this.isMinimizeSideBar = false;
-        // this.minimizeSidebar();
-      } else {
-        // If the class does not exist, add it
-        sidebar.classList.add('sidebar-mini');
-        this.isMinimizeSideBar = true;
-        // this.expandSidebar();
-      }
+      sidebar.classList.toggle('sidebar-mini');
+      this.isMinimizeSideBar = sidebar.classList.contains('sidebar-mini');
       this.logger.printLogs("i", "Minimize Sidebar : ", this.isMinimizeSideBar);
     }
   }
 
   public toggleSidebar(isMinimizeSideBar: boolean) {
-    // Check if the screen width is less than or equal to 768px (typical mobile breakpoint)
     if (window.innerWidth <= 768) {
       this.isMinimizeSideBar = isMinimizeSideBar;
     }
@@ -232,12 +221,11 @@ export class DashboardComponent implements OnInit {
     items.forEach(item => {
       const htmlElement = item as HTMLElement;
       htmlElement.style.display = 'inline';
-
-      const mini_icons = document.querySelectorAll('.mini-icon');
-      mini_icons.forEach(item => {
-        const htmlElement = item as HTMLElement;
-        htmlElement.style.display = 'none';
-      });
+    });
+    const miniIcons = document.querySelectorAll('.mini-icon');
+    miniIcons.forEach(item => {
+      const htmlElement = item as HTMLElement;
+      htmlElement.style.display = 'none';
     });
   }
 
@@ -246,13 +234,11 @@ export class DashboardComponent implements OnInit {
     items.forEach(item => {
       const htmlElement = item as HTMLElement;
       htmlElement.style.display = 'none';
-
-      const mini_icons = document.querySelectorAll('.mini-icon');
-      mini_icons.forEach(item => {
-        const htmlElement = item as HTMLElement;
-        htmlElement.style.display = 'inline';
-      });
-
+    });
+    const miniIcons = document.querySelectorAll('.mini-icon');
+    miniIcons.forEach(item => {
+      const htmlElement = item as HTMLElement;
+      htmlElement.style.display = 'inline';
     });
   }
 

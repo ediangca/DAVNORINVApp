@@ -967,6 +967,18 @@ export class ApiService {
       );
   }
 
+  //Update Post Flag
+  postITR(itrNo: string, postVal: boolean): Observable<any> {
+    console.log("Update ITR No. >>> : ", itrNo);
+    console.log("Update Post flag >>> : ", postVal);
+    return this.http.put<any>(`${this.apiUrl}ITR/Post?id=${itrNo}`, postVal)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+
+
   /*----------------------- Cencus -----------------------*/
 
   //Cencus List

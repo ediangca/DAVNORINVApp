@@ -1,15 +1,15 @@
-import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { DashboardComponent } from '../dashboard/dashboard.component';
+import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, OnDestroy } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import AOS from 'aos';
 
 @Component({
   selector: 'app-widget',
   standalone: true,
-  imports: [DashboardComponent],
   templateUrl: './widget.component.html',
   styleUrls: ['./widget.component.css']
 })
-export class WidgetComponent implements OnInit, AfterViewInit, OnChanges  {
+
+export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   totalPAR: number = 0;
   totalREPAR: number = 0;
   totalITR: number = 0;
@@ -26,7 +26,6 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges  {
 
   }
   ngOnChanges(changes: SimpleChanges): void {
-
     this.getTotalParCencus();
   }
 
@@ -37,17 +36,27 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges  {
 
   ngAfterViewInit(): void {
     // Query DOM elements after view initialization
-    this.prevBtn = document.getElementById("next") as HTMLButtonElement;
-    this.nextBtn = document.getElementById('prev') as HTMLButtonElement;
+    this.prevBtn = document.getElementById("prev") as HTMLButtonElement;
+    this.nextBtn = document.getElementById("next") as HTMLButtonElement;
     this.track = document.getElementById("carousel-track") as HTMLElement;
     this.cards = Array.from(this.track.children) as HTMLElement[];
 
     // Add event listeners
-    this.prevBtn.addEventListener('click', () => this.moveToNext());
-    this.nextBtn.addEventListener('click', () => this.moveToPrev());
+    this.prevBtn.addEventListener('click', () => this.moveToPrev());
+    this.nextBtn.addEventListener('click', () => this.moveToNext());
 
     // Add resize event listener
     window.addEventListener('resize', () => this.updateCarousel());
+
+    // Initialize AOS
+    AOS.init();
+  }
+
+  ngOnDestroy(): void {
+    // Clean up event listeners
+    this.prevBtn.removeEventListener('click', () => this.moveToPrev());
+    this.nextBtn.removeEventListener('click', () => this.moveToNext());
+    window.removeEventListener('resize', () => this.updateCarousel());
   }
 
   getTotalParCencus() {

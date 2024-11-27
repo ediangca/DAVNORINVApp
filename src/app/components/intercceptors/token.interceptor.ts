@@ -37,22 +37,44 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         if (err.status == 0) {
           toast.warning("Failed to establish connection!", "Error!", 5000);
           // authService.exit();
-        } else if (err.status == 400) {
-          // Handle validation errors
-          const validationErrors = err.error?.errors;
-          if (validationErrors) {
-            for (const key in validationErrors) {
-              if (validationErrors.hasOwnProperty(key)) {
-                messages = validationErrors[key];
-                messages.forEach((message: string) => {
-                  toast.warning(message, "Validation Error!", 5000);
-                });
+        } else if (err.status == 400) {// Check if the error response has a message property
+          if (err.error && err.error.message) {
+            // Display the custom message from the API
+            messages = err.error.message;
+            toast.warning(err.error.message, "Error!", 5000);
+          } else {
+            // Handle validation errors
+            const validationErrors = err.error?.errors;
+
+            if (validationErrors) {
+              for (const key in validationErrors) {
+                if (validationErrors.hasOwnProperty(key)) {
+                  const messages = validationErrors[key];
+                  if (Array.isArray(messages)) {
+                    messages.forEach((message: string) => {
+                      toast.warning(message, "Validation Error!", 5000);
+                    });
+                  } else {
+                    // If messages is not an array, display a custom message
+                    toast.warning(messages, "Validation Error!", 5000); // Assuming messages is a string
+                  }
+                }
               }
+            } else {
+              // Handle generic bad request error
+              toast.warning("An unknown error occurred.", "Error!", 5000);
             }
           }
         } else if (err.status === 401) {
-          toast.warning("Token is Expired!, Please login again! " + err.status, "Warning!", 5000);
+
+          messages = err.error?.message || "Token is Expired!, Please login again!"; // Get the message from the error response
+          // toast.warning("Token is Expired!, Please login again! " + err.status, "Warning!", 5000);
+          toast.warning(messages, "Warning!", 5000);
           authService.exit();
+
+        } else if (err.status === 404) {
+          messages = err.error.message;
+          toast.warning(err.error.message, "Not Found!", 5000);
         }
       }
       return throwError(() => new Error(messages! || err?.message || err.error?.message || "Something went wrong."));

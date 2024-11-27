@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
 
 
   @ViewChild('loadingModal') loadingModal!: ElementRef;
-
+  @ViewChild('usernameInput') usernameInput!: ElementRef; // Reference to the username input field
 
   loginForm!: FormGroup;
   errorMessage: string = '';
@@ -109,8 +109,10 @@ export class LoginComponent implements OnInit {
 
             },
             error: (err: any) => {
-              this.closeModal(this.loadingModal);
               console.log('Error response:', err);
+              this.closeModal(this.loadingModal);
+              this.loginForm.reset();
+              this.usernameInput.nativeElement.focus();
               Swal.fire({
                 title: 'Access Denied!',
                 text: err,

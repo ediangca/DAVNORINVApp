@@ -578,14 +578,14 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   }
 
-  onPostREPAR(par: any) {
+  onPostITR(itr: any) {
 
-    if ((this.roleNoFromToken != 'System Administrator' && !par.postFlag) || this.roleNoFromToken == 'System Administrator') {
-      let reparNo = par.reparNo;
+    if ((this.roleNoFromToken != 'System Administrator' && !itr.postFlag) || this.roleNoFromToken == 'System Administrator') {
+      let itrNo = itr.itrNo;
 
       Swal.fire({
         title: 'Are you sure?',
-        text: (par.postFlag ? 'Unpost' : 'Post') + ` REPAR #${reparNo}`,
+        text: (itr.postFlag ? 'Unpost' : 'Post') + ` REPAR #${itrNo}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -593,7 +593,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
       }).then((result) => {
         if (result.isConfirmed) {
 
-          this.api.postREPAR(reparNo, !par.postFlag)
+          this.api.postREPAR(itrNo, !itr.postFlag)
             .subscribe({
               next: (res) => {
                 this.getALLITR();
@@ -1025,11 +1025,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
             // Generate the full report content
             const reportContent = `
-          <div class="row mb-3">
-            <div class="col text-center">
-                <h5>INVENTORY TRANFER REPORT</h5>
-            </div>
-          </div>
 
           <div class="watermark">ITR</div>
 
@@ -1049,7 +1044,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
                 <tr style="border-color: transparent;">
                     <td class="p-0 m-0"><strong>Transfer type:</strong></td>
                     <td colspan="3"> <p class="fs-6 m-0 border-bottom">
-                    ${(((itr.ttype + '').toString().toLowerCase() == "others") ?  itr.ttype +' - '+ itr.otype : itr.ttype) || ''}
+                    ${(((itr.ttype + '').toString().toLowerCase() == "others") ? itr.ttype + ' - ' + itr.otype : itr.ttype) || ''}
                     </p></td>
                 </tr>
             </tbody>
