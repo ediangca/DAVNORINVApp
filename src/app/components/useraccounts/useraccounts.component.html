@@ -294,12 +294,7 @@
             <div class="col-lg col-security">
 
               <!-- LASTNAME -->
-              <small *ngIf="userProfileForm.controls['lastname'].invalid &&
-              userProfileForm.hasError('required', 'lastname') &&
-              userProfileForm.get('lastname')?.touched ||
-              (userProfileForm.controls['lastname'].dirty &&
-              userProfileForm.hasError('required', 'lastname'))"
-                class="text-danger">* Lastname is required</small>
+              <small>Lastname is required *</small>
 
               <div class="form-field d-flex align-items-center"
                 [class.error]="userProfileForm.controls['lastname'].invalid &&
@@ -313,12 +308,7 @@
               </div>
 
               <!-- FIRSTNAME -->
-              <small *ngIf="userProfileForm.controls['firstname'].invalid &&
-              userProfileForm.hasError('required', 'firstname') &&
-              userProfileForm.get('firstname')?.touched ||
-              (userProfileForm.controls['firstname'].dirty &&
-              userProfileForm.hasError('required', 'firstname'))"
-                class="text-danger">* Firstname is required</small>
+              <small>Firstname is required *</small>
 
               <div class="form-field d-flex align-items-center"
                 [class.error]="userProfileForm.controls['firstname'].invalid &&
@@ -332,12 +322,7 @@
               </div>
 
               <!-- MIDDLENAME -->
-              <small *ngIf="userProfileForm.controls['middlename'].invalid &&
-              userProfileForm.hasError('required', 'middlename') &&
-              userProfileForm.get('firstname')?.touched ||
-              (userProfileForm.controls['middlename'].dirty &&
-              userProfileForm.hasError('required', 'middlename'))"
-                class="text-danger">* Middlename is required</small>
+              <small>Middlename is required *</small>
 
               <div class="form-field d-flex align-items-center"
                 [class.error]="userProfileForm.controls['middlename'].invalid &&
@@ -350,13 +335,8 @@
                   placeholder="Middlename">
               </div>
 
-              <!-- BRANCH -->
-              <small *ngIf="userProfileForm.controls['sex'].invalid &&
-              userProfileForm.hasError('required', 'sex') &&
-              userProfileForm.get('branchID')?.touched ||
-              (userProfileForm.controls['sex'].dirty &&
-              userProfileForm.hasError('required', 'sex'))"
-                class="text-danger">* Sex is required</small>
+              <!-- SEX -->
+              <small>Sex is required *</small>
 
               <div class="form-field d-flex align-items-center"
                 [class.error]="userProfileForm.controls['sex'].invalid && userProfileForm.hasError('required', 'sex')
@@ -373,12 +353,7 @@
               </div>
 
               <!-- BRANCH -->
-              <small *ngIf="userProfileForm.controls['branchID'].invalid &&
-              userProfileForm.hasError('required', 'branchID') &&
-              userProfileForm.get('branchID')?.touched ||
-              (userProfileForm.controls['branchID'].dirty &&
-              userProfileForm.hasError('required', 'branchID'))"
-                class="text-danger">* Branch is required</small>
+              <small>Branch</small>
 
               <div class="form-field d-flex align-items-center"
                 [class.error]="userProfileForm.controls['branchID'].invalid && userProfileForm.hasError('required', 'branchID')
@@ -396,12 +371,7 @@
               </div>
 
               <!-- DEPARTMENT -->
-              <small *ngIf="userProfileForm.controls['depID'].invalid &&
-              userProfileForm.hasError('required', 'depID') &&
-              userProfileForm.get('depID')?.touched ||
-              (userProfileForm.controls['depID'].dirty &&
-              userProfileForm.hasError('required', 'depID'))"
-                class="text-danger">* Deparment is required</small>
+              <small>Deparment</small>
 
               <div class="form-field d-flex align-items-center"
                 [class.error]="userProfileForm.controls['depID'].invalid && userProfileForm.hasError('required', 'depID')
@@ -419,12 +389,7 @@
               </div>
 
               <!-- SECTION -->
-              <small *ngIf="userProfileForm.controls['secID'].invalid &&
-              userProfileForm.hasError('required', 'secID') &&
-              userProfileForm.get('secID')?.touched ||
-              (userProfileForm.controls['secID'].dirty &&
-              userProfileForm.hasError('required', 'secID'))"
-                class="text-danger">* Section is required</small>
+              <small>Section</small>
 
               <div class="form-field d-flex align-items-center"
                 [class.error]="userProfileForm.controls['secID'].invalid && userProfileForm.hasError('required', 'secID')
@@ -441,12 +406,7 @@
               </div>
 
               <!-- POSITION -->
-              <small *ngIf="userProfileForm.controls['positionID'].invalid &&
-              userProfileForm.hasError('required', 'positionID') &&
-              userProfileForm.get('positionID')?.touched ||
-              (userProfileForm.controls['positionID'].dirty &&
-              userProfileForm.hasError('required', 'positionID'))"
-                class="text-danger">* Position is required</small>
+              <small>Position</small>
 
               <div class="form-field d-flex align-items-center"
                 [class.error]="userProfileForm.controls['positionID'].invalid && userProfileForm.hasError('required', 'positionID')

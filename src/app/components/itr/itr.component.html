@@ -42,9 +42,9 @@
             <th></th>
             <th>Date Created</th>
             <th>ITR No.</th>
-            <th>Created By</th>
-            <th>Recieved By</th>
             <th>Issued By</th>
+            <th>Recieved By</th>
+            <th>Approved By</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -61,9 +61,9 @@
             </td>
             <td>{{formatDate(i.date_Created)}}</td>
             <td>{{i.itrNo}}</td>
-            <td>{{i.created}}</td>
-            <td>{{i.received}}</td>
             <td>{{i.issued}}</td>
+            <td>{{i.received}}</td>
+            <td>{{i.approved}}</td>
             <td>
               <form class="d-flex justify-content-end align-items-center">
                 @if(i.userName == "admin"){
@@ -441,52 +441,30 @@
               </div>
               <div class="row d-flex flex-row">
 
-                <!-- Approved By -->
+                <!-- Issued By -->
                 <div class="col">
-                  @if(!(icsForm.controls['userID3'].invalid &&
-                  icsForm.hasError('required', 'userID3') &&
-                  icsForm.get('userID3')?.touched ||
-                  (icsForm.controls['userID3'].dirty &&
-                  icsForm.hasError('required', 'userID3')))){
+
                   <small class="text-info">*
-                    Approved By</small>
-                  }@else {
-                  <small class="text-danger"
-                    *ngIf="icsForm.controls['userID3'].invalid &&
-                        icsForm.hasError('required', 'userID3') &&
-                        icsForm.get('userID3')?.touched ||
-                        (icsForm.controls['userID3'].dirty &&
-                        icsForm.hasError('required', 'userID3'))">* Approved By
-                    is
-                    required</small>
-                  }
+                    Issued By</small>
 
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="icsForm.controls['userID3'].invalid && icsForm.hasError('required', 'userID3')  && icsForm.get('userID3')?.touched || (icsForm.controls['userID3'].dirty &&
-                    icsForm.hasError('required', 'userID3'))">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(icsForm.controls['userID3'].invalid &&
-                    icsForm.hasError('required', 'userID3') &&
-                    icsForm.get('userID3')?.touched ||
-                    (icsForm.controls['userID3'].dirty &&
-                    icsForm.hasError('required', 'userID3')))"></i>
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="icsForm.controls['userID3'].invalid && icsForm.hasError('required', 'userID3') &&  icsForm.get('userID3')?.touched ||
-                    (icsForm.controls['userID3'].dirty && icsForm.hasError('required', 'userID3'))"></i>
+                    [class.error]="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2')  && icsForm.get('userID2')?.touched ||
+                    (icsForm.controls['userID2'].dirty && icsForm.hasError('required', 'userID2'))">
 
-                    <select class="form-select" formControlName="userID3"
-                      name="userID3"
-                      id="userID3">
-                      <option value>Approved By</option>
-                      <option class="text-dark" *ngFor="let up of userProfiles"
-                        [value]="up.userID">{{ up.fullName }}</option>
-                    </select>
+                    <input type="text" class="form-control"
+                      id="navbarDropdown"
+                      formControlName="userID2"
+                      name="userID2"
+                      placeholder="Issued By"
+                      role="textbox" readonly>
+
                   </div>
+
                 </div>
+
+                <!-- Received By -->
                 <div class="col">
 
-                  <!-- Received By -->
                   @if(!(icsForm.controls['userID1'].invalid &&
                   icsForm.hasError('required', 'userID1') &&
                   icsForm.get('userID1')?.touched ||
@@ -505,74 +483,96 @@
                   }
 
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="icsForm.controls['userID1'].invalid && icsForm.hasError('required', 'userID1')  && icsForm.get('userID1')?.touched || (icsForm.controls['userID1'].dirty &&
-                icsForm.hasError('required', 'userID1'))">
+                    [class.error]="icsForm.controls['userID1'].invalid && icsForm.hasError('required', 'userID1')  && icsForm.get('userID1')?.touched ||
+                  (icsForm.controls['userID1'].dirty && icsForm.hasError('required', 'userID1')) || (icsForm.get('userID1')?.touched && receivedID === null)">
                     <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(icsForm.controls['userID1'].invalid &&
-                icsForm.hasError('required', 'userID1') &&
-                icsForm.get('userID1')?.touched ||
-                (icsForm.controls['userID1'].dirty &&
-                icsForm.hasError('required', 'userID1')))"></i>
+                      *ngIf="!(icsForm.controls['userID1'].invalid && icsForm.hasError('required', 'userID1') &&
+                    icsForm.get('userID1')?.touched || (icsForm.controls['userID1'].dirty &&
+                    icsForm.hasError('required', 'userID1')) || (icsForm.get('userID1')?.touched && receivedID === null))"></i>
                     <i
                       class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
                       *ngIf="icsForm.controls['userID1'].invalid && icsForm.hasError('required', 'userID1') &&  icsForm.get('userID1')?.touched ||
-                (icsForm.controls['userID1'].dirty && icsForm.hasError('required', 'userID1'))"></i>
+                    (icsForm.controls['userID1'].dirty && icsForm.hasError('required', 'userID1')) || (icsForm.get('userID1')?.touched && receivedID === null)"></i>
 
-                    <select class="form-select" formControlName="userID1"
+                    <input type="text" class="form-control"
+                      id="navbarDropdown"
+                      formControlName="userID1"
                       name="userID1"
-                      id="userID1">
-                      <option value>Received By</option>
-                      <option class="text-dark" *ngFor="let up of userProfiles"
-                        [value]="up.userID">{{ up.fullName }}</option>
-                    </select>
+                      [(ngModel)]="receivedByID"
+                      placeholder="Received By"
+                      (keyup)="onAutoSuggestReceived()"
+                      role="textbox">
+                  </div>
+
+                  <div class="recent-searches"
+                    *ngIf="userProfiles.length > 0 && activeInput === 'received'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button"
+                        class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles"
+                        (click)="selectReceived(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
                   </div>
                 </div>
+
+                <!-- Approved By -->
                 <div class="col">
-
-                  <!-- Issued By -->
-
-                  @if(!(icsForm.controls['userID2'].invalid &&
-                  icsForm.hasError('required', 'userID2') &&
-                  icsForm.get('userID2')?.touched ||
-                  (icsForm.controls['userID2'].dirty &&
-                  icsForm.hasError('required', 'userID2')))){
+                  @if(!(icsForm.controls['userID3'].invalid &&
+                  icsForm.hasError('required', 'userID3') &&
+                  icsForm.get('userID3')?.touched ||
+                  (icsForm.controls['userID3'].dirty &&
+                  icsForm.hasError('required', 'userID3')))){
                   <small class="text-info">*
-                    Issued By</small>
+                    Approved By</small>
                   }@else {
                   <small class="text-danger"
-                    *ngIf="icsForm.controls['userID2'].invalid &&
-                  icsForm.hasError('required', 'userID2') &&
-                  icsForm.get('userID2')?.touched ||
-                  (icsForm.controls['userID2'].dirty &&
-                  icsForm.hasError('required', 'userID2'))">* Issued By is
-                    required</small>
+                    *ngIf="icsForm.controls['userID3'].invalid &&
+                        icsForm.hasError('required', 'userID3') &&
+                        icsForm.get('userID3')?.touched ||
+                        (icsForm.controls['userID3'].dirty &&
+                        icsForm.hasError('required', 'userID3'))">* Approved By
+                    is required *</small>
                   }
 
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2')  && icsForm.get('userID2')?.touched || (icsForm.controls['userID2'].dirty &&
-                icsForm.hasError('required', 'userID2'))">
+                    [class.error]="icsForm.controls['userID3'].invalid && icsForm.hasError('required', 'userID3')  && icsForm.get('userID3')?.touched ||
+                    (icsForm.controls['userID3'].dirty && icsForm.hasError('required', 'userID3')) || (icsForm.get('userID3')?.touched && approvedID === null)">
                     <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(icsForm.controls['userID2'].invalid &&
-                icsForm.hasError('required', 'userID2') &&
-                icsForm.get('userID2')?.touched ||
-                (icsForm.controls['userID2'].dirty &&
-                icsForm.hasError('required', 'userID2')))"></i>
+                      *ngIf="!(icsForm.controls['userID3'].invalid && icsForm.hasError('required', 'userID3') &&
+                      icsForm.get('userID3')?.touched || (icsForm.controls['userID3'].dirty &&
+                      icsForm.hasError('required', 'userID3')) || (icsForm.get('userID3')?.touched && approvedID === null))"></i>
                     <i
                       class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="icsForm.controls['userID2'].invalid && icsForm.hasError('required', 'userID2') &&  icsForm.get('userID2')?.touched ||
-                (icsForm.controls['userID2'].dirty && icsForm.hasError('required', 'userID2'))"></i>
+                      *ngIf="icsForm.controls['userID3'].invalid && icsForm.hasError('required', 'userID3') &&  icsForm.get('userID3')?.touched ||
+                      (icsForm.controls['userID3'].dirty && icsForm.hasError('required', 'userID3')) || (icsForm.get('userID3')?.touched && approvedID === null)"></i>
 
-                    <select class="form-select" formControlName="userID2"
-                      name="userID2"
-                      id="userID2">
-                      <option value>Issued By</option>
-                      <option class="text-dark" *ngFor="let up of userProfiles"
-                        [value]="up.userID">{{ up.fullName }}</option>
-                    </select>
+                    <input type="text" class="form-control"
+                      id="navbarDropdown"
+                      formControlName="userID3"
+                      name="userID3"
+                      [(ngModel)]="approvedByID"
+                      placeholder="Approve By"
+                      (keyup)="onAutoSuggestApproved()"
+                      role="textbox">
 
                   </div>
 
+                  <div class="recent-searches"
+                    *ngIf="userProfiles.length > 0 && activeInput === 'approved'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button"
+                        class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles"
+                        (click)="selectApproved(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+
                 </div>
+
               </div>
             </div>
           </div>
@@ -702,10 +702,10 @@
 
                       <div class="row d-flex flex-row">
                         <div class="col">
-                          <small class="text-info">APPROVED BY</small>
+                          <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <input type="text" [value]="itr?.approved"
-                              class="form-control" placeholder="APPROVED"
+                            <input type="text" [value]="itr?.issued"
+                              class="form-control" placeholder="Issued"
                               readonly>
                           </div>
                         </div>
@@ -718,10 +718,10 @@
                           </div>
                         </div>
                         <div class="col">
-                          <small class="text-info">ISSUED BY</small>
+                          <small class="text-info">APPROVED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <input type="text" [value]="itr?.issued"
-                              class="form-control" placeholder="Issued"
+                            <input type="text" [value]="itr?.approved"
+                              class="form-control" placeholder="APPROVED"
                               readonly>
                           </div>
                         </div>

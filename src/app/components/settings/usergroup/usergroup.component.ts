@@ -32,7 +32,7 @@ export class UsergroupComponent implements OnInit {
   currentEditId: number | null = null;
 
 
-  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService,  private logger: LogsService) {
+  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private logger: LogsService) {
 
     this.userGroupForm = this.fb.group({
       userGroupName: ['', Validators.required],
@@ -90,7 +90,7 @@ export class UsergroupComponent implements OnInit {
           .subscribe({
             next: (res) => {
               console.log("Fetching User Groups:", res);
-              this.userGroups = res;
+              this.userGroups = res.slice(0, 10);
             },
             error: (err: any) => {
               console.log("Error Fetching User Groups:", err);
@@ -104,7 +104,7 @@ export class UsergroupComponent implements OnInit {
     this.api.getAllUserGroups('*')
       .subscribe({
         next: (res) => {
-          this.userGroups = res;
+          this.userGroups = res.slice(0, 10);
         },
         error: (err: any) => {
           console.log("Error Fetching User Groups:", err);

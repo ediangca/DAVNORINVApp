@@ -1,7 +1,3 @@
-
-
-/* ############### SCROLLABLE ############### */
-
 .item-body {
   max-height: 600px;
 }
@@ -79,8 +75,47 @@ th {
   /* Ensures the header stays on top */
 }
 
+
+/* Ensures the parent div of the table allows scrolling */
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Sticky table headers */
+table thead th.sticky-header {
+  position: sticky;
+  top: 0;
+  /* Sticks the header to the top */
+  z-index: 1;
+  /* Ensures it appears above the table body */
+  background-color: #fff;
+  /* Optional: Add background color */
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  /* Optional: Adds subtle shadow for better visibility */
+}
+
+/* Ensures padding and alignment are consistent with other cells */
+table th,
+table td {
+  padding: 8px 16px;
+  /* Adjust padding as necessary */
+  text-align: left;
+}
+
+/* Optional: Style for table body rows */
+table tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+  /* Adds zebra stripes for better readability */
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #fff;
+}
+
+
 /* ############### SEARCH ############### */
 
+/*
 .recent-searches {
   margin-top: 20px;
   padding: 10px;
@@ -109,9 +144,51 @@ th {
 .recent-searches li:hover {
   background-color: var(--bs-primary);
   color: white;
+} */
+
+.form-field {
+  position: relative !important;
+  /* Set the parent container as the positioning context */
 }
 
-/* ############################## */
+/* AUTO SUGGEST  */
+
+.recent-searches {
+  position: absolute;
+  z-index: 1;
+  margin-top: 20px;
+  overflow-y: auto !important;
+  width: calc(100%-1rem);
+  padding: 10px;
+  border: 1px solid #dfe1e5;
+  border-radius: 24px;
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+  background-color: white;
+  margin: 0 auto;
+}
+
+
+.recent-searches ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-searches li {
+  border-width: 0px;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.recent-searches li:hover {
+  background-color: var(--bs-primary);
+  color: white;
+}
+
+
+/* SEARCH BAR */
 
 .searchbar {
   margin-bottom: auto;
@@ -130,6 +207,10 @@ th {
   caret-color: transparent;
   line-height: 40px;
   transition: width 0.5s linear;
+}
+
+.search_input:focus {
+  width: 70%;
 }
 
 .searchbar:hover>.search_input {

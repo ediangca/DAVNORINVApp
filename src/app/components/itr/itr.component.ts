@@ -49,8 +49,17 @@ export class ItrComponent implements OnInit, AfterViewInit {
   searchKey: string = '';
   parItemKey: string = '';
 
+  activeInput: 'received' | 'issued' | 'approved' | null = null;
+  receivedByID: string | null = null;
+  issuedByID: string | null = null;
+  approvedByID: string | null = null;
+
+  receivedID: string | null = null;
+  issuedID: string | null = null;
+  approvedID: string | null = null;
   receivedBy: string = '';
   issuedBy: string = '';
+  approvedBy: string = '';
 
   errorMessage: string = '';
 
@@ -382,6 +391,96 @@ export class ItrComponent implements OnInit, AfterViewInit {
   onKeyUp($event: KeyboardEvent) {
   }
 
+
+  onAutoSuggestReceived() {
+    this.receivedID = null;
+    if (!this.receivedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'received';
+      if (this.receivedByID.trim()) {
+        this.api.searchProfile(this.receivedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.receivedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Received By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Received By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Received By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectReceived(userProfile: any): void {
+
+    this.receivedID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Received', userProfile);
+
+    if (this.icsForm!) {
+      this.icsForm.patchValue({
+        userID1: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    if (this.itrForm!) {
+      this.itrForm.patchValue({
+        userID1: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+  onAutoSuggestApproved() {
+    if (!this.approvedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'approved';
+      if (this.approvedByID.trim()) {
+        this.api.searchProfile(this.approvedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.approvedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Approved By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Approved By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Approved By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectApproved(userProfile: any): void {
+
+    this.approvedID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Approved', userProfile);
+
+    this.itrForm.patchValue({
+      userID3: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+
   onAddITRItem() {
 
     this.api.getAllICSItems()
@@ -458,9 +557,9 @@ export class ItrComponent implements OnInit, AfterViewInit {
         ttype: this.icsForm.value['type'],
         otype: this.icsForm.value['others'],
         reason: this.icsForm.value['reason'],
-        receivedBy: this.icsForm.value['userID1'],
-        issuedBy: this.icsForm.value['userID2'],
-        approvedBy: this.icsForm.value['userID3'],
+        receivedBy: this.receivedID,
+        issuedBy: this.issuedID,
+        approvedBy: this.approvedID,
         postFlag: false,
         voidFlag: false,
         createdBy: this.userAccount.userID,
@@ -643,6 +742,10 @@ export class ItrComponent implements OnInit, AfterViewInit {
         this.currentEditId = itr.itrNo;
         this.isCustomType = itr.ttype == 'Others';
 
+        this.issuedID = itr.issuedBy
+        this.approvedID = itr.approvedBy
+        this.receivedID = itr.receivedBy
+
 
         this.logger.printLogs('i', 'Restoring ITR', itr);
 
@@ -653,9 +756,9 @@ export class ItrComponent implements OnInit, AfterViewInit {
           type: itr.ttype,
           others: itr.otype,
           reason: itr.reason,
-          userID1: itr.receivedBy,
-          userID2: itr.issuedBy,
-          userID3: itr.approvedBy
+          userID1: itr.received,
+          userID2: itr.issued,
+          userID3: itr.approved,
         });
 
 
@@ -1028,27 +1131,22 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
           <div class="watermark">ITR</div>
 
-          <table class="table">
-            <tbody>
-                <tr style="border-color: transparent;">
-                    <td class="p-0 m-0"><strong>LGU:</strong></td>
-                    <td colspan="3"> <p class="fs-6 m-0 border-bottom">asdasdasd ${itr.entityName || 'Default LGU'} </p></td>
-                </tr>
-                <tr style="border-color: transparent;">
-                    <td class="p-0 m-0"><strong>Fund Cluster:</strong></td>
-                    <td> <p class="fs-6 m-0 border-bottom"> ${itr.fund || 'Default FUND'}  </p></td>
-
-                    <td class="p-0 m-0"><strong>ITR No.:</strong></td>
-                    <td> <p class="fs-6 m-0 border-bottom"> ${itr.itrNo || 'N/A'} </p></td>
-                </tr>
-                <tr style="border-color: transparent;">
-                    <td class="p-0 m-0"><strong>Transfer type:</strong></td>
-                    <td colspan="3"> <p class="fs-6 m-0 border-bottom">
-                    ${(((itr.ttype + '').toString().toLowerCase() == "others") ? itr.ttype + ' - ' + itr.otype : itr.ttype) || ''}
-                    </p></td>
-                </tr>
-            </tbody>
-          </table>
+          <div class="row">
+            <div class="col-12">
+              <p class="">LGU: <span class="fw-bold border-bottom ms-1">${itr.entityName || 'N/A'}</span></p>
+            </div>
+            <div class="col-6">
+              <p class="">FUND: <span class="fw-bold border-bottom ms-1">${itr.fund || 'N/A'}</span></p>
+            </div>
+            <div class="col-6">
+              <p class="text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${itr.itrNo || 'N/A'}</span></p>
+            </div>
+            <div class="col-12">
+              <p class="">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">
+              ${(((itr.ttype + '').toString().toLowerCase() == "others") ? itr.ttype + ' - ' + itr.otype : itr.ttype) || 'N/A'}
+              </span></p>
+            </div>
+          </div>
 
           <!-- Table with List of Items -->
             <table class="table table-bordered table-striped">

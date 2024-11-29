@@ -61,10 +61,10 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       firstname: ['', Validators.required],
       middlename: ['', Validators.required],
       sex: ['', Validators.required],
-      branchID: ['', Validators.required],
-      depID: ['', Validators.required],
-      secID: ['', Validators.required],
-      positionID: ['', Validators.required]
+      branchID: [''],
+      depID: [''],
+      secID: [''],
+      positionID: ['']
     });
 
 
@@ -217,7 +217,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       this.api.getAllUserAccounts()
         .subscribe({
           next: (res) => {
-            this.userAccounts = res;
+            this.userAccounts = res.slice(0, 10);
             this.isLoading = false; // Stop showing the loading spinner
             this.logger.printLogs('i', 'LIST OF USERT ACCOUTNS', this.userAccounts);
           },
@@ -241,8 +241,24 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             this.userProfile = res[0];
             this.currentEditId = this.userProfile.profileID;
             console.log("Show Profile", this.userProfile);
-            this.loadDepartments(this.userProfile.branchID);
+            if (this.userProfile.branchID!) { this.loadDepartments(this.userProfile.branchID); } else {
+              if (!this.isModalOpen && this.userProfile) {
+                this.userProfileForm.patchValue({
+                  lastname: this.userProfile.lastname,
+                  firstname: this.userProfile.firstname,
+                  middlename: this.userProfile.middlename,
+                  sex: this.userProfile.sex,
+                  branchID: this.userProfile.branchID || '',
+                  depID: this.userProfile.depID || '',
+                  secID: this.userProfile.secID || '',
+                  positionID: this.userProfile.positionID || ''
+                });
 
+                console.log("Submit Profile", this.userProfileForm.value);
+
+                this.openAProfileModal();
+              }
+            }
 
           } else {
             this.isEditMode = false;
@@ -317,7 +333,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: (res) => {
               // console.log("Fetching User Groups:", res);
-              this.userAccounts = res;
+              this.userAccounts = res.slice(0, 10);
             },
             error: (err: any) => {
               console.log("Error Fetching User Groups:", err);
@@ -492,10 +508,10 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         "firstname": this.userProfileForm.value['firstname'],
         "middlename": this.userProfileForm.value['middlename'],
         "sex": this.userProfileForm.value['sex'],
-        "branchID": this.userProfileForm.value['branchID'],
-        "depID": this.userProfileForm.value['depID'],
-        "secID": this.userProfileForm.value['secID'],
-        "positionID": this.userProfileForm.value['positionID'],
+        "branchID": this.userProfileForm.value['branchID'] ? this.userProfileForm.value['branchID'] : null,
+        "depID": this.userProfileForm.value['depID'] ? this.userProfileForm.value['depID'] : null,
+        "secID": this.userProfileForm.value['secID'] ? this.userProfileForm.value['secID'] : null,
+        "positionID": this.userProfileForm.value['positionID'] ? this.userProfileForm.value['positionID'] : null,
         "userID": this.userAccount ? this.userAccount.userID : '0'
       }
 

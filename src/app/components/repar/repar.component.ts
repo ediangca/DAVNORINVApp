@@ -38,7 +38,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   pars: any = [];
-  par!: any;
+  par!: any | null;
   parItems: Item[] = [];
   selectedParItems: Item[] = []; // Array to track selected items from repar
   userProfiles: any = [];
@@ -46,8 +46,17 @@ export class ReparComponent implements OnInit, AfterViewInit {
   searchKey: string = '';
   parItemKey: string = '';
 
+  activeInput: 'received' | 'issued' | 'approved' | null = null;
+  receivedByID: string | null = null;
+  issuedByID: string | null = null;
+  approvedByID: string | null = null;
+
+  receivedID: string | null = null;
+  issuedID: string | null = null;
+  approvedID: string | null = null;
   receivedBy: string = '';
   issuedBy: string = '';
+  approvedBy: string = '';
 
   errorMessage: string = '';
 
@@ -399,6 +408,95 @@ export class ReparComponent implements OnInit, AfterViewInit {
     QRmodal.show();
   }
 
+
+  onAutoSuggestReceived() {
+    this.receivedID = null;
+    if (!this.receivedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'received';
+      if (this.receivedByID.trim()) {
+        this.api.searchProfile(this.receivedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.receivedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Received By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Received By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Received By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectReceived(userProfile: any): void {
+
+    this.receivedID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Received', userProfile);
+
+    if (this.parForm!) {
+      this.parForm.patchValue({
+        userID1: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    if (this.reparForm!) {
+      this.reparForm.patchValue({
+        userID1: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+  onAutoSuggestApproved() {
+    if (!this.approvedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'approved';
+      if (this.approvedByID.trim()) {
+        this.api.searchProfile(this.approvedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.approvedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Approved By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Approved By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Approved By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectApproved(userProfile: any): void {
+
+    this.approvedID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Approved', userProfile);
+
+    this.reparForm.patchValue({
+      userID3: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
   onAddPARItem() {
     const PARNo: string = this.parForm.value['parNo'];
     if (!PARNo) {
@@ -407,6 +505,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
     }
     this.openItemModal(this.ItemModal);
   }
+
 
   onSubmit() {
 
@@ -443,11 +542,9 @@ export class ReparComponent implements OnInit, AfterViewInit {
         ttype: this.parForm.value['type'],
         otype: this.parForm.value['others'],
         reason: this.parForm.value['reason'],
-        receivedBy: this.parForm.value['userID1'],
-        issuedBy: this.parForm.value['userID2'],
-        approvedBy: this.parForm.value['userID3'],
-        postFlag: false,
-        voidFlag: false,
+        receivedBy: this.receivedID,
+        issuedBy: this.issuedID,
+        approvedBy: this.approvedID,
         createdBy: this.userAccount.userID,
       }
 
@@ -462,7 +559,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
     }
 
   }
-
 
   onSubmitREPAR() {
 
@@ -665,6 +761,9 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.isEditMode = true;
     this.par = par;
     this.currentEditId = par.reparNo;
+    this.issuedID = par.issuedBy
+    this.approvedID = par.approvedBy
+    this.receivedID = par.receivedBy
 
     this.logger.printLogs('i', 'Restoring PAR', par);
 
@@ -675,9 +774,9 @@ export class ReparComponent implements OnInit, AfterViewInit {
       type: par.ttype,
       others: par.otype,
       reason: par.reason,
-      userID3: par.approvedBy,
-      userID1: par.receivedBy,
-      userID2: par.issuedBy,
+      userID1: par.received,
+      userID2: par.issued,
+      userID3: par.approved,
     });
 
     this.api.retrieveREPAR(this.currentEditId!)
@@ -712,7 +811,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
       fund: par.fund,
       parNo: par.parNo,
       userID1: par.receivedBy, // These will now be patched correctly
-      userID2: par.issuedBy
+      userID2: par.issuedBy,
+      userID3: par.approvedBy
     });
 
     this.api.retrieveREPAR(this.currentEditId!)
@@ -1304,7 +1404,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
           forkJoin([
             this.printService.setReceivedBy(res.details.receivedBy),
             this.printService.setIssuedBy(res.details.issuedBy),
-            this.printService.setApprovedBy(res.details.issuedBy)
+            this.printService.setApprovedBy(res.details.approvedBy)
           ] as Observable<any>[]).subscribe(() => {
             // Once both services complete, continue with the report generation
             const parItems = res.parItems;
@@ -1335,13 +1435,18 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
           <div class="row">
             <div class="col-12">
-              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${repar.lgu || 'Default LGU'}</span></p>
+              <p class="">LGU: <span class="fw-bold border-bottom ms-1">${repar.lgu || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${repar.fund || 'Default LGU'}</span></p>
+              <p class="">FUND: <span class="fw-bold border-bottom ms-1">${repar.fund || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="text-end fs-6">PTR No.: <span class="fw-bold border-bottom ms-1">${repar.reparNo || 'Default PTR No.'}</span></p>
+              <p class="text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${repar.reparNo || 'Default PTR No.'}</span></p>
+            </div>
+            <div class="col-12">
+              <p class="">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">
+              ${(((repar.ttype + '').toString().toLowerCase() == "others") ? repar.ttype + ' - ' + repar.otype : repar.ttype) || 'N/A'}
+              </span></p>
             </div>
           </div>
 

@@ -3,11 +3,9 @@
     <div class="table-wrapper">
       <div class="table-title">
 
-        <div
-          class="row d-flex align-items-center">
+        <div class="row d-flex align-items-center">
 
-          <div
-            class="col-12 d-flex just justify-content-center align-items-center">
+          <div class="col-12 d-flex just justify-content-center align-items-center">
             <div class="search" style="width: 100%;">
               <i
                 class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
@@ -72,9 +70,9 @@
             <th></th>
             <th>Date Created</th>
             <th>PAR No.</th>
-            <th>Created By</th>
-            <th>Recieved By</th>
             <th>Issued By</th>
+            <th>Recieved By</th>
+            <th>Created By</th>
             <th class="text-center">Actions
 
             </th>
@@ -93,9 +91,9 @@
             </td>
             <td>{{formatDate(p.date_Created)}}</td>
             <td>{{p.parNo}}</td>
-            <td>{{p.created}}</td>
-            <td>{{p.received}}</td>
             <td>{{p.issued}}</td>
+            <td>{{p.received}}</td>
+            <td>{{p.created}}</td>
             <td>
               <form class="d-flex justify-content-end align-items-center">
                 @if(p.userName == "admin"){

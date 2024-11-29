@@ -173,7 +173,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
   }
 
   ngOnInit(): void {
-    this.getALLPAR();
+    this.getALLICS();
     this.getUserAccount();
     this.getAllUserProfile();
     this.setupModalClose();
@@ -259,7 +259,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       });
   }
 
-  getALLPAR() {
+  getALLICS() {
     this.isLoading = true; // Stop showing the loading spinner
     // Simulate an API call with a delay
     setTimeout(() => {
@@ -630,7 +630,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
             });
 
             this.resetForm();
-            this.getALLPAR();
+            this.getALLICS();
           },
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving ICS', err);
@@ -692,7 +692,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', ics);
           Swal.fire('Updated!', res.message, 'warning');
-          this.getALLPAR();
+          this.getALLICS();
 
         },
         error: (err: any) => {
@@ -722,7 +722,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
           this.api.postICS(ics.icsNo, !ics.postFlag)
             .subscribe({
               next: (res) => {
-                this.getALLPAR();
+                this.getALLICS();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
               },
@@ -879,10 +879,10 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.api.deletePAR(icsNo)
+        this.api.deleteICS(icsNo)
           .subscribe({
             next: (res) => {
-              this.getALLPAR();
+              this.getALLICS();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {
@@ -1274,8 +1274,23 @@ export class IcsComponent implements OnInit, AfterViewInit  {
     this.isITR = false;
     this.item = null;
     this.isOpen = false;
-    this.icsForm.reset();
-    this.itrForm.reset();
+    this.icsForm.reset({
+      icsNo: '',
+      entityName: '',
+      fund: '',
+      userID1: '',
+      userID2: '',
+    });
+
+    this.itrForm.reset({
+      searchPARItemKey: '',
+      userID1: '',
+      userID2: '',
+      userID3: '',
+      reason: '',
+      others: '',
+      type: '',
+    });
     this.userProfiles = [];
     this.icsItems = [];
     this.searchPARItems = [];

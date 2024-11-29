@@ -1360,14 +1360,29 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.isRepar = false;
     this.item = null;
     this.isOpen = false;
-    this.parForm.reset();
-    this.reparForm.reset();
+    this.parForm.reset({
+      lgu: '',
+      fund: '',
+      parNo: '',
+      userID1: '',
+      userID2: '',
+    });
+    this.reparForm.reset({
+      searchPARItemKey: '',
+      userID1: '',
+      userID2: '',
+      userID3: '',
+      reason: '',
+      others: '',
+      type: '',
+    });
     this.userProfiles = [];
     this.parItems = [];
     this.searchPARItems = [];
     this.selectedParItems = [];
     this.parItemKey = '';
     this.searchKey = '';
+
   }
 
   resetItemForm() {
@@ -1375,12 +1390,12 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.isModalOpen = false;
     this.itemForm.reset({
       iid: '',
-      qrCode: '',
       description: '',
       brand: '',
       model: '',
       serialNo: '',
       propertyNo: '',
+      qrCode: '',
       unit: '',
       amount: '',
       date_Acquired: this.today,

@@ -35,6 +35,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         console.log("Pipe Error Status: " + err.status);
         console.log(err);
         if (err.status == 0) {
+          messages = "Failed to establish connection!";
           toast.warning("Failed to establish connection!", "Error!", 5000);
           // authService.exit();
         } else if (err.status == 400) {// Check if the error response has a message property
