@@ -667,8 +667,15 @@ export class ApiService {
 
 
   /*----------------------- PAR ITEMS -----------------------*/
-  //PARITEM List
-  getAllPARItem(parNo: String): Observable<any> {
+  //PARITEM List By PAR No.
+  getAllPARItem(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}PARITEM/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  //PARITEM List By PAR No.
+  getAllPARItemByPARNo(parNo: String): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}PARITEM/Search?key=` + parNo)
       .pipe(
         catchError(this.handleError)
@@ -972,6 +979,81 @@ export class ApiService {
     console.log("Update ITR No. >>> : ", itrNo);
     console.log("Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}ITR/Post?id=${itrNo}`, postVal)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+
+   /*----------------------- PRS -----------------------*/
+  //PRS List
+  getAllPRS(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}PRS/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  //Search
+  searchPRS(key: string): Observable<any> {
+    // console.log("Search PRS by key: ", key);
+    return this.http.get<any>(`${this.apiUrl}PRS/Search?key=` + key)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Create
+  createPRS(details: any, updatedItems: Item[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+
+    console.log("Create PRS Payload: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}PRS/Create/`, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve
+  retrievePRS(prsNo: string): Observable<any> {
+    console.log("Retrieve PRS No.: ", prsNo);
+    return this.http.get<Item[]>(`${this.apiUrl}PRS/` + prsNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update
+  updatePRS(details: any, updatedItems: Item[]): Observable<any> {
+
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+    console.log("Update PRS: ", details);
+    console.log("Update request Payload: ", requestPayload);
+    return this.http.put<any>(`${this.apiUrl}PRS/Update?id=` + details.reparNo, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Delete
+  deletePRS(id: string): Observable<any> {
+    console.log("Delete PRS: ", id);
+    return this.http.delete<any>(`${this.apiUrl}PRS/Delete?id=` + id)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update Post Flag
+  postPRS(reparNo: string, postVal: boolean): Observable<any> {
+    console.log("Update PRS No. >>> : ", reparNo);
+    console.log("Update Post flag >>> : ", postVal);
+    return this.http.put<any>(`${this.apiUrl}PRS/Post?id=${reparNo}`, postVal)
       .pipe(
         catchError(this.handleError)
       );

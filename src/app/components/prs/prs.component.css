@@ -225,3 +225,9 @@ th {
   /* Set a reasonable max-height or adjust as needed */
   padding: 15px;
 }
+
+
+/* ############## OTHERS OPTION PURPOSE ################ */
+.option-others-size {
+  width: 25% !important; /* Adjust this percentage as needed */
+}
