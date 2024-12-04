@@ -749,11 +749,10 @@ export class ParComponent implements OnInit, AfterViewInit {
             if (!result.isConfirmed) {
               this.closeModal(this.AddEditModal);
             }
-          });
 
+          });
           this.resetForm();
           this.getALLPAR();
-
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving PAR Items', err);
@@ -868,6 +867,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving PAR Item', res);
           this.parItems = res;
+          this.openModal(this.AddEditModal); // Open the modal after patching
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
@@ -875,7 +875,6 @@ export class ParComponent implements OnInit, AfterViewInit {
         }
       });
 
-    this.openModal(this.AddEditModal); // Open the modal after patching
 
   }
 

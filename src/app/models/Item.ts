@@ -19,13 +19,13 @@ export class Item {
   amount: number | null;
   date_Acquired: Date | null;
   reparFlag : boolean = false;
-  reparNo : string | null | undefined;
+  reparNo : string | null  = null;
   prsFlag : boolean = false;
-  prsNo : string | null | undefined;
+  prsNo : string | null  = null;
 
 
   constructor(
-    parino: number | null,
+    parino: number | null = null,
     parNo: string,
     iid: string,
     brand: string,
@@ -38,9 +38,9 @@ export class Item {
     amount: number,
     date_Acquired: Date,
     reparFlag : boolean = false,
-    REPARNo : string | null = null,
+    reparNo : string | null = null,
     prsFlag : boolean = false,
-    PRSNo : string | null = null
+    prsNo : string | null = null
   ) {
 
     this.parino = parino;
@@ -55,6 +55,10 @@ export class Item {
     this.unit = unit;
     this.amount = amount;
     this.date_Acquired = date_Acquired;
+    this.reparFlag = reparFlag;
+    this.reparNo = reparNo;
+    this.prsFlag = prsFlag;
+    this.prsNo = prsNo;
   }
 
 

@@ -504,15 +504,15 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     if (this.userProfileForm.valid) {
 
       const userProfile = {
-        "lastname": this.userProfileForm.value['lastname'],
-        "firstname": this.userProfileForm.value['firstname'],
-        "middlename": this.userProfileForm.value['middlename'],
-        "sex": this.userProfileForm.value['sex'],
-        "branchID": this.userProfileForm.value['branchID'] ? this.userProfileForm.value['branchID'] : null,
-        "depID": this.userProfileForm.value['depID'] ? this.userProfileForm.value['depID'] : null,
-        "secID": this.userProfileForm.value['secID'] ? this.userProfileForm.value['secID'] : null,
-        "positionID": this.userProfileForm.value['positionID'] ? this.userProfileForm.value['positionID'] : null,
-        "userID": this.userAccount ? this.userAccount.userID : '0'
+        lastname: this.userProfileForm.value['lastname'],
+        firstname: this.userProfileForm.value['firstname'],
+        middlename: this.userProfileForm.value['middlename'],
+        sex: this.userProfileForm.value['sex'],
+        branchID: this.userProfileForm.value['branchID'] ? this.userProfileForm.value['branchID'] : null,
+        depID: this.userProfileForm.value['depID'] ? this.userProfileForm.value['depID'] : null,
+        secID: this.userProfileForm.value['secID'] ? this.userProfileForm.value['secID'] : null,
+        positionID: this.userProfileForm.value['positionID'] ? this.userProfileForm.value['positionID'] : null,
+        userID: this.userAccount ? this.userAccount.userID : '0'
       }
 
 

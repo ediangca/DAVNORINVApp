@@ -44,15 +44,25 @@ export class PrsComponent implements OnInit, AfterViewInit {
   prss: any = [];
   parItems: Item[] = [];
   prsItems: Item[] = [];
+  searchPRSItems: Item[] = [];
   selectedParItems: Item[] = []; // Array to track selected items from repar
   userProfiles: any = [];
   items: any = [];
   searchKey: string = '';
-  searchPARItemKey = '';
   parItemKey: string = '';
 
-  receivedBy: string = '';
-  issuedBy: string = '';
+  activeInput: 'received' | 'issued' | 'approved' | null = null;
+  receivedByID: string | null = null;
+  issuedByID: string | null = null;
+  approvedByID: string | null = null;
+  receivedID: string | null = null;
+  issuedID: string | null = null;
+  approvedID: string | null = null;
+
+
+  // receivedBy: string = '';
+  // issuedBy: string = '';
+  // approvedBy: string = '';
 
   errorMessage: string = '';
 
@@ -76,10 +86,9 @@ export class PrsComponent implements OnInit, AfterViewInit {
   parINo: number | null = null;
   propertyNo: string | null = null;
 
-  typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
+  typeOptions: string[] = ['Disposal', 'Repair', 'Return to Stock'];
   isCustomType = false;
 
-  isRepar: boolean = false;
   reprsForm!: FormGroup;
   repar: any | null | undefined;
   searchPARItems: Item[] = [];
@@ -124,6 +133,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
       userID3: ['', Validators.required],
+      searchPRSItemKey: ['']
     });
 
 
@@ -151,18 +161,21 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   setupModalClose() {
-    const modal = document.getElementById('AddEditModalForm')!;
-    if (modal) {
-      modal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
-      });
-    }
-    const viewPARModal = document.getElementById('ViewModalForm')!;
-    if (viewPARModal) {
-      viewPARModal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
-      });
-    }
+    this.addModalHiddenListener('AddEditModalForm');
+    this.addModalHiddenListener('ViewModalForm');
+
+    // const modal = document.getElementById('AddEditModalForm')!;
+    // if (modal) {
+    //   modal.addEventListener('hidden.bs.modal', () => {
+    //     this.resetForm();
+    //   });
+    // }
+    // const viewPARModal = document.getElementById('ViewModalForm')!;
+    // if (viewPARModal) {
+    //   viewPARModal.addEventListener('hidden.bs.modal', () => {
+    //     this.resetForm();
+    //   });
+    // }
 
     const itemModal = document.getElementById('ItemModalForm')!;
     if (itemModal) {
@@ -188,6 +201,11 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
       });
     }
+  }
+
+  addModalHiddenListener(modalId: string) {
+    const modal = document.getElementById(modalId);
+    modal?.addEventListener('hidden.bs.modal', () => this.resetForm());
   }
 
   openPARModal(modalElement: ElementRef) {
@@ -297,8 +315,10 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   onAddPRS() {
-    this.isEditMode = false;
-    this.parItems = [];
+    // this.isEditMode = false;
+    // this.prs = [];
+    // this.prsItems = [];
+    // this.searchPRSItems = [];
     this.openPARModal(this.AddEditModal);
   }
 
@@ -309,26 +329,22 @@ export class PrsComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.parItems.length < 1) {
+    if (this.prsItems.length < 1) {
       Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
       return;
     }
 
-    this.currentEditId = this.par.reparNo;
+    if (this.prsForm.valid && this.prsItems.length > 0) {
 
-    if (this.prsForm.valid && this.parItems.length > 0) {
-
-      this.logger.printLogs('i', 'PAR Form', this.prsForm.value);
+      this.logger.printLogs('i', 'PRS Form', this.prsForm.value);
 
       this.prs = {
-        reparNo: this.currentEditId,
-        parNo: this.prsForm.value['parNo'],
-        ttype: this.prsForm.value['type'],
+        prsNo: this.prsForm.value['prsNo'],
+        rtype: this.prsForm.value['type'],
         otype: this.prsForm.value['others'],
-        reason: this.prsForm.value['reason'],
-        receivedBy: this.prsForm.value['userID1'],
-        issuedBy: this.prsForm.value['userID2'],
-        approvedBy: this.prsForm.value['userID3'],
+        receivedBy: this.receivedID ? this.receivedID : null,
+        issuedBy: this.issuedID ? this.issuedID : null,
+        approvedBy: this.approvedID ? this.approvedID : null,
         postFlag: false,
         voidFlag: false,
         createdBy: this.userAccount.userID,
@@ -336,8 +352,10 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
 
       if (this.isEditMode) {
+        this.logger.printLogs('i', 'Updating...', this.prs);
         this.Update(this.prs)
-      }else {
+      } else {
+        this.logger.printLogs('i', 'Saving...', this.prs);
         this.Save(this.prs);
       }
 
@@ -345,113 +363,31 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   }
 
-
-  onSubmitREPAR() {
-
-    if (!this.reprsForm.valid) {
-      this.vf.validateFormFields(this.reprsForm);
-      return;
-    }
-
-    if (this.selectedParItems.length < 1) {
-      Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
-      return;
-    }
-
-    if (this.reprsForm.valid && this.parItems.length > 0) {
-
-      this.logger.printLogs('i', 'REPAR Form', this.par);
-      this.Save(this.par);
-
-    }
-
-  }
-
-
-  Save(par: any) {
-    if (!this.isRepar) {
-      this.logger.printLogs('i', 'Saving PAR', par);
-      this.api.createPAR(par)
-        .subscribe({
-          next: (res) => {
-            this.logger.printLogs('i', 'Saved Success', par);
-            this.saveParItems();
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Saving PAR', err);
-            Swal.fire('Denied', err, 'warning');
-          }
-        });
-    } else {
-
-
-      this.repar = {
-        reparNo: par.reparNo,
-        parNo: par.parNo,
-        receivedBy: this.reprsForm.value['userID1'],
-        issuedBy: par.receivedBy,
-        postFlag: false,
-        voidFlag: false,
-        createdBy: this.userAccount.userID,
-      }
-
-      Swal.fire({
-        title: 'Confirmation',
-        text: 'Do you want to REPAR Selected Item(s)?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.logger.printLogs('i', 'Saving REPAR', this.repar);
-
-          this.api.createREPAR(this.repar, this.selectedParItems)
-            .subscribe({
-              next: (res) => {
-                this.logger.printLogs('i', 'Saved Success', res);
-                Swal.fire('Saved', res.message, 'success');
-                this.logger.printLogs('i', 'Saved Success', res.details);
-
-                this.closeModal(this.ViewModal);
-              },
-              error: (err: any) => {
-                this.logger.printLogs('e', 'Error Saving REPAR', err);
-                Swal.fire('Denied', err, 'warning');
-              }
-            });
-        }
-      });
-
-    }
-  }
-
-  saveParItems() {
-    this.api.createPARItem(this.parItems)  // Send the array of items
+  Save(prs: any) {
+    this.logger.printLogs('i', 'Saving PRS', prs);
+    this.logger.printLogs('i', 'Saving PRS Item', this.prsItems);
+    this.api.createPRS(prs, this.prsItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', this.parItems);
-
+          this.logger.printLogs('i', 'Saved Success', prs);
           // Handle success, e.g., show a success message
           Swal.fire({
             title: 'Saved',
-            text: 'Do you want to add new PAR?',
+            text: 'Do you want to add new PRS?',
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'Yes',
             cancelButtonText: 'No',
           }).then((result) => {
             if (!result.isConfirmed) {
-              this.closeModal(this.AddEditModal);
+              this.resetForm();
             }
+            this.getAllPRS();
           });
-
-          this.resetForm();
-          this.getAllPRS();
 
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving PAR Items', err);
+          this.logger.printLogs('e', 'Error Saving PAR', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
@@ -528,8 +464,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   }
 
-  onEditREPAR(par: any) {
-    if (par.postFlag) {
+  onEditPRS(prs: any) {
+    if (prs.postFlag) {
       Swal.fire('Information!', 'Cannot edit posted REPAR.', 'warning');
       return;
     }
@@ -545,68 +481,74 @@ export class PrsComponent implements OnInit, AfterViewInit {
     }
 
     this.isEditMode = true;
-    this.par = par;
-    this.currentEditId = par.reparNo;
+    this.prs = prs;
+    this.currentEditId = prs.prsNo;
 
-    this.logger.printLogs('i', 'Restoring PAR', par);
+    this.logger.printLogs('i', 'Restoring PRS', prs);
+
+    this.issuedID = prs.issuedBy;
+    this.receivedID = prs.receivedBy;
+    this.approvedID = prs.approvedBy;
 
     this.prsForm.patchValue({
-      lgu: par.lgu,
-      fund: par.fund,
-      parNo: par.parNo,
-      type: par.ttype,
-      others: par.otype,
-      reason: par.reason,
-      userID3: par.approvedBy,
-      userID1: par.receivedBy,
-      userID2: par.issuedBy,
+      prsNo: prs.prsNo,
+      type: prs.rtype,
+      others: prs.otype,
+      userID3: prs.approved,
+      userID1: prs.received,
+      userID2: prs.issued,
     });
 
-    this.api.retrieveREPAR(this.currentEditId!)
+    this.api.retrievePRS(this.currentEditId!)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving REPAR Item', res);
-          this.repar = res.details;
-          this.parItems = res.parItems;
+          this.logger.printLogs('i', 'Retrieving PRS Item', res);
+          this.prs = res.details;
+          this.prsItems = res.prsItems;
+          this.openPARModal(this.AddEditModal); // Open the modal after patching
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving REPAR Item', err);
+          this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
           Swal.fire('Error', 'Failure to Retrieve REPAR Item.', 'error');
         }
       });
 
-    this.openPARModal(this.AddEditModal); // Open the modal after patching
 
   }
 
 
-  onViewREPAR(par: any) {
-    this.par = par;
-    this.currentEditId = par.reparNo;
-    this.logger.printLogs('i', 'Viewing REPAR', par);
+  onViewPRS(prs: any) {
+    this.prs = prs;
+    this.currentEditId = prs.prsNo;
+    this.logger.printLogs('i', 'Viewing PRS', prs);
 
     if (!this.onItemFound) {
       this.item = null;
     }
 
+    this.issuedID = prs.issuedBy;
+    this.receivedID = prs.receivedBy;
+    this.approvedID = prs.approvedBy;
+
     this.prsForm.patchValue({
-      lgu: par.lgu,
-      fund: par.fund,
-      parNo: par.parNo,
-      userID1: par.receivedBy, // These will now be patched correctly
-      userID2: par.issuedBy
+      prsNo: prs.prsNo,
+      type: prs.rtype,
+      others: prs.otype,
+      userID3: prs.approvedBy,
+      userID1: prs.receivedBy,
+      userID2: prs.issuedBy,
     });
 
-    this.api.retrieveREPAR(this.currentEditId!)
+    this.api.retrievePRS(this.currentEditId!)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving REPAR Item', res);
-          this.par = res.details;
-          this.parItems = res.parItems;
-          this.searchPARItems = this.parItems;
+          this.logger.printLogs('i', 'Retrieving PRS', res);
+          this.prs = res.details;
+          this.prsItems = res.prsItems;
+          this.searchPRSItems = this.prsItems;
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
+          this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
           Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
         }
       });
@@ -615,66 +557,31 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   }
 
-  onRepar(par: any) {
-    if (!par.postFlag) {
-      Swal.fire('Information!', 'Cannot REPAR unposted PAR.', 'warning');
-      return;
-    }
+  onDelete(prs: any) {
 
-    this.isRepar = true;
-    this.par = par;
-    this.logger.printLogs('i', 'Restoring PAR', par);
-
-    this.reprsForm.patchValue({
-      userID2: par.receivedBy,
-      searchPARItemKey: [''],
-    });
-
-    this.api.retrievePARItemByParNo(this.par.parNo)
-      .subscribe({
-        next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PAR Item', res);
-          this.parItems = res;
-          this.searchPARItems = this.parItems;
-
-          this.noOfParItems = this.parItems.filter((group: any) => group.reparFlag === false).length;
-          this.logger.printLogs('i', 'Number of PAR Item Retrieved', this.noOfParItems);
-        },
-        error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
-        }
-      });
-
-    this.openPARModal(this.ViewModal); // Open the modal after patching
-
-  }
-
-  onDelete(par: any) {
-
-    if (par.postFlag) {
+    if (prs.postFlag) {
       Swal.fire('Information!', 'Cannot delete posted REPAR.', 'warning');
       return;
     }
 
-    let reparNo = par.reparNo;
+    let prsNo = prs.prsNo;
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Remove REPAR #' + reparNo,
+      text: 'Remove PRS #' + prsNo,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.api.deleteREPAR(reparNo)
+        this.api.deletePRS(prsNo)
           .subscribe({
             next: (res) => {
               this.getAllPRS();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error on Deleting PAR', err);
+              this.logger.printLogs('e', 'Error on Deleting PRS', err);
               Swal.fire('Denied', err, 'warning');
             }
           });
@@ -792,6 +699,203 @@ export class PrsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  onAutoSuggestIssued() {
+    this.issuedID = null;
+    if (!this.issuedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'issued';
+      if (this.issuedByID.trim()) {
+        this.api.searchProfile(this.issuedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.issuedByID) {
+                this.selectIssued(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Issued By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Issued By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Issued By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectIssued(userProfile: any): void {
+    this.issuedID = userProfile.userID;
+
+    this.logger.printLogs('i', 'Selected to Issued', userProfile);
+
+    this.prsForm.patchValue({
+      userID2: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+  onAutoSuggestReceived() {
+    this.receivedID = null;
+    if (!this.receivedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'received';
+      if (this.receivedByID.trim()) {
+        this.api.searchProfile(this.receivedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.issuedByID) {
+                this.selectReceived(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Received By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Received By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Received By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectReceived(userProfile: any): void {
+    this.issuedID = userProfile.userID;
+
+    this.logger.printLogs('i', 'Selected to Received', userProfile);
+
+    this.prsForm.patchValue({
+      userID1: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+
+  onAutoSuggestApproved() {
+    this.approvedID = null;
+    if (!this.approvedByID) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      this.activeInput = 'approved';
+      if (this.approvedByID.trim()) {
+        this.api.searchProfile(this.approvedByID)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.issuedByID) {
+                this.selectApproved(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Approved By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Approved By', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Approved By', err);
+            }
+          });
+      }
+    }
+  }
+
+  selectApproved(userProfile: any): void {
+    this.issuedID = userProfile.userID;
+
+    this.logger.printLogs('i', 'Selected to Approved', userProfile);
+
+    this.prsForm.patchValue({
+      userID3: userProfile.fullName  // Patch the selected IID to the form
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+  onAutoSuggest(actionType: 'issued' | 'received' | 'approved') {
+
+    const searchValue = {
+      issued: this.issuedByID,
+      received: this.receivedByID,
+      approved: this.approvedByID
+    }[actionType];
+
+    if (!searchValue) {
+      this.userProfiles = [];
+      return;
+    }
+
+    this.activeInput = actionType;
+    if (searchValue.trim()) {
+      this.api.searchProfile(searchValue)
+        .subscribe({
+          next: (res) => {
+            if (res.length === 1 && res[0].fullName === searchValue) {
+              this.selectProfile(actionType, res[0]);
+              this.logger.printLogs('i', `Fetch Specific ${actionType} By`, res[0]);
+            } else {
+              this.userProfiles = res.slice(0, 5);
+              this.logger.printLogs('i', `Fetching ${actionType} By`, res);
+            }
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', `Error Fetching ${actionType} By`, err);
+          }
+        });
+    }
+  }
+
+  selectProfile(actionType: 'issued' | 'received' | 'approved', userProfile: any): void {
+    const formPatchMap = {
+      issued: 'userID2',
+      received: 'userID1',
+      approved: 'userID3'
+    };
+
+    this[`${actionType}ID`] = userProfile.userID;
+
+    this.logger.printLogs('i', `Selected to ${actionType.charAt(0).toUpperCase() + actionType.slice(1)}`, userProfile);
+
+    this.prsForm.patchValue({
+      [formPatchMap[actionType]]: userProfile.fullName
+    });
+
+    this.activeInput = null;
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+
+  searchPRSItem() {
+    this.parItemKey = this.prsForm.value['searchPRSItemKey'];
+
+    // Populate all items if the search key is empty
+    if (!this.parItemKey || this.parItemKey.trim() === "") {
+      this.prsItems = [...this.searchPRSItems];  // Reset to full list
+    } else {
+      console.log(this.parItemKey);
+      const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
+
+      this.prsItems = this.searchPRSItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
+        item.brand!.toLowerCase().includes(searchKey) ||
+        item.model!.toLowerCase().includes(searchKey) ||
+        item.serialNo!.toLowerCase().includes(searchKey) ||
+        item.propertyNo!.toLowerCase().includes(searchKey) ||
+        item.qrCode!.toLowerCase().includes(searchKey)
+      );
+    }
+  }
+
   onViewItem(item: Item) {
     this.item = item;
     this.parINo = item.parino;
@@ -813,7 +917,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
               .subscribe({
                 next: (res) => {
                   this.repar = res.details;
-                  this.logger.printLogs('i', 'Retreived REPAR No: ' + item.reparNo!, res.details);
+                  this.logger.printLogs('i', 'Retreived REPAR No: ' + item.reparNo!, this.repar);
                   this.openItemModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
@@ -822,7 +926,18 @@ export class PrsComponent implements OnInit, AfterViewInit {
                 }
               });
           } else {
-            this.openItemModal(this.ViewItemModal)
+            this.api.retrievePAR(item.parNo!)
+              .subscribe({
+                next: (res) => {
+                  this.par = res[0];
+                  this.logger.printLogs('i', 'Retreived PAR No: ' + item.parNo!, this.par);
+                  this.openItemModal(this.ViewItemModal)
+                },
+                error: (err: any) => {
+                  this.logger.printLogs('e', 'Error Retreiving PAR', err);
+                  Swal.fire('Denied', err, 'warning');
+                }
+              });
           }
 
         },
@@ -916,11 +1031,20 @@ export class PrsComponent implements OnInit, AfterViewInit {
   resetForm() {
     this.isEditMode = false;
     this.currentEditId = null;
+    this.prs = null;
     this.isModalOpen = false;
-    this.isRepar = false;
     this.item = null;
     this.isOpen = false;
+    this.parItems = [];
+    this.prsItems = [];
+    this.selectedParItems = [];
+    this.parItemKey = '';
+    this.searchKey = '';
+    this.issuedID = null;
+    this.receivedID = null;
+    this.approvedID = null;
     this.prsForm.reset({
+      type: '',
       userID1: '',
       userID2: '',
       userID3: ''
@@ -929,10 +1053,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
       userID1: '',
       userID2: ''
     });
-    this.parItems = [];
-    this.selectedParItems = [];
-    this.parItemKey = '';
-    this.searchKey = '';
   }
 
   resetItemForm() {
@@ -1042,7 +1162,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
             if (result.isConfirmed) {
               this.onItemFound = true;
               this.onCloseQRScanning(this.scannerAction);
-              this.onViewREPAR(this.par);
+              this.onViewPRS(this.par);
             } else {
               this.resumeScanning(this.scannerAction);
             }

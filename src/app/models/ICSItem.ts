@@ -20,7 +20,7 @@ export class ICSItem {
   amount: number | null;
   eul: number | null;
   itrFlag: boolean = false;
-  itrNo: string | null | undefined;
+  itrNo: string | null = null;
 
 
   // "icsItemNo": 1,
@@ -35,21 +35,21 @@ export class ICSItem {
   // "itrNo": null
 
   constructor(
-    icsItemNo: number | null,
+    icsItemNo: number | null = null,
     icsNo: string,
     iid: string,
-    brand: string | null | undefined,
-    model: string | null | undefined,
+    brand: string | null = null,
+    model: string | null = null,
     description: string,
-    serialNo: string | null | undefined,
-    propertyNo: string | null | undefined,
-    qrCode: string | null | undefined,
+    serialNo: string | null = null,
+    propertyNo: string | null = null,
+    qrCode: string | null = null,
     qty: number,
     unit: string,
     amount: number,
     eul: number,
     itrFlag: boolean = false,
-    itrNo: string | null | undefined
+    itrNo: string | null = null
   ) {
 
     this.icsItemNo = icsItemNo;

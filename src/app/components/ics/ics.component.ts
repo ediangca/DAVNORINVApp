@@ -611,6 +611,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
   Save(ics: any) {
     if (!this.isITR) {
       this.logger.printLogs('i', 'Saving ICS', ics);
+      this.logger.printLogs('i', 'Saving ICS Item', this.icsItems);
 
       this.api.createICS(ics, this.icsItems)
         .subscribe({

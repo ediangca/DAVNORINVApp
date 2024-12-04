@@ -76,7 +76,7 @@
               </a>
             </td>
             <td>{{formatDate(p.date_Created)}}</td>
-            <td>{{p.reparNo}}</td>
+            <td>{{p.prsNo}}</td>
             <td>{{p.issued}}</td>
             <td>{{p.received}}</td>
             <td>{{p.approved}}</td>
@@ -89,7 +89,7 @@
                 }@else{
                 <a class="edit"
                   type="button"
-                  (click)="onEditREPAR(p)"><i
+                  (click)="onEditPRS(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square"
                     data-toggle="tooltip" title="Edit"></i></a>
                 <a class="delete"
@@ -99,7 +99,7 @@
                     data-toggle="tooltip" title="Delete"></i></a>
                 <a class="success"
                   type="button"
-                  (click)="onViewREPAR(p)">
+                  (click)="onViewPRS(p)">
                   <i class="fa-sharp-duotone fa-solid fa-eye"
                     data-toggle="tooltip" title="View"></i>
                 </a>
@@ -146,8 +146,7 @@
             <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
               isEditMode
               ?
-              'Edit PRS' : 'Add New PRS'}} <em> {{ '#' + currentEditId
-                }}</em>
+              'Edit PRS #' + currentEditId: 'Add New PRS'}}
             </h1>
             <span><em> Property Return Slip</em></span>
           </div>
@@ -345,12 +344,119 @@
                     type="button"
                     (click)="onAddPARItem()">
                     <i class="fa-sharp-duotone fa-solid fa-plus"></i>&nbsp;
-                    <span class="fs-6">ADD</span></a>
+                    <span class="fs-6">ADD</span>
+                  </a>
                 </div>
               </div>
-
               <!-- Signatory -->
               <div class="row d-flex flex-row">
+                <!-- Issued By -->
+                <div class="col">
+
+                  @if(!(prsForm.controls['userID2'].invalid &&
+                  prsForm.hasError('required', 'userID2') &&
+                  prsForm.get('userID2')?.touched ||
+                  (prsForm.controls['userID2'].dirty &&
+                  prsForm.hasError('required', 'userID2')))){
+                  <small class="text-info">*
+                    Issued By</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="prsForm.controls['userID2'].invalid &&
+                  prsForm.hasError('required', 'userID2') &&
+                  prsForm.get('userID2')?.touched ||
+                  (prsForm.controls['userID2'].dirty &&
+                  prsForm.hasError('required', 'userID2'))">* Issued By is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="prsForm.controls['userID2'].invalid && prsForm.hasError('required', 'userID2')  && prsForm.get('userID2')?.touched ||
+                    (prsForm.controls['userID2'].dirty && prsForm.hasError('required', 'userID2'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(prsForm.controls['userID2'].invalid && prsForm.hasError('required', 'userID2') &&
+                      prsForm.get('userID2')?.touched || (prsForm.controls['userID2'].dirty && prsForm.hasError('required', 'userID2')))"></i>
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="prsForm.controls['userID2'].invalid && prsForm.hasError('required', 'userID2') &&  prsForm.get('userID2')?.touched ||
+                      (prsForm.controls['userID2'].dirty && prsForm.hasError('required', 'userID2'))"></i>
+
+                    <input type="text" class="form-control"
+                      id="navbarDropdown"
+                      formControlName="userID2"
+                      name="userID2"
+                      [(ngModel)]="issuedByID"
+                      placeholder="Issued By"
+                      (keyup)="onAutoSuggest('issued')"
+                      role="textbox">
+
+                  </div>
+                  <div class="recent-searches"
+                    *ngIf="userProfiles.length > 0  && activeInput === 'issued'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button"
+                        class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles"
+                        (click)="selectProfile('issued',up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+                </div>
+                <!-- Received By -->
+                <div class="col">
+
+                  @if(!(prsForm.controls['userID1'].invalid &&
+                  prsForm.hasError('required', 'userID1') &&
+                  prsForm.get('userID1')?.touched ||
+                  (prsForm.controls['userID1'].dirty &&
+                  prsForm.hasError('required', 'userID1')))){
+                  <small class="text-info">*
+                    Received By</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="prsForm.controls['userID1'].invalid &&
+                    prsForm.hasError('required', 'userID1') &&
+                    prsForm.get('userID1')?.touched ||
+                    (prsForm.controls['userID1'].dirty &&
+                    prsForm.hasError('required', 'userID1'))">* Received By is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="prsForm.controls['userID1'].invalid && prsForm.hasError('required', 'userID1')  && prsForm.get('userID1')?.touched ||
+                    (prsForm.controls['userID1'].dirty && prsForm.hasError('required', 'userID1'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(prsForm.controls['userID1'].invalid && prsForm.hasError('required', 'userID1') && prsForm.get('userID1')?.touched ||
+                      (prsForm.controls['userID1'].dirty && prsForm.hasError('required', 'userID1')))"></i>
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="prsForm.controls['userID1'].invalid && prsForm.hasError('required', 'userID1') &&  prsForm.get('userID1')?.touched ||
+                      (prsForm.controls['userID1'].dirty && prsForm.hasError('required', 'userID1'))"></i>
+
+                    <input type="text" class="form-control"
+                      id="navbarDropdown"
+                      formControlName="userID1"
+                      name="userID1"
+                      [(ngModel)]="receivedByID"
+                      placeholder="Received By"
+                      (keyup)="onAutoSuggest('received')"
+                      role="textbox">
+                  </div>
+
+                  <div class="recent-searches"
+                    *ngIf="userProfiles.length > 0  && activeInput === 'received'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button"
+                        class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles"
+                        (click)="selectProfile('received',up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+
+                </div>
                 <!-- Approved By -->
                 <div class="col">
                   @if(!(prsForm.controls['userID3'].invalid &&
@@ -385,101 +491,26 @@
                       *ngIf="prsForm.controls['userID3'].invalid && prsForm.hasError('required', 'userID3') &&  prsForm.get('userID3')?.touched ||
                     (prsForm.controls['userID3'].dirty && prsForm.hasError('required', 'userID3'))"></i>
 
-                    <select class="form-select" formControlName="userID3"
+                    <input type="text" class="form-control"
+                      id="navbarDropdown"
+                      formControlName="userID3"
                       name="userID3"
-                      id="userID3">
-                      <option value>Approved By</option>
-                      <option class="text-dark" *ngFor="let up of userProfiles"
-                        [value]="up.userID">{{ up.fullName }}</option>
-                    </select>
-                  </div>
-                </div>
-                <!-- Issued By -->
-                <div class="col">
-
-                  @if(!(prsForm.controls['userID2'].invalid &&
-                  prsForm.hasError('required', 'userID2') &&
-                  prsForm.get('userID2')?.touched ||
-                  (prsForm.controls['userID2'].dirty &&
-                  prsForm.hasError('required', 'userID2')))){
-                  <small class="text-info">*
-                    Issued By</small>
-                  }@else {
-                  <small class="text-danger"
-                    *ngIf="prsForm.controls['userID2'].invalid &&
-                  prsForm.hasError('required', 'userID2') &&
-                  prsForm.get('userID2')?.touched ||
-                  (prsForm.controls['userID2'].dirty &&
-                  prsForm.hasError('required', 'userID2'))">* Issued By is
-                    required</small>
-                  }
-
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="prsForm.controls['userID2'].invalid && prsForm.hasError('required', 'userID2')  && prsForm.get('userID2')?.touched || (prsForm.controls['userID2'].dirty &&
-                prsForm.hasError('required', 'userID2'))">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(prsForm.controls['userID2'].invalid &&
-                prsForm.hasError('required', 'userID2') &&
-                prsForm.get('userID2')?.touched ||
-                (prsForm.controls['userID2'].dirty &&
-                prsForm.hasError('required', 'userID2')))"></i>
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="prsForm.controls['userID2'].invalid && prsForm.hasError('required', 'userID2') &&  prsForm.get('userID2')?.touched ||
-                (prsForm.controls['userID2'].dirty && prsForm.hasError('required', 'userID2'))"></i>
-
-                    <select class="form-select" formControlName="userID2"
-                      name="userID2"
-                      id="userID2">
-                      <option value>Issued By</option>
-                      <option class="text-dark" *ngFor="let up of userProfiles"
-                        [value]="up.userID">{{ up.fullName }}</option>
-                    </select>
-
+                      [(ngModel)]="approvedByID"
+                      placeholder="Approved By"
+                      (keyup)="onAutoSuggest('approved')"
+                      role="textbox">
                   </div>
 
-                </div>
-                <!-- Received By -->
-                <div class="col">
-
-                  @if(!(prsForm.controls['userID1'].invalid &&
-                  prsForm.hasError('required', 'userID1') &&
-                  prsForm.get('userID1')?.touched ||
-                  (prsForm.controls['userID1'].dirty &&
-                  prsForm.hasError('required', 'userID1')))){
-                  <small class="text-info">*
-                    Received By</small>
-                  }@else {
-                  <small class="text-danger"
-                    *ngIf="prsForm.controls['userID1'].invalid &&
-                    prsForm.hasError('required', 'userID1') &&
-                    prsForm.get('userID1')?.touched ||
-                    (prsForm.controls['userID1'].dirty &&
-                    prsForm.hasError('required', 'userID1'))">* Received By is
-                    required</small>
-                  }
-
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="prsForm.controls['userID1'].invalid && prsForm.hasError('required', 'userID1')  && prsForm.get('userID1')?.touched || (prsForm.controls['userID1'].dirty &&
-                prsForm.hasError('required', 'userID1'))">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(prsForm.controls['userID1'].invalid &&
-                prsForm.hasError('required', 'userID1') &&
-                prsForm.get('userID1')?.touched ||
-                (prsForm.controls['userID1'].dirty &&
-                prsForm.hasError('required', 'userID1')))"></i>
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="prsForm.controls['userID1'].invalid && prsForm.hasError('required', 'userID1') &&  prsForm.get('userID1')?.touched ||
-                (prsForm.controls['userID1'].dirty && prsForm.hasError('required', 'userID1'))"></i>
-
-                    <select class="form-select" formControlName="userID1"
-                      name="userID1"
-                      id="userID1">
-                      <option value>Received By</option>
-                      <option class="text-dark" *ngFor="let up of userProfiles"
-                        [value]="up.userID">{{ up.fullName }}</option>
-                    </select>
+                  <div class="recent-searches"
+                    *ngIf="userProfiles.length > 0  && activeInput === 'approved'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button"
+                        class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles"
+                        (click)="selectProfile('approved', up)">
+                        {{ up.fullName }}</li>
+                    </ul>
                   </div>
                 </div>
               </div>
@@ -502,7 +533,7 @@
   </div>
 </div>
 
-<!-- PAR VIEW -->
+<!-- PRS VIEW -->
 <div #ViewModalForm class="modal fade" id="ViewModalForm">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content formGroup">
@@ -511,10 +542,10 @@
 
           <div class="d-flex flex-column">
             <h1 class="modal-title fs-5" id="staticBackdropLabel">
-              REPAR <em> {{ '#' + currentEditId
+              PRS <em> {{ '#' + currentEditId
                 }}</em>
             </h1>
-            <span><em>Re-property Acknowledgement Receipt</em></span>
+            <span><em>Property Return Slip</em></span>
           </div>
 
           <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -525,7 +556,6 @@
           <div class="card m-0">
             <!-- CARD HEADER -->
             <div class="card-header py-2">
-
               <div class="row">
                 <div class="col">
                   <div class="simple-accordion">
@@ -538,66 +568,64 @@
                     </button>
                     <div class="accordion-content" [class.show]="isOpen">
 
-                      <div class="row">
-                        <div class="col-lg">
-                          <small class="text-info">LGU</small>
-                          <div class="form-field d-flex align-items-center">
-                            <i
-                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                              *ngIf="false"></i>
-                            <input type="text"
-                              [value]="par?.lgu"
-                              class="form-control" placeholder="LGU" readonly>
-                          </div>
-                        </div>
-                      </div>
-
                       <div class="row d-flex flex-row">
-                        <div class="col">
-                          <small class="text-info">FUND</small>
+
+                        <!-- Return type -->
+                        <div class="col-4">
+                          <small class="text-info">PRS No.</small>
                           <div class="form-field d-flex align-items-center">
-                            <i
-                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                              *ngIf="false"></i>
                             <input type="text"
-                              [value]="par?.fund"
-                              class="form-control" placeholder="FUND" readonly>
-                          </div>
-                        </div>
-                        <div class="col">
-                          <small class="text-info">PAR No.</small>
-                          <div class="form-field d-flex align-items-center">
-                            <i
-                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                              *ngIf="false"></i>
-                            <input type="text"
-                              [value]="par?.parNo"
+                              [value]="prs?.prsNo"
                               class="form-control" placeholder="PAR No."
                               readonly>
                           </div>
                         </div>
+
+                        <!-- Return type -->
+                        <div class="col-8">
+
+                          <small class="text-info">* Purpose of Return</small>
+
+                          <div class="form-field d-flex align-items-center">
+
+                            <input type="text" [value]="prs?.rtype" name="type"
+                              id="type"
+                              class="form-control" placeholder="Transfer type"
+                              readonly>
+
+                            <input type="text" *ngIf="prs?.rtype == 'Others'"
+                              [value]="prs?.otype" name="type" id="type"
+                              class="form-control" placeholder="Others"
+                              readonly>
+
+                          </div>
+                        </div>
+
                       </div>
 
                       <div class="row d-flex flex-row">
-                        <div class="col">
-                          <small class="text-info">RECEIVED BY</small>
+                        <div class="col-4">
+                          <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <i
-                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                              *ngIf="false"></i>
-                            <input type="text" [value]="par?.received"
-                              class="form-control" placeholder="RECEIVED"
+                            <input type="text" [value]="prs?.issued"
+                              class="form-control" placeholder="Issued By"
                               readonly>
                           </div>
                         </div>
-                        <div class="col">
-                          <small class="text-info">ISSUED BY</small>
+                        <div class="col-4">
+                          <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <i
-                              class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                              *ngIf="false"></i>
-                            <input type="text" [value]="par?.issued"
-                              class="form-control" placeholder="Issued"
+                            <input type="text" [value]="prs?.received"
+                              class="form-control" placeholder="Recieved By"
+                              readonly>
+                          </div>
+                        </div>
+
+                        <div class="col-4">
+                          <small class="text-info">APPROVED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <input type="text" [value]="prs?.approved"
+                              class="form-control" placeholder="Approved BY"
                               readonly>
                           </div>
                         </div>
@@ -610,6 +638,8 @@
 
             </div>
             <!-- END OF CARD HEADER -->
+
+            <!-- CARD BODY -->
             <div class="card-body py-0">
               <!-- ITEM TABLE -->
               <div class="row m-0">
@@ -624,10 +654,12 @@
                       class="col d-flex justify-content-end align-items-center h-100">
                       <div class="searchbar">
                         <input class="search_input" type="text"
-                          name="searchPARItemKey"
-                          formControlName="searchPARItemKey"
+                          name="searchPRSItemKey"
+                          formControlName="searchPRSItemKey"
+                          (keyup)="searchPRSItem()"
                           placeholder="Search...">
-                        <a type="button" class="search_icon">
+                        <a type="button" class="search_icon"
+                          (click)="searchPRSItem()">
                           <i class="fas fa-search"></i>
                         </a>
                       </div>
@@ -657,7 +689,7 @@
                         <tbody>
 
                           <ng-container
-                            *ngFor="let p of parItems; let i = index">
+                            *ngFor="let p of prsItems; let i = index">
 
                             <!-- *ngIf="(!isRepar || !p.reparFlag) && parItems.length > 0" -->
                             <tr
@@ -690,69 +722,9 @@
               <!-- END OF ITEM TABLE -->
             </div>
             <!-- END OF CARD BODY -->
+
+            <!-- CARD FOOTER -->
             <div class="card-footer">
-              <div class="row d-flex flex-row"
-                *ngIf="noOfParItems > 0 && isRepar">
-
-                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-
-                  <small class="text-info">*
-                    Issued By</small>
-
-                  <div class="form-field d-flex align-items-center">
-
-                    <select class="form-select" formControlName="userID2"
-                      name="userID2"
-                      id="userID2" readonly>
-                      <option [value]="par.receivedBy ">{{ par.received
-                        }}</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-
-                  <small class="text-info">*
-                    Issue To</small>
-
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="prsForm.controls['userID1'].invalid && prsForm.hasError('required', 'userID1')  && prsForm.get('userID1')?.touched || (prsForm.controls['userID1'].dirty &&
-                  prsForm.hasError('required', 'userID1'))">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(prsForm.controls['userID1'].invalid &&
-                  prsForm.hasError('required', 'userID1') &&
-                  prsForm.get('userID1')?.touched ||
-                  (prsForm.controls['userID1'].dirty &&
-                  prsForm.hasError('required', 'userID1')))"></i>
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="prsForm.controls['userID1'].invalid && prsForm.hasError('required', 'userID1') &&  prsForm.get('userID1')?.touched ||
-                  (prsForm.controls['userID1'].dirty && prsForm.hasError('required', 'userID1'))"></i>
-
-                    <select class="form-select" formControlName="userID1"
-                      name="userID1"
-                      id="userID1">
-                      <option value>Issue To</option>
-                      <ng-container *ngFor="let up of userProfiles">
-                        <option
-                          class="text-dark"
-                          [value]="up.userID"
-                          *ngIf="up.userID !== par.receivedBy">
-                          {{ up.fullName }}
-                        </option>
-                      </ng-container>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row"
-                *ngIf="noOfParItems < 1 && isRepar">
-                <div class="col">
-                  <h6 class="p-3 text-center text-danger">ITEM(s) FULLY
-                    REPARED.</h6>
-                </div>
-              </div>
             </div>
             <!-- END OF CARD FOOTER -->
           </div>
@@ -761,14 +733,11 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-warning rounded-pill"
-            *ngIf="!par?.postFlag || false"
-            (click)="onEditREPAR(par)">Edit</button>
+            *ngIf="!prs?.postFlag || false"
+            (click)="onEditPRS(prs)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill"
             data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill"
-            *ngIf="isRepar && noOfParItems > 0"
-            (click)="onSubmitREPAR()">Save</button>
         </div>
       </form>
     </div>
@@ -833,6 +802,17 @@
                   <td class="fw-bold">Date Acquired:</td>
                   <td>{{ (item?.date_Acquired | date:'shortDate') || 'N/A'
                     }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">{{item?.reparFlag?
+                    "PTR No.:":"PAR No.:"}}</td>
+                  <td>{{ (item?.reparFlag? item?.reparNo:item?.parNo ) || 'N/A'
+                    }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Issued to:</td>
+                  <td>{{ (item?.reparFlag? repar?.received! : par?.received! )
+                    || 'N/A'}} </td>
                 </tr>
               </tbody>
             </table>
