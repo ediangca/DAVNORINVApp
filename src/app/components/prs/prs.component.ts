@@ -315,10 +315,10 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   onAddPRS() {
-    // this.isEditMode = false;
-    // this.prs = [];
-    // this.prsItems = [];
-    // this.searchPRSItems = [];
+    this.isEditMode = false;
+    this.prs = [];
+    this.prsItems = [];
+    this.searchPRSItems = [];
     this.openPARModal(this.AddEditModal);
   }
 
@@ -350,26 +350,25 @@ export class PrsComponent implements OnInit, AfterViewInit {
         createdBy: this.userAccount.userID,
       }
 
+      this.logger.printLogs('i', this.isEditMode ? 'Updating...' : 'Saving...', this.prs);
 
       if (this.isEditMode) {
-        this.logger.printLogs('i', 'Updating...', this.prs);
-        this.Update(this.prs)
+        this.Update()
       } else {
-        this.logger.printLogs('i', 'Saving...', this.prs);
-        this.Save(this.prs);
+        this.Save();
       }
 
     }
 
   }
 
-  Save(prs: any) {
-    this.logger.printLogs('i', 'Saving PRS', prs);
+  Save() {
+    this.logger.printLogs('i', 'Saving PRS', this.prs);
     this.logger.printLogs('i', 'Saving PRS Item', this.prsItems);
-    this.api.createPRS(prs, this.prsItems)
+    this.api.createPRS(this.prs, this.prsItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', prs);
+          this.logger.printLogs('i', 'Saved Success', this.prs);
           // Handle success, e.g., show a success message
           Swal.fire({
             title: 'Saved',
@@ -380,11 +379,11 @@ export class PrsComponent implements OnInit, AfterViewInit {
             cancelButtonText: 'No',
           }).then((result) => {
             if (!result.isConfirmed) {
-              this.resetForm();
+              this.closeModal(this.AddEditModal);
             }
-            this.getAllPRS();
           });
-
+          this.resetForm();
+          this.getAllPRS();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving PAR', err);
@@ -393,14 +392,21 @@ export class PrsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  Update(repar: any) {
-    this.logger.printLogs('i', 'Updating REPAR', repar);
+  Update() {
+    this.logger.printLogs('i', 'Updating PRS', this.prs);
+    this.logger.printLogs('i', 'Updating PRS Items', this.prsItems);
 
-    this.api.updateREPAR(this.repar, this.parItems)
+    this.api.updatePRS(this.prs, this.prsItems)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', res);
-          Swal.fire('Saved', res.message, 'success');
+          Swal.fire({
+            title: 'Updated',
+            text: res.message,
+            icon: 'success',
+            allowOutsideClick: false,
+            allowEscapeKey: false
+          });
           this.logger.printLogs('i', 'Saved Success', res.details);
           this.getAllPRS();
           this.closeModal(this.ViewModal);
@@ -445,12 +451,12 @@ export class PrsComponent implements OnInit, AfterViewInit {
       }).then((result) => {
         if (result.isConfirmed) {
 
-          this.api.postREPAR(prsNo, !prs.postFlag)
+          this.api.postPRS(prsNo, !prs.postFlag)
             .subscribe({
               next: (res) => {
-                this.getAllPRS();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
+                this.getAllPRS();
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Posting PRS!']);
@@ -466,7 +472,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   onEditPRS(prs: any) {
     if (prs.postFlag) {
-      Swal.fire('Information!', 'Cannot edit posted REPAR.', 'warning');
+      Swal.fire('Information!', 'Cannot edit posted PRS.', 'warning');
       return;
     }
 
@@ -474,12 +480,59 @@ export class PrsComponent implements OnInit, AfterViewInit {
       const modalElement = this.ViewModal.nativeElement;
       const modalInstance = bootstrap.Modal.getInstance(modalElement);
 
-      // Check if the modal is shown or not
       if (modalInstance && modalInstance._isShown) {
-        this.closeModal(this.ViewModal)
+        modalElement.addEventListener('hidden.bs.modal', () => {
+          // Perform actions after the modal is fully closed
+          this.handleEditPRSLogic(prs);
+        }, { once: true });  // { once: true } ensures the listener fires only once
+
+        this.closeModal(this.ViewModal);
+      } else {
+        // If the modal is not open, proceed immediately
+        this.handleEditPRSLogic(prs);
       }
+    } else {
+      // If ViewModal is undefined, proceed with the logic
+      this.handleEditPRSLogic(prs);
     }
 
+    // this.isEditMode = true;
+    // this.prs = prs;
+    // this.currentEditId = prs.prsNo;
+
+    // this.logger.printLogs('i', 'Restoring PRS', prs);
+
+    // this.issuedID = prs.issuedBy;
+    // this.receivedID = prs.receivedBy;
+    // this.approvedID = prs.approvedBy;
+
+    // this.prsForm.patchValue({
+    //   prsNo: prs.prsNo,
+    //   type: prs.rtype,
+    //   others: prs.otype,
+    //   userID3: prs.approved,
+    //   userID1: prs.received,
+    //   userID2: prs.issued,
+    // });
+
+    // this.api.retrievePRS(this.currentEditId!)
+    //   .subscribe({
+    //     next: (res) => {
+    //       this.logger.printLogs('i', 'Retrieving PRS Item', res);
+    //       this.prs = res.details;
+    //       this.prsItems = res.prsItems;
+    //       this.openPARModal(this.AddEditModal); // Open the modal after patching
+    //     },
+    //     error: (err: any) => {
+    //       this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
+    //       Swal.fire('Error', 'Failure to Retrieve REPAR Item.', 'error');
+    //     }
+    //   });
+
+
+  }
+
+  handleEditPRSLogic(prs: any) {
     this.isEditMode = true;
     this.prs = prs;
     this.currentEditId = prs.prsNo;
@@ -502,18 +555,16 @@ export class PrsComponent implements OnInit, AfterViewInit {
     this.api.retrievePRS(this.currentEditId!)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PRS Item', res);
+          this.logger.printLogs('i', 'Retrieving PRS Item.....', res);
           this.prs = res.details;
           this.prsItems = res.prsItems;
-          this.openPARModal(this.AddEditModal); // Open the modal after patching
+          this.openPARModal(this.AddEditModal);  // Open modal after ensuring the other one closed
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
+          this.logger.printLogs('e', 'Error Retrieving PRS Item', err);
           Swal.fire('Error', 'Failure to Retrieve REPAR Item.', 'error');
         }
       });
-
-
   }
 
 
@@ -549,7 +600,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
+          Swal.fire('Error', 'Failure to Retrieve PRS Item.', 'error');
         }
       });
 
@@ -560,7 +611,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   onDelete(prs: any) {
 
     if (prs.postFlag) {
-      Swal.fire('Information!', 'Cannot delete posted REPAR.', 'warning');
+      Swal.fire('Information!', 'Cannot delete posted PRS.', 'warning');
       return;
     }
 
@@ -606,6 +657,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
               item.prsFlag === false
           );
           this.logger.printLogs('i', 'LIST OF ACTIVE PAR ITEM ', this.parItems);
+          this.logger.printLogs('i', 'LIST OF ACTIVE PRS ITEM ', this.prsItems);
 
           this.parItems.length < 1 ? Swal.fire('Information', 'No Items can be return.', 'info') : this.openItemModal(this.ListItemModal);
         },
@@ -985,7 +1037,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
       if (result.isConfirmed) {
         // Execute delete Item where propertyNo matches to list
         if (this.propertyNo) {
-          this.prsItems = this.prsItems.filter(item => item.propertyNo !== this.propertyNo);
+          this.prsItems = this.prsItems.filter(items => items.propertyNo !== this.propertyNo);
+          this.logger.printLogs('i', 'Execute delete Item where propertyNo matches to list', this.prsItems);
           Swal.fire('Remove!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid property number.', 'warning');
@@ -1029,6 +1082,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   resetForm() {
+    console.log('Resetting Form...');
     this.isEditMode = false;
     this.currentEditId = null;
     this.prs = null;
@@ -1053,6 +1107,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
       userID1: '',
       userID2: ''
     });
+    this.getAllPRS();
   }
 
   resetItemForm() {
@@ -1207,29 +1262,26 @@ export class PrsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onPrintREPAR(reparNo: string) {
+  onPrintREPAR(prsNo: string) {
 
-    this.api.retrieveREPAR(reparNo)
+    this.api.retrievePRS(prsNo)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving REPAR', res);
-          const repar = res.details;
-          const parItems = res.parItems;
+          this.logger.printLogs('i', 'Retrieving PRS', res);
+          this.prs = res.details;
+          this.prsItems = res.prsItems;
 
-          this.printService.setModel(repar);
+          this.printService.setModel(this.prs);
 
           // Ensure par.parItems is an array or default to an empty array
-          const items = Array.isArray(parItems) ? parItems : [];
+          const items = Array.isArray(this.prsItems) ? this.prsItems : [];
           // Use forkJoin to wait for both observables to complete
           forkJoin([
             this.printService.setReceivedBy(res.details.receivedBy),
             this.printService.setIssuedBy(res.details.issuedBy),
-            this.printService.setApprovedBy(res.details.issuedBy)
+            this.printService.setApprovedBy(res.details.approvedBy)
           ] as Observable<any>[]).subscribe(() => {
             // Once both services complete, continue with the report generation
-            const parItems = res.parItems;
-            this.searchPARItems = this.parItems;
-            const items = Array.isArray(parItems) ? parItems : [];
 
             const rows = items.map((item: any, index: number) => `
               <tr ${item.qrCode ? `class="${item.qrCode}  item-row"` : ''}>
@@ -1251,17 +1303,19 @@ export class PrsComponent implements OnInit, AfterViewInit {
             // Generate the full report content
             const reportContent = `
 
-          <div class="watermark">PTR</div>
+          <div class="watermark">PRS</div>
 
           <div class="row">
             <div class="col-12">
-              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${repar.lgu || 'Default LGU'}</span></p>
+              <p class="fs-6">Name of Local Government Unit: <span class="fw-bold border-bottom ms-1">PROVINCIAL GOVERNMENT OF DAVAO DEL NORTE</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${repar.fund || 'Default LGU'}</span></p>
+              <p class="fs-6">PURPOSE: <span class="fw-bold border-bottom ms-1">
+              ${(((this.prs.rtype + '').toString().toLowerCase() == "others") ? this.prs.rtype + ' - ' + this.prs.otype : this.prs.rtype) || 'N/A'}
+              </span></p>
             </div>
             <div class="col-6">
-              <p class="text-end fs-6">PTR No.: <span class="fw-bold border-bottom ms-1">${repar.reparNo || 'Default PTR No.'}</span></p>
+              <p class="fs-6 text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${this.prs.prsNo || 'Default PTR No.'}</span></p>
             </div>
           </div>
 
@@ -1284,13 +1338,13 @@ export class PrsComponent implements OnInit, AfterViewInit {
             </table>`;
 
             // Print the report
-            this.printService.printReport('PTR', reportContent);
+            this.printService.printReport('PRS', reportContent);
 
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving RE-PAR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve RE-PAR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
+          Swal.fire('Error', 'Failure to Retrieve PRS Item.', 'error');
           return;
         }
       });

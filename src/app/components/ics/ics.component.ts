@@ -609,6 +609,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
 
   Save(ics: any) {
+
     if (!this.isITR) {
       this.logger.printLogs('i', 'Saving ICS', ics);
       this.logger.printLogs('i', 'Saving ICS Item', this.icsItems);
@@ -686,6 +687,8 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
 
   Update(ics: any) {
+
+
     this.logger.printLogs('i', 'Updating ICS', ics);
 
     this.api.updateICS(this.currentEditId!, ics, this.icsItems)
@@ -924,6 +927,18 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       Swal.fire('Information!', 'Item not available!', 'warning');
       return;
     }
+    if (await this.isListed(SerialNo)) {
+      Swal.fire('Information!', 'Serial No. already listed!', 'warning');
+      return;
+    }
+    if (await this.isListed(PropertyNo)) {
+      Swal.fire('Information!', 'Property No. already listed!', 'warning');
+      return;
+    }
+    if (await this.isListed(QRCode)) {
+      Swal.fire('Information!', 'QRCode already listed!', 'warning');
+      return;
+    }
 
     if (!this.isEditItemMode) {
 
@@ -965,8 +980,6 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
     } else {
 
-
-
       if (await this.isExistOnUpdate(this.ICSItemNo, PropertyNo)) {
         Swal.fire('Information!', 'Property No. already exists!', 'warning');
         return;
@@ -992,6 +1005,13 @@ export class IcsComponent implements OnInit, AfterViewInit  {
         this.closeModal(this.ItemModal);
       }
     }
+  }
+
+
+  isListed(key: string | null): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.icsItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key ).length > 0 ? resolve(true) : resolve(false);
+    });
   }
 
 
@@ -1205,7 +1225,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       if (result.isConfirmed) {
         // Execute delete Item where propertyNo matches to list
         if (this.ICSItemNo) {
-          this.icsItems = this.icsItems.filter(items => items.icsItemNo !== item.icsItemNo);
+          this.icsItems = this.icsItems.filter(items => items.propertyNo !== item.propertyNo);
           Swal.fire('Deleted!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid property number.', 'warning');
@@ -1433,7 +1453,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
                     </td>
                     <td style="font-size: small;">${ ((item?.qty || 0) * (item?.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }</td>
                     <td style="font-size: small;">${item.description || 'N/A'}</td>
-                    <td style="font-size: small;">${index + 1 || item.icsNo || item.icsItemNo || item.iid || 'N/A'}</td>
+                    <td style="font-size: small;">${item.propertyNo || index + 1 || item.icsNo || item.icsItemNo || item.iid || 'N/A'}</td>
               <td style="font-size: small;">${item.eul + ' year(s)' || 'N/A'}</td>
                   </tr>
                 `).join('');
@@ -1464,8 +1484,8 @@ export class IcsComponent implements OnInit, AfterViewInit  {
                                     <th class="text-center align-middle" style="font-size: small;" rowspan="2">UNIT</th>
                                     <th class="text-center align-middle" style="font-size: small;" colspan="2" >Amount</th>
                                     <th class="text-center align-middle" style="font-size: small; "rowspan="2">DESCRIPTION</th>
-                                    <th class="text-center align-middle" style="font-size: small; "rowspan="2">ITEM NO</th>
-                                    <th class="text-center align-middle" style="font-size: small; "rowspan="2">ESTIMATED USEFUL LIFE</th>
+                                    <th class="text-center align-middle" style="font-size: small; "rowspan="2">PROPERTY NO</th>
+                                    <th class="text-center align-middle" style="font-size: small; "rowspan="2">ESTIMATED <br> USEFUL LIFE</th>
                                 </tr>
 
                                 <tr>

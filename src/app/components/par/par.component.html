@@ -1,3 +1,6 @@
+
+<div class="row mt-5 d-none d-sm-block" style="height: 10px;"></div>
+
 <div class="container-xl">
   <div class="table-responsive scrollable" data-aos="zoom-in">
     <div class="table-wrapper">
@@ -5,7 +8,8 @@
 
         <div class="row d-flex align-items-center">
 
-          <div class="col-12 d-flex just justify-content-center align-items-center">
+          <div
+            class="col-12 d-flex just justify-content-center align-items-center">
             <div class="search" style="width: 100%;">
               <i
                 class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
@@ -386,7 +390,8 @@
                     parForm.hasError('required', 'userID1') &&
                     parForm.get('userID1')?.touched ||
                     (parForm.controls['userID1'].dirty &&
-                    parForm.hasError('required', 'userID1')) || (parForm.get('userID1')?.touched && receivedID === null)">* Received By is
+                    parForm.hasError('required', 'userID1')) || (parForm.get('userID1')?.touched && receivedID === null)">*
+                    Received By is
                     required</small>
                   }
 
@@ -443,7 +448,8 @@
                   parForm.hasError('required', 'userID2') &&
                   parForm.get('userID2')?.touched ||
                   (parForm.controls['userID2'].dirty &&
-                  parForm.hasError('required', 'userID2')) || (parForm.get('userID2')?.touched && issuedID === null)">* Issued By is
+                  parForm.hasError('required', 'userID2')) || (parForm.get('userID2')?.touched && issuedID === null)">*
+                    Issued By is
                     required</small>
                   }
 
@@ -749,7 +755,6 @@
                       class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
                       *ngIf="reparForm.controls['userID3'].invalid && reparForm.hasError('required', 'userID3') &&  reparForm.get('userID3')?.touched ||
                       (reparForm.controls['userID3'].dirty && reparForm.hasError('required', 'userID3')) || (reparForm.get('userID3')?.touched && approvedID === null)"></i>
-
 
                     <input type="text" class="form-control"
                       id="navbarDropdown"

@@ -1,8 +1,11 @@
 
 <div class="container-fluid bg p-0">
-  <div class="outer d-flex align-items-center justify-content-center">
-    <div class="panel">
-      <div class="panel-heading col d-flex align-items-center ">
+  <div class="outer d-flex align-items-center justify-content-center vh-100">
+    <div class="panel"
+      data-aos="flip-left"
+      data-aos-easing="ease-out-cubic"
+      data-aos-duration="500">
+      <div class="panel-heading d-flex align-items-center ">
         <a [routerLink]="['/']" routerLinkActive="router-link-active" href
           class="link">
           <img class="img img-fluid" [src]="ac.logoPath"

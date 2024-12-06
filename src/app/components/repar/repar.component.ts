@@ -1170,7 +1170,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
       if (result.isConfirmed) {
         // Execute delete Item where propertyNo matches to list
         if (this.propertyNo) {
-          this.parItems = this.parItems.filter(item => item.propertyNo !== this.propertyNo);
+          this.parItems = this.parItems.filter(items => items.propertyNo !== this.propertyNo);
           Swal.fire('Deleted!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid property number.', 'warning');
@@ -1435,18 +1435,22 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
           <div class="row">
             <div class="col-12">
-              <p class="">LGU: <span class="fw-bold border-bottom ms-1">${repar.lgu || 'Default LGU'}</span></p>
+              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${repar.lgu || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="">FUND: <span class="fw-bold border-bottom ms-1">${repar.fund || 'Default LGU'}</span></p>
+              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${repar.fund || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${repar.reparNo || 'Default PTR No.'}</span></p>
+              <p class="fs-6 text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${repar.reparNo || 'Default PTR No.'}</span></p>
             </div>
-            <div class="col-12">
-              <p class="">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">
+            <div class="col-6">
+              <p class="fs-6">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">
               ${(((repar.ttype + '').toString().toLowerCase() == "others") ? repar.ttype + ' - ' + repar.otype : repar.ttype) || 'N/A'}
               </span></p>
+            </div>
+            <div class="col-6">
+              <p class="fs-6 text-end">Date No.: <span class="fw-bold border-bottom ms-1">
+              ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></p>
             </div>
           </div>
 

@@ -4,9 +4,11 @@
   <div class="col-md-12 col-lg-12">
     <!-- Carousel -->
     <div class="card-carousel">
-      <button class="carousel-btn prev" id="prev" aria-label="Previous Slide">‹</button>
+      <button class="carousel-btn prev" id="prev"
+        aria-label="Previous Slide">‹</button>
       <div class="carousel-container">
         <div class="carousel-track" id="carousel-track">
+          <!-- PAR -->
           <div class="card l-bg-cherry"
             data-aos="flip-left"
             data-aos-easing="ease-out-cubic"
@@ -20,7 +22,8 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2 class="d-flex align-items-center mb-0">{{totalPAR}}</h2>
+                  <h2
+                    class="d-flex align-items-center mb-0">{{census.totalPAR || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
                   <span>12.5% <i class="fa fa-arrow-up"></i></span>
@@ -28,7 +31,8 @@
               </div>
             </div>
           </div>
-          <div class="card l-bg-blue-dark"
+          <!-- PTR -->
+          <div class="card l-bg-green-dark"
             data-aos="flip-left"
             data-aos-easing="ease-out-cubic"
             data-aos-duration="1000">
@@ -37,11 +41,12 @@
                 <i class="fas fa-share-from-square"></i>
               </div>
               <div class="mb-4">
-                <h5 class="card-title mb-0">TOTAL REPAR</h5>
+                <h5 class="card-title mb-0">TOTAL PTR</h5>
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2 class="d-flex align-items-center mb-0">{{totalREPAR}}</h2>
+                  <h2
+                    class="d-flex align-items-center mb-0">{{census.totalREPAR || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
                   <span>12.5% <i class="fa fa-arrow-up"></i></span>
@@ -49,6 +54,30 @@
               </div>
             </div>
           </div>
+          <!-- PRS -->
+          <div class="card l-bg-blue-dark"
+            data-aos="flip-left"
+            data-aos-easing="ease-out-cubic"
+            data-aos-duration="2500">
+            <div class="card-statistic-3 p-4">
+              <div class="card-icon card-icon-large">
+                <i class="fas fa-rotate-left"></i>
+              </div>
+              <div class="mb-4">
+                <h5 class="card-title mb-0">TOTAL PRS</h5>
+              </div>
+              <div class="row align-items-center mb-2 d-flex">
+                <div class="col-8">
+                  <h2
+                    class="d-flex align-items-center mb-0">{{census.totalPAR || 0}}</h2>
+                </div>
+                <div class="col-4 text-right">
+                  <span>12.5% <i class="fa fa-arrow-up"></i></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ICS -->
           <div class="card l-bg-orange-dark"
             data-aos="flip-left"
             data-aos-easing="ease-out-cubic"
@@ -62,7 +91,8 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2 class="d-flex align-items-center mb-0">{{totalICS}}</h2>
+                  <h2
+                    class="d-flex align-items-center mb-0">{{census.totalICS || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
                   <span>12.5% <i class="fa fa-arrow-up"></i></span>
@@ -70,6 +100,7 @@
               </div>
             </div>
           </div>
+          <!-- ITR -->
           <div class="card l-bg-green-dark"
             data-aos="flip-left"
             data-aos-easing="ease-out-cubic"
@@ -83,7 +114,8 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2 class="d-flex align-items-center mb-0">{{totalITR}}</h2>
+                  <h2
+                    class="d-flex align-items-center mb-0">{{census.totalITR || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
                   <span>12.5% <i class="fa fa-arrow-up"></i></span>
@@ -91,6 +123,7 @@
               </div>
             </div>
           </div>
+          <!-- RRSP -->
           <div class="card l-bg-blue-dark"
             data-aos="flip-left"
             data-aos-easing="ease-out-cubic"
@@ -104,28 +137,8 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2 class="d-flex align-items-center mb-0">{{totalPAR}}</h2>
-                </div>
-                <div class="col-4 text-right">
-                  <span>12.5% <i class="fa fa-arrow-up"></i></span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card l-bg-cherry"
-            data-aos="flip-left"
-            data-aos-easing="ease-out-cubic"
-            data-aos-duration="2500">
-            <div class="card-statistic-3 p-4">
-              <div class="card-icon card-icon-large">
-                <i class="fas fa-rotate-left"></i>
-              </div>
-              <div class="mb-4">
-                <h5 class="card-title mb-0">TOTAL PRS</h5>
-              </div>
-              <div class="row align-items-center mb-2 d-flex">
-                <div class="col-8">
-                  <h2 class="d-flex align-items-center mb-0">{{totalPAR}}</h2>
+                  <h2
+                    class="d-flex align-items-center mb-0">{{census.totalPAR || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
                   <span>12.5% <i class="fa fa-arrow-up"></i></span>
@@ -136,26 +149,32 @@
           <!-- Repeat similar card structures as needed -->
         </div>
       </div>
-      <button class="carousel-btn next" id="next" aria-label="Next Slide">›</button>
+      <button class="carousel-btn next" id="next"
+        aria-label="Next Slide">›</button>
     </div>
   </div>
   <div class="col-md-12 col-lg-8">
   </div>
   <div class="col-md-12 col-lg-4">
-    <div class="card logs">
+
+    <!-- RECENTLY ADDED -->
+    <div class="card logs"
+      data-aos="fade-left"
+      data-aos-easing="linear"
+      data-aos-duration="500">
       <div class="card-header">
         <div class="flex-wrap d-flex justify-content-between">
           <div class="header-title">
             <h4 class="mb-2">
-              Activity Overview</h4>
-            <p class="mb-0">
+              Recently Added</h4>
+            <!-- <p class="mb-0">
               <svg width="24" height="24"
                 viewBox="0 0 24 24" class="me-2">
                 <path fill="#17904b"
                   d="M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z"></path>
               </svg>
               16% this month
-            </p>
+            </p> -->
           </div>
         </div>
       </div>
@@ -196,14 +215,44 @@
         </div>
       </div>
     </div>
-    <div class="card user-cencus">
-      <div class="text-center card-body d-flex justify-content-around">
-        <div>
-          <h2 class="mb-2">750<small>K</small></h2>
-          <p class="mb-0 text-gray">Website Visitors</p>
+
+    <!-- TOTAL CENSUS -->
+    <div class="card user-census"
+      data-aos="fade-up"
+      data-aos-easing="linear"
+      data-aos-duration="500">
+      <div
+        class="card-body d-flex justify-content-around align-items-center text-center">
+        <!-- Items Section -->
+        <div class="d-flex flex-column align-items-center">
+          <div class="d-flex">
+            <div class="me-3">
+              <h2 class="mb-2">
+                {{census.totalItemsAbove50 || 0}}
+                <small class="fs-6 text-success">
+                  <i class="fa fa-arrow-up"></i> 50K
+                </small>
+              </h2>
+            </div>
+            <div>
+              <h2 class="mb-2">
+                {{census.totalItemsBelow50 || 0}}
+                <small class="fs-6 text-danger">
+                  <i class="fa fa-arrow-down"></i> 50K
+                </small>
+              </h2>
+            </div>
+          </div>
+          <p class="mb-0 text-gray">Total Items</p>
         </div>
-        <hr class="hr-vertial"><div><h2 class="mb-2">7,500</h2>
-          <p class="mb-0 text-gray">New Customers</p>
+
+        <!-- Vertical Divider -->
+        <div class="vr mx-4"></div>
+
+        <!-- Users Section -->
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="mb-2">{{census.totalUsers}}</h2>
+          <p class="mb-0 text-gray">Registered User</p>
         </div>
       </div>
     </div>

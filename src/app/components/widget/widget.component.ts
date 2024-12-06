@@ -10,11 +10,8 @@ import AOS from 'aos';
 })
 
 export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-  totalPAR: number = 0;
-  totalREPAR: number = 0;
-  totalITR: number = 0;
-  totalICS: number = 0;
 
+  census: any | null = null;
   prevBtn!: HTMLButtonElement;
   nextBtn!: HTMLButtonElement;
   track!: HTMLElement;
@@ -63,10 +60,7 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.api.getCencus().subscribe({
       next: (res) => {
         console.log('Cencus : ', res);
-        this.totalPAR = res[0].totalPAR;
-        this.totalREPAR = res[0].totalREPAR;
-        this.totalITR = res[0].totalITR;
-        this.totalICS = res[0].totalICS;
+        this.census = res[0];
       },
       error: (err: any) => {
         console.log('Error Fetching User Groups:', err);

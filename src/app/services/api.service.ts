@@ -1034,7 +1034,7 @@ export class ApiService {
     };
     console.log("Update PRS: ", details);
     console.log("Update request Payload: ", requestPayload);
-    return this.http.put<any>(`${this.apiUrl}PRS/Update?id=` + details.reparNo, requestPayload)
+    return this.http.put<any>(`${this.apiUrl}PRS/Update?id=` + details.prsNo, requestPayload)
       .pipe(
         catchError(this.handleError)
       );

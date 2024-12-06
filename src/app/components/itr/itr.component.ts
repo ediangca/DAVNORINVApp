@@ -978,7 +978,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
       if (result.isConfirmed) {
         // Execute delete Item where propertyNo matches to list
         if (description) {
-          this.itrItems = this.itrItems.filter(item => item.description !== description);
+          this.itrItems = this.itrItems.filter(items => items.propertyNo !== item.propertyNo);
           Swal.fire('Deleted!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid Item.', 'warning');
@@ -1132,19 +1132,23 @@ export class ItrComponent implements OnInit, AfterViewInit {
           <div class="watermark">ITR</div>
 
           <div class="row">
-            <div class="col-12">
-              <p class="">LGU: <span class="fw-bold border-bottom ms-1">${itr.entityName || 'N/A'}</span></p>
+            <div class="col-12 ">
+              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${itr.entityName || 'N/A'}</span></p>
             </div>
             <div class="col-6">
-              <p class="">FUND: <span class="fw-bold border-bottom ms-1">${itr.fund || 'N/A'}</span></p>
+              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${itr.fund || 'N/A'}</span></p>
             </div>
             <div class="col-6">
-              <p class="text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${itr.itrNo || 'N/A'}</span></p>
+              <p class="fs-6 text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${itr.itrNo || 'N/A'}</span></p>
             </div>
-            <div class="col-12">
-              <p class="">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">
+            <div class="col-6">
+              <p class="fs-6">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">
               ${(((itr.ttype + '').toString().toLowerCase() == "others") ? itr.ttype + ' - ' + itr.otype : itr.ttype) || 'N/A'}
               </span></p>
+            </div>
+            <div class="col-6">
+              <p class="fs-6 text-end">Date No.: <span class="fw-bold border-bottom ms-1">
+              ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></p>
             </div>
           </div>
 

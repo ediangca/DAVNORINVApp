@@ -172,103 +172,226 @@ export class PrintService {
             <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
           </div>
         </div>`;
-    } else {
+    }else if (title === "prs") {
+      this.footer = `
+        <div class="row mt-3">
+          <div class="col-4 border">
+            <p class="fw-bold mb-5">Approved by:</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.approvedByProfile?.fullName || ''}</p>
+            <p class="text-center border-top">Signature over Printed Name of End User</p>
+          </div>
+          <div class="col-4 border">
+            <p class="fw-bold mb-5">Issued by:</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.issuedByProfile?.fullName || ''}</p>
+            <p class="text-center border-top">Signature over Printed Name and/or Property Custodian</p>
+          </div>
+          <div class="col-4 border">
+            <p class="fw-bold  mb-5">Received by:</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.receivedByProfile?.fullName || ''}</p>
+            <p class="text-center border-top">Signature over Printed Name of End User</p>
+          </div>
+          <div class="col-4 border py-2">
+            <p class="mb-0">Position: <strong>${this.approvedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.approvedByProfile?.branch || ''} - ${this.approvedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Date:</p>
+          </div>
+          <div class="col-4 border py-2">
+            <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Date:</p>
+          </div>
+          <div class="col-4 border py-2">
+            <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
+          </div>
+        </div>`;
+    }else {
       this.footer = ``;
     }
   }
 
 
   printReport(title: string, reportContent: string): void {
-    const printWindow = window.open('', '_blank');
-    this.setFooter(title);
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-        <head>
-          <title>${title} Report</title>
 
-          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-            <style>
-              @media print {
-                .footer {
-                  position: fixed;
-                  bottom: 0;
-                  left: 0;
-                  right: 0;
-                }
-                .item-row > th, .item-row > td{
-                  font-size: 12px;
-                }
-                p{
-                  font-size: 12px;
-                }
+    // Create an iframe element
+  const iframe = document.createElement('iframe');
 
-                .watermark {
-                  position: absolute;
-                  top: 30%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
-                  font-size: 8rem;
-                  color: rgba(0, 0, 0, 0.1); /* Adjust color and opacity for watermark effect */
-                  z-index: 9999; /* Ensure watermark is behind other content */
-                  pointer-events: none; /* Prevent any interaction with the watermark */
-                  font-weight: bold;
-                  user-select: none;
-                  transform: rotate(-45deg) translate(-50%, -50%);
-                }
-              }
-            </style>
-          </head>
-        <body>
-          <div class="container-fluid">
+  // Style the iframe to be invisible
+  iframe.style.position = 'absolute';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-              <img src="../../../assets/images/logo/ddn-logo.gif" alt="DDNLogo Left" style="height: 80px;">
-              <div>
-                <h6 style="text-align: center; flex-grow: 1;">Republic of the Philippines <br>
-                Provincial Goverment of Davao del Norte <br>
-                Goverment Center, Mankilam, Tagum City</h6>
-              </div>
-              <img src="../../../assets/images/logo/logo-lg.png" alt="Logo Left" style="height: 80px;">
+  // Append the iframe to the body
+  document.body.appendChild(iframe);
+  this.setFooter(title);
+
+  // Access the iframe's document
+  const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
+  iframeDoc!.open();
+  iframeDoc!.write(`
+    <html>
+      <head>
+        <title>${title} Report</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+          @media print {
+            .footer {
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              right: 0;
+            }
+            .item-row > th, .item-row > td {
+              font-size: 12px;
+            }
+            p {
+              font-size: 12px;
+            }
+            .watermark {
+              position: absolute;
+              top: 30%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              font-size: 8rem;
+              color: rgba(0, 0, 0, 0.1);
+              z-index: 9999;
+              pointer-events: none;
+              font-weight: bold;
+              user-select: none;
+              transform: rotate(-45deg) translate(-50%, -50%);
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container-fluid">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <img src="../../../assets/images/logo/ddn-logo.gif" alt="DDNLogo Left" style="height: 80px;">
+            <div>
+              <h6 style="text-align: center; flex-grow: 1;">
+                Republic of the Philippines <br>
+                Provincial Government of Davao del Norte <br>
+                Government Center, Mankilam, Tagum City
+              </h6>
             </div>
-
-            <div class="row mb-3">
-              <div class="col text-center">
-                <h5>${this.getTitleDetail(title)}</h5>
-              </div>
-            </div>
-
-              ${reportContent}
-
-
-            <!-- Footer -->
-            <div class="footer p-2">
-                ${this.footer}
-
-                <!-- Signature Section -->
-                <hr>
-                <p>&copy; ${new Date().getFullYear()} Provincial Government of
-                    Davao
-                    del Norte. All rights reserved.</p>
+            <img src="../../../assets/images/logo/logo-lg.png" alt="Logo Right" style="height: 80px;">
+          </div>
+          <div class="row mb-3">
+            <div class="col text-center">
+              <h5>${this.getTitleDetail(title)}</h5>
             </div>
           </div>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.onafterprint = () => printWindow.close();
-      printWindow.onclose = () => {
-        this.receivedByProfile = [];
-        this.issuedByProfile = [];
-      }
-      this.receivedByProfile = [];
-      this.issuedByProfile = [];
+          ${reportContent}
+          <div class="footer p-2">
+            ${this.footer}
+            <hr>
+            <p>&copy; ${new Date().getFullYear()} Provincial Government of Davao del Norte. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `);
+
+  // Close the document stream
+  iframeDoc!.close();
+
+  // Trigger the print
+  iframe.contentWindow?.focus();
+  iframe.contentWindow?.print();
+
+  // Clean up the iframe after printing
+  iframe.contentWindow!.onafterprint = () => document.body.removeChild(iframe);
 
 
+    // const printWindow = window.open('', '_blank');
+    // this.setFooter(title);
+    // if (printWindow) {
+    //   printWindow.document.write(`
+    //     <html>
+    //     <head>
+    //       <title>${title} Report</title>
 
-    }
+    //       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    //         <style>
+    //           @media print {
+    //             .footer {
+    //               position: fixed;
+    //               bottom: 0;
+    //               left: 0;
+    //               right: 0;
+    //             }
+    //             .item-row > th, .item-row > td{
+    //               font-size: 12px;
+    //             }
+    //             p{
+    //               font-size: 12px;
+    //             }
+
+    //             .watermark {
+    //               position: absolute;
+    //               top: 30%;
+    //               left: 50%;
+    //               transform: translate(-50%, -50%);
+    //               font-size: 8rem;
+    //               color: rgba(0, 0, 0, 0.1); /* Adjust color and opacity for watermark effect */
+    //               z-index: 9999; /* Ensure watermark is behind other content */
+    //               pointer-events: none; /* Prevent any interaction with the watermark */
+    //               font-weight: bold;
+    //               user-select: none;
+    //               transform: rotate(-45deg) translate(-50%, -50%);
+    //             }
+    //           }
+    //         </style>
+    //       </head>
+    //     <body>
+    //       <div class="container-fluid">
+
+    //         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    //           <img src="../../../assets/images/logo/ddn-logo.gif" alt="DDNLogo Left" style="height: 80px;">
+    //           <div>
+    //             <h6 style="text-align: center; flex-grow: 1;">Republic of the Philippines <br>
+    //             Provincial Goverment of Davao del Norte <br>
+    //             Goverment Center, Mankilam, Tagum City</h6>
+    //           </div>
+    //           <img src="../../../assets/images/logo/logo-lg.png" alt="Logo Left" style="height: 80px;">
+    //         </div>
+
+    //         <div class="row mb-3">
+    //           <div class="col text-center">
+    //             <h5>${this.getTitleDetail(title)}</h5>
+    //           </div>
+    //         </div>
+
+    //           ${reportContent}
+
+
+    //         <!-- Footer -->
+    //         <div class="footer p-2">
+    //             ${this.footer}
+
+    //             <!-- Signature Section -->
+    //             <hr>
+    //             <p>&copy; ${new Date().getFullYear()} Provincial Government of
+    //                 Davao
+    //                 del Norte. All rights reserved.</p>
+    //         </div>
+    //       </div>
+    //     </body>
+    //     </html>
+    //   `);
+    //   printWindow.document.close();
+    //   printWindow.focus();
+    //   printWindow.print();
+    //   printWindow.onafterprint = () => printWindow.close();
+    //   printWindow.onclose = () => {
+    //     this.receivedByProfile = [];
+    //     this.issuedByProfile = [];
+    //   }
+    //   this.receivedByProfile = [];
+    //   this.issuedByProfile = [];
+    // }
   }
 
 
@@ -285,6 +408,8 @@ export class PrintService {
         return 'INVENTORY TRANFER REPORT'
       case 'ptr':
         return 'PROPERTY TRANSFER REPORT'
+      case 'prs':
+        return 'PROPERTY RETURN SLIP'
       default:
         return 'TITLE'
     }

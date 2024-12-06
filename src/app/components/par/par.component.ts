@@ -1015,16 +1015,30 @@ export class ParComponent implements OnInit, AfterViewInit {
       Swal.fire('Information!', 'Item not available!', 'warning');
       return;
     }
+    if (await this.isListed(SerialNo)) {
+      Swal.fire('Information!', 'Serial No. already listed!', 'warning');
+      return;
+    }
+    if (await this.isListed(PropertyNo)) {
+      Swal.fire('Information!', 'Property No. already listed!', 'warning');
+      return;
+    }
+    if (await this.isListed(QRCode)) {
+      Swal.fire('Information!', 'QRCode already listed!', 'warning');
+      return;
+    }
+
 
     if (!this.isEditItemMode) {
 
-      if (await this.isExist(PropertyNo)) {
-        Swal.fire('Information!', 'Property No. already exists!', 'warning');
-        return;
-      }
 
       if (await this.isExist(SerialNo)) {
         Swal.fire('Information!', 'Serial No. already exists!', 'warning');
+        return;
+      }
+
+      if (await this.isExist(PropertyNo)) {
+        Swal.fire('Information!', 'Property No. already exists!', 'warning');
         return;
       }
 
@@ -1078,6 +1092,11 @@ export class ParComponent implements OnInit, AfterViewInit {
     }
   }
 
+  isListed(key: string | null): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.parItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key ).length > 0 ? resolve(true) : resolve(false);
+    });
+  }
 
   isExist(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -1289,7 +1308,7 @@ export class ParComponent implements OnInit, AfterViewInit {
       if (result.isConfirmed) {
         // Execute delete Item where propertyNo matches to list
         if (this.propertyNo) {
-          this.parItems = this.parItems.filter(item => item.propertyNo !== this.propertyNo);
+          this.parItems = this.parItems.filter(items => items.propertyNo !== this.propertyNo);
           Swal.fire('Deleted!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid property number.', 'warning');

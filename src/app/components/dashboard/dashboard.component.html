@@ -52,6 +52,7 @@
 
 <!-- Main content area -->
 <main class="main-content">
+
   <div class="position-relative iq-banner">
     <!--Nav Start-->
     <nav
@@ -174,14 +175,11 @@
     </div>
 
   </div>
-  <div class="container-fluid  content-inner">
-    <div class="row mt-5 d-none d-sm-block">
-      <div class="col">
-        &nbsp;
-      </div>
-    </div>
-    <router-outlet></router-outlet>
-    <div class="row">
+
+  <div class="container-fluid content-inner py-0">
+    <router-outlet>
+    </router-outlet>
+    <div class="row mt-n5">
       <div class="col">
         <app-widget class="widget"></app-widget>
       </div>
