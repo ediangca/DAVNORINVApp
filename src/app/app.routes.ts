@@ -22,13 +22,18 @@ import { UsergroupComponent } from './components/settings/usergroup/usergroup.co
 import { RrspComponent } from './components/rrsp/rrsp.component';
 import { PrsComponent } from './components/prs/prs.component';
 
+//
+  // { path: 'dashboard', component: DashboardComponent, resolve: { username: UserResolver }, canActivate: [authGuard], data: { title: 'Dashboard' } },
+
 export const routes: Routes = [
   { path: 'register', component: RegisterComponent, data: { title: 'Register' } },
   { path: 'login', component: LoginComponent, data: { title: 'Login' } },
-  { path: 'dashboard', component: DashboardComponent, resolve: { username: UserResolver }, canActivate: [authGuard], data: { title: 'Dashboard' } },
   {
     path: 'dashboard',
     component: DashboardComponent,
+    resolve: { username: UserResolver },
+    canActivate: [authGuard],
+    data: { title: 'Dashboard' },
     children: [
       { path: 'items', component: ItemsComponent, data: { title: 'Items' } },
       { path: 'par', component: ParComponent, data: { title: 'PAR' } },
@@ -53,8 +58,6 @@ export const routes: Routes = [
       { path: 'reports', component: ReportsComponent, data: { title: 'Reports' } },
       // Add more child routes here
     ],
-    resolve: { username: UserResolver },
-    canActivate: [authGuard]
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' },  // Default route
   { path: '**', redirectTo: '/login' }  // Wildcard route for a 404 page

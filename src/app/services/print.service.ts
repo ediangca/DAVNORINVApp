@@ -172,7 +172,7 @@ export class PrintService {
             <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
           </div>
         </div>`;
-    }else if (title === "prs") {
+    } else if (title === "prs") {
       this.footer = `
         <div class="row mt-3">
           <div class="col-4 border">
@@ -206,7 +206,7 @@ export class PrintService {
             <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
           </div>
         </div>`;
-    }else {
+    } else {
       this.footer = ``;
     }
   }
@@ -215,22 +215,22 @@ export class PrintService {
   printReport(title: string, reportContent: string): void {
 
     // Create an iframe element
-  const iframe = document.createElement('iframe');
+    const iframe = document.createElement('iframe');
 
-  // Style the iframe to be invisible
-  iframe.style.position = 'absolute';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  iframe.style.border = '0';
+    // Style the iframe to be invisible
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
 
-  // Append the iframe to the body
-  document.body.appendChild(iframe);
-  this.setFooter(title);
+    // Append the iframe to the body
+    document.body.appendChild(iframe);
+    this.setFooter(title);
 
-  // Access the iframe's document
-  const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
-  iframeDoc!.open();
-  iframeDoc!.write(`
+    // Access the iframe's document
+    const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
+    iframeDoc!.open();
+    iframeDoc!.write(`
     <html>
       <head>
         <title>${title} Report</title>
@@ -284,25 +284,31 @@ export class PrintService {
             </div>
           </div>
           ${reportContent}
-          <div class="footer p-2">
+
             ${this.footer}
-            <hr>
-            <p>&copy; ${new Date().getFullYear()} Provincial Government of Davao del Norte. All rights reserved.</p>
-          </div>
+
+            <div class="row">
+              <div class="col">
+                <hr>
+                <p>&copy; ${new Date().getFullYear()} Provincial Government of Davao del Norte. All rights reserved.</p>
+              </div>
+            </div>
+
+
         </div>
       </body>
     </html>
   `);
 
-  // Close the document stream
-  iframeDoc!.close();
+    // Close the document stream
+    iframeDoc!.close();
 
-  // Trigger the print
-  iframe.contentWindow?.focus();
-  iframe.contentWindow?.print();
+    // Trigger the print
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
 
-  // Clean up the iframe after printing
-  iframe.contentWindow!.onafterprint = () => document.body.removeChild(iframe);
+    // Clean up the iframe after printing
+    iframe.contentWindow!.onafterprint = () => document.body.removeChild(iframe);
 
 
     // const printWindow = window.open('', '_blank');

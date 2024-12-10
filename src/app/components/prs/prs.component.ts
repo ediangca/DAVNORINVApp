@@ -1319,6 +1319,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
             </div>
           </div>
 
+          <div class="row">
+          <div class="col">
           <!-- Table with List of Items -->
             <table class="table table-bordered table-striped">
                 <thead>
@@ -1335,7 +1337,11 @@ export class PrsComponent implements OnInit, AfterViewInit {
                 <tbody>
                     ${rows}
                 </tbody>
-            </table>`;
+            </table>
+
+            </div>
+            </div>
+            `;
 
             // Print the report
             this.printService.printReport('PRS', reportContent);

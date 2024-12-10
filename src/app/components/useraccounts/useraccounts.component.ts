@@ -107,7 +107,11 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   loadUserGroups(): void {
     this.api.getAllUserGroups(this.roleNoFromToken).subscribe(
       data => {
+        console.log('USE ROLE : ', this.roleNoFromToken);
+        console.log('USE GROUPS : ', data);
         this.userGroups = data;
+        this.userGroups = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*'? this.userGroups
+        : this.userGroups.filter(ug => ug.userGroupName != 'System Administrator' && ug.userGroupName != 'System Generated');
       },
       err => {
         console.error('Error: loading user groups => ', err);
@@ -119,7 +123,10 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   loadPositions(): void {
     this.api.getAllPositions().subscribe(
       data => {
+        console.log('POSITION : ', data);
         this.positions = data;
+        this.positions = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*'? this.positions
+        : this.positions.filter(ug => ug.positionName != 'System Administrator' && ug.positionName != 'Test');
       },
       err => {
         console.error('Error: loading Positions => ', err);
@@ -141,6 +148,12 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   // Handle branch change
   onBranchChange(event: Event): void {
+    this.departments = [];
+    this.sections = [];
+    this.userProfileForm.patchValue({
+      depID: [''],
+      secID: [''],
+    });
     const target = event.target as HTMLSelectElement;
     const branchID = target.value;
     console.log("Selected Branch: " + branchID);
@@ -150,9 +163,11 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       this.departments = [];
     }
   }
+
+
   // Load Departments
   loadDepartments(branchID: string): void {
-    this.api.getDepartmentsByCompanyID(branchID).subscribe(
+    this.api.getDepartmentsByCompanyID(branchID!).subscribe(
       data => {
         this.departments = data;
         console.log("Load Department", this.departments);
@@ -165,9 +180,12 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       }
     );
   }
-
   // Handle Department change
   onDepartmentChange(event: Event): void {
+    this.sections = [];
+    this.userProfileForm.patchValue({
+      secID: [''],
+    });
     const target = event.target as HTMLSelectElement;
     const depID = target.value;
     console.log("Selected Department: " + depID);
@@ -180,7 +198,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   // Load Sections
   loadSections(depID: string): void {
-    this.api.getSectionsByDepID(depID).subscribe(
+    this.api.getSectionsByDepID(depID!).subscribe(
       data => {
         this.sections = data;
         console.log("Load Section", this.sections);
@@ -637,6 +655,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.isEditMode = false;
     this.currentEditId = null;
     this.isModalOpen = false;
+    this.userProfile = null;
     this.userAccountForm.reset(
       {
         username: '',

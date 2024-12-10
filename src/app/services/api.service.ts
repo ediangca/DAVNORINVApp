@@ -415,7 +415,7 @@ export class ApiService {
   //Create
   createProfile(userProfile: any): Observable<any> {
     console.log("Create User Profile: ", userProfile);
-    return this.http.post<any>(`${this.apiUrl}UserProfile/${userProfile.userId ? 'Create/' : 'Create/GenratedAccount/'} `, userProfile)
+    return this.http.post<any>(`${this.apiUrl}UserProfile/${userProfile.userID ? 'Create/' : 'Create/GenratedAccount/'} `, userProfile)
       .pipe(
         catchError(this.handleError)
       );

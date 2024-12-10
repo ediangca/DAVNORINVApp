@@ -15,6 +15,7 @@ import { filter, map } from 'rxjs/operators';
 import { LogsService } from '../../services/logs.service';
 
 import AOS from 'aos';
+import { ProfileComponent } from '../profile/profile.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -167,6 +168,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 next: (res) => {
                   if (!res[0]) {
                     this.logger.printLogs('w', 'No Profile found', ['Profile Not Setup']);
+                    // this.router.navigate(['dashboard/profile']);
+                    this.router.navigate(['dashboard/profile'], {
+                      queryParams: { showProfileForm: true }
+                    });
                     return
                   }
 
@@ -189,17 +194,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   }
 
-  // setupSidebarToggle() {
-  //   const toggleButton = document.getElementById('sidebarToggle')!;
-  //   toggleButton.addEventListener('click', this.toggleSidebarItems);
-
-  //   const toggleMobileButton = document.getElementById('sidebar-Toggle')!;
-  //   toggleMobileButton.addEventListener('click', this.toggleSidebarItems);
-
-  //   const toggleDropDownButton = document.getElementById('masterlist-link')!;
-  //   toggleDropDownButton.addEventListener('click', this.toggleDropdown);
-
-  // }
 
   toggleSidebarItems() {
     const sidebar = document.querySelector('.sidebar');
