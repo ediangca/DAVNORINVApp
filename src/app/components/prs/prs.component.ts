@@ -89,7 +89,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
   typeOptions: string[] = ['Disposal', 'Repair', 'Return to Stock'];
   isCustomType = false;
 
-  reprsForm!: FormGroup;
   repar: any | null | undefined;
   searchPARItems: Item[] = [];
 
@@ -1103,11 +1102,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
       userID2: '',
       userID3: ''
     });
-    this.reprsForm.reset({
-      userID1: '',
-      userID2: ''
-    });
-    this.getAllPRS();
+    // this.getAllPRS();
   }
 
   resetItemForm() {
@@ -1180,16 +1175,16 @@ export class PrsComponent implements OnInit, AfterViewInit {
         this.api.retrievePARITEMByQRCode(results[0].value)
           .subscribe({
             next: (res) => {
-              console.log('Retrieve PAR ITEMS', res);
+              console.log('Retrieve PRS ITEMS', res);
               this.item = res[0];
 
               console.log('Show Items', this.item);
 
-              this.onRetrieveREPAR(res[0].reparNo);
+              this.onRetrievePRS(res[0].prsNo);
 
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error Retreiving PAR ITEMS', err);
+              this.logger.printLogs('e', 'Error Retreiving PRS ITEMS', err);
               Swal.fire('Denied', err, 'warning');
             }
           });
@@ -1199,16 +1194,16 @@ export class PrsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onRetrieveREPAR(reparNO: string) {
-    this.api.retrieveREPAR(reparNO)
+  onRetrievePRS(prsNo: string) {
+    this.api.retrievePRS(prsNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PAR', res);
-          this.par = res.details;
+          console.log('Retrieve PRS', res);
+          this.prs = res.details;
 
           Swal.fire({
-            title: 'Do you want to view the REPAR Details?',
-            text: 'Item Found from REPAR #' + this.par.reparNo,
+            title: 'Do you want to view the PRS Details?',
+            text: 'Item Found from  PRS #' + this.prs.prsNo,
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -1217,15 +1212,15 @@ export class PrsComponent implements OnInit, AfterViewInit {
             if (result.isConfirmed) {
               this.onItemFound = true;
               this.onCloseQRScanning(this.scannerAction);
-              this.onViewPRS(this.par);
+              this.onViewPRS(this.prs);
             } else {
               this.resumeScanning(this.scannerAction);
             }
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR', err);
-          Swal.fire('Denied', err, 'warning');
+          this.logger.printLogs('w', 'Problem with Retreiving PRS', err);
+          Swal.fire('Denied', 'Item Not Found in PRS Record', 'warning');
         }
       });
   }
@@ -1310,7 +1305,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
               <p class="fs-6">Name of Local Government Unit: <span class="fw-bold border-bottom ms-1">PROVINCIAL GOVERNMENT OF DAVAO DEL NORTE</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6">PURPOSE: <span class="fw-bold border-bottom ms-1">
+              <p class="fs-6">Purpose: <span class="fw-bold border-bottom ms-1">
               ${(((this.prs.rtype + '').toString().toLowerCase() == "others") ? this.prs.rtype + ' - ' + this.prs.otype : this.prs.rtype) || 'N/A'}
               </span></p>
             </div>

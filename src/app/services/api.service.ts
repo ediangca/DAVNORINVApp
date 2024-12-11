@@ -881,6 +881,14 @@ export class ApiService {
       );
   }
 
+  //Retrieve By QR Code
+  retrieveicsITEMByQRCode(qrcode: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}ICSITEM/QRCode/${qrcode}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
   scanUniqueICSItem(key: string,): Observable<any> {
     console.log("Update ICS Item Key >>> : ", key);
     return this.http.get<any>(`${this.apiUrl}ICSITEM/ScanUnique?key=${key}`)

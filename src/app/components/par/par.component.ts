@@ -206,44 +206,23 @@ export class ParComponent implements OnInit, AfterViewInit {
   }
 
   setupModalClose() {
-    const modal = document.getElementById('AddEditModalForm')!;
-    if (modal) {
-      modal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
-      });
-    }
-    const viewPARModal = document.getElementById('ViewModalForm')!;
-    if (viewPARModal) {
-      viewPARModal.addEventListener('hidden.bs.modal', () => {
-        console.log("CLOSEDDDD");
-        this.resetForm();
-      });
-    }
-
-    const itemModal = document.getElementById('ItemModalForm')!;
-    if (itemModal) {
-
-      itemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
-
-    const viewItemModal = document.getElementById('ViewItemModalForm')!;
-    if (viewItemModal) {
-
-      viewItemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
+    this.addModalHiddenListener(true, 'AddEditModalForm');
+    this.addModalHiddenListener(true, 'ViewModalForm');
+    this.addModalHiddenListener(false, 'ItemModalForm');
+    this.addModalHiddenListener(false, 'ViewItemModalForm');
 
     const QRScannerModal = document.getElementById('QRScannerForm')!;
     if (QRScannerModal) {
 
       QRScannerModal.addEventListener('hidden.bs.modal', () => {
         this.resetQRScanForm(this.scannerAction, this.fn);
-
       });
     }
+  }
+  addModalHiddenListener(parModal: boolean, modalId: string) {
+    const modal = document.getElementById(modalId);
+    modal?.addEventListener('hidden.bs.modal', () =>
+      parModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
 
   openModal(modalElement: ElementRef) {
@@ -339,7 +318,7 @@ export class ParComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onAddPAR(){
+  onAddPAR() {
     this.resetForm();
     this.openModal(this.AddEditModal);
   }
@@ -592,13 +571,6 @@ export class ParComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-  // Function to display the QR Scanner modal
-  onScanQR() {
-    const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
-    QRmodal.show();
-  }
-
   onAddPARItem() {
     const PARNo: string = this.parForm.value['parNo'];
     if (!PARNo) {
@@ -836,6 +808,14 @@ export class ParComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    this.isEditMode = true;
+    this.par = par;
+    this.currentEditId = par.parNo;
+    this.receivedID = par.receivedBy
+    this.issuedID = par.issuedBy
+
+    this.logger.printLogs('i', 'Restoring PAR', par);
+
     if (this.ViewModal) {
       const modalElement = this.ViewModal.nativeElement;
       const modalInstance = bootstrap.Modal.getInstance(modalElement);
@@ -846,19 +826,12 @@ export class ParComponent implements OnInit, AfterViewInit {
       }
     }
 
-    this.isEditMode = true;
-    this.par = par;
-    this.currentEditId = par.parNo;
-    this.receivedID = par.receivedBy
-    this.issuedID = par.issuedBy
-
-    this.logger.printLogs('i', 'Restoring PAR', par);
 
     this.parForm.patchValue({
       lgu: par.lgu,
       fund: par.fund,
       parNo: par.parNo,
-      userID1: par.received, // These will now be patched correctly
+      userID1: par.received,
       userID2: par.issued
     });
 
@@ -1094,7 +1067,11 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   isListed(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.parItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key ).length > 0 ? resolve(true) : resolve(false);
+      if (this.isEditItemMode) {
+        this.parItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 1 ? resolve(true) : resolve(false);
+      } else {
+        this.parItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 0 ? resolve(true) : resolve(false);
+      }
     });
   }
 
@@ -1378,6 +1355,13 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.isRepar = false;
     this.item = null;
     this.isOpen = false;
+    this.userProfiles = [];
+    this.parItems = [];
+    this.searchPARItems = [];
+    this.selectedParItems = [];
+    this.parItemKey = '';
+    this.searchKey = '';
+
     this.parForm.reset({
       lgu: '',
       fund: '',
@@ -1394,18 +1378,19 @@ export class ParComponent implements OnInit, AfterViewInit {
       others: '',
       type: '',
     });
-    this.userProfiles = [];
-    this.parItems = [];
-    this.searchPARItems = [];
-    this.selectedParItems = [];
-    this.parItemKey = '';
-    this.searchKey = '';
 
   }
 
   resetItemForm() {
     this.isEditItemMode = false;
     this.isModalOpen = false;
+    this.propertyNo = null;
+    this.IIDKey = null;
+    this.iid = null;
+    this.items = [];
+    this.brands = [];
+    this.models = [];
+    this.descriptions = [];
     this.itemForm.reset({
       iid: '',
       description: '',
@@ -1418,17 +1403,14 @@ export class ParComponent implements OnInit, AfterViewInit {
       amount: '',
       date_Acquired: this.today,
     });
-    // Clear related data
-    this.propertyNo = null;
-    this.IIDKey = null;
-    this.iid = null;
-    // this.item = null;
-    this.items = [];
-    this.brands = [];
-    this.models = [];
-    this.descriptions = [];
   }
 
+
+  // Function to display the QR Scanner modal
+  onScanQR() {
+    const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
+    QRmodal.show();
+  }
   // Reset and stop/start QR scanning
   resetQRScanForm(action: any, fn: string) {
     this.onCloseQRScanning(this.scannerAction)
@@ -1482,7 +1464,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error Retreiving PAR ITEMS', err);
+              this.logger.printLogs('w', 'Problem with PAR ITEMS', err);
               Swal.fire('Denied', err, 'warning');
             }
           });
@@ -1518,7 +1500,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving PAR', err);
-          Swal.fire('Denied', err, 'warning');
+          Swal.fire('Denied', 'Item Not Found in PAR Record', 'warning');
         }
       });
   }

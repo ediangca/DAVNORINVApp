@@ -24,13 +24,14 @@ declare var bootstrap: any;
   templateUrl: './ics.component.html',
   styleUrl: './ics.component.css'
 })
-export class IcsComponent implements OnInit, AfterViewInit  {
+export class IcsComponent implements OnInit, AfterViewInit {
 
 
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
   @ViewChild('ViewModalForm') ViewModal!: ElementRef;
   @ViewChild('ItemModalForm') ItemModal!: ElementRef;
   @ViewChild('ViewItemModalForm') ViewItemModal!: ElementRef;
+  @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
 
   @ViewChild('othersInput') othersInput!: ElementRef;
 
@@ -101,7 +102,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
   today: string | undefined;
   private logger: LogsService;
-  legend : string | undefined | null;
+  legend: string | undefined | null;
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
@@ -195,36 +196,26 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
 
   setupModalClose() {
-    const modal = document.getElementById('AddEditModalForm')!;
-    if (modal) {
-      modal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
+    this.addModalHiddenListener(true, 'AddEditModalForm');
+    this.addModalHiddenListener(true, 'ViewModalForm');
+    this.addModalHiddenListener(false, 'ItemModalForm');
+    this.addModalHiddenListener(false, 'ViewItemModalForm');
+
+    const QRScannerModal = document.getElementById('QRScannerForm')!;
+    if (QRScannerModal) {
+
+      QRScannerModal.addEventListener('hidden.bs.modal', () => {
+        this.resetQRScanForm(this.scannerAction, this.fn);
       });
     }
-    const viewPARModal = document.getElementById('ViewModalForm')!;
-    if (viewPARModal) {
-      viewPARModal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
-      });
-    }
-
-    const itemModal = document.getElementById('ItemModalForm')!;
-    if (itemModal) {
-
-      itemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
-
-    const viewItemModal = document.getElementById('ViewItemModalForm')!;
-    if (viewItemModal) {
-
-      viewItemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
-
   }
+
+  addModalHiddenListener(icsModal: boolean, modalId: string) {
+    const modal = document.getElementById(modalId);
+    modal?.addEventListener('hidden.bs.modal', () =>
+    icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+  }
+
 
   openModal(modalElement: ElementRef) {
     if (modalElement) {
@@ -303,7 +294,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       });
   }
 
-  onAddICS(){
+  onAddICS() {
     this.resetForm();
     this.openModal(this.AddEditModal);
   }
@@ -748,6 +739,12 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       return;
     }
 
+    this.isEditMode = true;
+    this.ics = ics;
+    this.currentEditId = ics.icsNo;
+    this.receivedID = ics.receivedBy
+    this.issuedID = ics.issuedBy
+
     if (this.ViewModal) {
       const modalElement = this.ViewModal.nativeElement;
       const modalInstance = bootstrap.Modal.getInstance(modalElement);
@@ -758,18 +755,12 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       }
     }
 
-    this.isEditMode = true;
-    this.ics = ics;
-    this.currentEditId = ics.icsNo;
-    this.receivedID = ics.receivedBy
-    this.issuedID = ics.issuedBy
-
     this.logger.printLogs('i', 'Restoring ICS', ics);
 
     this.icsForm.patchValue({
-      icsNo: ics.icsNo,
       entityName: ics.entityName,
       fund: ics.fund,
+      icsNo: ics.icsNo,
       userID1: ics.received,
       userID2: ics.issued
     });
@@ -998,7 +989,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
       const index = this.icsItems.findIndex(i => i.description === this.item!.description);
       if (index !== -1) {
-        this.icsItems[index] = new  ICSItem(this.ICSItemNo, ICSNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Qty, Unit, Amount, Eul, false, null);
+        this.icsItems[index] = new ICSItem(this.ICSItemNo, ICSNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Qty, Unit, Amount, Eul, false, null);
 
         Swal.fire('Success!', 'Item updated successfully!', 'success');
         this.resetItemForm();
@@ -1010,7 +1001,12 @@ export class IcsComponent implements OnInit, AfterViewInit  {
 
   isListed(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.icsItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key ).length > 0 ? resolve(true) : resolve(false);
+      // this.icsItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key ).length > 0 ? resolve(true) : resolve(false);
+      if (this.isEditItemMode) {
+        this.icsItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 1 ? resolve(true) : resolve(false);
+      } else {
+        this.icsItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 0 ? resolve(true) : resolve(false);
+      }
     });
   }
 
@@ -1288,6 +1284,20 @@ export class IcsComponent implements OnInit, AfterViewInit  {
     })
   }
 
+  onTypeChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.isCustomType = selectedValue === 'Others';
+    if (!this.isCustomType) {
+      this.itrForm.get('type')?.setValue(selectedValue);
+      this.itrForm.get('others')?.setValue('N/A');
+    } else {
+      // Wait for Angular to render the input field before focusing
+      this.itrForm.get('type')?.markAsUntouched();
+      this.itrForm.get('others')?.markAsTouched();
+      this.itrForm.get('others')?.setValue(null);
+    }
+  }
+
   resetForm() {
     this.isEditMode = false;
     this.currentEditId = null;
@@ -1295,10 +1305,17 @@ export class IcsComponent implements OnInit, AfterViewInit  {
     this.isITR = false;
     this.item = null;
     this.isOpen = false;
+    this.userProfiles = [];
+    this.icsItems = [];
+    this.searchPARItems = [];
+    this.selectedICSItems = [];
+    this.parItemKey = '';
+    this.searchKey = '';
+
     this.icsForm.reset({
-      icsNo: '',
       entityName: '',
       fund: '',
+      icsNo: '',
       userID1: '',
       userID2: '',
     });
@@ -1312,13 +1329,6 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       others: '',
       type: '',
     });
-    this.userProfiles = [];
-    this.icsItems = [];
-    this.searchPARItems = [];
-    this.selectedICSItems = [];
-    this.parItemKey = '';
-    this.searchKey = '';
-
 
   }
 
@@ -1341,6 +1351,43 @@ export class IcsComponent implements OnInit, AfterViewInit  {
     this.descriptions = [];
   }
 
+
+  // Function to display the QR Scanner modal
+  onScanQR() {
+    const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
+    QRmodal.show();
+  }
+
+  // Reset and stop/start QR scanning
+  resetQRScanForm(action: any, fn: string) {
+    this.onCloseQRScanning(this.scannerAction)
+  }
+
+  // Handle start/stop of QR scanning
+  public handle(scannerAction: any, fn: string): void {
+    this.scannerAction = scannerAction;
+    this.fn = fn;
+    this.onScanQR(); // Show the scanner modal
+
+    // Function to select a device, preferring the back camera
+    const playDeviceFacingBack = (devices: any[]) => {
+      const device = devices.find(f => /back|rear|environment/gi.test(f.label));
+      scannerAction.playDevice(device ? device.deviceId : devices[0].deviceId);
+    };
+
+    // Start or stop the scanning action
+    if (fn === 'start') {
+      scannerAction[fn](playDeviceFacingBack).subscribe(
+        (r: any) => console.log(fn, r),
+        alert
+      );
+      this.cdr.detectChanges();     // Trigger change detection to update button state
+    } else {
+      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      this.cdr.detectChanges();     // Trigger change detection to update button state
+    }
+  }
+
   // Event handler when QR code is scanned
   public onEvent(results: ScannerQRCodeResult[], action?: any): void {
     this.onItemFound = false;
@@ -1352,29 +1399,27 @@ export class IcsComponent implements OnInit, AfterViewInit  {
         console.log('Scanned Data:', results); // Handle scanned results here
 
 
-        this.api.retrievePARITEMByQRCode(results[0].value)
+        this.api.retrieveicsITEMByQRCode(results[0].value)
           .subscribe({
             next: (res) => {
-              console.log('Retrieve PAR ITEMS', res);
+              console.log('Retrieve ICS ITEMS', res);
               this.item = res[0];
 
               console.log('Show Items', this.item);
 
-              this.onRetrievePAR(res[0].icsNo);
+              this.onRetrieveICS(res[0].parNo);
 
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error Retreiving PAR ITEMS', err);
+              this.logger.printLogs('w', 'Problem with Retreiving ICS ITEMS', err);
               Swal.fire('Denied', err, 'warning');
             }
           });
-
       }
-
     }
   }
 
-  onRetrievePAR(icsNo: string) {
+  onRetrieveICS(icsNo: string) {
     this.api.retrievePAR(icsNo)
       .subscribe({
         next: (res) => {
@@ -1402,18 +1447,24 @@ export class IcsComponent implements OnInit, AfterViewInit  {
       });
   }
 
-  onTypeChange(event: Event) {
-    const selectedValue = (event.target as HTMLSelectElement).value;
-    this.isCustomType = selectedValue === 'Others';
-    if (!this.isCustomType) {
-      this.itrForm.get('type')?.setValue(selectedValue);
-      this.itrForm.get('others')?.setValue('N/A');
-    } else {
-      // Wait for Angular to render the input field before focusing
-      this.itrForm.get('type')?.markAsUntouched();
-      this.itrForm.get('others')?.markAsTouched();
-      this.itrForm.get('others')?.setValue(null);
-    }
+
+  resumeScanning(scannerAction: any): void {
+    // Add any conditions or user prompts if needed before resuming
+
+    scannerAction.play().subscribe(
+      (r: any) => console.log('Resuming Scan:', r),
+      (error: any) => console.error('Error while resuming scan:', error)
+    );
+  }
+
+  onCloseQRScanning(scannerAction: any) {
+    // Close the modal
+    this.closeModal(this.QRScannerModal!);
+    this.fn = 'stop';
+    scannerAction.stop();
+    scannerAction.isStart = false;
+    scannerAction.isLoading = false;
+
   }
 
 
@@ -1451,7 +1502,7 @@ export class IcsComponent implements OnInit, AfterViewInit  {
                     <td style="font-size: small;">
                     ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td style="font-size: small;">${ ((item?.qty || 0) * (item?.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }</td>
+                    <td style="font-size: small;">${((item?.qty || 0) * (item?.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td style="font-size: small;">${item.description || 'N/A'}</td>
                     <td style="font-size: small;">${item.propertyNo || index + 1 || item.icsNo || item.icsItemNo || item.iid || 'N/A'}</td>
               <td style="font-size: small;">${item.eul + ' year(s)' || 'N/A'}</td>

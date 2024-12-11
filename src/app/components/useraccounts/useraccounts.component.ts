@@ -640,6 +640,8 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
               Swal.fire('Denied', err, 'warning');
             }
           });
+      }else{
+        input.checked = !isVerified;
       }
 
       // this.getAllUserAccounts();

@@ -1328,11 +1328,11 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.api.retrieveREPAR(reparNO)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PAR', res);
+          console.log('Retrieve PTR', res);
           this.par = res.details;
 
           Swal.fire({
-            title: 'Do you want to view the REPAR Details?',
+            title: 'Do you want to view the PTR Details?',
             text: 'Item Found from REPAR #' + this.par.reparNo,
             icon: 'question',
             showCancelButton: true,
@@ -1349,8 +1349,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR', err);
-          Swal.fire('Denied', err, 'warning');
+          this.logger.printLogs('e', 'Error Retreiving PTR', err);
+          Swal.fire('Denied', 'Item Not Found in PTR Record', 'warning');
         }
       });
   }

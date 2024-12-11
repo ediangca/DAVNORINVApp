@@ -175,36 +175,30 @@ export class PrintService {
     } else if (title === "prs") {
       this.footer = `
         <div class="row mt-3">
-          <div class="col-4 border">
-            <p class="fw-bold mb-5">Approved by:</p>
-            <p class="text-center fs-6 fw-bold m-0">${this.approvedByProfile?.fullName || ''}</p>
+          <div class="col-6 border">
+            <p class="mb-5">I HEREBY CERTIFY that I have this <br> RETURNED to <strong> ${this.receivedByProfile?.fullName || ''} </strong>,
+            <em>Provincial General Services Officer</em>, <br> the items/articles described above.</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.issuedByProfile?.fullName || ''}</p>
             <p class="text-center border-top">Signature over Printed Name of End User</p>
           </div>
-          <div class="col-4 border">
-            <p class="fw-bold mb-5">Issued by:</p>
-            <p class="text-center fs-6 fw-bold m-0">${this.issuedByProfile?.fullName || ''}</p>
-            <p class="text-center border-top">Signature over Printed Name and/or Property Custodian</p>
-          </div>
-          <div class="col-4 border">
-            <p class="fw-bold  mb-5">Received by:</p>
+          <div class="col-6 border">
+            <p class="mb-5">I HEREBY CERTIFY that I have this <br> RECEIVED from <strong> ${this.issuedByProfile?.fullName || ''} </strong>,
+            <em>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</em>  <br> the items/articles described above. </p>
             <p class="text-center fs-6 fw-bold m-0">${this.receivedByProfile?.fullName || ''}</p>
             <p class="text-center border-top">Signature over Printed Name of End User</p>
           </div>
-          <div class="col-4 border py-2">
-            <p class="mb-0">Position: <strong>${this.approvedByProfile?.position || ''}</strong></p>
-            <p class="mb-0 py-2">Office: <strong>${this.approvedByProfile?.branch || ''} - ${this.approvedByProfile?.department || ''}</strong></p>
+          <!--
+          <div class="col-6 border py-2">
+            <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
             <p class="mb-0">Date:</p>
           </div>
-          <div class="col-4 border py-2">
-            <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
-            <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p>
-            <p class="mb-0">Date:</p>
-          </div>
-          <div class="col-4 border py-2">
+          <div class="col-6 border py-2">
             <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
             <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
             <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
           </div>
+          -->
         </div>`;
     } else {
       this.footer = ``;

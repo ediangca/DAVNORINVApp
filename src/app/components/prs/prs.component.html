@@ -61,7 +61,7 @@
             <th></th>
             <th>Date Created</th>
             <th>PRS No.</th>
-            <th>Issued By</th>
+            <th>Return By</th>
             <th>Recieved By</th>
             <th>Approved By</th>
             <th>Actions</th>
@@ -353,7 +353,7 @@
               </div>
               <!-- Signatory -->
               <div class="row d-flex flex-row">
-                <!-- Issued By -->
+                <!-- Return By -->
                 <div class="col">
 
                   @if(!(prsForm.controls['userID2'].invalid &&
@@ -362,14 +362,14 @@
                   (prsForm.controls['userID2'].dirty &&
                   prsForm.hasError('required', 'userID2')))){
                   <small class="text-info">*
-                    Issued By</small>
+                    Return By</small>
                   }@else {
                   <small class="text-danger"
                     *ngIf="prsForm.controls['userID2'].invalid &&
                   prsForm.hasError('required', 'userID2') &&
                   prsForm.get('userID2')?.touched ||
                   (prsForm.controls['userID2'].dirty &&
-                  prsForm.hasError('required', 'userID2'))">* Issued By is
+                  prsForm.hasError('required', 'userID2'))">* Return By is
                     required</small>
                   }
 
@@ -389,7 +389,7 @@
                       formControlName="userID2"
                       name="userID2"
                       [(ngModel)]="issuedByID"
-                      placeholder="Issued By"
+                      placeholder="Return By"
                       (keyup)="onAutoSuggest('issued')"
                       role="textbox">
 
@@ -608,10 +608,10 @@
 
                       <div class="row d-flex flex-row">
                         <div class="col-4">
-                          <small class="text-info">ISSUED BY</small>
+                          <small class="text-info">RETURN BY</small>
                           <div class="form-field d-flex align-items-center">
                             <input type="text" [value]="prs?.issued"
-                              class="form-control" placeholder="Issued By"
+                              class="form-control" placeholder="Return By"
                               readonly>
                           </div>
                         </div>
