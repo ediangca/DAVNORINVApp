@@ -24,6 +24,16 @@
                   class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
 
+            <button
+              class="btn btn-dark rounded-pill d-flex justify-content-center align-items-center"
+              type="button"
+              (click)="handle(scannerAction, scannerAction.isStart ? 'stop' : 'start')"
+              [class.btn-warning]="scannerAction?.isStart"
+              [disabled]="scannerAction?.isLoading || false">
+              <i class="fa-solid fa-qrcode"></i>
+              <span class="fs-6">Scan</span>
+            </button>
+
           </div>
 
         </div>
@@ -1368,6 +1378,37 @@
         <button type="button" class="btn btn-secondary rounded-pill"
           data-bs-dismiss="modal"
           (click)="closeModal(ViewItemModal)">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- QR CODE SCANNER -->
+<div #QRScannerForm class="modal fade" id="QRScannerForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Scan QR Item</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="onCloseQRScanning(scannerAction)"></button>
+      </div>
+      <div class="modal-body item-body scrollable">
+        <!-- ngx-scanner-qrcode -->
+        <ngx-scanner-qrcode
+          #scannerAction="scanner"
+          [config]="config"
+          (event)="onEvent($event, scannerAction)">
+        </ngx-scanner-qrcode>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill"
+          data-bs-dismiss="modal"
+          (click)="onCloseQRScanning(scannerAction)">Close</button>
+        <button type="button" class="btn btn-primary rounded-pill"
+          *ngIf="scannerAction?.isPause"
+          (click)="resumeScanning(scannerAction)">Scan Again</button>
       </div>
     </div>
   </div>

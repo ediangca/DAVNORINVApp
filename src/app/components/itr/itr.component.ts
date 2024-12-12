@@ -33,6 +33,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   @ViewChild('ItemModalForm') ItemModal!: ElementRef;
   @ViewChild('ViewItemModalForm') ViewItemModal!: ElementRef;
   @ViewChild('ListItemModalForm') ListItemModal!: ElementRef;
+  @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
 
   roleNoFromToken: string = "Role";
 
@@ -178,35 +179,27 @@ export class ItrComponent implements OnInit, AfterViewInit {
   }
 
   setupModalClose() {
-    const modal = document.getElementById('AddEditModalForm')!;
-    if (modal) {
-      modal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
-      });
-    }
-    const viewPARModal = document.getElementById('ViewModalForm')!;
-    if (viewPARModal) {
-      viewPARModal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
-      });
-    }
 
-    const itemModal = document.getElementById('ItemModalForm')!;
-    if (itemModal) {
+    this.addModalHiddenListener(true, 'AddEditModalForm');
+    this.addModalHiddenListener(true, 'ViewModalForm');
+    this.addModalHiddenListener(false, 'ItemModalForm');
+    this.addModalHiddenListener(false, 'ViewItemModalForm');
 
-      itemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
+    const QRScannerModal = document.getElementById('QRScannerForm')!;
+    if (QRScannerModal) {
 
-    const viewItemModal = document.getElementById('ViewItemModalForm')!;
-    if (viewItemModal) {
+      QRScannerModal.addEventListener('hidden.bs.modal', () => {
+        this.resetQRScanForm(this.scannerAction, this.fn);
 
-      viewItemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
       });
     }
   }
+  addModalHiddenListener(parModal: boolean, modalId: string) {
+    const modal = document.getElementById(modalId);
+    modal?.addEventListener('hidden.bs.modal', () =>
+      parModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+  }
+
 
   openPARModal(modalElement: ElementRef) {
     if (modalElement) {
@@ -1083,6 +1076,133 @@ export class ItrComponent implements OnInit, AfterViewInit {
       this.itrForm.get('type')?.markAsUntouched();
       this.itrForm.get('others')?.markAsTouched();
     }
+  }
+
+  onCloseQRScanning(scannerAction: any) {
+    // Close the modal
+    this.closeModal(this.QRScannerModal!);
+    this.fn = 'stop';
+    scannerAction.stop();
+    scannerAction.isStart = false;
+    scannerAction.isLoading = false;
+
+  }
+  resumeScanning(scannerAction: any): void {
+    // Add any conditions or user prompts if needed before resuming
+
+    scannerAction.play().subscribe(
+      (r: any) => console.log('Resuming Scan:', r),
+      (error: any) => console.error('Error while resuming scan:', error)
+    );
+  }
+
+  // Function to display the QR Scanner modal
+  onScanQR() {
+    const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
+    QRmodal.show();
+  }
+
+  onResumeScanning(scannerAction: any): void {
+    // Add any conditions or user prompts if needed before resuming
+
+    scannerAction.play().subscribe(
+      (r: any) => console.log('Resuming Scan:', r),
+      (error: any) => console.error('Error while resuming scan:', error)
+    );
+  }
+
+  // Reset and stop/start QR scanning
+  resetQRScanForm(action: any, fn: string) {
+    this.onCloseQRScanning(this.scannerAction)
+  }
+
+  // Handle start/stop of QR scanning
+  public handle(scannerAction: any, fn: string): void {
+    this.scannerAction = scannerAction;
+    this.fn = fn;
+    this.onScanQR(); // Show the scanner modal
+
+    // Function to select a device, preferring the back camera
+    const playDeviceFacingBack = (devices: any[]) => {
+      const device = devices.find(f => /back|rear|environment/gi.test(f.label));
+      scannerAction.playDevice(device ? device.deviceId : devices[0].deviceId);
+    };
+
+    // Start or stop the scanning action
+    if (fn === 'start') {
+      scannerAction[fn](playDeviceFacingBack).subscribe(
+        (r: any) => console.log(fn, r),
+        alert
+      );
+      this.cdr.detectChanges();     // Trigger change detection to update button state
+    } else {
+      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      this.cdr.detectChanges();     // Trigger change detection to update button state
+    }
+  }
+
+  // Event handler when QR code is scanned
+  public onEvent(results: ScannerQRCodeResult[], action?: any): void {
+    this.onItemFound = false;
+    if (results && results.length) {
+      if (results) {
+        action.pause(); // Pause scanning if needed
+
+        console.log('QR value', results[0].value);
+        console.log('Scanned Data:', results); // Handle scanned results here
+
+
+        this.api.retrieveicsITEMByQRCode(results[0].value)
+          .subscribe({
+            next: (res) => {
+              console.log('Retrieve ICS ITEMS', res);
+              this.item = res[0];
+
+              console.log('Show Items', this.item);
+
+              this.onRetrieveITR(res[0].reparNo);
+
+            },
+            error: (err: any) => {
+              this.logger.printLogs('w', 'Problem with Retreiving ITR', err);
+              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in ITR`, 'info');
+            }
+          });
+
+      }
+
+    }
+  }
+
+  onRetrieveITR(itrNO: string) {
+    this.api.retrieveITR(itrNO)
+      .subscribe({
+        next: (res) => {
+          console.log('Retrieve PTR', res);
+          this.itr = res.details;
+
+          Swal.fire({
+            title: 'Do you want to view the ITR Details?',
+            text: 'Item Found from ITR #' + this.itr.itrNo,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.onItemFound = true;
+              this.onCloseQRScanning(this.scannerAction);
+              this.onViewITR(this.itr);
+            } else {
+              this.onResumeScanning(this.scannerAction);
+            }
+          });
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Problem Retreiving ITR', err);
+          Swal.fire('Denied', err, 'warning');
+        }
+      });
   }
 
   onPrintITR(itrNo: string) {

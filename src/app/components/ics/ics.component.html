@@ -308,6 +308,7 @@
                             <th class="sticky-header">QTY</th>
                             <th class="sticky-header">UNIT</th>
                             <th class="sticky-header">DESCRIPTION</th>
+                            <th class="sticky-header">DATE ACQUIRED</th>
                             <th class="sticky-header">AMOUNT</th>
                             <th class="sticky-header">TOTAL</th>
                             <th class="sticky-header text-center">ACTION</th>
@@ -324,6 +325,7 @@
                             <td>{{p.unit}}</td>
                             <td>{{p.description}}</td>
                             <td>{{p.amount}}</td>
+                            <td>{{formatDate(p.date_Acquired)}}</td>
                             <td>{{( p.qty || 0) * (p.amount || 0)}}</td>
                             <td>
                               <form class="d-flex justify-content-end">
@@ -1271,6 +1273,35 @@
                   placeholder="1">
               </div>
 
+              <!-- DATE ACQUIRED -->
+              @if(!(itemForm.controls['date_Acquired'].invalid &&
+              itemForm.hasError('required', 'date_Acquired') &&
+              itemForm.get('date_Acquired')?.touched ||
+              (itemForm.controls['date_Acquired'].dirty &&
+              itemForm.hasError('required', 'date_Acquired')))){
+              <small class="text-info">*
+                Date Acquired</small>
+              }@else {
+              <small class="text-danger"
+                *ngIf="itemForm.controls['date_Acquired'].invalid && itemForm.hasError('required', 'date_Acquired') && itemForm.get('date_Acquired')?.touched ||
+                (itemForm.controls['date_Acquired'].dirty && itemForm.hasError('required', 'date_Acquired'))">*
+                Date Acquired is required</small>
+              }
+              <div class="form-field d-flex align-items-center"
+                [class.error]="itemForm.controls['date_Acquired'].invalid && itemForm.hasError('required', 'date_Acquired') &&  itemForm.get('date_Acquired')?.touched ||
+                (itemForm.controls['date_Acquired'].dirty && itemForm.hasError('required', 'date_Acquired'))">
+
+                <i
+                  class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                  *ngIf="itemForm.controls['date_Acquired'].invalid && itemForm.hasError('required', 'date_Acquired') &&  itemForm.get('date_Acquired')?.touched ||
+                  (itemForm.controls['date_Acquired'].dirty && itemForm.hasError('required', 'date_Acquired'))"></i>
+
+                <input type="date" formControlName="date_Acquired"
+                  name="date_Acquired"
+                  id="date_Acquired"
+                  placeholder="Date Acquired is required">
+              </div>
+
               <!-- Estimated Useful Life -->
               <small class="text-info"
                 *ngIf="!itemForm.controls['eul'].invalid || !itemForm.controls['eul'].touched">*
@@ -1385,6 +1416,11 @@
                 <tr>
                   <td class="fw-bold">Total Cost:</td>
                   <td>{{ (item?.qty || 0) * (item?.amount || 0 )}}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Date Acquired:</td>
+                  <td>{{ (item?.date_Acquired | date:'shortDate') || 'N/A'
+                    }}</td>
                 </tr>
                 <tr *ngIf="item?.itrFlag">
                   <td class="fw-bold">ITR No.:</td>

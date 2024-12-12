@@ -166,6 +166,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
       unit: ['', Validators.required],
       amount: ['', [Validators.required, Validators.min(1)]],
       eul: ['', [Validators.required, Validators.min(1)]],
+      date_Acquired: [this.today, Validators.required],
     });
 
     // this.getALLPAR();
@@ -213,7 +214,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
   addModalHiddenListener(icsModal: boolean, modalId: string) {
     const modal = document.getElementById(modalId);
     modal?.addEventListener('hidden.bs.modal', () =>
-    icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+      icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
 
 
@@ -911,6 +912,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
     const Unit: string = this.itemForm.value['unit'];
     const Amount: number = this.itemForm.value['amount'];
     const Eul: number = this.itemForm.value['eul'];
+    const Date_Acquired: Date = this.itemForm.value['date_Acquired'];
 
 
 
@@ -951,7 +953,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
       // icsItemNo, icsNo, iid, description, qty, unit, amount: number, itrFlag, ITRNo
 
-      this.item = new ICSItem(null, ICSNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Qty, Unit, Amount, Eul, false, null);
+      this.item = new ICSItem(null, ICSNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Qty, Unit, Amount, Date_Acquired, Eul, false, null);
       this.icsItems.push(this.item);
       this.logger.printLogs('i', 'PAR ITEMS', this.icsItems);
       this.resetItemForm();
@@ -989,7 +991,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
       const index = this.icsItems.findIndex(i => i.description === this.item!.description);
       if (index !== -1) {
-        this.icsItems[index] = new ICSItem(this.ICSItemNo, ICSNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Qty, Unit, Amount, Eul, false, null);
+        this.icsItems[index] = new ICSItem(this.ICSItemNo, ICSNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Qty, Unit, Amount, Date_Acquired, Eul, false, null);
 
         Swal.fire('Success!', 'Item updated successfully!', 'success');
         this.resetItemForm();
@@ -1099,6 +1101,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
             unit: item.unit,
             amount: item.amount,
             eul: item.eul,
+            date_Acquired: this.formatDate(item.date_Acquired),
           });
 
           this.openModal(this.ItemModal)
@@ -1411,8 +1414,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
             },
             error: (err: any) => {
-              this.logger.printLogs('w', 'Problem with Retreiving ICS ITEMS', err);
-              Swal.fire('Denied', err, 'warning');
+              this.logger.printLogs('w', 'Problem with Retreiving ICS', err);
+              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in ICS`, 'info');
             }
           });
       }
@@ -1420,7 +1423,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
   }
 
   onRetrieveICS(icsNo: string) {
-    this.api.retrievePAR(icsNo)
+    this.api.retrieveICS(icsNo)
       .subscribe({
         next: (res) => {
           console.log('Retrieve ICS', res);
@@ -1437,11 +1440,13 @@ export class IcsComponent implements OnInit, AfterViewInit {
             if (result.isConfirmed) {
               this.onItemFound = true;
               this.onViewICS(this.ics);
+            } else {
+              this.resumeScanning(this.scannerAction);
             }
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR', err);
+          this.logger.printLogs('w', 'Problem Retreiving ICS', err);
           Swal.fire('Denied', err, 'warning');
         }
       });

@@ -21,14 +21,6 @@
                 type="button" (click)="onSearchPAR()"><i
                   class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
-            <!-- start/stop -->
-            <!--
-            <a
-              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
-              type="button" (click)="openPARModal(AddEditModal)">
-              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
-                class="fs-6">NEW</span></a>
-                -->
 
             <button
               class="btn btn-dark rounded-pill d-flex justify-content-center align-items-center"
@@ -149,10 +141,10 @@
             <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
               isEditMode
               ?
-              'Edit REPAR' : 'Add New REPAR'}} <em> {{ '#' + currentEditId
+              'Edit PTR' : 'Add New PTR'}} <em> {{ '#' + currentEditId
                 }}</em>
             </h1>
-            <span><em> Re-Property Acknowledgement
+            <span><em> Property Transfer
                 Receipt</em></span>
           </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal"

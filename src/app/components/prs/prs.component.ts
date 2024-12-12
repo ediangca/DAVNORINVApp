@@ -160,37 +160,10 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   setupModalClose() {
-    this.addModalHiddenListener('AddEditModalForm');
-    this.addModalHiddenListener('ViewModalForm');
-
-    // const modal = document.getElementById('AddEditModalForm')!;
-    // if (modal) {
-    //   modal.addEventListener('hidden.bs.modal', () => {
-    //     this.resetForm();
-    //   });
-    // }
-    // const viewPARModal = document.getElementById('ViewModalForm')!;
-    // if (viewPARModal) {
-    //   viewPARModal.addEventListener('hidden.bs.modal', () => {
-    //     this.resetForm();
-    //   });
-    // }
-
-    const itemModal = document.getElementById('ItemModalForm')!;
-    if (itemModal) {
-
-      itemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
-
-    const viewItemModal = document.getElementById('ViewItemModalForm')!;
-    if (viewItemModal) {
-
-      viewItemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
+    this.addModalHiddenListener(true, 'AddEditModalForm');
+    this.addModalHiddenListener(true, 'ViewModalForm');
+    this.addModalHiddenListener(false, 'ItemModalForm');
+    this.addModalHiddenListener(false, 'ViewItemModalForm');
 
     const QRScannerModal = document.getElementById('QRScannerForm')!;
     if (QRScannerModal) {
@@ -202,10 +175,12 @@ export class PrsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addModalHiddenListener(modalId: string) {
+  addModalHiddenListener(icsModal: boolean, modalId: string) {
     const modal = document.getElementById(modalId);
-    modal?.addEventListener('hidden.bs.modal', () => this.resetForm());
+    modal?.addEventListener('hidden.bs.modal', () =>
+    icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
+
 
   openPARModal(modalElement: ElementRef) {
     if (modalElement) {
@@ -1184,8 +1159,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error Retreiving PRS ITEMS', err);
-              Swal.fire('Denied', err, 'warning');
+              this.logger.printLogs('w', 'Problem with Retreiving PRS', err);
+              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in PRS`, 'info');
             }
           });
 
@@ -1219,8 +1194,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('w', 'Problem with Retreiving PRS', err);
-          Swal.fire('Denied', 'Item Not Found in PRS Record', 'warning');
+          this.logger.printLogs('w', 'Problem Retreiving PRS', err);
+          Swal.fire('Denied', err, 'warning');
         }
       });
   }

@@ -1464,8 +1464,8 @@ export class ParComponent implements OnInit, AfterViewInit {
 
             },
             error: (err: any) => {
-              this.logger.printLogs('w', 'Problem with PAR ITEMS', err);
-              Swal.fire('Denied', err, 'warning');
+              this.logger.printLogs('w', 'Problem with Retreiving PAR', err);
+              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in PAR`, 'info');
             }
           });
 
@@ -1499,8 +1499,8 @@ export class ParComponent implements OnInit, AfterViewInit {
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR', err);
-          Swal.fire('Denied', 'Item Not Found in PAR Record', 'warning');
+          this.logger.printLogs('w', 'Problem Retreiving PAR', err);
+          Swal.fire('Denied', err, 'warning');
         }
       });
   }

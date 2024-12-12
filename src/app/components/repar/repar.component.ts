@@ -178,34 +178,11 @@ export class ReparComponent implements OnInit, AfterViewInit {
   }
 
   setupModalClose() {
-    const modal = document.getElementById('AddEditModalForm')!;
-    if (modal) {
-      modal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
-      });
-    }
-    const viewPARModal = document.getElementById('ViewModalForm')!;
-    if (viewPARModal) {
-      viewPARModal.addEventListener('hidden.bs.modal', () => {
-        this.resetForm();
-      });
-    }
+    this.addModalHiddenListener(true, 'AddEditModalForm');
+    this.addModalHiddenListener(true, 'ViewModalForm');
+    this.addModalHiddenListener(false, 'ItemModalForm');
+    this.addModalHiddenListener(false, 'ViewItemModalForm');
 
-    const itemModal = document.getElementById('ItemModalForm')!;
-    if (itemModal) {
-
-      itemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
-
-    const viewItemModal = document.getElementById('ViewItemModalForm')!;
-    if (viewItemModal) {
-
-      viewItemModal.addEventListener('hidden.bs.modal', () => {
-        this.resetItemForm();
-      });
-    }
 
     const QRScannerModal = document.getElementById('QRScannerForm')!;
     if (QRScannerModal) {
@@ -215,6 +192,11 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
       });
     }
+  }
+  addModalHiddenListener(parModal: boolean, modalId: string) {
+    const modal = document.getElementById(modalId);
+    modal?.addEventListener('hidden.bs.modal', () =>
+      parModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
 
   openPARModal(modalElement: ElementRef) {
@@ -402,11 +384,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
   }
 
 
-  // Function to display the QR Scanner modal
-  onScanQR() {
-    const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
-    QRmodal.show();
-  }
 
 
   onAutoSuggestReceived() {
@@ -1196,6 +1173,20 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.displaySelectedItems();
   }
 
+
+  onTypeChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.isCustomType = selectedValue == 'Others';
+    if (!this.isCustomType) {
+      this.parForm.get('type')?.setValue(selectedValue);
+      this.parForm?.get('others')?.setValue('N/A');
+    } else {
+      this.parForm?.get('others')?.setValue(null);
+      this.parForm.get('type')?.markAsUntouched();
+      this.parForm.get('others')?.markAsTouched();
+    }
+  }
+
   // Optional function to get the currently selected items
   displaySelectedItems() {
     this.logger.printLogs('i', 'List of selected PAR Items', this.selectedParItems!);
@@ -1212,6 +1203,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
       }
     })
   }
+
 
   resetForm() {
     this.isEditMode = false;
@@ -1259,6 +1251,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.brands = [];
     this.models = [];
     this.descriptions = [];
+  }
+
+  // Function to display the QR Scanner modal
+  onScanQR() {
+    const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
+    QRmodal.show();
   }
 
   // Reset and stop/start QR scanning
@@ -1314,8 +1312,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error Retreiving PAR ITEMS', err);
-              Swal.fire('Denied', err, 'warning');
+              this.logger.printLogs('w', 'Problem with Retreiving PTR', err);
+              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in PTR`, 'info');
             }
           });
 
@@ -1349,8 +1347,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PTR', err);
-          Swal.fire('Denied', 'Item Not Found in PTR Record', 'warning');
+          this.logger.printLogs('w', 'Problem Retreiving PTR', err);
+          Swal.fire('Denied', err, 'warning');
         }
       });
   }
@@ -1372,19 +1370,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
     scannerAction.isStart = false;
     scannerAction.isLoading = false;
 
-  }
-
-  onTypeChange(event: Event) {
-    const selectedValue = (event.target as HTMLSelectElement).value;
-    this.isCustomType = selectedValue == 'Others';
-    if (!this.isCustomType) {
-      this.parForm.get('type')?.setValue(selectedValue);
-      this.parForm?.get('others')?.setValue('N/A');
-    } else {
-      this.parForm?.get('others')?.setValue(null);
-      this.parForm.get('type')?.markAsUntouched();
-      this.parForm.get('others')?.markAsTouched();
-    }
   }
 
   onPrintREPAR(reparNo: string) {

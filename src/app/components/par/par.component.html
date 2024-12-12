@@ -169,7 +169,7 @@
             <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
               isEditMode
               ?
-              'Edit' : 'Add New '}} PAR</h1>
+              'Edit' : 'New '}} PAR <em> {{ '#' + currentEditId }}</em> </h1>
             <span><em> Property Acknowledgement
                 Receipt</em></span>
           </div>
@@ -251,7 +251,7 @@
                       placeholder="FUND">
                   </div>
                 </div>
-                <div class="col">
+                <div class="col" *ngIf="!isEditMode">
 
                   @if(!(parForm.controls['parNo'].invalid &&
                   parForm.hasError('required', 'parNo') &&
@@ -977,15 +977,6 @@
                   class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
                   *ngIf="((itemForm.controls['iid'].invalid && itemForm.hasError('required', 'iid') || iid==null) && itemForm.get('iid')?.touched) ||
              (itemForm.controls['iid'].dirty && itemForm.hasError('required', 'iid'))"></i>
-                <!-- <input type="text" class="form-control"
-                  id="navbarDropdown"
-                  formControlName="iid"
-                  name="iid"
-                  [(ngModel)]="IIDKey"
-                  placeholder=" Item"
-                  (keydown.enter)="onAutoSuggest()"
-                  (keyup)="onAutoSuggest()"
-                  role="textbox"> -->
 
                 <input type="text" class="form-control"
                   id="navbarDropdown"

@@ -1058,16 +1058,85 @@ export class ApiService {
   }
 
   //Update Post Flag
-  postPRS(reparNo: string, postVal: boolean): Observable<any> {
-    console.log("Update PRS No. >>> : ", reparNo);
+  postPRS(prsNo: string, postVal: boolean): Observable<any> {
+    console.log("Update PRS No. >>> : ", prsNo);
     console.log("Update Post flag >>> : ", postVal);
-    return this.http.put<any>(`${this.apiUrl}PRS/Post?id=${reparNo}`, postVal)
+    return this.http.put<any>(`${this.apiUrl}PRS/Post?id=${prsNo}`, postVal)
       .pipe(
         catchError(this.handleError)
       );
   }
 
 
+   /*----------------------- PRS -----------------------*/
+  getAllRRSEP(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}RRSEP/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  searchRRSEP(key: string): Observable<any> {
+    // console.log("Search PRS by key: ", key);
+    return this.http.get<any>(`${this.apiUrl}RRSEP/Search?key=` + key)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  createRRSEP(details: any, updatedItems: ICSItem[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+
+    console.log("Create RRSEP Payload: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}RRSEP/Create/`, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  retrieveRRSEP(rrsepNo: string): Observable<any> {
+    console.log("Retrieve RRSEP No.: ", rrsepNo);
+    return this.http.get<Item[]>(`${this.apiUrl}RRSEP/` + rrsepNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update
+  updateRRSEP(details: any, updatedItems: ICSItem[]): Observable<any> {
+
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+    console.log("Update RRSEP: ", details);
+    console.log("Update request Payload: ", requestPayload);
+    return this.http.put<any>(`${this.apiUrl}RRSEP/Update?id=` + details.rrsepNo, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Delete
+  deleteRRSEP(id: string): Observable<any> {
+    console.log("Delete RRSEP: ", id);
+    return this.http.delete<any>(`${this.apiUrl}RRSEP/Delete?id=` + id)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update Post Flag
+  postPRRSEP(rrsepNo: string, postVal: boolean): Observable<any> {
+    console.log("Update RRSEP No. >>> : ", rrsepNo);
+    console.log("Update Post flag >>> : ", postVal);
+    return this.http.put<any>(`${this.apiUrl}RRSEP/Post?id=${rrsepNo}`, postVal)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
   /*----------------------- Cencus -----------------------*/
 

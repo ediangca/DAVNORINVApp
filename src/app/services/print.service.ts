@@ -410,6 +410,8 @@ export class PrintService {
         return 'PROPERTY TRANSFER REPORT'
       case 'prs':
         return 'PROPERTY RETURN SLIP'
+      case 'rrsep':
+        return 'RECEIPT RETURN SEMI-EXPANDABLE PROPERTY'
       default:
         return 'TITLE'
     }

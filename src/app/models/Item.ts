@@ -36,7 +36,7 @@ export class Item {
     qrCode: string = 'N/A',
     unit: string,
     amount: number,
-    date_Acquired: Date,
+    date_Acquired: Date | null = null,
     reparFlag : boolean = false,
     reparNo : string | null = null,
     prsFlag : boolean = false,
