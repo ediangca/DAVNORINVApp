@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxScannerQrcodeModule, LOAD_WASM, ScannerQRCodeConfig, ScannerQRCodeResult, NgxScannerQrcodeComponent } from 'ngx-scanner-qrcode';
@@ -7,13 +7,12 @@ import Swal from 'sweetalert2';
 import { ApiService } from '../../services/api.service';
 import { LogsService } from '../../services/logs.service';
 import { StoreService } from '../../services/store.service';
-import { Item } from '../../models/Item';
+import { ICSItem } from '../../models/ICSItem';
 import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 
 import { PrintService } from '../../services/print.service';
-import { forkJoin, Observable } from 'rxjs';
-import { ICSItem } from '../../models/ICSItem';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -30,7 +29,6 @@ export class RrspComponent {
 
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
   @ViewChild('ViewModalForm') ViewModal!: ElementRef;
-  @ViewChild('ItemModalForm') ItemModal!: ElementRef;
   @ViewChild('ViewItemModalForm') ViewItemModal!: ElementRef;
   @ViewChild('ListItemModalForm') ListItemModal!: ElementRef;
   @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
@@ -85,7 +83,7 @@ export class RrspComponent {
   isCustomType = false;
 
   itr: any | null | undefined;
-  searchPARItems: Item[] = [];
+  searchPARItems: ICSItem[] = [];
 
   isNewItem: boolean = false;
   accID: string = "unknown";
@@ -121,7 +119,7 @@ export class RrspComponent {
     this.today = new Date().toISOString().split('T')[0];
 
     this.rrsepForm = this.fb.group({
-      prsNo: ['', Validators.required],
+      rrsepNo: ['', Validators.required],
       entityName: ['', Validators.required],
       type: ['', Validators.required],
       others: ['', Validators.required],
@@ -158,7 +156,7 @@ export class RrspComponent {
   setupModalClose() {
     this.addModalHiddenListener(true, 'AddEditModalForm');
     this.addModalHiddenListener(true, 'ViewModalForm');
-    this.addModalHiddenListener(false, 'ItemModalForm');
+    // this.addModalHiddenListener(false, 'ItemModalForm');
     this.addModalHiddenListener(false, 'ViewItemModalForm');
 
     const QRScannerModal = document.getElementById('QRScannerForm')!;
@@ -178,14 +176,7 @@ export class RrspComponent {
   }
 
 
-  openPARModal(modalElement: ElementRef) {
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement.nativeElement);
-      modal.show();
-    }
-  }
-
-  openItemModal(modalElement: ElementRef) {
+  openModal(modalElement: ElementRef) {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement.nativeElement);
       modal.show();
@@ -283,12 +274,12 @@ export class RrspComponent {
     QRmodal.show();
   }
 
-  onAddPRS() {
+  onAddRRSEP() {
     this.isEditMode = false;
     this.rrsep = null;
     this.rrsepItems = [];
     this.searchRRSEPItems = [];
-    this.openPARModal(this.AddEditModal);
+    this.openModal(this.AddEditModal);
   }
 
   onSubmit() {
@@ -389,7 +380,7 @@ export class RrspComponent {
   }
 
 
-  updatePARItems() {
+  updateICSItems() {
     this.api.updateICSItem(this.currentEditId!, this.icsItems)
       .subscribe({
         next: (res) => {
@@ -405,14 +396,14 @@ export class RrspComponent {
 
   }
 
-  onPostPRS(prs: any) {
+  onPostRRSEP(rrsep: any) {
 
-    if ((this.roleNoFromToken != 'System Administrator' && !prs.postFlag) || this.roleNoFromToken == 'System Administrator') {
-      let rrsepNo = prs.prsNo;
+    if ((this.roleNoFromToken != 'System Administrator' && !rrsep.postFlag) || this.roleNoFromToken == 'System Administrator') {
+      let rrsepNo = rrsep.rrsepNo;
 
       Swal.fire({
         title: 'Are you sure?',
-        text: (prs.postFlag ? 'Unpost' : 'Post') + ` RRSEP #${rrsepNo}`,
+        text: (rrsep.postFlag ? 'Unpost' : 'Post') + ` RRSEP #${rrsepNo}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -420,7 +411,7 @@ export class RrspComponent {
       }).then((result) => {
         if (result.isConfirmed) {
 
-          this.api.postPRS(rrsepNo, !prs.postFlag)
+          this.api.postPRRSEP(rrsepNo, !rrsep.postFlag)
             .subscribe({
               next: (res) => {
                 this.logger.printLogs('i', 'Posted Success', res);
@@ -439,9 +430,9 @@ export class RrspComponent {
 
   }
 
-  onEditPRS(prs: any) {
-    if (prs.postFlag) {
-      Swal.fire('Information!', 'Cannot edit posted PRS.', 'warning');
+  onEditRRSEP(rrsep: any) {
+    if (rrsep.postFlag) {
+      Swal.fire('Information!', 'Cannot edit posted RRSEP.', 'warning');
       return;
     }
 
@@ -452,17 +443,17 @@ export class RrspComponent {
       if (modalInstance && modalInstance._isShown) {
         modalElement.addEventListener('hidden.bs.modal', () => {
           // Perform actions after the modal is fully closed
-          this.handleEditPRSLogic(prs);
+          this.handleEditPRSLogic(rrsep);
         }, { once: true });  // { once: true } ensures the listener fires only once
 
         this.closeModal(this.ViewModal);
       } else {
         // If the modal is not open, proceed immediately
-        this.handleEditPRSLogic(prs);
+        this.handleEditPRSLogic(rrsep);
       }
     } else {
       // If ViewModal is undefined, proceed with the logic
-      this.handleEditPRSLogic(prs);
+      this.handleEditPRSLogic(rrsep);
     }
 
   }
@@ -479,7 +470,7 @@ export class RrspComponent {
     this.approvedID = rrsep.approvedBy;
 
     this.rrsepForm.patchValue({
-      prsNo: rrsep.prsNo,
+      rrsepNo: rrsep.rrsepNo,
       entityName: rrsep.entityName,
       type: rrsep.rtype,
       others: rrsep.otype,
@@ -488,13 +479,13 @@ export class RrspComponent {
       userID2: rrsep.issued,
     });
 
-    this.api.retrievePRS(this.currentEditId!)
+    this.api.retrieveRRSEP(this.currentEditId!)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving RRSEP Item.....', res);
           this.rrsep = res.details;
           this.rrsepItems = res.prsItems;
-          this.openPARModal(this.AddEditModal);
+          this.openModal(this.AddEditModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retrieving RRSEP Item', err);
@@ -504,7 +495,7 @@ export class RrspComponent {
   }
 
 
-  onViewPRS(rrsep: any) {
+  onViewRRSEP(rrsep: any) {
     this.rrsep = rrsep;
     this.currentEditId = rrsep.rrsepNo;
     this.logger.printLogs('i', 'Viewing RRSEP', rrsep);
@@ -527,7 +518,7 @@ export class RrspComponent {
       userID2: rrsep.issuedBy,
     });
 
-    this.api.retrievePRS(this.currentEditId!)
+    this.api.retrieveRRSEP(this.currentEditId!)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving RRSEP', res);
@@ -541,7 +532,7 @@ export class RrspComponent {
         }
       });
 
-    this.openPARModal(this.ViewModal); // Open the modal after patching
+    this.openModal(this.ViewModal); // Open the modal after patching
 
   }
 
@@ -552,7 +543,7 @@ export class RrspComponent {
       return;
     }
 
-    let rrsepNo = rrsep.prsNo;
+    let rrsepNo = rrsep.rrsepNo;
     Swal.fire({
       title: 'Are you sure?',
       text: 'Remove RRSEP #' + rrsepNo,
@@ -562,7 +553,7 @@ export class RrspComponent {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.api.deletePRS(rrsepNo)
+        this.api.deleteRRSEP(rrsepNo)
           .subscribe({
             next: (res) => {
               this.getAllRRSEP();
@@ -579,8 +570,8 @@ export class RrspComponent {
   }
 
   onAddPARItem() {
-    const PRSNo: string = this.rrsepForm.value['prsNo'];
-    if (!PRSNo) {
+    const RRSEPNo: string = this.rrsepForm.value['rrsepNo'];
+    if (!RRSEPNo) {
       Swal.fire('INFORMATION!', 'Please input RRSEP No. first before adding item', 'warning');
       return;
     }
@@ -597,7 +588,7 @@ export class RrspComponent {
           this.logger.printLogs('i', 'LIST OF ACTIVE ICS ITEM ', this.icsItems);
           this.logger.printLogs('i', 'LIST OF ACTIVE RRSEP ITEM ', this.rrsepItems);
 
-          this.icsItems.length < 1 ? Swal.fire('Information', 'No Items can be return.', 'info') : this.openItemModal(this.ListItemModal);
+          this.icsItems.length < 1 ? Swal.fire('Information', 'No Items can be return.', 'info') : this.openModal(this.ListItemModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching Items', err);
@@ -908,7 +899,7 @@ export class RrspComponent {
                 next: (res) => {
                   this.itr = res.details;
                   this.logger.printLogs('i', 'Retreived ITR No: ' + item.itrNo!, this.itr);
-                  this.openItemModal(this.ViewItemModal)
+                  this.openModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
                   this.logger.printLogs('e', 'Error Retreiving ITR', err);
@@ -921,7 +912,7 @@ export class RrspComponent {
                 next: (res) => {
                   this.ics = res[0];
                   this.logger.printLogs('i', 'Retreived ICS No: ' + item.icsNo!, this.ics);
-                  this.openItemModal(this.ViewItemModal)
+                  this.openModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
                   this.logger.printLogs('e', 'Error Retreiving ICS', err);
@@ -1120,7 +1111,7 @@ export class RrspComponent {
 
               console.log('Show Items', this.item);
 
-              this.onRetrievePRS(res[0].prsNo);
+              this.onRetrievePRS(res[0].rrsepNo);
 
             },
             error: (err: any) => {
@@ -1143,7 +1134,7 @@ export class RrspComponent {
 
           Swal.fire({
             title: 'Do you want to view the RRSEP Details?',
-            text: 'Item Found from  RRSEP #' + this.rrsep.prsNo,
+            text: 'Item Found from  RRSEP #' + this.rrsep.rrsepNo,
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -1152,7 +1143,7 @@ export class RrspComponent {
             if (result.isConfirmed) {
               this.onItemFound = true;
               this.onCloseQRScanning(this.scannerAction);
-              this.onViewPRS(this.rrsep);
+              this.onViewRRSEP(this.rrsep);
             } else {
               this.resumeScanning(this.scannerAction);
             }
@@ -1199,7 +1190,9 @@ export class RrspComponent {
 
   onPrintREPAR(rrsepNo: string) {
 
-    this.api.retrievePRS(rrsepNo)
+    const referenceModel: any | null = null;
+
+    this.api.retrieveRRSEP(rrsepNo)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving RRSEP', res);
@@ -1210,88 +1203,99 @@ export class RrspComponent {
 
           // Ensure par.parItems is an array or default to an empty array
           const items = Array.isArray(this.rrsepItems) ? this.rrsepItems : [];
-          // Use forkJoin to wait for both observables to complete
           forkJoin([
             this.printService.setReceivedBy(res.details.receivedBy),
             this.printService.setIssuedBy(res.details.issuedBy),
-            this.printService.setApprovedBy(res.details.approvedBy)
-          ] as Observable<any>[]).subscribe(() => {
-            // Once both services complete, continue with the report generation
+            this.printService.setApprovedBy(res.details.approvedBy),
+            ...items.map(item =>
+              this.getModel(item.itrFlag ? item.itrNo : item.icsNo, item.itrFlag ? 'ITR' : 'ICS')
+            )
+          ]).subscribe((responses: any[]) => {
+            const [setReceivedBy, setIssuedBy, setApprovedBy, ...models] = responses;
 
+            // Generate rows with fetched data
             const rows = items.map((item: any, index: number) => `
-              <tr ${item.qrCode ? `class="${item.qrCode}  item-row"` : ''}>
-                <td>${index + 1}</td>
-                <td>${item.qty || '1'}</td>
-                <td>${item.unit || 'pcs'}</td>
+              <tr ${item.qrCode ? `class="${item.qrCode} item-row"` : ''}>
                 <td>${item.description || 'N/A'}</td>
-                <td>${this.formatDate(item.date_Acquired) || 'N/A'}</td>
-                <td>${item.propertyNo || 'N/A'}
-                </td>
-                <td>
-                ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </td>
+                <td>${item.qty || 1}</td>
+                <td>${item.itrFlag? item.itrNo: item.icsNo}</td>
+                <td>${models[index].toString().toUpperCase()}</td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+              </tr>
+            `).join('');
 
-              </tr>`).join('');
-
-
-
-            // Generate the full report content
+            // Generate report content
             const reportContent = `
-
-          <div class="watermark">RRSEP</div>
-
-          <div class="row">
-            <div class="col-12">
-              <p class="fs-6">Entity Name: <span class="fw-bold border-bottom ms-1">${this.rrsep.entityName.toUpperCase() || 'N/A'}</span></p>
-            </div>
-            <div class="col-6">
-              <p class="fs-6">Purpose: <span class="fw-bold border-bottom ms-1">
-              ${(((this.rrsep.rtype + '').toString().toLowerCase() == "others") ? this.rrsep.rtype + ' - ' + this.rrsep.otype : this.rrsep.rtype) || 'N/A'}
-              </span></p>
-            </div>
-            <div class="col-6">
-              <p class="fs-6 text-end">RRSEP No.: <span class="fw-bold border-bottom ms-1">${this.rrsep.rrsepNo || 'Default RRSEP No.'}</span></p>
-            </div>
-          </div>
-
-          <div class="row">
-          <div class="col">
-          <!-- Table with List of Items -->
-            <table class="table table-bordered table-striped">
-                <thead>
-                  <tr class="item-row">
-                    <th>#</th>
-                    <th>QTY</th>
-                    <th>UNIT</th>
-                    <th>DESCRIPTION</th>
-                    <th>DATE ACQUIRED</th>
-                    <th>PROPERTY NUMBER</th>
-                    <th>AMOUNT</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    ${rows}
-                </tbody>
-            </table>
-
-            </div>
-            </div>
+              <div class="watermark">RRSEP</div>
+              <div class="row">
+                <div class="col col-lg-6">
+                  <p class="fs-6">Entity Name: <span class="fw-bold border-bottom ms-1">${this.rrsep.entityName}</span></p>
+                </div>
+                <!--
+                <div class="col col-lg-6">
+                  <p class="fs-6">Purpose: <span class="fw-bold border-bottom ms-1">
+                    ${(((this.rrsep.rtype + '').toLowerCase() === "others") ? this.rrsep.rtype + ' - ' + this.rrsep.otype : this.rrsep.rtype) || 'N/A'}
+                  </span></p>
+                </div>
+                -->
+                <div class="col-lg-6">
+                  <p class="fs-6 text-end">RRSEP No.: <span class="fw-bold border-bottom ms-1">${this.rrsep.rrsepNo || 'Default RRSEP No.'}</span></p>
+                </div>
+                <div class="col col-lg-12 border border-dark py-0">
+                  <p class="fs-6 text-center py-0">This is to acknowledge receipt of the returned Semi-expendable Property</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <table class="table table-bordered table-striped">
+                    <thead>
+                      <tr class="item-row">
+                        <th class='text-center'>DESCRIPTION</th>
+                        <th class='text-center'>QUANTITY</th>
+                        <th class='text-center'>ICS/ITR</th>
+                        <th class='text-center'>END USER TO</th>
+                        <th class='text-center'>REMARKS</th>
+                      </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                  </table>
+                </div>
+              </div>
             `;
 
             // Print the report
             this.printService.printReport('RRSEP', reportContent);
-
           });
+
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving RRSEP Item', err);
-          Swal.fire('Error', 'Failure to Retrieve RRSEP Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
+          Swal.fire('Error', 'Failure to Retrieve PRS Item.', 'error');
           return;
         }
       });
+  }
 
-
-
+  getModel(idNo: any, table: string): Observable<string> {
+    if (table === 'ITR') {
+      return this.api.retrieveITR(idNo).pipe(
+        map((res: any) => res.details.received || 'N/A'),
+        catchError((err: any) => {
+          this.logger.printLogs('w', 'Problem Retrieving PTR', err);
+          return of('N/A'); // Return default value on error
+        })
+      );
+    } else if (table === 'ICS') {
+      return this.api.retrieveICS(idNo).pipe(
+        map((res: any[]) => (res[0]?.received || 'N/A')),
+        catchError((err: any) => {
+          this.logger.printLogs('w', 'Problem Retrieving PAR', err);
+          Swal.fire('Denied', err, 'warning');
+          return of('N/A');
+        })
+      );
+    }
+    return of('N/A'); // Default value for invalid table input
   }
 
 }

@@ -530,7 +530,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         depID: this.userProfileForm.value['depID'] ? this.userProfileForm.value['depID'] : null,
         secID: this.userProfileForm.value['secID'] ? this.userProfileForm.value['secID'] : null,
         positionID: this.userProfileForm.value['positionID'] ? this.userProfileForm.value['positionID'] : null,
-        userID: this.userAccount ? this.userAccount.userID : '0'
+        userID: this.userAccount ? this.userAccount.userID : null
       }
 
 

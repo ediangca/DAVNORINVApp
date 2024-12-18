@@ -26,7 +26,7 @@
             <!-- start/stop -->
             <a
               class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
-              type="button" (click)="onAddPRS()">
+              type="button" (click)="onAddRRSEP()">
               <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
                 class="fs-6">NEW</span></a>
 
@@ -72,7 +72,7 @@
             <td>
               <a [ngClass]="p.postFlag ? 'primary' : 'secondary'"
                 type="button"
-                (click)="onPostPRS(p)">
+                (click)="onPostRRSEP(p)">
                 <i class="fa-sharp-duotone fa-solid fa-thumbtack"
                   data-toggle="tooltip"
                   [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
@@ -92,7 +92,7 @@
                 }@else{
                 <a class="edit"
                   type="button"
-                  (click)="onEditPRS(p)"><i
+                  (click)="onEditRRSEP(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square"
                     data-toggle="tooltip" title="Edit"></i></a>
                 <a class="delete"
@@ -102,7 +102,7 @@
                     data-toggle="tooltip" title="Delete"></i></a>
                 <a class="success"
                   type="button"
-                  (click)="onViewPRS(p)">
+                  (click)="onViewRRSEP(p)">
                   <i class="fa-sharp-duotone fa-solid fa-eye"
                     data-toggle="tooltip" title="View"></i>
                 </a>
@@ -149,7 +149,7 @@
             <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
               isEditMode
               ?
-              'Edit PRS #' + currentEditId: 'Add New PRS'}}
+              'Edit PRS #' + currentEditId: 'New RRSEP'}}
             </h1>
             <span><em> Receipt of Returned Semi-Expandable Property</em></span>
           </div>
@@ -162,6 +162,44 @@
           <div class="card m-0">
             <div class="card-header py-2">
               <div class="row">
+                <div class="col-lg">
+
+                  @if(!(rrsepForm.controls['entityName'].invalid &&
+                  rrsepForm.hasError('required', 'entityName') &&
+                  rrsepForm.get('entityName')?.touched ||
+                  (rrsepForm.controls['entityName'].dirty &&
+                  rrsepForm.hasError('required', 'entityName')))){
+                  <small class="text-info">*
+                    Entity Name</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="rrsepForm.controls['entityName'].invalid &&
+                      rrsepForm.hasError('required', 'entityName') &&
+                      rrsepForm.get('entityName')?.touched ||
+                      (rrsepForm.controls['entityName'].dirty &&
+                      rrsepForm.hasError('required', 'entityName'))">*
+                    Entity Name is required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="rrsepForm.controls['entityName'].invalid && rrsepForm.hasError('required', 'entityName') &&
+                    rrsepForm.get('entityName')?.touched || (rrsepForm.controls['entityName'].dirty && rrsepForm.hasError('required', 'entityName'))">
+
+                    <i
+                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="rrsepForm.controls['entityName'].invalid &&
+                      rrsepForm.hasError('required', 'entityName') &&  rrsepForm.get('entityName')?.touched || (rrsepForm.controls['entityName'].dirty &&
+                      rrsepForm.hasError('required', 'entityName'))"></i>
+
+                    <input type="text" formControlName="entityName"
+                      name="entityName"
+                      id="entityName"
+                      placeholder="Entity Name">
+                  </div>
+
+                </div>
+              </div>
+              <div class="row">
                 <!-- PRS No -->
                 <div class="col">
 
@@ -171,12 +209,12 @@
                   (rrsepForm.controls['rrsepNo'].dirty &&
                   rrsepForm.hasError('required', 'rrsepNo')))){
                   <small class="text-info">*
-                    PRS No.</small>
+                    RRSEP No.</small>
                   }@else {
                   <small class="text-danger"
                     *ngIf="rrsepForm.controls['rrsepNo'].invalid && rrsepForm.hasError('required', 'rrsepNo') && rrsepForm.get('rrsepNo')?.touched ||
                           (rrsepForm.controls['rrsepNo'].dirty && rrsepForm.hasError('required', 'rrsepNo'))">*
-                    PRS No. is
+                    RRSEP No. is
                     required</small>
                   }
 
@@ -192,7 +230,7 @@
                       type="text" formControlName="rrsepNo"
                       name="rrsepNo"
                       id="rrsepNo"
-                      placeholder="PRS No.">
+                      placeholder="RRSEP No.">
                   </div>
                 </div>
                 <!-- Return type -->
@@ -537,7 +575,7 @@
   </div>
 </div>
 
-<!-- PRS VIEW -->
+<!-- RRSEP VIEW -->
 <div #ViewModalForm class="modal fade" id="ViewModalForm">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content formGroup">
@@ -570,12 +608,22 @@
                       <i
                         class="fa-sharp-duotone fa-solid {{ isOpen? 'fa-caret-up' : 'fa-caret-down' }} "></i>
                     </button>
-                    <div class="accordion-content" [class.show]="isOpen">
+                    <div class="accordion-content" style="overflow-y: auto;" [class.show]="isOpen">
 
                       <div class="row d-flex flex-row">
+                        <!-- Return type -->
+                        <div class="col-12">
+                          <small class="text-info">Entity Name</small>
+                          <div class="form-field d-flex align-items-center">
+                            <input type="text"
+                              [value]="rrsep?.entityName"
+                              class="form-control" placeholder="Entity Name"
+                              readonly>
+                          </div>
+                        </div>
 
                         <!-- Return type -->
-                        <div class="col-4">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">PRS No.</small>
                           <div class="form-field d-flex align-items-center">
                             <input type="text"
@@ -586,7 +634,7 @@
                         </div>
 
                         <!-- Return type -->
-                        <div class="col-8">
+                        <div class="col-12 col-lg-8">
 
                           <small class="text-info">* Purpose of Return</small>
 
@@ -738,7 +786,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-warning rounded-pill"
             *ngIf="!rrsep?.postFlag || false"
-            (click)="onEditPRS(rrsep)">Edit</button>
+            (click)="onEditRRSEP(rrsep)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill"
             data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
@@ -809,7 +857,7 @@
                 </tr>
                 <tr>
                   <td class="fw-bold">{{item?.itrFlag?
-                    "PTR No.:":"PAR No.:"}}</td>
+                    "ITR No.:":"ICS No.:"}}</td>
                   <td>{{ (item?.itrFlag? item?.itrNo:item?.icsNo ) || 'N/A'
                     }}</td>
                 </tr>

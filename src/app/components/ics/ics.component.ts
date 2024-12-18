@@ -1510,7 +1510,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
                     <td style="font-size: small;">${((item?.qty || 0) * (item?.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td style="font-size: small;">${item.description || 'N/A'}</td>
                     <td style="font-size: small;">${item.propertyNo || index + 1 || item.icsNo || item.icsItemNo || item.iid || 'N/A'}</td>
-              <td style="font-size: small;">${item.eul + ' year(s)' || 'N/A'}</td>
+                    <td style="font-size: small;">${item.eul + ' year(s)' || 'N/A'}</td>
                   </tr>
                 `).join('');
 

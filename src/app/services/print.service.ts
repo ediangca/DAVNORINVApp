@@ -200,6 +200,32 @@ export class PrintService {
           </div>
           -->
         </div>`;
+    } else if (title === "rrsep") {
+      this.footer = `
+        <div class="row mt-3">
+          <div class="col-6 border">
+            <p class="mb-5 fw-bold">Return By:</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.issuedByProfile?.fullName || ''}</p>
+            <p class="text-center border-top">Signature over Printed Name of End User</p>
+          </div>
+          <div class="col-6 border">
+            <p class="mb-5 fw-bold">Received By:</p>
+            <p class="text-center fs-6 fw-bold m-0">${this.receivedByProfile?.fullName || ''}</p>
+            <p class="text-center border-top">Signature over Printed Name of End User</p>
+          </div>
+
+          <div class="col-6 border py-2">
+            <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Date:</p>
+          </div>
+          <div class="col-6 border py-2">
+            <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
+          </div>
+
+        </div>`;
     } else {
       this.footer = ``;
     }

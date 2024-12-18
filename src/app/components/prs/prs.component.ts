@@ -12,7 +12,7 @@ import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 
 import { PrintService } from '../../services/print.service';
-import { forkJoin, Observable } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 
 
 // import * as bootstrap from 'bootstrap';
@@ -178,7 +178,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   addModalHiddenListener(icsModal: boolean, modalId: string) {
     const modal = document.getElementById(modalId);
     modal?.addEventListener('hidden.bs.modal', () =>
-    icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+      icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
 
 
@@ -1234,6 +1234,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   onPrintREPAR(prsNo: string) {
 
+    const referenceModel: any | null = null;
+
     this.api.retrievePRS(prsNo)
       .subscribe({
         next: (res) => {
@@ -1245,78 +1247,73 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
           // Ensure par.parItems is an array or default to an empty array
           const items = Array.isArray(this.prsItems) ? this.prsItems : [];
-          // Use forkJoin to wait for both observables to complete
           forkJoin([
             this.printService.setReceivedBy(res.details.receivedBy),
             this.printService.setIssuedBy(res.details.issuedBy),
-            this.printService.setApprovedBy(res.details.approvedBy)
-          ] as Observable<any>[]).subscribe(() => {
-            // Once both services complete, continue with the report generation
+            this.printService.setApprovedBy(res.details.approvedBy),
+            ...items.map(item =>
+              this.getModel(item.reparFlag ? item.reparNo : item.parNo, item.reparFlag ? 'PTR' : 'PAR')
+            )
+          ]).subscribe((responses: any[]) => {
+            const [setReceivedBy, setIssuedBy, setApprovedBy, ...models] = responses;
 
+            // Generate rows with fetched data
             const rows = items.map((item: any, index: number) => `
-              <tr ${item.qrCode ? `class="${item.qrCode}  item-row"` : ''}>
-                <td>${index + 1}</td>
-                <td>${item.qty || '1'}</td>
+              <tr ${item.qrCode ? `class="${item.qrCode} item-row"` : ''}>
+                <td>${item.qty || 1}</td>
                 <td>${item.unit || 'pcs'}</td>
                 <td>${item.description || 'N/A'}</td>
                 <td>${this.formatDate(item.date_Acquired) || 'N/A'}</td>
-                <td>${item.propertyNo || 'N/A'}
-                </td>
-                <td>
-                ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </td>
+                <td>${item.propertyNo || 'N/A'}</td>
+                <td>${item.iid || 'N/A'}</td>
+                <td>${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td>${((item.qty || 1) * (item.amount || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td>${models[index].toString().toUpperCase()}</td>
+              </tr>
+            `).join('');
 
-              </tr>`).join('');
-
-
-
-            // Generate the full report content
+            // Generate report content
             const reportContent = `
-
-          <div class="watermark">PRS</div>
-
-          <div class="row">
-            <div class="col-12">
-              <p class="fs-6">Name of Local Government Unit: <span class="fw-bold border-bottom ms-1">PROVINCIAL GOVERNMENT OF DAVAO DEL NORTE</span></p>
-            </div>
-            <div class="col-6">
-              <p class="fs-6">Purpose: <span class="fw-bold border-bottom ms-1">
-              ${(((this.prs.rtype + '').toString().toLowerCase() == "others") ? this.prs.rtype + ' - ' + this.prs.otype : this.prs.rtype) || 'N/A'}
-              </span></p>
-            </div>
-            <div class="col-6">
-              <p class="fs-6 text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${this.prs.prsNo || 'Default PTR No.'}</span></p>
-            </div>
-          </div>
-
-          <div class="row">
-          <div class="col">
-          <!-- Table with List of Items -->
-            <table class="table table-bordered table-striped">
-                <thead>
-                  <tr class="item-row">
-                    <th>#</th>
-                    <th>QTY</th>
-                    <th>UNIT</th>
-                    <th>DESCRIPTION</th>
-                    <th>DATE ACQUIRED</th>
-                    <th>PROPERTY NUMBER</th>
-                    <th>AMOUNT</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    ${rows}
-                </tbody>
-            </table>
-
-            </div>
-            </div>
+              <div class="watermark">PRS</div>
+              <div class="row">
+                <div class="col-12">
+                  <p class="fs-6">Name of Local Government Unit: <span class="fw-bold border-bottom ms-1">PROVINCIAL GOVERNMENT OF DAVAO DEL NORTE</span></p>
+                </div>
+                <div class="col-6">
+                  <p class="fs-6">Purpose: <span class="fw-bold border-bottom ms-1">
+                    ${(((this.prs.rtype + '').toLowerCase() === "others") ? this.prs.rtype + ' - ' + this.prs.otype : this.prs.rtype) || 'N/A'}
+                  </span></p>
+                </div>
+                <div class="col-6">
+                  <p class="fs-6 text-end">PRS No.: <span class="fw-bold border-bottom ms-1">${this.prs.prsNo || 'Default PRS No.'}</span></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <table class="table table-bordered table-striped">
+                    <thead>
+                      <tr class="item-row">
+                        <th class='text-center'>QTY</th>
+                        <th class='text-center'>UNIT</th>
+                        <th class='text-center'>DESCRIPTION</th>
+                        <th class='text-center'>DATE ACQUIRED/PURCHASE</th>
+                        <th class='text-center'>PROPERTY NUMBER</th>
+                        <th class='text-center'>CLASS NUMBER</th>
+                        <th class='text-center'>UNIT VALUE</th>
+                        <th class='text-center'>TOTAL VALUE</th>
+                        <th class='text-center'>ISSUED TO</th>
+                      </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                  </table>
+                </div>
+              </div>
             `;
 
             // Print the report
             this.printService.printReport('PRS', reportContent);
-
           });
+
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
@@ -1324,11 +1321,31 @@ export class PrsComponent implements OnInit, AfterViewInit {
           return;
         }
       });
+  }
 
-
-
+  getModel(idNo: any, table: string): Observable<string> {
+    if (table === 'PTR') {
+      return this.api.retrieveREPAR(idNo).pipe(
+        map((res: any) => res.details.received || 'N/A'),
+        catchError((err: any) => {
+          this.logger.printLogs('w', 'Problem Retrieving PTR', err);
+          return of('N/A'); // Return default value on error
+        })
+      );
+    } else if (table === 'PAR') {
+      return this.api.retrievePAR(idNo).pipe(
+        map((res: any[]) => (res[0]?.received || 'N/A')),
+        catchError((err: any) => {
+          this.logger.printLogs('w', 'Problem Retrieving PAR', err);
+          Swal.fire('Denied', err, 'warning');
+          return of('N/A');
+        })
+      );
+    }
+    return of('N/A'); // Default value for invalid table input
   }
 
 
 }
+
 
