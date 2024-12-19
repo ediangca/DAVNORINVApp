@@ -289,10 +289,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   onAddPRS() {
-    this.isEditMode = false;
-    this.prs = [];
-    this.prsItems = [];
-    this.searchPRSItems = [];
+    this.resetForm()
     this.openPARModal(this.AddEditModal);
   }
 
@@ -1077,7 +1074,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
       userID2: '',
       userID3: ''
     });
-    // this.getAllPRS();
   }
 
   resetItemForm() {

@@ -1330,8 +1330,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
           this.par = res.details;
 
           Swal.fire({
-            title: 'Do you want to view the PTR Details?',
-            text: 'Item Found from REPAR #' + this.par.reparNo,
+            title: 'Item Found from PTR #' + this.par.reparNo,
+            text: 'Do you want to view the PTR Details?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',

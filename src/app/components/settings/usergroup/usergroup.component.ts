@@ -19,7 +19,9 @@ import { LogsService } from '../../../services/logs.service';
 })
 export class UsergroupComponent implements OnInit {
 
+
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
+  @ViewChild('PrivilegeModalForm') PrivilegeModal!: ElementRef;
 
   public roleNoFromToken: string = '*';
 
@@ -49,11 +51,6 @@ export class UsergroupComponent implements OnInit {
     this.setupModalClose();
   }
 
-  openAddEditModal() {
-    const modal = new bootstrap.Modal(this.AddEditModal.nativeElement);
-    modal.show();
-  }
-
   setupModalClose() {
     const modal = document.getElementById('AddEditModalForm')!;
     if (modal) {
@@ -61,6 +58,18 @@ export class UsergroupComponent implements OnInit {
         // console.log('Modal is closed');
         this.resetForm();
       });
+    }
+  }
+
+  openModal(modalElement: ElementRef) {
+    const modal = new bootstrap.Modal(modalElement.nativeElement);
+    modal.show();
+  }
+
+  closeModal(modalElement: ElementRef) {
+    const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
+    if (modal) {
+      modal.hide();
     }
   }
 
@@ -204,7 +213,7 @@ export class UsergroupComponent implements OnInit {
       notes: userGroup.notes
     });
 
-    this.openAddEditModal();
+    this.openModal(this.AddEditModal);
   }
 
   resetForm(): void {
@@ -251,6 +260,25 @@ export class UsergroupComponent implements OnInit {
       }
     });
   }
+  onPrivilege() {
+    this.openModal(this.PrivilegeModal)
+  }
+
+  toggleAllSelection(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const isChecked: boolean = input.checked;
+
+
+  }
+  toggleSelection(access: any, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const isChecked: boolean = input.checked;
+
+  }
+
+  onSubmitPrivilege() {
+  }
+
 
   //Common Method - Advice to add in Helpers
   private validateFormFields(fg: FormGroup) {

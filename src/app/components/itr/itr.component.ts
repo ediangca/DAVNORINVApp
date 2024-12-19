@@ -1182,8 +1182,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
           this.itr = res.details;
 
           Swal.fire({
-            title: 'Do you want to view the ITR Details?',
-            text: 'Item Found from ITR #' + this.itr.itrNo,
+            title: 'Item Found from ITR #' + this.itr.itrNo,
+            text: 'Do you want to view the ITR Details?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',

@@ -32,7 +32,7 @@
             <button
               class="btn btn-dark rounded-pill d-flex justify-content-center align-items-center"
               type="button"
-              (click)="handle(scannerAction, scannerAction.isStart ? 'stop' : 'start')"
+              (click)="handle(scannerAction, scannerAction.isStart ? 'stop' : 'start','retreive')"
               [class.btn-warning]="scannerAction?.isStart"
               [disabled]="scannerAction?.isLoading || false">
               <i class="fa-solid fa-qrcode"></i>
@@ -1146,6 +1146,12 @@
                   name="qrCode"
                   id="qrCode"
                   placeholder="QR Code">
+                  
+                  <button type="button"
+                    class="bg-primary border-0 rounded-pill py-1 px-2 me-3"
+                    (click)="handle(scannerAction, scannerAction.isStart ? 'stop' : 'start', 'get')"
+                    [class.btn-warning]="scannerAction?.isStart" [disabled]="scannerAction?.isLoading || false">
+                    <i class="fa-solid fa-qrcode text-white"></i></button>
               </div>
 
               <!-- PROPERTY NO. -->

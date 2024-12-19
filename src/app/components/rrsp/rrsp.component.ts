@@ -275,10 +275,7 @@ export class RrspComponent {
   }
 
   onAddRRSEP() {
-    this.isEditMode = false;
-    this.rrsep = null;
-    this.rrsepItems = [];
-    this.searchRRSEPItems = [];
+    this.resetForm()
     this.openModal(this.AddEditModal);
   }
 

@@ -3,29 +3,20 @@
     <div class="table-wrapper">
       <div class="table-title">
 
-        <div
-          class="row d-flex align-items-center">
+        <div class="row d-flex align-items-center">
 
-          <div
-            class="col-12 d-flex just justify-content-center align-items-center">
+          <div class="col-12 d-flex just justify-content-center align-items-center">
             <div class="search" style="width: 60rem;">
-              <i
-                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
-              <input type="text" class="form-control rounded-pill" type="search"
-                [(ngModel)]="searchKey"
-                (keyup)="onKeyUp($event)"
-                placeholder="Search here.." aria-label="Search">
-              <a
-                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
-                type="button" (click)="searchUserGroups()"><i
-                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+              <i class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search" [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)" placeholder="Search here.." aria-label="Search">
+              <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
+                (click)="searchUserGroups()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
-            <a
-              *ngIf="roleNoFromToken=='System Administrator'"
-              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
-              type="button" (click)="openAddEditModal()">
-              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
-                class="fs-6">NEW</span></a>
+            <a *ngIf="roleNoFromToken=='System Administrator'"
+              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center " type="button"
+              (click)="openModal(AddEditModal)">
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">NEW</span></a>
           </div>
 
         </div>
@@ -63,20 +54,17 @@
                 @if(ug.userGroupName.includes("System")||
                 ug.userGroupName
                 == "Test"){
-                <span><i
-                    class="fa-sharp-duotone fa-solid fa-asterisk"
-                    data-toggle="tooltip" title="System Default"></i></span>
+                <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
+                    title="System Default"></i></span>
                 }@else{
-                <a class="edit"
-                  *ngIf="roleNoFromToken=='System Administrator'"
-                  type="button" (click)="restoreData(ug)"><i
-                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
-                    data-toggle="tooltip" title="Edit"></i></a>
-                <a class="delete"
-                  *ngIf="roleNoFromToken=='System Administrator'"
-                  (click)="onDelete(ug.ugid, ug.userGroupName)"><i
-                    class="fa-sharp-duotone fa-solid fa-trash"
+                <a class="edit" *ngIf="roleNoFromToken=='System Administrator'" type="button"
+                  (click)="restoreData(ug)"><i class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip"
+                    title="Edit"></i></a>
+                <a class="delete" *ngIf="roleNoFromToken=='System Administrator'"
+                  (click)="onDelete(ug.ugid, ug.userGroupName)"><i class="fa-sharp-duotone fa-solid fa-trash"
                     data-toggle="tooltip" title="Delete"></i></a>
+                <a class="text-success" (click)="onPrivilege()"><i class="fa-solid fa-list-check" data-toggle="tooltip"
+                    title="Module Privilege"></i></a>
                 }
               </form>
             </td>
@@ -85,7 +73,8 @@
       </table>
       <div class="clearfix">
         <div class="hint-text">Showing <b>5</b> out of
-          <b>{{userGroups.length}}</b> entries</div>
+          <b>{{userGroups.length}}</b> entries
+        </div>
         <ul class="pagination">
           <li class="page-item disabled"><a href="#">Previous</a></li>
           <li class="page-item"><a href="#" class="page-link">1</a></li>
@@ -111,8 +100,8 @@
           <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ isEditMode ?
             'Edit' : 'Add New' }} User
             Group</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-            aria-label="Close" (click)="resetForm()"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="resetForm()"></button>
         </div>
         <div class="modal-body">
           <div class="formGroup row">
@@ -127,14 +116,11 @@
               <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
               <small class="text-danger">* User Group is required</small>
               }
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userGroupForm.controls['userGroupName'].invalid &&
+              <div class="form-field d-flex align-items-center" [class.error]="userGroupForm.controls['userGroupName'].invalid &&
                 userGroupForm.hasError('required', 'userGroupName') &&  userGroupForm.get('userGroupName')?.touched || (userGroupForm.controls['userGroupName'].dirty &&
                 userGroupForm.hasError('required', 'userGroupName'))">
                 <i class="fa-sharp-duotone fa-solid fa-pen"></i>
-                <input type="text" formControlName="userGroupName"
-                  name="userGroupName"
-                  id="userGroupName"
+                <input type="text" formControlName="userGroupName" name="userGroupName" id="userGroupName"
                   placeholder="User Group Name">
               </div>
 
@@ -146,14 +132,11 @@
               <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
               <small class="text-danger">* Notes is required</small>
               }
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userGroupForm.controls['notes'].invalid &&
+              <div class="form-field d-flex align-items-center" [class.error]="userGroupForm.controls['notes'].invalid &&
                 userGroupForm.hasError('required', 'notes') &&  userGroupForm.get('notes')?.touched || (userGroupForm.controls['notes'].dirty &&
                 userGroupForm.hasError('required', 'notes'))">
                 <i class="fa-sharp-duotone fa-solid fa-pen"></i>
-                <textarea type="text" formControlName="notes"
-                  name="notes" style="height: 150px;"
-                  id="notes"
+                <textarea type="text" formControlName="notes" name="notes" style="height: 150px;" id="notes"
                   placeholder="Notes"></textarea>
               </div>
 
@@ -162,13 +145,163 @@
 
         </div>
         <div class="modal-footer">
-          <button id="closeBut" type="button"
-            class="btn btn-secondary rounded-pill"
-            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill"
-            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save' }}</button>
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+            (click)="resetForm()">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
+            'Save' }}</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ADD/EDIT PRIVILEGE -->
+<div #PrivilegeModalForm class="modal fade" id="PrivilegeModalForm">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">User Group Access</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          (click)="closeModal(PrivilegeModal)"></button>
+      </div>
+      <div class="modal-body item-body scrollable">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th style="width: 60%;">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="selectAll"
+                      (change)="toggleAllSelection($event)" />
+                    <label class="form-check-label" for="selectAll">Module</label>
+                  </div>
+                  
+                </th>
+                <th class="text-center text-primary" style="width: 8%;"><i class="fa-solid fa-file-circle-plus"></i> New
+                </th>
+                <th class="text-center text-secondary" style="width: 8%;"><i class="fa-solid fa-file-export"></i>
+                  Retrieve </th>
+                <th class="text-center text-warning" style="width: 8%;"><i class="fa-solid fa-file-pen"></i> Update
+                </th>
+                <th class="text-center text-danger" style="width: 8%;"><i
+                    class="fa-solid fa-file-circle-xmark"></i>Delete</th>
+                <th class="text-center text-info" style="width: 8%;"><i class="fa-solid fa-thumbtack"></i>Post</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Items -->
+              <tr>
+                <td>
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                    <label class="form-check-label" for="selectAll">ITEMS</label>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('edit', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                    <label class="form-check-label" for="selectAll">PAR</label>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('edit', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                    <label class="form-check-label" for="selectAll">ICS</label>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('edit', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', $event)" />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
+                  </div>
+                </td>
+              </tr>
+              <!-- Repeat for other rows as needed -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary rounded-pill" (click)="onSubmitPrivilege()">{{ isEditMode ?
+          'Update' : 'Save' }}</button>
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+          (click)="closeModal(PrivilegeModal)">Close</button>
+      </div>
     </div>
   </div>
 </div>

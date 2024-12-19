@@ -106,6 +106,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
+  purpose: string = 'retreive';
 
   // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#front_and_back_camera
   public config: ScannerQRCodeConfig = {
@@ -1367,9 +1368,11 @@ export class IcsComponent implements OnInit, AfterViewInit {
   }
 
   // Handle start/stop of QR scanning
-  public handle(scannerAction: any, fn: string): void {
+  public handle(scannerAction: any, fn: string, purpose: string): void {
     this.scannerAction = scannerAction;
     this.fn = fn;
+    this.purpose = purpose;
+
     this.onScanQR(); // Show the scanner modal
 
     // Function to select a device, preferring the back camera
@@ -1401,23 +1404,29 @@ export class IcsComponent implements OnInit, AfterViewInit {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-
-        this.api.retrieveicsITEMByQRCode(results[0].value)
-          .subscribe({
-            next: (res) => {
-              console.log('Retrieve ICS ITEMS', res);
-              this.item = res[0];
-
-              console.log('Show Items', this.item);
-
-              this.onRetrieveICS(res[0].parNo);
-
-            },
-            error: (err: any) => {
-              this.logger.printLogs('w', 'Problem with Retreiving ICS', err);
-              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in ICS`, 'info');
-            }
+        if (this.purpose == 'get') {
+          this.itemForm.patchValue({
+            qrCode: results[0].value
           });
+          this.onCloseQRScanning(this.scannerAction);
+        } else {
+          this.api.retrieveicsITEMByQRCode(results[0].value)
+            .subscribe({
+              next: (res) => {
+                console.log('Retrieve ICS ITEMS', res);
+                this.item = res[0];
+
+                console.log('Show Items', this.item);
+
+                this.onRetrieveICS(res[0].parNo);
+
+              },
+              error: (err: any) => {
+                this.logger.printLogs('w', 'Problem with Retreiving ICS', err);
+                Swal.fire('Item not Found', `QR Code ${results[0].value} not found in ICS`, 'info');
+              }
+            });
+        }
       }
     }
   }
