@@ -9,6 +9,7 @@ import * as bootstrap from 'bootstrap';
 import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { LogsService } from '../../../services/logs.service';
+import { Privilege } from '../../../models/Privilege';
 
 @Component({
   selector: 'app-usergroup',
@@ -32,6 +33,12 @@ export class UsergroupComponent implements OnInit {
   userGroupForm!: FormGroup;
   isEditMode: boolean = false;
   currentEditId: number | null = null;
+
+
+  privilege: Privilege | null = null;
+  modules: any[] = [];
+  privileges: any[] = [];
+  UGID: number | null = null;
 
 
   constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private logger: LogsService) {
@@ -260,11 +267,50 @@ export class UsergroupComponent implements OnInit {
       }
     });
   }
-  onPrivilege() {
-    this.openModal(this.PrivilegeModal)
+  onPrivilege(UGID: any) {
+    this.logger.printLogs('i', 'Selected UGID', UGID);
+    this.UGID = UGID;
+    this.api.retrievePrivilegByUG(this.UGID)
+      .subscribe({
+        next: (res) => {
+          // this.logger.printLogs('i', 'Retreiving Privilege', res);
+          this.privileges = res;
+
+          if (this.privileges.length < 1) {
+            this.loadDefaultModules();
+          }
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Problem Retreiving Privilege', err);
+          Swal.fire('Denied', err, 'warning');
+        }
+      });
   }
 
-  toggleAllSelection(event: Event) {
+  loadDefaultModules() {
+
+    this.api.retrieveModules()
+      .subscribe({
+        next: (res) => {
+          this.logger.printLogs('i', 'Retreiving Modules', res);
+          this.modules = res;
+
+          this.modules.forEach(element => {
+            this.privileges.push(new Privilege(null, this.UGID, element.mid, element.moduleName, true, false, false, false, false, false, false));
+          });
+
+          this.logger.printLogs('i', 'Default Privileges', this.privileges);
+
+          this.openModal(this.PrivilegeModal)
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Problem Retreiving Modules', err);
+          Swal.fire('Denied', err, 'warning');
+        }
+      });
+  }
+
+  toggleAllModule(event: Event) {
     const input = event.target as HTMLInputElement;
     const isChecked: boolean = input.checked;
 
@@ -297,3 +343,4 @@ export class UsergroupComponent implements OnInit {
 
 
 }
+

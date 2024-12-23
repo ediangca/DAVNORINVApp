@@ -13,11 +13,20 @@ import { ICSItem } from '../models/ICSItem';
 export class ApiService {
 
 
-
   private apiUrl: string = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router) { }
 
+
+  /*----------------------- Cencus -----------------------*/
+
+  //Cencus List
+  getCencus(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}Cencus/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
   /*----------------------- COMPANY/BRANCH -----------------------*/
   // Branch List
@@ -1138,17 +1147,23 @@ export class ApiService {
       );
   }
 
-  /*----------------------- Cencus -----------------------*/
+  /*----------------------- Privilege -----------------------*/
 
-  //Cencus List
-  getCencus(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}Cencus/`)
+  retrievePrivilegByUG(ugid: any) {
+    console.log("Retrieve Privilege By UGID.: ", ugid);
+    return this.http.get<any[]>(`${this.apiUrl}Privilege/UGID/` + ugid)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-
+  retrieveModules() {
+    console.log("Retrieve Modules");
+    return this.http.get<any[]>(`${this.apiUrl}Privilege/Modules/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
   /*----------------------- Reports -----------------------*/
 

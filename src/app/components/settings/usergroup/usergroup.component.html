@@ -63,8 +63,8 @@
                 <a class="delete" *ngIf="roleNoFromToken=='System Administrator'"
                   (click)="onDelete(ug.ugid, ug.userGroupName)"><i class="fa-sharp-duotone fa-solid fa-trash"
                     data-toggle="tooltip" title="Delete"></i></a>
-                <a class="text-success" (click)="onPrivilege()"><i class="fa-solid fa-list-check" data-toggle="tooltip"
-                    title="Module Privilege"></i></a>
+                <a class="text-success" (click)="onPrivilege(ug.ugid)"><i class="fa-solid fa-list-check"
+                    data-toggle="tooltip" title="Module Access"></i></a>
                 }
               </form>
             </td>
@@ -161,7 +161,7 @@
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5">User Group Access</h1>
+        <h1 class="modal-title fs-5">MODULE</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
           (click)="closeModal(PrivilegeModal)"></button>
       </div>
@@ -172,11 +172,10 @@
               <tr>
                 <th style="width: 60%;">
                   <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="selectAll"
-                      (change)="toggleAllSelection($event)" />
+                    <input class="form-check-input" type="checkbox" id="selectAll" (change)="toggleAllModule($event)" />
                     <label class="form-check-label" for="selectAll">Module</label>
                   </div>
-                  
+
                 </th>
                 <th class="text-center text-primary" style="width: 8%;"><i class="fa-solid fa-file-circle-plus"></i> New
                 </th>
@@ -187,110 +186,51 @@
                 <th class="text-center text-danger" style="width: 8%;"><i
                     class="fa-solid fa-file-circle-xmark"></i>Delete</th>
                 <th class="text-center text-info" style="width: 8%;"><i class="fa-solid fa-thumbtack"></i>Post</th>
+                <th class="text-center text-secondary" style="width: 8%;"><i class="fa-solid fa-thumbtack-slash"></i>Unpost</th>
               </tr>
             </thead>
             <tbody>
-              <!-- Items -->
-              <tr>
-                <td>
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
-                    <label class="form-check-label" for="selectAll">ITEMS</label>
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('edit', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
-                    <label class="form-check-label" for="selectAll">PAR</label>
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('edit', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
-                    <label class="form-check-label" for="selectAll">ICS</label>
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('edit', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', $event)" />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="form-check form-switch form-check-inline">
-                    <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
-                  </div>
-                </td>
-              </tr>
               <!-- Repeat for other rows as needed -->
+              <ng-container *ngFor="let p of privileges; let i = index">
+                <tr *ngIf="p.isActive">  
+                  <td >
+                    <div class="form-check form-switch form-check-inline">
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                      <label class="form-check-label" for="selectAll">{{p.moduleName}}</label>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="form-check form-switch form-check-inline">
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="form-check form-switch form-check-inline">
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('edit', $event)" />
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="form-check form-switch form-check-inline">
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', $event)" />
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="form-check form-switch form-check-inline">
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', $event)" />
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="form-check form-switch form-check-inline">
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="form-check form-switch form-check-inline">
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
         </div>
