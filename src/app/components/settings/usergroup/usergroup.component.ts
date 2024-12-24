@@ -10,6 +10,7 @@ import { ApiService } from '../../../services/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { LogsService } from '../../../services/logs.service';
 import { Privilege } from '../../../models/Privilege';
+import { when } from 'jquery';
 
 @Component({
   selector: 'app-usergroup',
@@ -38,7 +39,8 @@ export class UsergroupComponent implements OnInit {
   privilege: Privilege | null = null;
   modules: any[] = [];
   privileges: any[] = [];
-  UGID: number | null = null;
+  selectedPrivileges: any[] = []; // Array to track selected module
+  public ug: any | undefined | null = null;
 
 
   constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private logger: LogsService) {
@@ -267,10 +269,10 @@ export class UsergroupComponent implements OnInit {
       }
     });
   }
-  onPrivilege(UGID: any) {
-    this.logger.printLogs('i', 'Selected UGID', UGID);
-    this.UGID = UGID;
-    this.api.retrievePrivilegByUG(this.UGID)
+  onPrivilege(userGroup: any) {
+    this.logger.printLogs('i', 'Selected UGID', userGroup);
+    this.ug = userGroup;
+    this.api.retrievePrivilegByUG(this.ug.ugid)
       .subscribe({
         next: (res) => {
           // this.logger.printLogs('i', 'Retreiving Privilege', res);
@@ -296,8 +298,11 @@ export class UsergroupComponent implements OnInit {
           this.modules = res;
 
           this.modules.forEach(element => {
-            this.privileges.push(new Privilege(null, this.UGID, element.mid, element.moduleName, true, false, false, false, false, false, false));
+            this.privileges.push(new Privilege(null, this.ug.ugid, element.mid, element.moduleName, false, false, false, false, false, false, false));
           });
+
+
+          this.selectedPrivileges = this.privileges
 
           this.logger.printLogs('i', 'Default Privileges', this.privileges);
 
@@ -313,13 +318,70 @@ export class UsergroupComponent implements OnInit {
   toggleAllModule(event: Event) {
     const input = event.target as HTMLInputElement;
     const isChecked: boolean = input.checked;
+    // Loop through all items
+    this.privileges.forEach(item => {
+      item.isActive = isChecked; // Update isActive based on checkbox state
+    });
 
-
+    this.displaySelectedItems(); // Update the UI or other components
   }
-  toggleSelection(access: any, event: Event) {
+
+  // Optional function to get the currently selected items
+  displaySelectedItems() {
+    this.logger.printLogs('i', 'List of selected Module', this.selectedPrivileges!);
+  }
+
+  toggleSelectionModule(privilege: any, event: Event) {
     const input = event.target as HTMLInputElement;
     const isChecked: boolean = input.checked;
 
+
+    this.privileges.forEach(item => {
+      // Update Action on Module
+      if (item.moduleName == privilege.moduleName) {
+        item.isActive = isChecked;
+      }
+    });
+
+    this.selectedPrivileges = this.privileges
+    this.displaySelectedItems(); // Update the UI or other components
+
+  }
+
+  toggleSelection(action: string, privilege: any, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const isChecked: boolean = input.checked;
+
+    this.privileges.forEach(item => {
+
+      // Update Action on Module
+      if (item.moduleName == privilege.moduleName) {
+        switch (action) {
+          case "add":
+            item.c = isChecked;
+            break;
+          case "retrieve":
+            item.r = isChecked;
+            break;
+          case "update":
+            item.u = isChecked;
+            break;
+          case "delete":
+            item.d = isChecked;
+            break;
+          case "post":
+            item.post = isChecked;
+            break;
+          case "unpost":
+            item.unpost = isChecked;
+            break;
+        }
+      }
+
+    });
+
+    this.selectedPrivileges = this.privileges
+    this.displaySelectedItems();
   }
 
   onSubmitPrivilege() {

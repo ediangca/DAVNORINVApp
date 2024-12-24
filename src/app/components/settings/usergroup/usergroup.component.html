@@ -63,7 +63,7 @@
                 <a class="delete" *ngIf="roleNoFromToken=='System Administrator'"
                   (click)="onDelete(ug.ugid, ug.userGroupName)"><i class="fa-sharp-duotone fa-solid fa-trash"
                     data-toggle="tooltip" title="Delete"></i></a>
-                <a class="text-success" (click)="onPrivilege(ug.ugid)"><i class="fa-solid fa-list-check"
+                <a class="text-success" (click)="onPrivilege(ug)"><i class="fa-solid fa-list-check"
                     data-toggle="tooltip" title="Module Access"></i></a>
                 }
               </form>
@@ -161,7 +161,7 @@
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5">MODULE</h1>
+        <h1 class="modal-title fs-5">USER ACCESS - {{ug?.userGroupName}}</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
           (click)="closeModal(PrivilegeModal)"></button>
       </div>
@@ -192,41 +192,41 @@
             <tbody>
               <!-- Repeat for other rows as needed -->
               <ng-container *ngFor="let p of privileges; let i = index">
-                <tr *ngIf="p.isActive">  
+                <tr>  
                   <td >
                     <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                      <input class="form-check-input" type="checkbox"  [checked]="p.isActive" (change)="toggleSelectionModule(p, $event)" />
                       <label class="form-check-label" for="selectAll">{{p.moduleName}}</label>
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', $event)" />
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', p, $event)" [disabled]="!p.isActive"/>
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('edit', $event)" />
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('retrieve', p, $event)" [disabled]="!p.isActive"/>
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', $event)" />
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', p, $event)"[disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', $event)" />
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', p, $event)" [disabled]="!p.isActive"/>
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', p, $event)" [disabled]="!p.isActive"/>
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', $event)" />
+                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('unpost', p, $event)" [disabled]="!p.isActive"/>
                     </div>
                   </td>
                 </tr>
