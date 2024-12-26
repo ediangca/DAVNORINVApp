@@ -41,9 +41,11 @@ export class UsergroupComponent implements OnInit {
   privileges: any[] = [];
   selectedPrivileges: any[] = []; // Array to track selected module
   public ug: any | undefined | null = null;
+  isLoading: boolean = false;
 
 
-  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, private logger: LogsService) {
+  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, 
+    private logger: LogsService) {
 
     this.userGroupForm = this.fb.group({
       userGroupName: ['', Validators.required],
@@ -269,21 +271,95 @@ export class UsergroupComponent implements OnInit {
       }
     });
   }
+
   onPrivilege(userGroup: any) {
     this.logger.printLogs('i', 'Selected UGID', userGroup);
     this.ug = userGroup;
-    this.api.retrievePrivilegByUG(this.ug.ugid)
+    this.isLoading = true; // Show loading indicator
+
+    this.api.retrievePrivilegByUG(this.ug.ugid).subscribe({
+      next: (res) => {
+        this.privileges = res;
+        this.logger.printLogs('i', 'Retrieved Privilegessssss', res);
+
+
+        this.isEditMode = !(this.privileges && this.privileges.length < 1);
+
+        if (!this.isEditMode) {
+          this.loadDefaultModules();
+        } else {
+          this.restoreLoadModule();
+        }
+        this.openModal(this.PrivilegeModal)
+      },
+      error: (err: any) => {
+        this.isLoading = false; // Hide loading indicator
+        this.logger.printLogs('w', 'Error Retrieving Privileges', err);
+        Swal.fire('Denied', err.message || 'Error retrieving privileges.', 'warning');
+      },
+    });
+  }
+
+
+  restoreLoadModule() {
+    const updatedPrivileges: any[] = [];
+
+    this.api.retrieveModules()
       .subscribe({
         next: (res) => {
-          // this.logger.printLogs('i', 'Retreiving Privilege', res);
-          this.privileges = res;
+          this.logger.printLogs('i', 'Retreiving Modules', res);
+          this.modules = res;
 
-          if (this.privileges.length < 1) {
-            this.loadDefaultModules();
-          }
+
+          this.modules.forEach(module => {
+            // Find matching privilege for the current module
+            const matchedPrivilege = this.privileges.find(privilege => module.mid === privilege.mid);
+
+            if (matchedPrivilege) {
+              // Push updated privilege if a match is found
+              updatedPrivileges!.push(new Privilege(
+                null,
+                this.ug.ugid,
+                module.mid,
+                module.moduleName,
+                matchedPrivilege.isActive,
+                matchedPrivilege.c,
+                matchedPrivilege.r,
+                matchedPrivilege.u,
+                matchedPrivilege.d,
+                matchedPrivilege.post,
+                matchedPrivilege.unpost
+              ));
+            } else {
+              // Push new privilege as inactive if no match is found
+              updatedPrivileges!.push(new Privilege(
+                null,
+                this.ug.ugid,
+                module.mid,
+                module.moduleName,
+                false, // Default inactive
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ));
+            }
+          });
+
+
+          this.privileges = updatedPrivileges!;
+
+          this.logger.printLogs('i', 'Retreiving Privileges', this.privileges);
+
+          // Delay modal opening slightly to ensure UI stability
+          setTimeout(() => {
+            this.isLoading = false; // Hide loading indicator
+          }, 3);
         },
         error: (err: any) => {
-          this.logger.printLogs('w', 'Problem Retreiving Privilege', err);
+          this.logger.printLogs('w', 'Problem Retreiving Modules', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
@@ -306,7 +382,7 @@ export class UsergroupComponent implements OnInit {
 
           this.logger.printLogs('i', 'Default Privileges', this.privileges);
 
-          this.openModal(this.PrivilegeModal)
+          this.isLoading = false;
         },
         error: (err: any) => {
           this.logger.printLogs('w', 'Problem Retreiving Modules', err);
@@ -324,6 +400,8 @@ export class UsergroupComponent implements OnInit {
     });
 
     this.displaySelectedItems(); // Update the UI or other components
+
+    this.logger.printLogs('i', 'Toggle all selection', this.privileges!);
   }
 
   // Optional function to get the currently selected items
@@ -331,22 +409,90 @@ export class UsergroupComponent implements OnInit {
     this.logger.printLogs('i', 'List of selected Module', this.selectedPrivileges!);
   }
 
+  // toggleSelectionModule(privilege: any, event: Event) {
+  //   const input = event.target as HTMLInputElement;
+  //   const isChecked: boolean = input.checked;
+
+
+  //   this.privileges.forEach(item => {
+  //     // Update Action on Module
+  //     if (item.moduleName == privilege.moduleName) {
+  //       item.isActive = isChecked;
+  //       if (!(item.moduleName == 'GLOBAL' || item.moduleName == 'REPORTS')) {
+  //         item.c = isChecked;
+  //         item.r = isChecked;
+  //         item.u = isChecked;
+  //         item.d = isChecked;
+  //       }
+  //       if (item.moduleName == 'PAR' || item.moduleName == 'ICS' ||
+  //         item.moduleName == 'PTR' || item.moduleName == 'ITR' ||
+  //         item.moduleName == 'PRS' || item.moduleName == 'RRSEP'
+  //       ) {
+  //         item.post = isChecked;
+  //         item.unpost = isChecked;
+  //       }
+  //     }
+
+  //     if (privilege.moduleName == 'ITEM CATEGORY' || privilege.moduleName == 'COMPANY' ||
+  //       privilege.moduleName == 'POSITION' || privilege.moduleName == 'USER GROUPS') {
+  //       if (item.moduleName == 'GLOBAL' && isChecked == true) {
+  //         item.isActive = true;
+  //       }
+  //     }
+
+  //   });
+
+
+
+  //   this.logger.printLogs('i', 'Toggle selection Module', this.privileges!);
+
+
+  //   this.selectedPrivileges = this.privileges
+  //   this.displaySelectedItems(); // Update the UI or other components
+
+  // }
+
   toggleSelectionModule(privilege: any, event: Event) {
     const input = event.target as HTMLInputElement;
     const isChecked: boolean = input.checked;
-
 
     this.privileges.forEach(item => {
       // Update Action on Module
       if (item.moduleName == privilege.moduleName) {
         item.isActive = isChecked;
+        if (!(item.moduleName == 'GLOBAL' || item.moduleName == 'REPORTS')) {
+          item.c = isChecked;
+          item.r = isChecked;
+          item.u = isChecked;
+          item.d = isChecked;
+        }
+        if (
+          ['PAR', 'ICS', 'PTR', 'ITR', 'PRS', 'RRSEP', 'USER ACCOUNTS'].includes(item.moduleName)
+        ) {
+          item.post = isChecked;
+          item.unpost = isChecked;
+        }
       }
     });
 
-    this.selectedPrivileges = this.privileges
-    this.displaySelectedItems(); // Update the UI or other components
+    // Check specific modules for "GLOBAL" module logic
+    const importantModules = ['ITEM CATEGORY', 'COMPANY', 'POSITION', 'USER GROUPS'];
+    const isAnyActive = this.privileges
+      .filter(item => importantModules.includes(item.moduleName))
+      .some(item => item.isActive); // At least one is active
 
+    this.privileges.forEach(item => {
+      if (item.moduleName === 'GLOBAL') {
+        item.isActive = isAnyActive; // Activate if at least one is active
+      }
+    });
+
+    this.logger.printLogs('i', 'Toggle selection Module', this.privileges!);
+
+    this.selectedPrivileges = this.privileges;
+    this.displaySelectedItems(); // Update the UI or other components
   }
+
 
   toggleSelection(action: string, privilege: any, event: Event) {
     const input = event.target as HTMLInputElement;
@@ -378,6 +524,8 @@ export class UsergroupComponent implements OnInit {
         }
       }
 
+      this.logger.printLogs('i', 'Toggle selection', this.privileges!);
+
     });
 
     this.selectedPrivileges = this.privileges
@@ -385,6 +533,39 @@ export class UsergroupComponent implements OnInit {
   }
 
   onSubmitPrivilege() {
+    if (!this.privileges || this.privileges.length === 0) {
+      Swal.fire('Warning', 'No privileges to submit.', 'warning');
+      return;
+    }
+
+    if (!this.isEditMode) {
+      // Saving new privileges
+      this.logger.printLogs('i', 'Saving Privilege', this.privileges);
+      this.api.createPrivilege(this.privileges).subscribe({
+        next: (res) => {
+          this.logger.printLogs('i', 'Saved Successfully', res);
+          Swal.fire('Saved', res.message || 'Privileges saved successfully!', 'success');
+        },
+        error: (err) => {
+          this.logger.printLogs('e', 'Error Saving Privileges', err);
+          Swal.fire('Error', err || 'An error occurred while saving privileges.', 'error');
+        },
+      });
+    } else {
+      // Updating privileges
+      this.logger.printLogs('i', 'Updating Privilege', this.privileges);
+      this.api.updatePrivilege(this.ug.ugid, this.privileges).subscribe({
+        next: (res) => {
+          this.logger.printLogs('i', 'Updated Successfully', res);
+          Swal.fire('Updated', res.message || 'Privileges updated successfully!', 'success');
+        },
+        error: (err) => {
+          this.logger.printLogs('e', 'Error Updating Privileges', err);
+          Swal.fire('Error', err || 'An error occurred while saving privileges.', 'error');
+        },
+      });
+
+    }
   }
 
 

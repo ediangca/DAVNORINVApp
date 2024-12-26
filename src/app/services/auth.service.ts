@@ -79,13 +79,21 @@ export class AuthService {
     this.router.navigate(['login']);
   }
 
-  storeToken(token: string) {
-    // console.log("token: ", token);
-    localStorage.setItem('token', token)
+  storeLocal(result: any) {
+    console.log("reult: ", result);
+    localStorage.setItem('token', result.token)
+    // localStorage.setItem('userID', result.userID)
+    // localStorage.setItem('UGID', result.ugid)
   }
 
   getToken() {
     return localStorage.getItem('token');
+  }
+  getuserID() {
+    return localStorage.getItem('userID');
+  }
+  getUGID() {
+    return localStorage.getItem('UGID');
   }
 
   isAuthenticated(): boolean {

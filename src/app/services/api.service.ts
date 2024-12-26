@@ -1002,7 +1002,7 @@ export class ApiService {
   }
 
 
-   /*----------------------- PRS -----------------------*/
+  /*----------------------- PRS -----------------------*/
   //PRS List
   getAllPRS(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}PRS/`)
@@ -1077,7 +1077,7 @@ export class ApiService {
   }
 
 
-   /*----------------------- PRS -----------------------*/
+  /*----------------------- PRS -----------------------*/
   getAllRRSEP(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}RRSEP/`)
       .pipe(
@@ -1163,6 +1163,26 @@ export class ApiService {
       .pipe(
         catchError(this.handleError)
       );
+  }
+
+
+  // Create Privilege API
+  createPrivilege(privileges: any[]): Observable<any> {
+    console.log('Create Privilege: ', privileges);
+    return this.http.post<any>(`${this.apiUrl}Privilege/Create/`, privileges).pipe(
+      catchError(this.handleError) // Proper error handling
+    );
+  }
+
+  // Update Privilege API
+  updatePrivilege(ugid: number, privileges: any[]): Observable<any> {
+    console.log('Update Privilege: ', privileges);
+
+    return this.http.put<any>(`${this.apiUrl}Privilege/Update?ugid=${ugid}`, privileges).pipe(
+      catchError(this.handleError) // Proper error handling
+    );
+
+
   }
 
   /*----------------------- Reports -----------------------*/

@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit {
                 allowOutsideClick: false
               }).then((result) => {
                 if (result.isConfirmed) {
-                  this.auth.storeToken(res.token);
+                  this.auth.storeLocal(res);
                   this.loginForm.reset();
                   this.router.navigate(['dashboard']);
                   this.toast.success(res.message, "ACCESS GRANTED", 5000);

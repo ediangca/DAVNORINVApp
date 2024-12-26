@@ -51,12 +51,12 @@
             <td>{{ug.notes}}</td>
             <td>
               <form class="d-flex justify-content-end">
-                @if(ug.userGroupName.includes("System")||
+                <!-- @if(ug.userGroupName.includes("System")||
                 ug.userGroupName
-                == "Test"){
-                <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
-                    title="System Default"></i></span>
-                }@else{
+                == "Test"){ -->
+                <!-- <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
+                    title="System Default"></i></span> -->
+                <!-- }@else{  -->
                 <a class="edit" *ngIf="roleNoFromToken=='System Administrator'" type="button"
                   (click)="restoreData(ug)"><i class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip"
                     title="Edit"></i></a>
@@ -65,7 +65,7 @@
                     data-toggle="tooltip" title="Delete"></i></a>
                 <a class="text-success" (click)="onPrivilege(ug)"><i class="fa-solid fa-list-check"
                     data-toggle="tooltip" title="Module Access"></i></a>
-                }
+                <!-- } -->
               </form>
             </td>
           </tr>
@@ -166,7 +166,14 @@
           (click)="closeModal(PrivilegeModal)"></button>
       </div>
       <div class="modal-body item-body scrollable">
-        <div class="table-responsive">
+
+        <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
+          <img src="../../../assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
+          <span class="loading-text text-dark">Loading<span class="dot">.</span>
+            <span class="dot">.</span><span class="dot">.</span></span>
+        </div>
+
+        <div class="table-responsive" *ngIf="!isLoading">
           <table class="table table-bordered">
             <thead>
               <tr>
@@ -177,7 +184,7 @@
                   </div>
 
                 </th>
-                <th class="text-center text-primary" style="width: 8%;"><i class="fa-solid fa-file-circle-plus"></i> New
+                <th class="text-center text-primary" style="width: 8%;"><i class="fa-solid fa-file-circle-plus"></i> Create
                 </th>
                 <th class="text-center text-secondary" style="width: 8%;"><i class="fa-solid fa-file-export"></i>
                   Retrieve </th>
@@ -186,47 +193,65 @@
                 <th class="text-center text-danger" style="width: 8%;"><i
                     class="fa-solid fa-file-circle-xmark"></i>Delete</th>
                 <th class="text-center text-info" style="width: 8%;"><i class="fa-solid fa-thumbtack"></i>Post</th>
-                <th class="text-center text-secondary" style="width: 8%;"><i class="fa-solid fa-thumbtack-slash"></i>Unpost</th>
+                <th class="text-center text-secondary" style="width: 8%;"><i
+                    class="fa-solid fa-thumbtack-slash"></i>Unpost</th>
               </tr>
             </thead>
             <tbody>
               <!-- Repeat for other rows as needed -->
               <ng-container *ngFor="let p of privileges; let i = index">
-                <tr>  
-                  <td >
+                <tr>
+                  <td>
                     <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox"  [checked]="p.isActive" (change)="toggleSelectionModule(p, $event)" />
-                      <label class="form-check-label" for="selectAll">{{p.moduleName}}</label>
+                      <input class="form-check-input" id="{{p.moduleName}}" type="checkbox" [checked]="p.isActive"
+                        (change)="toggleSelectionModule(p, $event)" />
+                      <label class="form-check-label" for="{{p.moduleName}}">{{p.moduleName}}</label>
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('add', p, $event)" [disabled]="!p.isActive"/>
+                    <div class="form-check form-switch form-check-inline" 
+                    *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
+                      <input class="form-check-input" id="{{p.moduleName}}-c" type="checkbox" [checked]="p.c"
+                        (change)="toggleSelection('add', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('retrieve', p, $event)" [disabled]="!p.isActive"/>
+                    <div class="form-check form-switch form-check-inline"
+                    *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
+                      <input class="form-check-input" id="{{p.moduleName}}-r" type="checkbox" [checked]="p.r"
+                        (change)="toggleSelection('retrieve', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('update', p, $event)"[disabled]="!p.isActive" />
+                    <div class="form-check form-switch form-check-inline"
+                    *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
+                      <input class="form-check-input" id="{{p.moduleName}}-u" type="checkbox" [checked]="p.u"
+                        (change)="toggleSelection('update', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('delete', p, $event)" [disabled]="!p.isActive"/>
+                    <div class="form-check form-switch form-check-inline"
+                    *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
+                      <input class="form-check-input" id="{{p.moduleName}}-d" type="checkbox" [checked]="p.d"
+                        (change)="toggleSelection('delete', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('post', p, $event)" [disabled]="!p.isActive"/>
+                    <div class="form-check form-switch form-check-inline" 
+                    *ngIf="p.moduleName === 'PAR' || p.moduleName === 'ICS' || 
+                    p.moduleName === 'PTR' || p.moduleName === 'ITR' || 
+                    p.moduleName === 'PRS' || p.moduleName === 'RRSEP' || p.moduleName === 'USER ACCOUNTS'">
+                      <input class="form-check-input" id="{{p.moduleName}}-p" type="checkbox" [checked]="p.post"
+                        (change)="toggleSelection('post', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline">
-                      <input class="form-check-input" type="checkbox" (change)="toggleSelection('unpost', p, $event)" [disabled]="!p.isActive"/>
+                    <div class="form-check form-switch form-check-inline" 
+                    *ngIf="p.moduleName === 'PAR' || p.moduleName === 'ICS' || 
+                    p.moduleName === 'PTR' || p.moduleName === 'ITR' || 
+                    p.moduleName === 'PRS' || p.moduleName === 'RRSEP' || p.moduleName === 'USER ACCOUNTS'">
+                      <input class="form-check-input" id="{{p.moduleName}}-up" type="checkbox" [checked]="p.unpost"
+                        (change)="toggleSelection('unpost', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                 </tr>

@@ -111,7 +111,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item"  *ngIf="isModuleActive('PAR')">
     <a class="nav-link" [ngClass]="{'active': title === 'PAR'}"
       [routerLink]="['par']"
       (click)="toggleSidebar(true)"
