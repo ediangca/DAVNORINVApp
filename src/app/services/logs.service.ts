@@ -4,6 +4,7 @@ import { environment } from '../../environment/environment';
 @Injectable({
   providedIn: 'root'
 })
+
 export class LogsService {
   private logsMap: Map<string, any[]> = new Map<string, any[]>();;
 

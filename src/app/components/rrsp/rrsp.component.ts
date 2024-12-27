@@ -40,6 +40,7 @@ export class RrspComponent {
   ics!: any;
   rrsep!: any;
   rrseps: any = [];
+  totalItems: number = 0;
   icsItems: ICSItem[] = [];
   rrsepItems: ICSItem[] = [];
   searchRRSEPItems: ICSItem[] = [];
@@ -100,6 +101,15 @@ export class RrspComponent {
   today: string | undefined;
   private logger: LogsService;
 
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
+
+
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
 
@@ -114,6 +124,7 @@ export class RrspComponent {
   constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService
   ) {
+    this.checkPrivileges();
     this.logger = new LogsService();
 
     this.today = new Date().toISOString().split('T')[0];
@@ -137,6 +148,7 @@ export class RrspComponent {
   }
 
   ngOnInit(): void {
+    this.checkPrivileges();
     this.getAllRRSEP();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -151,6 +163,16 @@ export class RrspComponent {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('RRSEP', 'create');
+    this.canRetrieve = this.store.isAllowedAction('RRSEP', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('RRSEP', 'update');
+    this.canDelete = this.store.isAllowedAction('RRSEP', 'delete');
+    this.canPost = this.store.isAllowedAction('RRSEP', 'post');
+    this.canUnpost = this.store.isAllowedAction('RRSEP', 'unpost');
   }
 
   setupModalClose() {
@@ -172,7 +194,7 @@ export class RrspComponent {
   addModalHiddenListener(icsModal: boolean, modalId: string) {
     const modal = document.getElementById(modalId);
     modal?.addEventListener('hidden.bs.modal', () =>
-    icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+      icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
 
 
@@ -216,6 +238,7 @@ export class RrspComponent {
       this.api.getAllRRSEP()
         .subscribe({
           next: (res) => {
+            this.totalItems = res.length;
             this.rrseps = res;
             this.logger.printLogs('i', 'LIST OF RRSEP', this.rrseps);
             this.isLoading = false;
@@ -395,7 +418,17 @@ export class RrspComponent {
 
   onPostRRSEP(rrsep: any) {
 
-    if ((this.roleNoFromToken != 'System Administrator' && !rrsep.postFlag) || this.roleNoFromToken == 'System Administrator') {
+    if (!rrsep.postFlag && !this.canPost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
+      return;
+    }
+
+    if (rrsep.postFlag && !this.canUnpost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
+      return
+    }
+
+    if ((this.roleNoFromToken != 'System Administrator' && !rrsep.postFlag) || this.roleNoFromToken == 'System Administrator' || (rrsep.postFlag && this.canUnpost) || (!rrsep.postFlag && this.canPost)) {
       let rrsepNo = rrsep.rrsepNo;
 
       Swal.fire({
@@ -1215,7 +1248,7 @@ export class RrspComponent {
               <tr ${item.qrCode ? `class="${item.qrCode} item-row"` : ''}>
                 <td>${item.description || 'N/A'}</td>
                 <td>${item.qty || 1}</td>
-                <td>${item.itrFlag? item.itrNo: item.icsNo}</td>
+                <td>${item.itrFlag ? item.itrNo : item.icsNo}</td>
                 <td>${models[index].toString().toUpperCase()}</td>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
               </tr>

@@ -1,4 +1,3 @@
-
 <div class="row mt-5 d-none d-sm-block" style="height: 10px;"></div>
 
 <div class="container-xl">
@@ -6,36 +5,24 @@
     <div class="table-wrapper">
       <div class="table-title">
 
-        <div
-          class="row d-flex align-items-center">
+        <div class="row d-flex align-items-center">
 
-          <div
-            class="col-12 d-flex just justify-content-center align-items-center">
+          <div class="col-12 d-flex just justify-content-center align-items-center">
             <div class="search" style="width: 100%;">
-              <i
-                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
-              <input type="text" class="form-control rounded-pill" type="search"
-                [(ngModel)]="searchKey"
-                (keyup)="onKeyUp($event)"
-                placeholder="Search here.." aria-label="Search">
-              <a
-                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
-                type="button" (click)="onSearchRRSEP()"><i
-                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+              <i class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search" [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)" placeholder="Search here.." aria-label="Search">
+              <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
+                (click)="onSearchRRSEP()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
             <!-- start/stop -->
-            <a
-              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+            <a *ngIf="canCreate" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
               type="button" (click)="onAddRRSEP()">
-              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
-                class="fs-6">NEW</span></a>
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">NEW</span></a>
 
-            <button
-              class="btn btn-dark rounded-pill d-flex justify-content-center align-items-center"
-              type="button"
+            <button class="btn btn-dark rounded-pill d-flex justify-content-center align-items-center" type="button"
               (click)="handle(scannerAction, scannerAction.isStart ? 'stop' : 'start')"
-              [class.btn-warning]="scannerAction?.isStart"
-              [disabled]="scannerAction?.isLoading || false">
+              [class.btn-warning]="scannerAction?.isStart" [disabled]="scannerAction?.isLoading || false">
               <i class="fa-solid fa-qrcode"></i>
               <span class="fs-6">Scan</span>
             </button>
@@ -46,10 +33,8 @@
 
       </div>
 
-      <div *ngIf="isLoading" class="text-center my-3 align-content-center"
-        style="height: 50vh;">
-        <img src="../../../assets/images/loading.gif" alt="Loading..."
-          width="100" style="height: 80px;">
+      <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
+        <img src="../../../assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
         <span class="loading-text text-dark">Loading<span class="dot">.</span>
           <span class="dot">.</span><span class="dot">.</span></span>
 
@@ -70,11 +55,8 @@
         <tbody>
           <tr *ngFor="let p of rrseps">
             <td>
-              <a [ngClass]="p.postFlag ? 'primary' : 'secondary'"
-                type="button"
-                (click)="onPostRRSEP(p)">
-                <i class="fa-sharp-duotone fa-solid fa-thumbtack"
-                  data-toggle="tooltip"
+              <a [ngClass]="p.postFlag ? 'primary' : 'secondary'" type="button" (click)="onPostRRSEP(p)">
+                <i class="fa-sharp-duotone fa-solid fa-thumbtack" data-toggle="tooltip"
                   [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
               </a>
             </td>
@@ -86,31 +68,18 @@
             <td>
               <form class="d-flex justify-content-end align-items-center">
                 @if(p.userName == "admin"){
-                <span><i
-                    class="fa-sharp-duotone fa-solid fa-asterisk"
-                    data-toggle="tooltip" title="System Default"></i></span>
+                <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
+                    title="System Default"></i></span>
                 }@else{
-                <a class="edit"
-                  type="button"
-                  (click)="onEditRRSEP(p)"><i
-                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
-                    data-toggle="tooltip" title="Edit"></i></a>
-                <a class="delete"
-                  type="button"
-                  (click)="onDelete(p)"><i
-                    class="fa-sharp-duotone fa-solid fa-trash"
-                    data-toggle="tooltip" title="Delete"></i></a>
-                <a class="success"
-                  type="button"
-                  (click)="onViewRRSEP(p)">
-                  <i class="fa-sharp-duotone fa-solid fa-eye"
-                    data-toggle="tooltip" title="View"></i>
+                <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditRRSEP(p)"><i
+                    class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
+                <a *ngIf="canDelete" class="delete" type="button" (click)="onDelete(p)"><i
+                    class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
+                <a *ngIf="canRetrieve" class="success" type="button" (click)="onViewRRSEP(p)">
+                  <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
                 </a>
-                <a class="seconadry"
-                  type="button"
-                  (click)="onPrintREPAR(p.rrsepNo)">
-                  <i class="fa-sharp-duotone fa-solid fa-print"
-                    data-toggle="tooltip" title="Print"></i>
+                <a class="seconadry" type="button" (click)="onPrintREPAR(p.rrsepNo)">
+                  <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
                 </a>
                 }
               </form>
@@ -121,7 +90,8 @@
 
       <div class="clearfix" *ngIf="!isLoading">
         <div class="hint-text">Showing <b>{{rrseps.length}}</b> out of
-          <b>{{rrseps.length}}</b> entries</div>
+          <b>{{totalItems}}</b> entries
+        </div>
         <!-- <ul class="pagination">
           <li class="page-item disabled"><a href="#">Previous</a></li>
           <li class="page-item"><a href="#" class="page-link">1</a></li>
@@ -142,8 +112,7 @@
 <div #AddEditModalForm class="modal fade" id="AddEditModalForm">
   <div class="modal-dialog modal-dialog-centered  modal-xl">
     <div class="modal-content formGroup">
-      <form class [formGroup]="rrsepForm"
-        class="ng-untouched ng-pristine ng-invalid">
+      <form class [formGroup]="rrsepForm" class="ng-untouched ng-pristine ng-invalid">
         <div class="modal-header">
           <div class="d-flex flex-column">
             <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
@@ -153,8 +122,8 @@
             </h1>
             <span><em> Receipt of Returned Semi-Expandable Property</em></span>
           </div>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-            aria-label="Close" (click)="closeModal(AddEditModal)"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="closeModal(AddEditModal)"></button>
         </div>
 
         <div class="modal-body p-0 m-0">
@@ -172,8 +141,7 @@
                   <small class="text-info">*
                     Entity Name</small>
                   }@else {
-                  <small class="text-danger"
-                    *ngIf="rrsepForm.controls['entityName'].invalid &&
+                  <small class="text-danger" *ngIf="rrsepForm.controls['entityName'].invalid &&
                       rrsepForm.hasError('required', 'entityName') &&
                       rrsepForm.get('entityName')?.touched ||
                       (rrsepForm.controls['entityName'].dirty &&
@@ -185,15 +153,11 @@
                     [class.error]="rrsepForm.controls['entityName'].invalid && rrsepForm.hasError('required', 'entityName') &&
                     rrsepForm.get('entityName')?.touched || (rrsepForm.controls['entityName'].dirty && rrsepForm.hasError('required', 'entityName'))">
 
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="rrsepForm.controls['entityName'].invalid &&
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="rrsepForm.controls['entityName'].invalid &&
                       rrsepForm.hasError('required', 'entityName') &&  rrsepForm.get('entityName')?.touched || (rrsepForm.controls['entityName'].dirty &&
                       rrsepForm.hasError('required', 'entityName'))"></i>
 
-                    <input type="text" formControlName="entityName"
-                      name="entityName"
-                      id="entityName"
+                    <input type="text" formControlName="entityName" name="entityName" id="entityName"
                       placeholder="Entity Name">
                   </div>
 
@@ -211,26 +175,19 @@
                   <small class="text-info">*
                     RRSEP No.</small>
                   }@else {
-                  <small class="text-danger"
-                    *ngIf="rrsepForm.controls['rrsepNo'].invalid && rrsepForm.hasError('required', 'rrsepNo') && rrsepForm.get('rrsepNo')?.touched ||
+                  <small class="text-danger" *ngIf="rrsepForm.controls['rrsepNo'].invalid && rrsepForm.hasError('required', 'rrsepNo') && rrsepForm.get('rrsepNo')?.touched ||
                           (rrsepForm.controls['rrsepNo'].dirty && rrsepForm.hasError('required', 'rrsepNo'))">*
                     RRSEP No. is
                     required</small>
                   }
 
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="rrsepForm.controls['rrsepNo'].invalid && rrsepForm.hasError('required', 'rrsepNo') &&  rrsepForm.get('rrsepNo')?.touched ||
+                  <div class="form-field d-flex align-items-center" [class.error]="rrsepForm.controls['rrsepNo'].invalid && rrsepForm.hasError('required', 'rrsepNo') &&  rrsepForm.get('rrsepNo')?.touched ||
                     (rrsepForm.controls['rrsepNo'].dirty && rrsepForm.hasError('required', 'rrsepNo'))">
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="rrsepForm.controls['rrsepNo'].invalid && rrsepForm.hasError('required', 'rrsepNo') &&  rrsepForm.get('rrsepNo')?.touched ||
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="rrsepForm.controls['rrsepNo'].invalid && rrsepForm.hasError('required', 'rrsepNo') &&  rrsepForm.get('rrsepNo')?.touched ||
                     (rrsepForm.controls['rrsepNo'].dirty && rrsepForm.hasError('required', 'rrsepNo'))"></i>
 
-                    <input class="form-control is-invalid"
-                      type="text" formControlName="rrsepNo"
-                      name="rrsepNo"
-                      id="rrsepNo"
-                      placeholder="RRSEP No.">
+                    <input class="form-control is-invalid" type="text" formControlName="rrsepNo" name="rrsepNo"
+                      id="rrsepNo" placeholder="RRSEP No.">
                   </div>
                 </div>
                 <!-- Return type -->
@@ -262,16 +219,13 @@
                     Specify 'Others' is required.
                   </small>
 
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="rrsepForm.controls['type'].invalid && rrsepForm.hasError('required', 'type')  && rrsepForm.get('type')?.touched ||
+                  <div class="form-field d-flex align-items-center" [class.error]="rrsepForm.controls['type'].invalid && rrsepForm.hasError('required', 'type')  && rrsepForm.get('type')?.touched ||
                     (rrsepForm.controls['type'].dirty && rrsepForm.hasError('required', 'type')) ||
                     (isCustomType && rrsepForm.controls['others'].invalid && rrsepForm.hasError('required', 'others')  && rrsepForm.get('others')?.touched ||
                   (rrsepForm.controls['others'].dirty && rrsepForm.hasError('required', 'others'))) ||
                     (isCustomType && rrsepForm.get('others')?.invalid && rrsepForm.get('others')?.touched)">
 
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="rrsepForm.controls['type'].invalid && rrsepForm.hasError('required', 'type')  && rrsepForm.get('type')?.touched ||
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="rrsepForm.controls['type'].invalid && rrsepForm.hasError('required', 'type')  && rrsepForm.get('type')?.touched ||
                       (rrsepForm.controls['type'].dirty && rrsepForm.hasError('required', 'type')) ||
                       (isCustomType && rrsepForm.controls['others'].invalid && rrsepForm.hasError('required', 'others')  && rrsepForm.get('others')?.touched ||
                     (rrsepForm.controls['others'].dirty && rrsepForm.hasError('required', 'others'))) ||
@@ -279,20 +233,15 @@
                     </i>
 
                     <select formControlName="type" name="type" id="type"
-                      [ngClass]="{'option-others-size': isCustomType}"
-                      class="form-select" (change)="onTypeChange($event)">
+                      [ngClass]="{'option-others-size': isCustomType}" class="form-select"
+                      (change)="onTypeChange($event)">
                       <option value>Transfer Type</option>
-                      <option *ngFor="let option of typeOptions"
-                        [value]="option">{{option}}</option>
+                      <option *ngFor="let option of typeOptions" [value]="option">{{option}}</option>
                       <option value="Others">Others</option>
                     </select>
 
-                    <input *ngIf="isCustomType"
-                      type="text" id="others"
-                      #othersInput
-                      value="N/A"
-                      formControlName="others"
-                      placeholder="Specify">
+                    <input *ngIf="isCustomType" type="text" id="others" #othersInput value="N/A"
+                      formControlName="others" placeholder="Specify">
                   </div>
                 </div>
               </div>
@@ -302,8 +251,7 @@
               <div class="row m-0">
                 <div class="col py-0">
                   <div class="row py-3 bg-primary">
-                    <div
-                      class="col">
+                    <div class="col">
                       <h5 class="ms-3 text-light">
                         List of Item
                       </h5>
@@ -311,8 +259,7 @@
                   </div>
                   <div class="row table-responsive p-0 m-0">
                     <div class="col p-0 m-0 table-body scrollable ">
-                      <table
-                        class="table table-striped table-hover">
+                      <table class="table table-striped table-hover">
                         <thead>
                           <tr>
                             <th class="sticky-header"></th>
@@ -334,12 +281,10 @@
                           </tr>
                           <tr *ngFor="let p of rrsepItems; let i = index">
                             <td>
-                              <a class="success"
-                                type="button"
-                                (click)="onViewItem(p)">
-                                <i class="fa-sharp-duotone fa-solid fa-eye"
-                                  data-toggle="tooltip" title="View"></i>
-                              </a></td>
+                              <a class="success" type="button" (click)="onViewItem(p)">
+                                <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
+                              </a>
+                            </td>
                             <td>{{i+1}}</td>
                             <td>1</td>
                             <td>{{p.unit}}</td>
@@ -358,11 +303,8 @@
                                     data-toggle="tooltip" title="Edit"
                                     (click)="onEditItem(p)"></i></a>
                                     -->
-                                <a class="delete"
-                                  type="button"
-                                  (click)="onDeleteItem(p)"><i
-                                    class="fa-sharp-duotone fa-solid fa-trash"
-                                    data-toggle="tooltip"
+                                <a class="delete" type="button" (click)="onDeleteItem(p)"><i
+                                    class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip"
                                     title="Delete"></i></a>
                               </form>
                             </td>
@@ -380,10 +322,8 @@
 
               <div class="row">
                 <div class="col">
-                  <a
-                    class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
-                    type="button"
-                    (click)="onAddPARItem()">
+                  <a class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+                    type="button" (click)="onAddPARItem()">
                     <i class="fa-sharp-duotone fa-solid fa-plus"></i>&nbsp;
                     <span class="fs-6">ADD</span>
                   </a>
@@ -402,8 +342,7 @@
                   <small class="text-info">*
                     Return By</small>
                   }@else {
-                  <small class="text-danger"
-                    *ngIf="rrsepForm.controls['userID2'].invalid &&
+                  <small class="text-danger" *ngIf="rrsepForm.controls['userID2'].invalid &&
                   rrsepForm.hasError('required', 'userID2') &&
                   rrsepForm.get('userID2')?.touched ||
                   (rrsepForm.controls['userID2'].dirty &&
@@ -411,35 +350,23 @@
                     required</small>
                   }
 
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="rrsepForm.controls['userID2'].invalid && rrsepForm.hasError('required', 'userID2')  && rrsepForm.get('userID2')?.touched ||
+                  <div class="form-field d-flex align-items-center" [class.error]="rrsepForm.controls['userID2'].invalid && rrsepForm.hasError('required', 'userID2')  && rrsepForm.get('userID2')?.touched ||
                     (rrsepForm.controls['userID2'].dirty && rrsepForm.hasError('required', 'userID2'))">
                     <i class="fa-sharp-duotone fa-solid fa-caret-down"
                       *ngIf="!(rrsepForm.controls['userID2'].invalid && rrsepForm.hasError('required', 'userID2') &&
                       rrsepForm.get('userID2')?.touched || (rrsepForm.controls['userID2'].dirty && rrsepForm.hasError('required', 'userID2')))"></i>
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="rrsepForm.controls['userID2'].invalid && rrsepForm.hasError('required', 'userID2') &&  rrsepForm.get('userID2')?.touched ||
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="rrsepForm.controls['userID2'].invalid && rrsepForm.hasError('required', 'userID2') &&  rrsepForm.get('userID2')?.touched ||
                       (rrsepForm.controls['userID2'].dirty && rrsepForm.hasError('required', 'userID2'))"></i>
 
-                    <input type="text" class="form-control"
-                      id="navbarDropdown"
-                      formControlName="userID2"
-                      name="userID2"
-                      [(ngModel)]="issuedByID"
-                      placeholder="Return By"
-                      (keyup)="onAutoSuggest('issued')"
-                      role="textbox">
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID2" name="userID2"
+                      [(ngModel)]="issuedByID" placeholder="Return By" (keyup)="onAutoSuggest('issued')" role="textbox">
 
                   </div>
-                  <div class="recent-searches"
-                    *ngIf="userProfiles.length > 0  && activeInput === 'issued'"
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0  && activeInput === 'issued'"
                     (blur)="activeInput = null">
                     <ul class="list-group list-group-flush py-3">
-                      <li type="button"
-                        class="list-group-item list-group-item-action px-3 rounded-pill"
-                        *ngFor="let up of userProfiles"
-                        (click)="selectProfile('issued',up)">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectProfile('issued',up)">
                         {{ up.fullName }}</li>
                     </ul>
                   </div>
@@ -455,8 +382,7 @@
                   <small class="text-info">*
                     Received By</small>
                   }@else {
-                  <small class="text-danger"
-                    *ngIf="rrsepForm.controls['userID1'].invalid &&
+                  <small class="text-danger" *ngIf="rrsepForm.controls['userID1'].invalid &&
                     rrsepForm.hasError('required', 'userID1') &&
                     rrsepForm.get('userID1')?.touched ||
                     (rrsepForm.controls['userID1'].dirty &&
@@ -464,35 +390,23 @@
                     required</small>
                   }
 
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="rrsepForm.controls['userID1'].invalid && rrsepForm.hasError('required', 'userID1')  && rrsepForm.get('userID1')?.touched ||
+                  <div class="form-field d-flex align-items-center" [class.error]="rrsepForm.controls['userID1'].invalid && rrsepForm.hasError('required', 'userID1')  && rrsepForm.get('userID1')?.touched ||
                     (rrsepForm.controls['userID1'].dirty && rrsepForm.hasError('required', 'userID1'))">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(rrsepForm.controls['userID1'].invalid && rrsepForm.hasError('required', 'userID1') && rrsepForm.get('userID1')?.touched ||
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down" *ngIf="!(rrsepForm.controls['userID1'].invalid && rrsepForm.hasError('required', 'userID1') && rrsepForm.get('userID1')?.touched ||
                       (rrsepForm.controls['userID1'].dirty && rrsepForm.hasError('required', 'userID1')))"></i>
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="rrsepForm.controls['userID1'].invalid && rrsepForm.hasError('required', 'userID1') &&  rrsepForm.get('userID1')?.touched ||
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="rrsepForm.controls['userID1'].invalid && rrsepForm.hasError('required', 'userID1') &&  rrsepForm.get('userID1')?.touched ||
                       (rrsepForm.controls['userID1'].dirty && rrsepForm.hasError('required', 'userID1'))"></i>
 
-                    <input type="text" class="form-control"
-                      id="navbarDropdown"
-                      formControlName="userID1"
-                      name="userID1"
-                      [(ngModel)]="receivedByID"
-                      placeholder="Received By"
-                      (keyup)="onAutoSuggest('received')"
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
+                      [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggest('received')"
                       role="textbox">
                   </div>
 
-                  <div class="recent-searches"
-                    *ngIf="userProfiles.length > 0  && activeInput === 'received'"
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0  && activeInput === 'received'"
                     (blur)="activeInput = null">
                     <ul class="list-group list-group-flush py-3">
-                      <li type="button"
-                        class="list-group-item list-group-item-action px-3 rounded-pill"
-                        *ngFor="let up of userProfiles"
-                        (click)="selectProfile('received',up)">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectProfile('received',up)">
                         {{ up.fullName }}</li>
                     </ul>
                   </div>
@@ -508,8 +422,7 @@
                   <small class="text-info">*
                     Approved By</small>
                   }@else {
-                  <small class="text-danger"
-                    *ngIf="rrsepForm.controls['userID3'].invalid &&
+                  <small class="text-danger" *ngIf="rrsepForm.controls['userID3'].invalid &&
                         rrsepForm.hasError('required', 'userID3') &&
                         rrsepForm.get('userID3')?.touched ||
                         (rrsepForm.controls['userID3'].dirty &&
@@ -519,38 +432,26 @@
                     required</small>
                   }
 
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="rrsepForm.controls['userID3'].invalid && rrsepForm.hasError('required', 'userID3')  && rrsepForm.get('userID3')?.touched || (rrsepForm.controls['userID3'].dirty &&
+                  <div class="form-field d-flex align-items-center" [class.error]="rrsepForm.controls['userID3'].invalid && rrsepForm.hasError('required', 'userID3')  && rrsepForm.get('userID3')?.touched || (rrsepForm.controls['userID3'].dirty &&
                     rrsepForm.hasError('required', 'userID3'))">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(rrsepForm.controls['userID3'].invalid &&
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down" *ngIf="!(rrsepForm.controls['userID3'].invalid &&
                     rrsepForm.hasError('required', 'userID3') &&
                     rrsepForm.get('userID3')?.touched ||
                     (rrsepForm.controls['userID3'].dirty &&
                     rrsepForm.hasError('required', 'userID3')))"></i>
-                    <i
-                      class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="rrsepForm.controls['userID3'].invalid && rrsepForm.hasError('required', 'userID3') &&  rrsepForm.get('userID3')?.touched ||
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="rrsepForm.controls['userID3'].invalid && rrsepForm.hasError('required', 'userID3') &&  rrsepForm.get('userID3')?.touched ||
                     (rrsepForm.controls['userID3'].dirty && rrsepForm.hasError('required', 'userID3'))"></i>
 
-                    <input type="text" class="form-control"
-                      id="navbarDropdown"
-                      formControlName="userID3"
-                      name="userID3"
-                      [(ngModel)]="approvedByID"
-                      placeholder="Approved By"
-                      (keyup)="onAutoSuggest('approved')"
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID3" name="userID3"
+                      [(ngModel)]="approvedByID" placeholder="Approved By" (keyup)="onAutoSuggest('approved')"
                       role="textbox">
                   </div>
 
-                  <div class="recent-searches"
-                    *ngIf="userProfiles.length > 0  && activeInput === 'approved'"
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0  && activeInput === 'approved'"
                     (blur)="activeInput = null">
                     <ul class="list-group list-group-flush py-3">
-                      <li type="button"
-                        class="list-group-item list-group-item-action px-3 rounded-pill"
-                        *ngFor="let up of userProfiles"
-                        (click)="selectProfile('approved', up)">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectProfile('approved', up)">
                         {{ up.fullName }}</li>
                     </ul>
                   </div>
@@ -562,12 +463,11 @@
         </div>
         <div class="modal-footer">
 
-          <button id="closeBut" type="button"
-            class="btn btn-secondary rounded-pill me-2"
-            data-bs-dismiss="modal"
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal"
             (click)="closeModal(AddEditModal)">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill"
-            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save'
+          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
+            class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
+            'Save'
             }}</button>
         </div>
       </form>
@@ -590,8 +490,8 @@
             <span><em>Property Return Slip</em></span>
           </div>
 
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-            aria-label="Close" (click)="closeModal(ViewModal)"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="closeModal(ViewModal)"></button>
         </div>
 
         <div class="modal-body p-0 m-0">
@@ -601,12 +501,9 @@
               <div class="row">
                 <div class="col">
                   <div class="simple-accordion">
-                    <button class="accordion-header"
-                      (click)="toggleAccordion()"
-                      [attr.aria-expanded]="isOpen">
+                    <button class="accordion-header" (click)="toggleAccordion()" [attr.aria-expanded]="isOpen">
                       INFORMATION
-                      <i
-                        class="fa-sharp-duotone fa-solid {{ isOpen? 'fa-caret-up' : 'fa-caret-down' }} "></i>
+                      <i class="fa-sharp-duotone fa-solid {{ isOpen? 'fa-caret-up' : 'fa-caret-down' }} "></i>
                     </button>
                     <div class="accordion-content" style="overflow-y: auto;" [class.show]="isOpen">
 
@@ -615,10 +512,8 @@
                         <div class="col-12">
                           <small class="text-info">Entity Name</small>
                           <div class="form-field d-flex align-items-center">
-                            <input type="text"
-                              [value]="rrsep?.entityName"
-                              class="form-control" placeholder="Entity Name"
-                              readonly>
+                            <input type="text" [value]="rrsep?.entityName" class="form-control"
+                              placeholder="Entity Name" readonly>
                           </div>
                         </div>
 
@@ -626,9 +521,7 @@
                         <div class="col-12 col-lg-4">
                           <small class="text-info">PRS No.</small>
                           <div class="form-field d-flex align-items-center">
-                            <input type="text"
-                              [value]="rrsep?.rrsepNo"
-                              class="form-control" placeholder="PAR No."
+                            <input type="text" [value]="rrsep?.rrsepNo" class="form-control" placeholder="PAR No."
                               readonly>
                           </div>
                         </div>
@@ -640,16 +533,11 @@
 
                           <div class="form-field d-flex align-items-center">
 
-                            <input type="text" [value]="rrsep?.rtype"
-                              name="type"
-                              id="type"
-                              class="form-control" placeholder="Transfer type"
-                              readonly>
+                            <input type="text" [value]="rrsep?.rtype" name="type" id="type" class="form-control"
+                              placeholder="Transfer type" readonly>
 
-                            <input type="text" *ngIf="rrsep?.rtype == 'Others'"
-                              [value]="rrsep?.otype" name="type" id="type"
-                              class="form-control" placeholder="Others"
-                              readonly>
+                            <input type="text" *ngIf="rrsep?.rtype == 'Others'" [value]="rrsep?.otype" name="type"
+                              id="type" class="form-control" placeholder="Others" readonly>
 
                           </div>
                         </div>
@@ -660,16 +548,14 @@
                         <div class="col-4">
                           <small class="text-info">RETURN BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <input type="text" [value]="rrsep?.issued"
-                              class="form-control" placeholder="Return By"
+                            <input type="text" [value]="rrsep?.issued" class="form-control" placeholder="Return By"
                               readonly>
                           </div>
                         </div>
                         <div class="col-4">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <input type="text" [value]="rrsep?.received"
-                              class="form-control" placeholder="Recieved By"
+                            <input type="text" [value]="rrsep?.received" class="form-control" placeholder="Recieved By"
                               readonly>
                           </div>
                         </div>
@@ -677,8 +563,7 @@
                         <div class="col-4">
                           <small class="text-info">APPROVED BY</small>
                           <div class="form-field d-flex align-items-center">
-                            <input type="text" [value]="rrsep?.approved"
-                              class="form-control" placeholder="Approved BY"
+                            <input type="text" [value]="rrsep?.approved" class="form-control" placeholder="Approved BY"
                               readonly>
                           </div>
                         </div>
@@ -703,16 +588,11 @@
                       <h5 class="ms-3 text-light">List of Items</h5>
                     </div>
 
-                    <div
-                      class="col d-flex justify-content-end align-items-center h-100">
+                    <div class="col d-flex justify-content-end align-items-center h-100">
                       <div class="searchbar">
-                        <input class="search_input" type="text"
-                          name="searchPRSItemKey"
-                          formControlName="searchPRSItemKey"
-                          (keyup)="searchPRSItem()"
-                          placeholder="Search...">
-                        <a type="button" class="search_icon"
-                          (click)="searchPRSItem()">
+                        <input class="search_input" type="text" name="searchPRSItemKey"
+                          formControlName="searchPRSItemKey" (keyup)="searchPRSItem()" placeholder="Search...">
+                        <a type="button" class="search_icon" (click)="searchPRSItem()">
                           <i class="fas fa-search"></i>
                         </a>
                       </div>
@@ -720,12 +600,10 @@
 
                   </div>
                   <!-- table-responsive -->
-                  <div
-                    class="row table-responsive p-0 m-0">
+                  <div class="row table-responsive p-0 m-0">
                     <div class="col p-0 m-0 table-body scrollable ">
                       <!-- *ngIf="noOfParItems > 0 || !isRepar" -->
-                      <table
-                        class="table table-striped table-hover">
+                      <table class="table table-striped table-hover">
                         <thead>
                           <tr>
                             <th class="sticky-header"></th>
@@ -741,17 +619,12 @@
                         </thead>
                         <tbody>
 
-                          <ng-container
-                            *ngFor="let p of rrsepItems; let i = index">
+                          <ng-container *ngFor="let p of rrsepItems; let i = index">
 
-                            <tr
-                              [class.border-warning]="item?.qrCode == p.qrCode">
+                            <tr [class.border-warning]="item?.qrCode == p.qrCode">
                               <td>
-                                <a class="success"
-                                  type="button"
-                                  (click)="onViewItem(p)">
-                                  <i class="fa-sharp-duotone fa-solid fa-eye"
-                                    data-toggle="tooltip" title="View"></i>
+                                <a class="success" type="button" (click)="onViewItem(p)">
+                                  <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
                                 </a>
                               </td>
                               <td>{{i + 1}}</td>
@@ -784,11 +657,9 @@
         </div><!-- END OF MODAL BODY -->
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-warning rounded-pill"
-            *ngIf="!rrsep?.postFlag || false"
+          <button type="button" class="btn btn-warning rounded-pill" *ngIf="!rrsep?.postFlag || false"
             (click)="onEditRRSEP(rrsep)">Edit</button>
-          <button type="button" class="btn btn-secondary rounded-pill"
-            data-bs-dismiss="modal"
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
         </div>
       </form>
@@ -797,18 +668,19 @@
 </div>
 
 <!-- ITEM VIEW MODAL -->
-<div #ViewItemModalForm class="modal fade" id="ViewItemModalForm" tabindex="-1"
-  aria-labelledby="ItemModalFormLabel" aria-hidden="true">
+<div #ViewItemModalForm class="modal fade" id="ViewItemModalForm" tabindex="-1" aria-labelledby="ItemModalFormLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="ItemModalFormLabel">Item
           Details</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"
-          aria-label="Close" (click)="closeModal(ViewItemModal)"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          (click)="closeModal(ViewItemModal)"></button>
       </div>
       <div class="modal-body item-body scrollable">
-        <!-- ITEM DETAILS --><div class="row">
+        <!-- ITEM DETAILS -->
+        <div class="row">
           <div class="col-lg-12">
             <table class="table table-bordered">
               <tbody>
@@ -873,8 +745,7 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary rounded-pill"
-          data-bs-dismiss="modal"
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
           (click)="closeModal(ViewItemModal)">Close</button>
       </div>
     </div>
@@ -888,24 +759,18 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5">Scan QR Item</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"
-          aria-label="Close"
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
           (click)="onCloseQRScanning(scannerAction)"></button>
       </div>
       <div class="modal-body item-body scrollable">
         <!-- ngx-scanner-qrcode -->
-        <ngx-scanner-qrcode
-          #scannerAction="scanner"
-          [config]="config"
-          (event)="onEvent($event, scannerAction)">
+        <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
         </ngx-scanner-qrcode>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary rounded-pill"
-          data-bs-dismiss="modal"
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
           (click)="onCloseQRScanning(scannerAction)">Close</button>
-        <button type="button" class="btn btn-primary rounded-pill"
-          *ngIf="scannerAction?.isPause"
+        <button type="button" class="btn btn-primary rounded-pill" *ngIf="scannerAction?.isPause"
           (click)="resumeScanning(scannerAction)">Scan Again</button>
       </div>
     </div>
@@ -913,15 +778,14 @@
 </div>
 
 <!-- ITEM LIST VIEW MODAL -->
-<div #ListItemModalForm class="modal fade" id="ListItemModalForm"
-  tabindex="-1"
-  aria-labelledby="ItemModalFormLabel" aria-hidden="true">
+<div #ListItemModalForm class="modal fade" id="ListItemModalForm" tabindex="-1" aria-labelledby="ItemModalFormLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-l">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="ItemModalFormLabel">List of Item</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"
-          aria-label="Close" (click)="closeModal(ViewItemModal)"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          (click)="closeModal(ViewItemModal)"></button>
       </div>
       <div class="modal-body item-body scrollable">
         <!-- ITEM DETAILS -->
@@ -938,20 +802,15 @@
                 </tr>
               </thead>
               <tbody>
-                <ng-container
-                  *ngFor="let ii of icsItems; let i = index">
+                <ng-container *ngFor="let ii of icsItems; let i = index">
                   <tr *ngIf="ii.rrsepFlag==false">
                     <td>{{ii.itrNo? ii.itrNo: ii.icsNo }}</td>
                     <td>{{ii.description}}</td>
                     <td>{{ii.propertyNo}}</td>
                     <td>{{ii.amount}}</td>
                     <td>
-                      <a class="delete"
-                        type="button"
-                        (click)="onAddItem(ii)"><i
-                          class="fa-sharp-duotone  fa-solid fa-plus"
-                          data-toggle="tooltip"
-                          title="Delete"></i></a>
+                      <a class="delete" type="button" (click)="onAddItem(ii)"><i
+                          class="fa-sharp-duotone  fa-solid fa-plus" data-toggle="tooltip" title="Delete"></i></a>
                     </td>
                   </tr>
                 </ng-container>
@@ -961,8 +820,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary rounded-pill"
-          data-bs-dismiss="modal"
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
           (click)="closeModal(ViewItemModal)">Close</button>
       </div>
     </div>

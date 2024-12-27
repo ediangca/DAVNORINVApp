@@ -145,6 +145,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       .subscribe(res => {
         this.username = res || this.usernameFromToken;
       });
+      
     // Get Decoded role from token
     this.store.getRoleFromStore()
       .subscribe(res => {

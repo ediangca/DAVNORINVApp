@@ -8,6 +8,7 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { StoreService } from '../../services/store.service';
 import { LogsService } from '../../services/logs.service';
+import { post } from 'jquery';
 
 declare var bootstrap: any;
 declare var $: any;
@@ -45,7 +46,6 @@ export class MenuComponent implements AfterViewInit {
       this.title = title;
     });
 
-    this.loadPrivileges();
 
     // let debounceTimer;
     // const debounceDelay = 100; // milliseconds
@@ -124,26 +124,37 @@ export class MenuComponent implements AfterViewInit {
     this.store.getUserAccount()
       .subscribe(res => {
         this.userAccount = res;
+
         console.log('User Account >>>', this.userAccount);
 
-        this.api.retrievePrivilegByUG(this.userAccount.ugid).subscribe({
-          next: (res: any) => {
-            // Load and normalize privileges
-            this.privileges = res.map((privilege: any) => ({
-              moduleName: privilege.moduleName,
-              isActive: privilege.isActive // Assuming `isActive` indicates if the user has access
-            }));
-            this.logger.printLogs('i', 'Retrieved Privileges from Menu', this.privileges);
-          },
-          error: (err: any) => {
-            this.logger.printLogs('w', 'Error Retrieving Privileges', err);
-          }
-        });
+        if (this.userAccount) {
+          this.api.retrievePrivilegByUG(this.userAccount.ugid).subscribe({
+            next: (res: any) => {
+              // Load and normalize privileges
+              this.privileges = res.map((privilege: any) => ({
+                moduleName: privilege.moduleName,
+                isActive: privilege.isActive, // Assuming `isActive` indicates if the user has access
+                c: privilege.c, // Assuming `c` indicates if the user has access to create
+                r: privilege.r, // Assuming `r` indicates if the user has access to retrieve
+                u: privilege.u, // Assuming `u` indicates if the user has access to update
+                d: privilege.d, // Assuming `d` indicates if the user has access to delete
+                post: privilege.post, // Assuming `post` indicates if the user has access to post
+                unpost: privilege.unpost, // Assuming `unpost` indicates if the user has access to unpost
+              }));
+              this.store.setPrivilege(this.privileges);
+              this.logger.printLogs('i', 'Retrieved Privileges from Menu', this.privileges);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('w', 'Error Retrieving Privileges', err);
+            }
+          });
+
+        }
       });
   }
-  
+
   isModuleActive(moduleName: string): boolean {
-    return this.privileges.some(privilege => privilege.moduleName === moduleName && privilege.isActive);
+    return this.store.isModuleActive(moduleName);
   }
 
 }

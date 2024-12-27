@@ -40,6 +40,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   icss: any = [];
+  totalItems: number = 0;
   ics!: any;
   icsItems: ICSItem[] = [];
   selectedICSItems: ICSItem[] = []; // Array to track selected items from repar
@@ -102,11 +103,20 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   today: string | undefined;
   private logger: LogsService;
-  legend: string | undefined | null;
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
   purpose: string = 'retreive';
+
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
+
+  canITR: boolean = false;
 
   // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#front_and_back_camera
   public config: ScannerQRCodeConfig = {
@@ -132,8 +142,9 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef, private printService: PrintService) {
+
+    this.checkPrivileges();
     this.logger = new LogsService();
-    this.legend = store.legend;
 
     this.today = new Date().toISOString().split('T')[0];
 
@@ -175,7 +186,20 @@ export class IcsComponent implements OnInit, AfterViewInit {
     this.roleNoFromToken = this.auth.getRoleFromToken();
   }
 
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('ICS', 'create');
+    this.canRetrieve = this.store.isAllowedAction('ICS', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('ICS', 'update');
+    this.canDelete = this.store.isAllowedAction('ICS', 'delete');
+    this.canPost = this.store.isAllowedAction('ICS', 'post');
+    this.canUnpost = this.store.isAllowedAction('ICS', 'unpost');
+
+    this.canITR = this.store.isAllowedAction('ITR', 'create');
+  }
+
   ngOnInit(): void {
+    this.checkPrivileges();
     this.getALLICS();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -190,7 +214,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
-
   }
 
   ngAfterViewInit(): void {
@@ -259,7 +282,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
       this.api.getAllICS()
         .subscribe({
           next: (res) => {
-            this.icss = res;
+            this.totalItems = res.length;
+            this.icss = res.slice(0, 10);
             this.logger.printLogs('i', 'LIST OF ICS', this.icss);
             this.isLoading = false; // Stop showing the loading spinner
           },
@@ -521,11 +545,33 @@ export class IcsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onSearchPAR() {
-
+  onSearchICS() {
+    //Populate all ICS
+    if (!this.searchKey) {
+      this.getALLICS();
+    } else {
+      if (this.searchKey.trim()) {
+        this.api.searchICS(this.searchKey)
+          .subscribe({
+            next: (res) => {
+              this.icss = res;
+              this.logger.printLogs('i', 'SEARCH ICS', this.icss);
+              this.icss = res.slice(0, 10);
+            },
+            error: (err: any) => {
+              console.log("Error Fetching ICS:", err);
+            }
+          });
+      }
+    }
   }
 
-  onKeyUp($event: KeyboardEvent) {
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onSearchICS();
+    } else {
+      this.onSearchICS();
+    }
   }
 
 
@@ -703,7 +749,17 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   onPostICS(ics: any) {
 
-    if ((this.roleNoFromToken != 'System Administrator' && !ics.postFlag) || this.roleNoFromToken == 'System Administrator') {
+    if (!ics.postFlag && !this.canPost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
+      return;
+    }
+
+    if (ics.postFlag && !this.canUnpost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
+      return
+    }
+
+    if ((this.roleNoFromToken != 'System Administrator' && !ics.postFlag) || this.roleNoFromToken == 'System Administrator' || (ics.postFlag && this.canUnpost) || (!ics.postFlag && this.canPost)) {
       let icsNo = ics.icsNo;
 
       Swal.fire({

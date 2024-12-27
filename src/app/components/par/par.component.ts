@@ -36,6 +36,7 @@ export class ParComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   pars: any = [];
+  totalItems: number = 0;
   par!: any;
   parItems: Item[] = [];
   selectedParItems: Item[] = []; // Array to track selected items from repar
@@ -109,6 +110,16 @@ export class ParComponent implements OnInit, AfterViewInit {
   fn: string = 'start';
   purpose: string = 'retreive';
 
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
+
+  canPTR: boolean = false;
+
   // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#front_and_back_camera
   public config: ScannerQRCodeConfig = {
     constraints: {
@@ -130,9 +141,11 @@ export class ParComponent implements OnInit, AfterViewInit {
     ],
   };
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
+  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, 
+    private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService
   ) {
+    this.checkPrivileges();
     this.logger = new LogsService();
 
     this.today = new Date().toISOString().split('T')[0];
@@ -176,6 +189,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit(): void {
+    this.checkPrivileges();
     this.getALLPAR();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -192,6 +206,17 @@ export class ParComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('PAR', 'create');
+    this.canRetrieve = this.store.isAllowedAction('PAR', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('PAR', 'update');
+    this.canDelete = this.store.isAllowedAction('PAR', 'delete');
+    this.canPost = this.store.isAllowedAction('PAR', 'post');
+    this.canUnpost = this.store.isAllowedAction('PAR', 'unpost');
+
+    this.canPTR = this.store.isAllowedAction('PTR', 'create');
+  }
 
   ngAfterViewInit(): void {
     window.addEventListener('load', () => {
@@ -278,9 +303,10 @@ export class ParComponent implements OnInit, AfterViewInit {
       this.api.getAllPAR()
         .subscribe({
           next: (res) => {
+            this.totalItems = res.length;
             this.pars = res;
             this.logger.printLogs('i', 'LIST OF PARS', this.pars);
-            this.pars = this.pars.slice(0, 10);
+            this.pars = res.slice(0, 10);
             this.isLoading = false; // Stop showing the loading spinner
           },
           error: (err: any) => {
@@ -771,8 +797,19 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   onPostPAR(par: any) {
 
-    if ((this.roleNoFromToken != 'System Administrator' && !par.postFlag) || this.roleNoFromToken == 'System Administrator') {
+    if (!par.postFlag && !this.canPost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
+      return;
+    }
+
+    if (par.postFlag && !this.canUnpost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
+      return
+    }
+
+    if ((this.roleNoFromToken != 'System Administrator' && !par.postFlag) || this.roleNoFromToken == 'System Administrator' || (par.postFlag && this.canUnpost) || (!par.postFlag && this.canPost)) {
       let parNo = par.parNo;
+
 
       Swal.fire({
         title: (par.postFlag ? 'Unpost' : 'Post') + ` PAR #${parNo}`,
@@ -1455,22 +1492,22 @@ export class ParComponent implements OnInit, AfterViewInit {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-        if(this.purpose == 'get'){
+        if (this.purpose == 'get') {
           this.itemForm.patchValue({
             qrCode: results[0].value
           });
           this.onCloseQRScanning(this.scannerAction);
-        }else{
+        } else {
           this.api.retrievePARITEMByQRCode(results[0].value)
             .subscribe({
               next: (res) => {
                 console.log('Retrieve PAR ITEMS', res);
                 this.item = res[0];
-  
+
                 console.log('Show Items', this.item);
-  
+
                 this.onRetrievePAR(res[0].parNo);
-  
+
               },
               error: (err: any) => {
                 this.logger.printLogs('w', 'Problem with Retreiving PAR', err);

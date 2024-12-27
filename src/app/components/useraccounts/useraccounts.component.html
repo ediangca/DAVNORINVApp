@@ -1,4 +1,3 @@
-
 <div class="row mt-5 d-none d-sm-block" style="height: 10px;"></div>
 
 <div class="container-xl">
@@ -6,44 +5,31 @@
     <div class="table-wrapper">
       <div class="table-title">
 
-        <div
-          class="row d-flex align-items-center">
+        <div class="row d-flex align-items-center">
 
           <!-- <div class="col-12 col-sm-12 col-md-8 col-lg-8"> -->
-          <div
-            class="col-12 d-flex just justify-content-center align-items-center">
+          <div class="col-12 d-flex just justify-content-center align-items-center">
             <div class="search" style="width: 100%;">
-              <i
-                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
-              <input type="text" class="form-control rounded-pill" type="search"
-                [(ngModel)]="searchKey"
-                (keyup)="onKeyUp($event)"
-                placeholder="Search here.." aria-label="Search">
-              <a
-                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
-                type="button" (click)="searchUserAccount()"><i
-                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+              <i class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search" [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)" placeholder="Search here.." aria-label="Search">
+              <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
+                (click)="searchUserAccount()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
-            <a
-              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+            <a *ngIf="canCreate" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
               type="button" (click)="openAddEditModal()">
-              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
-                class="fs-6">ACCOUNT</span></a>
-            <a
-              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">ACCOUNT</span></a>
+            <a *ngIf="canCreate" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
               type="button" (click)="openAProfileModal()">
-              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
-                class="fs-6">PROFILE</span></a>
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">PROFILE</span></a>
           </div>
 
         </div>
 
       </div>
 
-      <div *ngIf="isLoading" class="text-center my-3 align-content-center"
-        style="height: 50vh;">
-        <img src="../../../assets/images/loading.gif" alt="Loading..."
-          width="100" style="height: 80px;">
+      <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
+        <img src="../../../assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
         <span class="loading-text text-dark">Loading<span class="dot">.</span>
           <span class="dot">.</span><span class="dot">.</span></span>
 
@@ -62,8 +48,8 @@
             <th>Username</th>
             <th>Fullname</th>
             <th>User Group</th>
-            <th>Verified</th>
-            <th>Actions</th>
+            <th *ngIf="canPost">Verified</th>
+            <th *ngIf="canCreate || canRetrieve">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -79,12 +65,10 @@
             <td>{{ua.userName}}</td>
             <td>{{ua.fullname}}</td>
             <td>{{ua.userGroupName}}</td>
-            <td>
+            <td *ngIf="canPost">
               <div class="form-check form-switch form-check-inline">
-                <input class="form-check-input" type="checkbox" id="switch2"
-                  [checked]="ua.isVerified"
-                  (change)="toggleVerification($event, ua.userID, ua.userName)"
-                  [disabled]="ua.userName === 'admin'" />
+                <input class="form-check-input" type="checkbox" id="switch2" [checked]="ua.isVerified"
+                  (change)="toggleVerification($event, ua.userID, ua.userName)" [disabled]="ua.userName === 'admin'" />
               </div>
               <!-- @if (ua.isVerified) {
               <svg class="me-2 text-primary icon-24" width="24"
@@ -96,28 +80,19 @@
               <span class="fw-bold text-danger">X</span>
               } -->
             </td>
-            <td>
+            <td *ngIf="canCreate || canRetrieve">
               <form class="d-flex justify-content-end">
                 @if(ua.userName == "admin"){
-                <span><i
-                    class="fa-sharp-duotone fa-solid fa-asterisk"
-                    data-toggle="tooltip" title="System Default"></i></span>
+                <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
+                    title="System Default"></i></span>
                 }@else{
-                <a class="edit"
-                  type="button"
-                  (click)="restoreData(ua)"><i
-                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
-                    data-toggle="tooltip" title="Edit"></i></a>
-                <a class="delete"
-                  (click)="onDelete(ua.userID, ua.userName)"><i
-                    class="fa-sharp-duotone fa-solid fa-trash"
-                    data-toggle="tooltip" title="Delete"></i></a>
+                <a *ngIf="canRetrieve" class="edit" type="button" (click)="restoreData(ua)"><i
+                    class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
+                <a *ngIf="canDelete" class="delete" (click)="onDelete(ua.userID, ua.userName)"><i
+                    class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
                 }
-                <a class="info"
-                  type="button"
-                  (click)="getProfileByUserID(ua)"><i
-                    class="fa-sharp-duotone fa-solid fa-id-card"
-                    data-toggle="tooltip" title="Profile"></i></a>
+                <a *ngIf="canRetrieve" class="info" type="button" (click)="getProfileByUserID(ua)"><i
+                    class="fa-sharp-duotone fa-solid fa-id-card" data-toggle="tooltip" title="Profile"></i></a>
               </form>
             </td>
           </tr>
@@ -125,7 +100,9 @@
       </table>
 
       <div class="clearfix" *ngIf="!isLoading">
-        <div class="hint-text">Showing {{userAccounts.length}} entries</div>
+        <div class="hint-text">Showing {{userAccounts.length}} out of
+          <b>{{totalItems}}</b>entries
+        </div>
         <!--
         <ul class="pagination">
           <li class="page-item disabled"><a href="#">Previous</a></li>
@@ -147,15 +124,14 @@
 <div #AddEditModalForm class="modal fade" id="AddEditModalForm">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form class [formGroup]="userAccountForm"
-        ng-reflect-form="[object Object]"
+      <form class [formGroup]="userAccountForm" ng-reflect-form="[object Object]"
         class="ng-untouched ng-pristine ng-invalid">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ isEditMode ?
             'Edit' : 'Add New' }} User
             Account</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-            aria-label="Close" (click)="resetForm()"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="resetForm()"></button>
         </div>
         <div class="modal-body">
           <div class="formGroup row">
@@ -170,15 +146,11 @@
               <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
               <small class="text-danger">* Username is required</small>
               }
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userAccountForm.controls['username'].invalid &&
+              <div class="form-field d-flex align-items-center" [class.error]="userAccountForm.controls['username'].invalid &&
             userAccountForm.hasError('required', 'username') &&  userAccountForm.get('username')?.touched || (userAccountForm.controls['username'].dirty &&
             userAccountForm.hasError('required', 'username'))">
                 <span class="far fa-user"></span>
-                <input type="text" formControlName="username"
-                  name="username"
-                  id="username"
-                  placeholder="Username">
+                <input type="text" formControlName="username" name="username" id="username" placeholder="Username">
               </div>
 
               <div class="row" *ngIf="!isEditMode">
@@ -207,11 +179,8 @@
                     userAccountForm.hasError('required', 'password') &&  userAccountForm.get('password')?.touched || (userAccountForm.controls['password'].dirty &&
                     userAccountForm.hasError('required', 'password')) || userAccountForm.hasError('minlength', 'password') || passwordMismatch">
                     <span class="fas fa-key"></span>
-                    <input type="password" formControlName="password"
-                      name="password"
-                      id="password"
-                      placeholder="Password"
-                      class="ng-untouched ng-pristine ng-invalid password"
+                    <input type="password" formControlName="password" name="password" id="password"
+                      placeholder="Password" class="ng-untouched ng-pristine ng-invalid password"
                       autocomplete="password">
                   </div>
 
@@ -227,16 +196,12 @@
                   <small class="text-danger">* Confirm Password not
                     match</small>
                   }
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="userAccountForm.controls['confirmPassword'].invalid &&
+                  <div class="form-field d-flex align-items-center" [class.error]="userAccountForm.controls['confirmPassword'].invalid &&
                     userAccountForm.hasError('required', 'confirmPassword') &&  userAccountForm.get('confirmPassword')?.touched || (userAccountForm.controls['confirmPassword'].dirty &&
                     userAccountForm.hasError('required', 'confirmPassword') || passwordMismatch)">
                     <span class="fas fa-key"></span>
-                    <input type="password" formControlName="confirmPassword"
-                      name="confirmPassword"
-                      id="confirmPassword"
-                      placeholder="Confirm Password"
-                      class="ng-untouched ng-pristine ng-invalid confirmPassword"
+                    <input type="password" formControlName="confirmPassword" name="confirmPassword" id="confirmPassword"
+                      placeholder="Confirm Password" class="ng-untouched ng-pristine ng-invalid confirmPassword"
                       autocomplete="confirmPassword">
                   </div>
                 </div>
@@ -249,15 +214,12 @@
               userAccountForm.hasError('required', 'ug'))) {
               <small class="text-danger">* User Group is required</small>
               }
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userAccountForm.controls['ug'].invalid && userAccountForm.hasError('required', 'ug')  && userAccountForm.get('ug')?.touched || (userAccountForm.controls['ug'].dirty &&
+              <div class="form-field d-flex align-items-center" [class.error]="userAccountForm.controls['ug'].invalid && userAccountForm.hasError('required', 'ug')  && userAccountForm.get('ug')?.touched || (userAccountForm.controls['ug'].dirty &&
             userAccountForm.hasError('required', 'ug'))">
                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
-                <select class="form-select" formControlName="ug" name="ug"
-                  id="ug">
+                <select class="form-select" formControlName="ug" name="ug" id="ug">
                   <option value>Select User Group</option>
-                  <option *ngFor="let group of userGroups"
-                    [value]="group.ugid">{{ group.userGroupName }}</option>
+                  <option *ngFor="let group of userGroups" [value]="group.ugid">{{ group.userGroupName }}</option>
                 </select>
               </div>
 
@@ -266,11 +228,11 @@
 
         </div>
         <div class="modal-footer">
-          <button id="closeBut" type="button"
-            class="btn btn-secondary rounded-pill"
-            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill"
-            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save' }}</button>
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+            (click)="resetForm()">Close</button>
+          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
+            class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
+            'Save' }}</button>
         </div>
       </form>
     </div>
@@ -281,15 +243,14 @@
 <div #ProfileModalForm class="modal fade" id="ProfileModalForm">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form class [formGroup]="userProfileForm"
-        ng-reflect-form="[object Object]"
+      <form class [formGroup]="userProfileForm" ng-reflect-form="[object Object]"
         class="ng-untouched ng-pristine ng-invalid">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ isEditMode ?
             'Edit' : 'Add New' }} Profile
             Account</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-            aria-label="Close" (click)="resetForm()"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="resetForm()"></button>
         </div>
         <div class="modal-body">
           <div class="formGroup row">
@@ -299,56 +260,42 @@
               <!-- LASTNAME -->
               <small>Lastname is required *</small>
 
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userProfileForm.controls['lastname'].invalid &&
+              <div class="form-field d-flex align-items-center" [class.error]="userProfileForm.controls['lastname'].invalid &&
             userProfileForm.hasError('required', 'lastname') &&  userProfileForm.get('lastname')?.touched || (userProfileForm.controls['lastname'].dirty &&
             userProfileForm.hasError('required', 'lastname'))">
                 <i class="fa-sharp-duotone fa-solid fa-pen"></i>
-                <input type="text" formControlName="lastname"
-                  name="lastname"
-                  id="lastname"
-                  placeholder="Lastname">
+                <input type="text" formControlName="lastname" name="lastname" id="lastname" placeholder="Lastname">
               </div>
 
               <!-- FIRSTNAME -->
               <small>Firstname is required *</small>
 
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userProfileForm.controls['firstname'].invalid &&
+              <div class="form-field d-flex align-items-center" [class.error]="userProfileForm.controls['firstname'].invalid &&
             userProfileForm.hasError('required', 'firstname') &&  userProfileForm.get('firstname')?.touched || (userProfileForm.controls['firstname'].dirty &&
             userProfileForm.hasError('required', 'firstname'))">
                 <i class="fa-sharp-duotone fa-solid fa-pen"></i>
-                <input type="text" formControlName="firstname"
-                  name="firstname"
-                  id="firstname"
-                  placeholder="Firstname">
+                <input type="text" formControlName="firstname" name="firstname" id="firstname" placeholder="Firstname">
               </div>
 
               <!-- MIDDLENAME -->
               <small>Middlename is required *</small>
 
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userProfileForm.controls['middlename'].invalid &&
+              <div class="form-field d-flex align-items-center" [class.error]="userProfileForm.controls['middlename'].invalid &&
             userProfileForm.hasError('required', 'middlename') &&  userProfileForm.get('middlename')?.touched || (userProfileForm.controls['middlename'].dirty &&
             userProfileForm.hasError('required', 'middlename'))">
                 <i class="fa-sharp-duotone fa-solid fa-pen"></i>
-                <input type="text" formControlName="middlename"
-                  name="middlename"
-                  id="middlename"
+                <input type="text" formControlName="middlename" name="middlename" id="middlename"
                   placeholder="Middlename">
               </div>
 
               <!-- SEX -->
               <small>Sex is required *</small>
 
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userProfileForm.controls['sex'].invalid && userProfileForm.hasError('required', 'sex')
+              <div class="form-field d-flex align-items-center" [class.error]="userProfileForm.controls['sex'].invalid && userProfileForm.hasError('required', 'sex')
                 && userProfileForm.get('sex')?.touched || (userProfileForm.controls['sex'].dirty &&
                 userProfileForm.hasError('required', 'sex'))">
                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
-                <select class="form-select" formControlName="sex"
-                  name="sex"
-                  id="sex">
+                <select class="form-select" formControlName="sex" name="sex" id="sex">
                   <option value>Select Sex</option>
                   <option value="M">Male</option>
                   <option value="F">Female</option>
@@ -358,70 +305,54 @@
               <!-- BRANCH -->
               <small>Branch</small>
 
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userProfileForm.controls['branchID'].invalid && userProfileForm.hasError('required', 'branchID')
+              <div class="form-field d-flex align-items-center" [class.error]="userProfileForm.controls['branchID'].invalid && userProfileForm.hasError('required', 'branchID')
                 && userProfileForm.get('branchID')?.touched || (userProfileForm.controls['branchID'].dirty &&
                 userProfileForm.hasError('required', 'branchID'))">
                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
-                <select class="form-select" formControlName="branchID"
-                  name="branchID"
-                  id="branchID"
+                <select class="form-select" formControlName="branchID" name="branchID" id="branchID"
                   (change)="onBranchChange($event)">
                   <option value>Select Company/Branch</option>
-                  <option *ngFor="let b of branches"
-                    [value]="b.branchID">{{ b.branchName }}</option>
+                  <option *ngFor="let b of branches" [value]="b.branchID">{{ b.branchName }}</option>
                 </select>
               </div>
 
               <!-- DEPARTMENT -->
               <small>Deparment</small>
 
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userProfileForm.controls['depID'].invalid && userProfileForm.hasError('required', 'depID')
+              <div class="form-field d-flex align-items-center" [class.error]="userProfileForm.controls['depID'].invalid && userProfileForm.hasError('required', 'depID')
                 && userProfileForm.get('depID')?.touched || (userProfileForm.controls['depID'].dirty &&
                 userProfileForm.hasError('required', 'depID'))">
                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
-                <select class="form-select" formControlName="depID"
-                  name="depID"
-                  id="depID"
+                <select class="form-select" formControlName="depID" name="depID" id="depID"
                   (change)="onDepartmentChange($event)">
                   <option value>Select Deparment</option>
-                  <option *ngFor="let d of departments"
-                    [value]="d.depID">{{ d.departmentName }}</option>
+                  <option *ngFor="let d of departments" [value]="d.depID">{{ d.departmentName }}</option>
                 </select>
               </div>
 
               <!-- SECTION -->
               <small>Section</small>
 
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userProfileForm.controls['secID'].invalid && userProfileForm.hasError('required', 'secID')
+              <div class="form-field d-flex align-items-center" [class.error]="userProfileForm.controls['secID'].invalid && userProfileForm.hasError('required', 'secID')
                 && userProfileForm.get('secID')?.touched || (userProfileForm.controls['secID'].dirty &&
                 userProfileForm.hasError('required', 'secID'))">
                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
-                <select class="form-select" formControlName="secID"
-                  name="secID"
-                  id="secID">
+                <select class="form-select" formControlName="secID" name="secID" id="secID">
                   <option value>Select Section</option>
-                  <option *ngFor="let s of sections"
-                    [value]="s.secID">{{ s.sectionName }}</option>
+                  <option *ngFor="let s of sections" [value]="s.secID">{{ s.sectionName }}</option>
                 </select>
               </div>
 
               <!-- POSITION -->
               <small>Position</small>
 
-              <div class="form-field d-flex align-items-center"
-                [class.error]="userProfileForm.controls['positionID'].invalid && userProfileForm.hasError('required', 'positionID')
+              <div class="form-field d-flex align-items-center" [class.error]="userProfileForm.controls['positionID'].invalid && userProfileForm.hasError('required', 'positionID')
                 && userProfileForm.get('positionID')?.touched || (userProfileForm.controls['secID'].dirty &&
                 userProfileForm.hasError('required', 'positionID'))">
                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
-                <select class="form-select" formControlName="positionID"
-                  name="positionID"
-                  id="positionID">
+                <select class="form-select" formControlName="positionID" name="positionID" id="positionID">
                   <option value>Select Position</option>
-                  <option *ngFor="let p of positions"
-                    [value]="p.positionID">{{ p.positionName }}</option>
+                  <option *ngFor="let p of positions" [value]="p.positionID">{{ p.positionName }}</option>
                 </select>
               </div>
 
@@ -430,11 +361,11 @@
 
         </div>
         <div class="modal-footer">
-          <button id="closeBut" type="button"
-            class="btn btn-secondary rounded-pill"
-            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill"
-            (click)="onSubmitProfile()">{{ isEditMode ? 'Update' :
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+            (click)="resetForm()">Close</button>
+          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
+            class="btn btn-primary rounded-pill" (click)="onSubmitProfile()">{{ isEditMode ?
+            'Update' :
             'Save' }}</button>
         </div>
       </form>

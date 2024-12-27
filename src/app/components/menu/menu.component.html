@@ -29,7 +29,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item"  *ngIf="isModuleActive('ITEMS')">
     <a class="nav-link collapsed" id="masterlist-link" type="button"
       data-bs-toggle="collapse" aria-expanded="false"
       (click)="toggleDropdown()"
@@ -102,8 +102,8 @@
     </ul>
   </li>
 
-  <li><hr class="hr-horizontal"></li>
-  <li class="nav-item static-item">
+  <li *ngIf="isModuleActive('PAR') || isModuleActive('ICS')"><hr class="hr-horizontal"></li>
+  <li class="nav-item static-item" *ngIf="isModuleActive('PAR') && isModuleActive('ICS')">
     <a class="nav-link static-item disabled" href="#"
       tabindex="-1">
       <span class="default-icon">Issuance</span>
@@ -111,7 +111,7 @@
     </a>
   </li>
 
-  <li class="nav-item"  *ngIf="isModuleActive('PAR')">
+  <li class="nav-item" *ngIf="isModuleActive('PAR')">
     <a class="nav-link" [ngClass]="{'active': title === 'PAR'}"
       [routerLink]="['par']"
       (click)="toggleSidebar(true)"
@@ -148,7 +148,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item" *ngIf="isModuleActive('ICS')">
     <a class="nav-link" [ngClass]="{'active': title === 'ICS'}"
       [routerLink]="['ics']"
       (click)="toggleSidebar(true)"
@@ -186,8 +186,8 @@
     </a>
   </li>
 
-  <li><hr class="hr-horizontal"></li>
-  <li class="nav-item static-item">
+  <li *ngIf="isModuleActive('PTR') || isModuleActive('ITR')"><hr class="hr-horizontal"></li>
+  <li class="nav-item static-item"  *ngIf="isModuleActive('PTR') && isModuleActive('ITR')">
     <a class="nav-link static-item disabled" href="#"
       tabindex="-1">
       <span class="default-icon">Transfer</span>
@@ -195,7 +195,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item"  *ngIf="isModuleActive('PTR')">
     <a class="nav-link" [ngClass]="{'active': title === 'PTR'}"
       [routerLink]="['repar']"
       (click)="toggleSidebar(true)"
@@ -234,7 +234,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item"  *ngIf="isModuleActive('ITR')">
     <a class="nav-link" [ngClass]="{'active': title === 'ITR'}"
       [routerLink]="['itr']"
       (click)="toggleSidebar(true)"
@@ -271,9 +271,9 @@
     </a>
   </li>
 
-  <li><hr class="hr-horizontal"></li>
+  <li  *ngIf="isModuleActive('PRS') || isModuleActive('RRSEP')"><hr class="hr-horizontal"></li>
 
-  <li class="nav-item static-item">
+  <li class="nav-item static-item"  *ngIf="isModuleActive('PRS') && isModuleActive('RRSEP')">
     <a class="nav-link static-item disabled" href="#"
       tabindex="-1">
       <span class="default-icon">Return</span>
@@ -281,7 +281,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item"  *ngIf="isModuleActive('PRS')">
     <a class="nav-link" [ngClass]="{'active': title === 'PRS'}"
       [routerLink]="['prs']"
       (click)="toggleSidebar(true)"
@@ -318,7 +318,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item" *ngIf="isModuleActive('RRSEP')">
     <a class="nav-link" [ngClass]="{'active': title === 'RRSP'}"
       [routerLink]="['rrsp']"
       routerLinkActive="router-link-active">
@@ -354,7 +354,7 @@
     </a>
   </li>
 
-  <li><hr class="hr-horizontal"></li>
+  <li  *ngIf="isModuleActive('GLOBAL') || isModuleActive('USER ACCOUNTS') || isModuleActive('REPORTS')"><hr class="hr-horizontal"></li>
   <li class="nav-item static-item">
     <a class="nav-link static-item disabled" href="#"
       tabindex="-1">
@@ -363,7 +363,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item" *ngIf="isModuleActive('GLOBAL') || isModuleActive('ITEM CATEGORY') || isModuleActive('COMPANY') || isModuleActive('USER GROUP')">
     <a class="nav-link" [ngClass]="{'active': title === 'Item Group'}"
       [routerLink]="['global']"
       (click)="toggleSidebar(true)"
@@ -388,7 +388,7 @@
     </a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item" *ngIf="isModuleActive('USER ACCOUNTS')">
     <a class="nav-link" [ngClass]="{'active': title === 'User Account'}"
       [routerLink]="['useraccounts']"
       (click)="toggleSidebar(true)"
@@ -424,7 +424,7 @@
       </span>
     </a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item" *ngIf="isModuleActive('REPORTS')">
     <a class="nav-link" [ngClass]="{'active': title === 'Reports'}"
       [routerLink]="['reports']"
       (click)="toggleSidebar(true)"

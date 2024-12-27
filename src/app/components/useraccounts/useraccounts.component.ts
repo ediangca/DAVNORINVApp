@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 
 import * as bootstrap from 'bootstrap';
 import { LogsService } from '../../services/logs.service';
+import { StoreService } from '../../services/store.service';
 
 @Component({
   selector: 'app-useraccounts',
@@ -27,6 +28,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   public userAccounts: any = [];
+  totalItems: number = 0;
   public userProfiles: any = [];
   searchKey: string = '';
 
@@ -46,7 +48,15 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   isLoading: boolean = true;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private api: ApiService, private logger: LogsService) {
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
+
+  constructor(private fb: FormBuilder, private auth: AuthService, private api: ApiService, private logger: LogsService, private store: StoreService,) {
 
     this.userAccountForm = this.fb.group({
       username: ['', Validators.required],
@@ -55,6 +65,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       ug: ['', Validators.required]
     }, { validators: validatePasswordMatch('password', 'confirmPassword') });
 
+    this.checkPrivileges();
 
     this.userProfileForm = this.fb.group({
       lastname: ['', Validators.required],
@@ -76,12 +87,22 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.checkPrivileges();
     this.getAllUserAccounts();
-
     this.loadUserGroups();
     this.loadBranches();
     this.loadPositions();
 
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('USER ACCOUNTS', 'create');
+    this.canRetrieve = this.store.isAllowedAction('USER ACCOUNTS', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('USER ACCOUNTS', 'update');
+    this.canDelete = this.store.isAllowedAction('USER ACCOUNTS', 'delete');
+    this.canPost = this.store.isAllowedAction('USER ACCOUNTS', 'post');
+    this.canUnpost = this.store.isAllowedAction('USER ACCOUNTS', 'unpost');
   }
 
   openAddEditModal() {
@@ -110,8 +131,8 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         console.log('USE ROLE : ', this.roleNoFromToken);
         console.log('USE GROUPS : ', data);
         this.userGroups = data;
-        this.userGroups = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*'? this.userGroups
-        : this.userGroups.filter(ug => ug.userGroupName != 'System Administrator' && ug.userGroupName != 'System Generated');
+        this.userGroups = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*' ? this.userGroups
+          : this.userGroups.filter(ug => ug.userGroupName != 'System Administrator' && ug.userGroupName != 'System Generated');
       },
       err => {
         console.error('Error: loading user groups => ', err);
@@ -125,8 +146,8 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       data => {
         console.log('POSITION : ', data);
         this.positions = data;
-        this.positions = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*'? this.positions
-        : this.positions.filter(ug => ug.positionName != 'System Administrator' && ug.positionName != 'Test');
+        this.positions = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*' ? this.positions
+          : this.positions.filter(ug => ug.positionName != 'System Administrator' && ug.positionName != 'Test');
       },
       err => {
         console.error('Error: loading Positions => ', err);
@@ -235,9 +256,11 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       this.api.getAllUserAccounts()
         .subscribe({
           next: (res) => {
+            this.totalItems = res.length;
+            this.userAccounts = res;
+            this.logger.printLogs('i', 'LIST OF USERT ACCOUTNS', this.userAccounts);
             this.userAccounts = res.slice(0, 10);
             this.isLoading = false; // Stop showing the loading spinner
-            this.logger.printLogs('i', 'LIST OF USERT ACCOUTNS', this.userAccounts);
           },
           error: (err: any) => {
             console.log("Error Fetching User Groups:", err);
@@ -292,12 +315,8 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       });
   }
 
-
-
   onKeyPress(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      this.searchUserAccount();
-    }
+    this.searchUserAccount();
   }
 
   onKeyUp(event: KeyboardEvent): void {
@@ -354,7 +373,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
               this.userAccounts = res.slice(0, 10);
             },
             error: (err: any) => {
-              console.log("Error Fetching User Groups:", err);
+              console.log("Error Fetching User Accounts:", err);
             }
           });
       }
@@ -614,38 +633,54 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
 
   toggleVerification(event: Event, id: number, name: string) {
+
     const input = event.target as HTMLInputElement;
     const isVerified: boolean = input.checked;
-    //Change verification status
-    Swal.fire({
-      title: (isVerified ? 'Verify' : 'Unverify') + " " + name,
-      text: 'Are you sure?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'No',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Execute Update Verification
-        this.api.verifyUserAccount(id)
-          .subscribe({
-            next: (res) => {
 
-              Swal.fire('Success', res.message, 'success');
-              this.getAllUserAccounts();
+    if (isVerified && !this.canPost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Verify Account.', 'warning');
+      input.checked = !isVerified;
+      return;
+    }
 
-            },
-            error: (err: any) => {
-              this.logger.printLogs('e', 'Error Verifying User', err);
-              Swal.fire('Denied', err, 'warning');
-            }
-          });
-      }else{
-        input.checked = !isVerified;
-      }
+    if (!isVerified && !this.canUnpost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to  Unverify Account.', 'warning');
+      input.checked = !isVerified;
+      return
+    }
 
-      // this.getAllUserAccounts();
-    });
+    if ((this.roleNoFromToken != 'System Administrator' && !isVerified) || this.roleNoFromToken == 'System Administrator' || (!isVerified && this.canUnpost) || (isVerified && this.canPost)) {
+      //Change verification status
+      Swal.fire({
+        title: (isVerified ? 'Verify' : 'Unverify') + " " + name,
+        text: 'Are you sure?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Execute Update Verification
+          this.api.verifyUserAccount(id)
+            .subscribe({
+              next: (res) => {
+
+                Swal.fire('Success', res.message, 'success');
+                this.getAllUserAccounts();
+
+              },
+              error: (err: any) => {
+                this.logger.printLogs('e', 'Error Verifying User', err);
+                Swal.fire('Denied', err, 'warning');
+              }
+            });
+        } else {
+          input.checked = !isVerified;
+        }
+
+        // this.getAllUserAccounts();
+      });
+    }
   }
 
   setupModalClose() {

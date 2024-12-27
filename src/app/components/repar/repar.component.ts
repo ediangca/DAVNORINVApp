@@ -37,7 +37,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
   isModalOpen = false;
 
-  pars: any = [];
+  ptrs: any = [];
+  totalItems: number = 0;
   par!: any | null;
   parItems: Item[] = [];
   selectedParItems: Item[] = []; // Array to track selected items from repar
@@ -103,6 +104,14 @@ export class ReparComponent implements OnInit, AfterViewInit {
   today: string | undefined;
   private logger: LogsService;
 
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
+
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
 
@@ -117,6 +126,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
   constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService
   ) {
+    this.checkPrivileges();
     this.logger = new LogsService();
 
     this.today = new Date().toISOString().split('T')[0];
@@ -161,6 +171,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.checkPrivileges();
     this.getALLREPAR();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -175,6 +186,16 @@ export class ReparComponent implements OnInit, AfterViewInit {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('PTR', 'create');
+    this.canRetrieve = this.store.isAllowedAction('PTR', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('PTR', 'update');
+    this.canDelete = this.store.isAllowedAction('PTR', 'delete');
+    this.canPost = this.store.isAllowedAction('PTR', 'post');
+    this.canUnpost = this.store.isAllowedAction('PTR', 'unpost');
   }
 
   setupModalClose() {
@@ -246,8 +267,9 @@ export class ReparComponent implements OnInit, AfterViewInit {
       this.api.getAllREPAR()
         .subscribe({
           next: (res) => {
-            this.pars = res;
-            this.logger.printLogs('i', 'LIST OF REPARS', this.pars);
+            this.totalItems = res.length;
+            this.ptrs = res.slice(0, 10);
+            this.logger.printLogs('i', 'LIST OF PTR', this.ptrs);
             this.isLoading = false; // Stop showing the loading spinner
           },
           error: (err: any) => {
@@ -377,12 +399,34 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
 
 
-  onSearchPAR() {
+  onSearchPTR() {
+    //Populate all PTR
+    if (!this.searchKey) {
+      this.getALLREPAR();
+    } else {
+      if (this.searchKey.trim()) {
+        this.api.searchREPAR(this.searchKey)
+          .subscribe({
+            next: (res) => {
+              this.ptrs = res;
+              this.logger.printLogs('i', 'SEARCH PTR', this.ptrs);
+              this.ptrs = res.slice(0, 10);
+            },
+            error: (err: any) => {
+              console.log("Error Fetching PTR:", err);
+            }
+          });
+      }
+    }
   }
 
-  onKeyUp($event: KeyboardEvent) {
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onSearchPTR();
+    } else {
+      this.onSearchPTR();
+    }
   }
-
 
 
 
@@ -685,14 +729,24 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
   }
 
-  onPostREPAR(par: any) {
+  onPostREPAR(ptr: any) {
 
-    if ((this.roleNoFromToken != 'System Administrator' && !par.postFlag) || this.roleNoFromToken == 'System Administrator') {
-      let reparNo = par.reparNo;
+    if (!ptr.postFlag && !this.canPost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
+      return;
+    }
+
+    if (ptr.postFlag && !this.canUnpost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
+      return
+    }
+
+    if ((this.roleNoFromToken != 'System Administrator' && !ptr.postFlag) || this.roleNoFromToken == 'System Administrator' || (ptr.postFlag && this.canUnpost) || (!ptr.postFlag && this.canPost)) {
+      let reparNo = ptr.reparNo;
 
       Swal.fire({
         title: 'Are you sure?',
-        text: (par.postFlag ? 'Unpost' : 'Post') + ` REPAR #${reparNo}`,
+        text: (ptr.postFlag ? 'Unpost' : 'Post') + ` PTR #${reparNo}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -700,7 +754,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
       }).then((result) => {
         if (result.isConfirmed) {
 
-          this.api.postREPAR(reparNo, !par.postFlag)
+          this.api.postREPAR(reparNo, !ptr.postFlag)
             .subscribe({
               next: (res) => {
                 this.getALLREPAR();
@@ -708,7 +762,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
                 Swal.fire('Success', res.message, 'success');
               },
               error: (err: any) => {
-                this.logger.printLogs('e', 'Error', ['Retrieving RPAR Item!']);
+                this.logger.printLogs('e', 'Error', ['Retrieving PTR Item!']);
                 Swal.fire('Warning', err, 'warning');
               }
             });

@@ -1,4 +1,3 @@
-
 <div class="row mt-5 d-none d-sm-block" style="height: 10px;"></div>
 
 <div class="container-xl">
@@ -7,29 +6,20 @@
     <div class="table-wrapper">
       <div class="table-title">
 
-        <div
-          class="row d-flex align-items-center">
+        <div class="row d-flex align-items-center">
 
           <!-- <div class="col-12 col-sm-12 col-md-8 col-lg-8"> -->
-          <div
-            class="col-12 d-flex just justify-content-center align-items-center">
+          <div class="col-12 d-flex just justify-content-center align-items-center">
             <div class="search" style="width: 100%;">
-              <i
-                class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
-              <input type="text" class="form-control rounded-pill" type="search"
-                [(ngModel)]="searchKey"
-                (keyup)="onKeyUp($event)"
-                placeholder="Search here.." aria-label="Search">
-              <a
-                class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill"
-                type="button" (click)="searchItems()"><i
-                  class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+              <i class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+              <input type="text" class="form-control rounded-pill" type="search" [(ngModel)]="searchKey"
+                (keyup)="onKeyUp($event)" placeholder="Search here.." aria-label="Search">
+              <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
+                (click)="searchItems()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
-            <a
-              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+            <a *ngIf="canCreate" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
               type="button" (click)="openAddEditModal()">
-              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
-                class="fs-6">NEW</span></a>
+              <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">NEW</span></a>
           </div>
         </div>
 
@@ -48,22 +38,15 @@
             <td>{{c.itemGroupName}}</td>
             <td>
               <form class="d-flex justify-content-end">
-                @if(c.branchID <= 2){
-                <span><i
-                    class="fa-sharp-duotone fa-solid fa-asterisk"
-                    data-toggle="tooltip" title="System Default"></i></span>
-                }
-                @else{
-                <a class="edit"
-                  type="button"
-                  (click)="restoreData(c)"><i
-                    class="fa-sharp-duotone fa-solid fa-pen-to-square"
-                    data-toggle="tooltip" title="Edit"></i></a>
-                <a class="delete"
-                  (click)="onDelete(c.iid, c.description )"><i
-                    class="fa-sharp-duotone fa-solid fa-trash"
-                    data-toggle="tooltip" title="Delete"></i></a>
-                }
+                @if(c.branchID <= 2){ <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
+                    title="System Default"></i></span>
+                  }
+                  @else{
+                  <a class="edit" *ngIf="canRetrieve"  type="button" (click)="restoreData(c)"><i
+                      class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
+                  <a class="delete" *ngIf="canDelete"  (click)="onDelete(c.iid, c.description )"><i
+                      class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
+                  }
 
               </form>
 
@@ -73,18 +56,18 @@
         </tbody>
       </table>
       <div class="clearfix">
-        <div class="hint-text">Showing <b>5</b> out of
-          <b>{{items.length}}</b> entries</div>
-        <ul class="pagination">
+        <div class="hint-text">Showing <b>{{items.length}}</b> out of
+          <b>{{totalItems}}</b> entries
+        </div>
+        <!-- <ul class="pagination">
           <li class="page-item disabled"><a href="#">Previous</a></li>
           <li class="page-item"><a href="#" class="page-link">1</a></li>
           <li class="page-item"><a href="#" class="page-link">2</a></li>
-          <li class="page-item active"><a href="#"
-              class="page-link">3</a></li>
+          <li class="page-item active"><a href="#" class="page-link">3</a></li>
           <li class="page-item"><a href="#" class="page-link">4</a></li>
           <li class="page-item"><a href="#" class="page-link">5</a></li>
           <li class="page-item"><a href="#" class="page-link">Next</a></li>
-        </ul>
+        </ul> -->
       </div>
     </div>
   </div>
@@ -104,26 +87,22 @@
           <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
             isEditMode ?
             'Edit' : 'New' }} Item</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-            aria-label="Close" (click)="resetForm()"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="resetForm()"></button>
         </div>
         <div class="modal-body">
           <div class="formGroup row">
             <div class="col-lg col-security">
 
-              <div
-                *ngIf="itemForm.controls['description'].invalid && itemForm.get('description')?.touched || itemForm.controls['description'].dirty &&
+              <div *ngIf="itemForm.controls['description'].invalid && itemForm.get('description')?.touched || itemForm.controls['description'].dirty &&
                 itemForm.hasError('required', 'description')">
                 <small class="text-danger">* Item is
                   required</small>
               </div>
-              <div class="form-field d-flex align-items-center"
-                [class.error]="itemForm.controls['description'].invalid && itemForm.get('description')?.touched  || itemForm.controls['description'].dirty &&
+              <div class="form-field d-flex align-items-center" [class.error]="itemForm.controls['description'].invalid && itemForm.get('description')?.touched  || itemForm.controls['description'].dirty &&
                 itemForm.hasError('required', 'description')">
                 <i class="fa-sharp-duotone fa-solid fa-pen"></i>
-                <input type="text" formControlName="description"
-                  name="description"
-                  id="description"
+                <input type="text" formControlName="description" name="description" id="description"
                   placeholder="Item Description">
               </div>
 
@@ -134,16 +113,12 @@
               itemForm.hasError('required', 'type'))) {
               <small class="text-danger">* Item type is required</small>
               }
-              <div class="form-field d-flex align-items-center"
-                [class.error]="itemForm.controls['type'].invalid && itemForm.hasError('required', 'type')  && itemForm.get('type')?.touched || (itemForm.controls['type'].dirty &&
+              <div class="form-field d-flex align-items-center" [class.error]="itemForm.controls['type'].invalid && itemForm.hasError('required', 'type')  && itemForm.get('type')?.touched || (itemForm.controls['type'].dirty &&
             itemForm.hasError('required', 'type'))">
                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
-                <select class="form-select" formControlName="type" name="type"
-                  id="type"
-                  >
+                <select class="form-select" formControlName="type" name="type" id="type">
                   <option value>Select Item Type</option>
-                  <option *ngFor="let group of itemGroups"
-                    [value]="group.igid">{{ group.itemGroupName }}</option>
+                  <option *ngFor="let group of itemGroups" [value]="group.igid">{{ group.itemGroupName }}</option>
                 </select>
               </div>
 
@@ -151,11 +126,10 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button id="closeBut" type="button"
-            class="btn btn-secondary rounded-pill"
-            data-bs-dismiss="modal" (click)="resetForm()">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill"
-            (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save'
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+            (click)="resetForm()">Close</button>
+          <button type="button" *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
+            'Save'
             }}</button>
         </div>
       </form>

@@ -15,8 +15,8 @@
               <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
                 (click)="onSearchPAR()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
-            <a class="btn btn-success rounded-pill d-flex justify-content-center align-items-center " type="button"
-              (click)="onAddPAR()">
+            <a *ngIf="canCreate" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+              type="button" (click)="onAddPAR()">
               <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">NEW</span></a>
 
             <button class="btn btn-dark rounded-pill d-flex justify-content-center align-items-center" type="button"
@@ -87,17 +87,17 @@
                 <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
                     title="System Default"></i></span>
                 }@else{
-                <a class="edit" type="button" (click)="onEditPAR(p)"><i
+                <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditPAR(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
-                <a class="delete" type="button" (click)="onDelete(p)"><i class="fa-sharp-duotone fa-solid fa-trash"
-                    data-toggle="tooltip" title="Delete"></i></a>
-                <a class="success" type="button" (click)="onViewPAR(p)">
+                <a *ngIf="canDelete" class="delete" type="button" (click)="onDelete(p)"><i
+                    class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
+                <a *ngIf="canRetrieve" class="success" type="button" (click)="onViewPAR(p)">
                   <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
                 </a>
                 <a class="seconadry" type="button" (click)="onPrintPAR(p.parNo!)">
                   <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
                 </a>
-                <a class="primary" type="button" (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
+                <a *ngIf="canPTR" class="primary" type="button" (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
                     data-toggle="tooltip" title="PTR"></i></a>
                 }
               </form>
@@ -108,7 +108,7 @@
 
       <div class="clearfix" *ngIf="!isLoading">
         <div class="hint-text">Showing <b>{{pars.length}}</b> out of
-          <b>{{pars.length}}</b>entries
+          <b>{{totalItems}}</b>entries
         </div>
         <!-- <ul class="pagination">
           <li class="page-item disabled"><a href="#">Previous</a></li>
@@ -409,7 +409,7 @@
 
           <button id="closeBut" type="button" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal"
             (click)="closeModal(AddEditModal)">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
+          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)"  type="button" class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
             'Save'
             }}</button>
 
@@ -929,9 +929,8 @@
                   (itemForm.controls['qrCode'].dirty && itemForm.hasError('required', 'qrCode'))"></i>
 
                 <input type="text" formControlName="qrCode" name="qrCode" id="qrCode" placeholder="QR Code">
-                
-                <button type="button"
-                  class="bg-primary border-0 rounded-pill py-1 px-2 me-3"
+
+                <button type="button" class="bg-primary border-0 rounded-pill py-1 px-2 me-3"
                   (click)="handle(scannerAction, scannerAction.isStart ? 'stop' : 'start', 'get')"
                   [class.btn-warning]="scannerAction?.isStart" [disabled]="scannerAction?.isLoading || false">
                   <i class="fa-solid fa-qrcode text-white"></i></button>

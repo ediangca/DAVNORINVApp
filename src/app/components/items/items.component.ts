@@ -7,6 +7,7 @@ import * as bootstrap from 'bootstrap';
 import Swal from 'sweetalert2';
 import ValidateForm from '../../helpers/validateForm';
 import { catchError, defaultIfEmpty, firstValueFrom, of } from 'rxjs';
+import { StoreService } from '../../services/store.service';
 
 @Component({
   selector: 'app-items',
@@ -20,6 +21,7 @@ export class ItemsComponent implements OnInit {
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
 
   public items: any = [];
+  totalItems: number = 0;
   public item: any;
   itemForm!: FormGroup;
 
@@ -37,7 +39,15 @@ export class ItemsComponent implements OnInit {
   generatedId: string | null | undefined;
   currentEditId: string | null | undefined;
 
-  constructor(private fb: FormBuilder, private api: ApiService, public vf: ValidateForm) {
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
+
+  constructor(private fb: FormBuilder, private api: ApiService, public vf: ValidateForm, private store: StoreService) {
 
     this.itemForm = this.fb.group({
       description: ['', Validators.required],
@@ -60,12 +70,25 @@ export class ItemsComponent implements OnInit {
           });
       }
     });
+    this.checkPrivileges();
   }
 
 
   ngOnInit(): void {
     this.resetForm();
+    this.checkPrivileges();
   }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('ITEMS', 'create');
+    this.canRetrieve = this.store.isAllowedAction('ITEMS', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('ITEMS', 'update');
+    this.canDelete = this.store.isAllowedAction('ITEMS', 'delete');
+    this.canPost = this.store.isAllowedAction('ITEMS', 'post');
+    this.canUnpost = this.store.isAllowedAction('ITEMS', 'unpost');
+  }
+
   openAddEditModal() {
     const modal = new bootstrap.Modal(this.AddEditModal.nativeElement);
     modal.show();
@@ -86,7 +109,8 @@ export class ItemsComponent implements OnInit {
     this.api.getAllItems()
       .subscribe({
         next: (res) => {
-          this.items = res;
+          this.totalItems = res.length;
+          this.items = res.slice(0,10);
         },
         error: (err: any) => {
           console.log("Error Fetching Items: ", err);
@@ -104,8 +128,8 @@ export class ItemsComponent implements OnInit {
       data => {
         this.itemGroups = data;
 
-        const otherGroups = this.itemGroups.filter((group:any) => group.itemGroupName !== 'Others');
-        const othersGroup = this.itemGroups.filter((group:any) => group.itemGroupName === 'Others');
+        const otherGroups = this.itemGroups.filter((group: any) => group.itemGroupName !== 'Others');
+        const othersGroup = this.itemGroups.filter((group: any) => group.itemGroupName === 'Others');
 
         // Combine other groups first, then add "Others" at the end
         this.itemGroups = [...otherGroups, ...othersGroup];
@@ -303,6 +327,13 @@ export class ItemsComponent implements OnInit {
     this.getItems();
     this.loadItemGroups();
   }
+
+  
+  isAllowedAction(moduleName: string, action: string): boolean {
+    return this.store.isAllowedAction(moduleName, action);
+  }
+
+
 
 
 

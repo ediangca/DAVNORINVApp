@@ -40,9 +40,10 @@ export class ItrComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   itrs: any = [];
+  totalItems: number = 0;
   itr!: any;
   itrItems: ICSItem[] = [];
-  selectedITRItems: ICSItem[] = []; // Array to track selected items from repar
+  selectedITRItems: ICSItem[] = []; // Array to track selected items from ITR
 
   icsItems: ICSItem[] = [];
   userProfiles: any = [];
@@ -78,7 +79,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   isEditItemMode: boolean = false;
   currentEditId: string | null = null;
 
-  generatedREPARNo: string | null | undefined;
+  generatedITRNo: string | null | undefined;
   noOfParItems: number = 0;
 
   icsItemNo: number | null = null;
@@ -86,7 +87,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
   isCustomType = false;
 
-  isRepar: boolean = false;
+  isITR: boolean = false;
   itrForm!: FormGroup;
   searchITRItems: ICSItem[] = [];
 
@@ -105,6 +106,14 @@ export class ItrComponent implements OnInit, AfterViewInit {
   today: string | undefined;
   private logger: LogsService;
 
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
+
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
 
@@ -119,6 +128,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService
   ) {
+    this.checkPrivileges();
     this.logger = new LogsService();
     this.today = new Date().toISOString().split('T')[0];
 
@@ -162,6 +172,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.checkPrivileges();
     this.getALLITR();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -176,6 +187,16 @@ export class ItrComponent implements OnInit, AfterViewInit {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('ITR', 'create');
+    this.canRetrieve = this.store.isAllowedAction('ITR', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('ITR', 'update');
+    this.canDelete = this.store.isAllowedAction('ITR', 'delete');
+    this.canPost = this.store.isAllowedAction('ITR', 'post');
+    this.canUnpost = this.store.isAllowedAction('ITR', 'unpost');
   }
 
   setupModalClose() {
@@ -248,6 +269,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
       this.api.getAllITR()
         .subscribe({
           next: (res) => {
+            this.totalItems = res.length;
             this.itrs = res;
             this.logger.printLogs('i', 'LIST OF ITR', this.itrs);
             this.isLoading = false; // Stop showing the loading spinner
@@ -376,14 +398,34 @@ export class ItrComponent implements OnInit, AfterViewInit {
       });
   }
 
-
-
-  onSearchPAR() {
+  onSearchITR() {
+    //Populate all ITR
+    if (!this.searchKey) {
+      this.getALLITR();
+    } else {
+      if (this.searchKey.trim()) {
+        this.api.searchITR(this.searchKey)
+          .subscribe({
+            next: (res) => {
+              this.itrs = res;
+              this.logger.printLogs('i', 'SEARCH ITR', this.itrs);
+              this.itrs = res.slice(0, 10);
+            },
+            error: (err: any) => {
+              console.log("Error Fetching ITR:", err);
+            }
+          });
+      }
+    }
   }
 
-  onKeyUp($event: KeyboardEvent) {
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onSearchITR();
+    } else {
+      this.onSearchITR();
+    }
   }
-
 
   onAutoSuggestReceived() {
     this.receivedID = null;
@@ -569,31 +611,30 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   }
 
+  // onSubmitITR() {
 
-  onSubmitREPAR() {
+  //   if (!this.itrForm.valid) {
+  //     this.vf.validateFormFields(this.itrForm);
+  //     return;
+  //   }
 
-    if (!this.itrForm.valid) {
-      this.vf.validateFormFields(this.itrForm);
-      return;
-    }
+  //   if (this.selectedITRItems.length < 1) {
+  //     Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
+  //     return;
+  //   }
 
-    if (this.selectedITRItems.length < 1) {
-      Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
-      return;
-    }
+  //   if (this.itrForm.valid && this.itrItems.length > 0) {
 
-    if (this.itrForm.valid && this.itrItems.length > 0) {
+  //     this.logger.printLogs('i', 'ITR Form', this.itr);
+  //     this.Save(this.itr);
 
-      this.logger.printLogs('i', 'REPAR Form', this.itr);
-      this.Save(this.itr);
+  //   }
 
-    }
-
-  }
+  // }
 
 
   Save(itr: any) {
-    if (!this.isRepar) {
+    if (!this.isITR) {
       this.logger.printLogs('i', 'Saving ITR', itr);
       this.api.createITR(itr, this.itrItems)
         .subscribe({
@@ -628,7 +669,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
         cancelButtonText: 'No',
       }).then((result) => {
         if (result.isConfirmed) {
-          this.logger.printLogs('i', 'Saving REPAR', this.itr);
+          this.logger.printLogs('i', 'Saving ITR', this.itr);
 
           this.api.createITR(this.itr, this.selectedITRItems)
             .subscribe({
@@ -640,7 +681,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
                 this.closeModal(this.ViewModal);
               },
               error: (err: any) => {
-                this.logger.printLogs('e', 'Error Saving REPAR', err);
+                this.logger.printLogs('e', 'Error Saving ITR', err);
                 Swal.fire('Denied', err, 'warning');
               }
             });
@@ -663,7 +704,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving REPAR', err);
+          this.logger.printLogs('e', 'Error Saving ITR', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
@@ -672,12 +713,22 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   onPostITR(itr: any) {
 
-    if ((this.roleNoFromToken != 'System Administrator' && !itr.postFlag) || this.roleNoFromToken == 'System Administrator') {
+    if (!itr.postFlag && !this.canPost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
+      return;
+    }
+
+    if (itr.postFlag && !this.canUnpost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
+      return
+    }
+    
+    if ((this.roleNoFromToken != 'System Administrator' && !itr.postFlag) || this.roleNoFromToken == 'System Administrator' || (itr.postFlag && this.canUnpost) || (!itr.postFlag && this.canPost)) {
       let itrNo = itr.itrNo;
 
       Swal.fire({
         title: 'Are you sure?',
-        text: (itr.postFlag ? 'Unpost' : 'Post') + ` REPAR #${itrNo}`,
+        text: (itr.postFlag ? 'Unpost' : 'Post') + ` ITR #${itrNo}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -685,7 +736,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
       }).then((result) => {
         if (result.isConfirmed) {
 
-          this.api.postREPAR(itrNo, !itr.postFlag)
+          this.api.postITR(itrNo, !itr.postFlag)
             .subscribe({
               next: (res) => {
                 this.getALLITR();
@@ -693,7 +744,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
                 Swal.fire('Success', res.message, 'success');
               },
               error: (err: any) => {
-                this.logger.printLogs('e', 'Error', ['Retrieving RPAR Item!']);
+                this.logger.printLogs('e', 'Error', ['Retrieving ITR Item!']);
                 Swal.fire('Warning', err, 'warning');
               }
             });
@@ -712,7 +763,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
 
     if (itr.postFlag) {
-      Swal.fire('Information!', 'Cannot edit posted REPAR.', 'warning');
+      Swal.fire('Information!', 'Cannot edit posted ITR.', 'warning');
       return;
     }
     if (this.ViewModal) {
@@ -913,11 +964,11 @@ export class ItrComponent implements OnInit, AfterViewInit {
               .subscribe({
                 next: (res) => {
                   this.itr = res.details;
-                  this.logger.printLogs('i', 'Retreived REPAR No: ' + item.itrNo!, res.details);
+                  this.logger.printLogs('i', 'Retreived ITR No: ' + item.itrNo!, res.details);
                   this.openItemModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
-                  this.logger.printLogs('e', 'Error Retreiving REPAR', err);
+                  this.logger.printLogs('e', 'Error Retreiving ITR', err);
                   Swal.fire('Denied', err, 'warning');
                 }
               });
@@ -1018,7 +1069,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
     this.isEditMode = false;
     this.currentEditId = null;
     this.isModalOpen = false;
-    this.isRepar = false;
+    this.isITR = false;
     this.item = null;
     this.isOpen = false;
     this.isCustomType = false;
@@ -1160,7 +1211,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
               console.log('Show Items', this.item);
 
-              this.onRetrieveITR(res[0].reparNo);
+              this.onRetrieveITR(res[0].itrNo);
 
             },
             error: (err: any) => {

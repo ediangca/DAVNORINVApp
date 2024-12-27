@@ -42,6 +42,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   par!: any;
   prs!: any;
   prss: any = [];
+  totalItems: number = 0;
   parItems: Item[] = [];
   prsItems: Item[] = [];
   searchPRSItems: Item[] = [];
@@ -58,11 +59,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
   receivedID: string | null = null;
   issuedID: string | null = null;
   approvedID: string | null = null;
-
-
-  // receivedBy: string = '';
-  // issuedBy: string = '';
-  // approvedBy: string = '';
 
   errorMessage: string = '';
 
@@ -107,6 +103,14 @@ export class PrsComponent implements OnInit, AfterViewInit {
   today: string | undefined;
   private logger: LogsService;
 
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
+
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
 
@@ -121,6 +125,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService
   ) {
+    this.checkPrivileges();
     this.logger = new LogsService();
 
     this.today = new Date().toISOString().split('T')[0];
@@ -143,6 +148,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.checkPrivileges();
     this.getAllPRS();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -157,6 +163,16 @@ export class PrsComponent implements OnInit, AfterViewInit {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
+  }
+  
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('PRS', 'create');
+    this.canRetrieve = this.store.isAllowedAction('PRS', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('PRS', 'update');
+    this.canDelete = this.store.isAllowedAction('PRS', 'delete');
+    this.canPost = this.store.isAllowedAction('PRS', 'post');
+    this.canUnpost = this.store.isAllowedAction('PRS', 'unpost');
   }
 
   setupModalClose() {
@@ -229,7 +245,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
       this.api.getAllPRS()
         .subscribe({
           next: (res) => {
-            this.prss = res;
+            this.totalItems = res.length;
+            this.prss = res.slice(0, 10);
             this.logger.printLogs('i', 'LIST OF PRS', this.prss);
             this.isLoading = false;
           },
@@ -254,7 +271,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   onSearchPRS() {
-    //Populate all User Groups
+    //Populate all PRS
     if (!this.searchKey) {
       this.getAllPRS();
     } else {
@@ -409,7 +426,17 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   onPostPRS(prs: any) {
 
-    if ((this.roleNoFromToken != 'System Administrator' && !prs.postFlag) || this.roleNoFromToken == 'System Administrator') {
+    if (!prs.postFlag && !this.canPost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
+      return;
+    }
+
+    if (prs.postFlag && !this.canUnpost) {
+      Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
+      return
+    }
+
+    if ((this.roleNoFromToken != 'System Administrator' && !prs.postFlag) || this.roleNoFromToken == 'System Administrator' || (prs.postFlag && this.canUnpost) || (!prs.postFlag && this.canPost)) {
       let prsNo = prs.prsNo;
 
       Swal.fire({
