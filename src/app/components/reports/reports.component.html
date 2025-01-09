@@ -1,1 +1,98 @@
-<p>reports works!</p>
+<div class="row mt-5 d-none d-sm-block" style="height: 10px;"></div>
+
+
+<div class="container-fluid ">
+
+    <div class="card p-3 m-0 d-flex align-items-start" data-aos="fade-down"
+        style="border-left-width: 0.5rem; border-color: var(--bs-primary);">
+        <div class="row d-flex flex-row">
+            <span class="text-primary fw-bold">REPORTS</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+
+            <div class="table-responsive scrollable">
+                <div class="table-wrapper">
+
+                    <table class="table table-striped table-hover" data-aos="zoom-in">
+                        <thead>
+                            <tr>
+                                <th>Report Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let report of objectKeys(reportsMap)">
+                                <td>
+                                    <!-- 
+                                    <a class="primary" id="viewPrint" type="button" (click)="onViewReport(report)">
+                                    </a> -->
+
+                                    <i class="fa-solid fa-folder text-primary" data-toggle="tooltip"
+                                        title="View Print"></i>
+                                    <input type="button" class="bg-transparent border-0" id="{{reportsMap[report]}}"
+                                        type="button" (click)="onViewReport(report)" data-toggle="tooltip"
+                                        title="View Print">
+
+
+                                    <label class="form-viewPrint-label" for="{{reportsMap[report]}}">{{
+                                        reportsMap[report] + ' List' }}</label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Filter -->
+<div #FilterBranch class="modal fade" id="QRScannerForm">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form class [formGroup]="filterForm" ng-reflect-form="[object Object]"
+                class="ng-untouched ng-pristine ng-invalid">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Office</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="closeModal(filterModal)"></button>
+                </div>
+                <div class="modal-body item-body scrollable">
+                    <div class="formGroup row">
+                        <div class="col">
+
+                            @if (filterForm.controls['office'].invalid &&
+                            filterForm.hasError('required', 'office') &&
+                            filterForm.get('office')?.touched ||
+                            (filterForm.controls['office'].dirty &&
+                            filterForm.hasError('required', 'office'))) {
+                            <small class="text-danger">* Office is required</small>
+                            }
+                            <div class="form-field d-flex align-items-center"
+                                [class.error]="filterForm.controls['office'].invalid && filterForm.hasError('required', 'office')  && 
+                    filterForm.get('office')?.touched || (filterForm.controls['office'].dirty && filterForm.hasError('required', 'office'))">
+                                <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
+                                <select class="form-select" formControlName="office" name="office" id="office">
+                                    <option value>Select Office</option>
+                                    <option *ngFor="let o of offices" [value]="o.office">{{ o.office }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+                        (click)="closeModal(filterModal)">Close</button>
+                    <button type="button" class="btn btn-primary rounded-pill" (click)="onPrint()">Print
+                        Preview</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

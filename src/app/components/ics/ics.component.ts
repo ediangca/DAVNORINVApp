@@ -102,7 +102,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
   isOpen = false;
 
   today: string | undefined;
-  private logger: LogsService;
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
@@ -140,12 +139,19 @@ export class IcsComponent implements OnInit, AfterViewInit {
   };
 
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm,
-    private auth: AuthService, private cdr: ChangeDetectorRef, private printService: PrintService) {
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private vf: ValidateForm,
+    private auth: AuthService, private cdr: ChangeDetectorRef,
+    private printService: PrintService, private logger: LogsService) {
 
+    this.ngOnInit();
+
+  }
+
+  ngOnInit(): void {
+
+    this.roleNoFromToken = this.auth.getRoleFromToken();
     this.checkPrivileges();
-    this.logger = new LogsService();
-
     this.today = new Date().toISOString().split('T')[0];
 
     this.icsForm = this.fb.group({
@@ -181,25 +187,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
       date_Acquired: [this.today, Validators.required],
     });
 
-    // this.getALLPAR();
-    // this.getUserAccount();
-    this.roleNoFromToken = this.auth.getRoleFromToken();
-  }
-
-  private checkPrivileges(): void {
-    this.store.loadPrivileges();
-    this.canCreate = this.store.isAllowedAction('ICS', 'create');
-    this.canRetrieve = this.store.isAllowedAction('ICS', 'retrieve');
-    this.canUpdate = this.store.isAllowedAction('ICS', 'update');
-    this.canDelete = this.store.isAllowedAction('ICS', 'delete');
-    this.canPost = this.store.isAllowedAction('ICS', 'post');
-    this.canUnpost = this.store.isAllowedAction('ICS', 'unpost');
-
-    this.canITR = this.store.isAllowedAction('ITR', 'create');
-  }
-
-  ngOnInit(): void {
-    this.checkPrivileges();
     this.getALLICS();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -217,8 +204,20 @@ export class IcsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.checkPrivileges();
   }
 
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('ICS', 'create');
+    this.canRetrieve = this.store.isAllowedAction('ICS', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('ICS', 'update');
+    this.canDelete = this.store.isAllowedAction('ICS', 'delete');
+    this.canPost = this.store.isAllowedAction('ICS', 'post');
+    this.canUnpost = this.store.isAllowedAction('ICS', 'unpost');
+
+    this.canITR = this.store.isAllowedAction('ITR', 'create');
+  }
 
   setupModalClose() {
     this.addModalHiddenListener(true, 'AddEditModalForm');

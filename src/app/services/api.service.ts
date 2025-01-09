@@ -1188,7 +1188,24 @@ export class ApiService {
   /*----------------------- Reports -----------------------*/
 
 
+  //https://localhost:7289/api/Report/Offices?module={?}
+  getAllOffices(module: string): Observable<any> {
+    // console.log("Search PRS by key: ", key);
+    return this.http.get<any>(`${this.apiUrl}Report/Offices?module=` + module)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
+
+  //https://localhost:7289/api/Report/Module?office={?}
+  getAllPARItemByOffice(office: string): Observable<any> {
+    // console.log("Search PRS by key: ", key);
+    return this.http.get<any>(`${this.apiUrl}Report/Module?office=` + office)
+      .pipe(
+        catchError(this.handleError) 
+      );
+  }
 
 
 

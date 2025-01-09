@@ -29,8 +29,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   public userProfile: any | null;
   public profile: any | null;
 
-  logger: LogsService;
-
   isLoading = true;
 
   public roleNoFromToken: string = '*';
@@ -52,14 +50,15 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   showProfileForm = false;
   isModalOpen = false;
 
-  constructor(private fb: FormBuilder,
-    private vf: ValidateForm,
-    private auth: AuthService,
-    private api: ApiService,
-    private store: StoreService,
-    private route: ActivatedRoute) {
+  constructor(private fb: FormBuilder, private vf: ValidateForm,
+    private auth: AuthService, private api: ApiService,
+    private store: StoreService, private route: ActivatedRoute,
+    private logger: LogsService) {
 
-    this.logger = new LogsService();
+    this.ngOnInit();
+  }
+
+  ngOnInit(): void {
 
     this.roleNoFromToken = this.auth.getRoleFromToken();
 
@@ -79,10 +78,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       secID: [''],
       positionID: ['']
     });
-
-  }
-
-  ngOnInit(): void {
 
     this.loadUserGroups();
     this.loadBranches();

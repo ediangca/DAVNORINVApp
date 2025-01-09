@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -8,6 +8,8 @@ import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
 import { ApiService } from '../../../services/api.service';
 import { GlobalComponent } from '../global/global.component';
+import { StoreService } from '../../../services/store.service';
+import { LogsService } from '../../../services/logs.service';
 
 @Component({
   selector: 'app-positions',
@@ -16,13 +18,13 @@ import { GlobalComponent } from '../global/global.component';
   templateUrl: './positions.component.html',
   styleUrl: './positions.component.css'
 })
-export class PositionsComponent implements OnInit {
+export class PositionsComponent implements OnInit, AfterViewInit {
 
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
 
   public positions: any = [];
+  totalItems: number = 0;
   searchKey: string = '';
-
 
   public position: any;
   positionForm!: FormGroup;
@@ -30,19 +32,40 @@ export class PositionsComponent implements OnInit {
   currentEditId: number | null = null;
 
 
-  constructor(private fb: FormBuilder, private api: ApiService) {
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
 
-    this.positionForm = this.fb.group({
-      positionName: ['', Validators.required],
-    });
+  constructor(private fb: FormBuilder, private api: ApiService, 
+    private store: StoreService, private logger: LogsService) {
 
-
+    this.ngOnInit();
   }
 
   ngOnInit(): void {
-    // this.global.setTitle("USER GROUP");
+    this.positionForm = this.fb.group({
+      positionName: ['', Validators.required],
+    });
     this.getAllPositions();
     this.setupModalClose();
+  }
+  
+  ngAfterViewInit(): void {
+    this.checkPrivileges();
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('POSITION', 'create');
+    this.canRetrieve = this.store.isAllowedAction('POSITION', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('POSITION', 'update');
+    this.canDelete = this.store.isAllowedAction('POSITION', 'delete');
+    this.canPost = this.store.isAllowedAction('POSITION', 'post');
+    this.canUnpost = this.store.isAllowedAction('POSITION', 'unpost');
   }
 
   openAddEditModal() {
@@ -100,7 +123,9 @@ export class PositionsComponent implements OnInit {
     this.api.getAllPositions()
       .subscribe({
         next: (res) => {
+          this.totalItems = res.length;
           this.positions = res;
+          this.logger.printLogs('i', 'LIST OF POSITIONS', this.positions);
         },
         error: (err: any) => {
           console.log("Error Fetching Positions:", err);

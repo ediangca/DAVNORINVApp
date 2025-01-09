@@ -56,7 +56,18 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   canPost: boolean = false;
   canUnpost: boolean = false;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private api: ApiService, private logger: LogsService, private store: StoreService,) {
+  constructor(private fb: FormBuilder, private auth: AuthService,
+    private api: ApiService, private store: StoreService, private logger: LogsService) {
+
+
+    this.ngOnInit();
+
+  }
+
+
+  ngOnInit(): void {
+    this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.checkPrivileges();
 
     this.userAccountForm = this.fb.group({
       username: ['', Validators.required],
@@ -65,7 +76,6 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       ug: ['', Validators.required]
     }, { validators: validatePasswordMatch('password', 'confirmPassword') });
 
-    this.checkPrivileges();
 
     this.userProfileForm = this.fb.group({
       lastname: ['', Validators.required],
@@ -77,22 +87,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       secID: [''],
       positionID: ['']
     });
-
-
-    this.roleNoFromToken = this.auth.getRoleFromToken();
-  }
-
-  ngAfterViewInit(): void {
-    this.setupModalClose();
-  }
-
-  ngOnInit(): void {
-    this.checkPrivileges();
     this.getAllUserAccounts();
     this.loadUserGroups();
     this.loadBranches();
     this.loadPositions();
-
+    this.setupModalClose();
+  }
+  ngAfterViewInit(): void {
+    this.checkPrivileges();
   }
 
   private checkPrivileges(): void {

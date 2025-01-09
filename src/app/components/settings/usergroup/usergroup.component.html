@@ -1,4 +1,4 @@
-<div class="container-xl">
+<div class="container-fluid">
   <div class="table-responsive" data-aos="zoom-in">
     <div class="table-wrapper">
       <div class="table-title">
@@ -13,7 +13,7 @@
               <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
                 (click)="searchUserGroups()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
-            <a *ngIf="roleNoFromToken=='System Administrator'"
+            <a *ngIf="roleNoFromToken=='System Administrator' || canCreate"
               class="btn btn-success rounded-pill d-flex justify-content-center align-items-center " type="button"
               (click)="openModal(AddEditModal)">
               <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">NEW</span></a>
@@ -56,15 +56,16 @@
                 == "Test"){ -->
                 <!-- <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
                     title="System Default"></i></span> -->
-                <!-- }@else{  -->
-                <a class="edit" *ngIf="roleNoFromToken=='System Administrator'" type="button"
+                <!-- }@else{    -->
+                <a *ngIf="roleNoFromToken=='System Administrator' || canRetrieve" class="edit" type="button"
                   (click)="restoreData(ug)"><i class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip"
                     title="Edit"></i></a>
-                <a class="delete" *ngIf="roleNoFromToken=='System Administrator'"
+                <a *ngIf="roleNoFromToken=='System Administrator' || canDelete" class="delete"
                   (click)="onDelete(ug.ugid, ug.userGroupName)"><i class="fa-sharp-duotone fa-solid fa-trash"
                     data-toggle="tooltip" title="Delete"></i></a>
-                <a class="text-success" (click)="onPrivilege(ug)"><i class="fa-solid fa-list-check"
-                    data-toggle="tooltip" title="Module Access"></i></a>
+                <a *ngIf="roleNoFromToken=='System Administrator' || canCreate" class="text-success"
+                  (click)="onPrivilege(ug)"><i class="fa-solid fa-list-check" data-toggle="tooltip"
+                    title="Module Access"></i></a>
                 <!-- } -->
               </form>
             </td>
@@ -72,10 +73,11 @@
         </tbody>
       </table>
       <div class="clearfix">
-        <div class="hint-text">Showing <b>5</b> out of
-          <b>{{userGroups.length}}</b> entries
+        <div class="hint-text">Showing <b>{{userGroups.length}}</b> out of
+          <b>{{totalItems}}</b> entries
         </div>
-        <ul class="pagination">
+
+        <!-- <ul class="pagination">
           <li class="page-item disabled"><a href="#">Previous</a></li>
           <li class="page-item"><a href="#" class="page-link">1</a></li>
           <li class="page-item"><a href="#" class="page-link">2</a></li>
@@ -83,7 +85,7 @@
           <li class="page-item"><a href="#" class="page-link">4</a></li>
           <li class="page-item"><a href="#" class="page-link">5</a></li>
           <li class="page-item"><a href="#" class="page-link">Next</a></li>
-        </ul>
+        </ul> -->
       </div>
     </div>
   </div>
@@ -147,7 +149,8 @@
         <div class="modal-footer">
           <button id="closeBut" type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="resetForm()">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
+          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
+            class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
             'Save' }}</button>
         </div>
       </form>
@@ -184,7 +187,8 @@
                   </div>
 
                 </th>
-                <th class="text-center text-primary" style="width: 8%;"><i class="fa-solid fa-file-circle-plus"></i> Create
+                <th class="text-center text-primary" style="width: 8%;"><i class="fa-solid fa-file-circle-plus"></i>
+                  Create
                 </th>
                 <th class="text-center text-secondary" style="width: 8%;"><i class="fa-solid fa-file-export"></i>
                   Retrieve </th>
@@ -209,36 +213,35 @@
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline" 
-                    *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
+                    <div class="form-check form-switch form-check-inline"
+                      *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
                       <input class="form-check-input" id="{{p.moduleName}}-c" type="checkbox" [checked]="p.c"
                         (change)="toggleSelection('add', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline"
-                    *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
+                      *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
                       <input class="form-check-input" id="{{p.moduleName}}-r" type="checkbox" [checked]="p.r"
                         (change)="toggleSelection('retrieve', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline"
-                    *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
+                      *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
                       <input class="form-check-input" id="{{p.moduleName}}-u" type="checkbox" [checked]="p.u"
                         (change)="toggleSelection('update', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline"
-                    *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
+                      *ngIf="!(p.moduleName === 'GLOBAL') && !(p.moduleName === 'REPORTS')">
                       <input class="form-check-input" id="{{p.moduleName}}-d" type="checkbox" [checked]="p.d"
                         (change)="toggleSelection('delete', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline" 
-                    *ngIf="p.moduleName === 'PAR' || p.moduleName === 'ICS' || 
+                    <div class="form-check form-switch form-check-inline" *ngIf="p.moduleName === 'PAR' || p.moduleName === 'ICS' || 
                     p.moduleName === 'PTR' || p.moduleName === 'ITR' || 
                     p.moduleName === 'PRS' || p.moduleName === 'RRSEP' || p.moduleName === 'USER ACCOUNTS'">
                       <input class="form-check-input" id="{{p.moduleName}}-p" type="checkbox" [checked]="p.post"
@@ -246,8 +249,7 @@
                     </div>
                   </td>
                   <td class="text-center">
-                    <div class="form-check form-switch form-check-inline" 
-                    *ngIf="p.moduleName === 'PAR' || p.moduleName === 'ICS' || 
+                    <div class="form-check form-switch form-check-inline" *ngIf="p.moduleName === 'PAR' || p.moduleName === 'ICS' || 
                     p.moduleName === 'PTR' || p.moduleName === 'ITR' || 
                     p.moduleName === 'PRS' || p.moduleName === 'RRSEP' || p.moduleName === 'USER ACCOUNTS'">
                       <input class="form-check-input" id="{{p.moduleName}}-up" type="checkbox" [checked]="p.unpost"
@@ -262,7 +264,8 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary rounded-pill" (click)="onSubmitPrivilege()">{{ isEditMode ?
+        <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
+          class="btn btn-primary rounded-pill" (click)="onSubmitPrivilege()">{{ isEditMode ?
           'Update' : 'Save' }}</button>
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
           (click)="closeModal(PrivilegeModal)">Close</button>

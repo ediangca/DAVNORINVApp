@@ -1,8 +1,6 @@
-
-
 <div class="row mt-5 d-none d-sm-block" style="height: 10px;"></div>
 
-<div class="container-xl py-5">
+<div class="container-fluid py-5">
 
   <div class="row">
     <div class="col">
@@ -12,35 +10,28 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-none ">
           <div class="container-fluid">
             <div class="row d-flex flex-row">
-              <span>GLOBAL SETTINGS - {{getTitle()}}</span>
-              <button class="navbar-toggler d-lg-none" type="button"
-                (click)="toggleNavbar()"
-                aria-controls="navbarNav" aria-expanded="false"
-                aria-label="Toggle navigation">
+              <span class="text-primary fw-bold">GLOBAL SETTINGS - {{getTitle()}}</span>
+              <button class="navbar-toggler d-lg-none" type="button" (click)="toggleNavbar()" aria-controls="navbarNav"
+                aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
 
-              <div class="collapse navbar-collapse d-lg-none " id="navbarNav"
-                [class.show]="toggleMenu">
+              <div class="collapse navbar-collapse d-lg-none " id="navbarNav" [class.show]="toggleMenu">
                 <ul class="navbar-nav">
-                  <li class="nav-item active ">
-                    <a class="nav-link" [routerLink]="['itemcategory']"
-                      (click)="toggleNavbar()"
+                  <li class="nav-item active" *ngIf="isModuleActive('ITEM CATEGORY')">
+                    <a class="nav-link" [routerLink]="['itemcategory']" (click)="toggleNavbar()"
                       routerLinkActive="router-link-active">Item Category</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" [routerLink]="['company']"
-                      (click)="toggleNavbar()"
+                  <li class="nav-item" *ngIf="isModuleActive('COMPANY')">
+                    <a class="nav-link" [routerLink]="['company']" (click)="toggleNavbar()"
                       routerLinkActive="router-link-active">Company/Branch</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" [routerLink]="['position']"
-                      (click)="toggleNavbar()"
+                  <li class="nav-item" *ngIf="isModuleActive('POSITION')">
+                    <a class="nav-link" [routerLink]="['position']" (click)="toggleNavbar()"
                       routerLinkActive="router-link-active">Position</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" [routerLink]="['usergroup']"
-                      (click)="toggleNavbar()"
+                  <li class="nav-item" *ngIf="isModuleActive('USER GROUPS')">
+                    <a class="nav-link" [routerLink]="['usergroup']" (click)="toggleNavbar()"
                       routerLinkActive="router-link-active">User Group</a>
                   </li>
                 </ul>
@@ -50,8 +41,13 @@
         </nav>
 
       </div>
+      <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
+        <img src="../../../assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
+        <span class="loading-text text-dark">Loading<span class="dot">.</span>
+          <span class="dot">.</span><span class="dot">.</span></span>
 
-      <router-outlet></router-outlet>
+      </div>
+      <router-outlet  *ngIf="!isLoading"></router-outlet>
 
     </div>
   </div>

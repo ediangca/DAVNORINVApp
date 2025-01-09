@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
 import { ApiService } from '../../../services/api.service';
 import { GlobalComponent } from '../global/global.component';
+import { LogsService } from '../../../services/logs.service';
+import { StoreService } from '../../../services/store.service';
 
 @Component({
   selector: 'app-itemgroup',
@@ -14,10 +16,11 @@ import { GlobalComponent } from '../global/global.component';
   templateUrl: './itemgroup.component.html',
   styleUrl: './itemgroup.component.css'
 })
-export class ItemgroupComponent implements OnInit {
+export class ItemgroupComponent implements OnInit, AfterViewInit {
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
 
   public itemGroups: any = [];
+  totalItems: number = 0;
   searchKey: string = '';
 
 
@@ -26,19 +29,42 @@ export class ItemgroupComponent implements OnInit {
   isEditMode: boolean = false;
   currentEditId: number | null = null;
 
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
 
 
-  constructor(private global: GlobalComponent, private fb: FormBuilder, private api: ApiService) {
-    this.itemGroupForm = this.fb.group({
-      itemGroupName: ['', Validators.required],
-      notes: ['', Validators.required]
-    });
+  constructor(private global: GlobalComponent, private fb: FormBuilder, 
+    private api: ApiService, private store: StoreService, private logger: LogsService) {
+    this.ngOnInit();
   }
 
 
   ngOnInit(): void {
+    this.itemGroupForm = this.fb.group({
+      itemGroupName: ['', Validators.required],
+      notes: ['', Validators.required]
+    });
     this.getAllItemGroups();
     this.setupModalClose();
+  }
+
+  ngAfterViewInit(): void {
+    this.checkPrivileges();
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('ITEM CATEGORY', 'create');
+    this.canRetrieve = this.store.isAllowedAction('ITEM CATEGORY', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('ITEM CATEGORY', 'update');
+    this.canDelete = this.store.isAllowedAction('ITEM CATEGORY', 'delete');
+    this.canPost = this.store.isAllowedAction('ITEM CATEGORY', 'post');
+    this.canUnpost = this.store.isAllowedAction('ITEM CATEGORY', 'unpost');
   }
 
   openAddEditModal() {
@@ -98,10 +124,12 @@ export class ItemgroupComponent implements OnInit {
     this.api.getAllItemGroups()
       .subscribe({
         next: (res) => {
-          this.itemGroups = res;
 
-          const otherGroups = this.itemGroups.filter((group:any) => group.itemGroupName !== 'Others');
-          const othersGroup = this.itemGroups.filter((group:any) => group.itemGroupName === 'Others');
+          this.totalItems = res.length;
+          this.itemGroups = res;
+          this.logger.printLogs('i', 'LIST OF ITEM GROUPS', this.itemGroups);
+          const otherGroups = this.itemGroups.filter((group: any) => group.itemGroupName !== 'Others');
+          const othersGroup = this.itemGroups.filter((group: any) => group.itemGroupName === 'Others');
 
           // Combine other groups first, then add "Others" at the end
           this.itemGroups = [...otherGroups, ...othersGroup];

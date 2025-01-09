@@ -104,8 +104,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   isOpen = false;
 
   today: string | undefined;
-  private logger: LogsService;
-
+  
   // Privilege Action Access
   canCreate: boolean = false;
   canRetrieve: boolean = false;
@@ -125,11 +124,18 @@ export class ItrComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService
+  constructor(private fb: FormBuilder, private api: ApiService, 
+    private store: StoreService, private vf: ValidateForm, 
+    private auth: AuthService, private cdr: ChangeDetectorRef,
+    private printService: PrintService, private logger: LogsService
   ) {
+    this.ngOnInit();
+  }
+
+  ngOnInit(): void {
+
+    this.roleNoFromToken = this.auth.getRoleFromToken();
     this.checkPrivileges();
-    this.logger = new LogsService();
     this.today = new Date().toISOString().split('T')[0];
 
     this.icsForm = this.fb.group({
@@ -163,16 +169,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
       date_Acquired: [this.today, Validators.required],
     });
 
-    // this.getALLPAR();
-    // this.getUserAccount();
-    this.roleNoFromToken = this.auth.getRoleFromToken();
-  }
-
-  ngAfterViewInit(): void {
-  }
-
-  ngOnInit(): void {
-    this.checkPrivileges();
     this.getALLITR();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -187,6 +183,10 @@ export class ItrComponent implements OnInit, AfterViewInit {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.checkPrivileges();
   }
 
   private checkPrivileges(): void {
@@ -610,28 +610,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
     }
 
   }
-
-  // onSubmitITR() {
-
-  //   if (!this.itrForm.valid) {
-  //     this.vf.validateFormFields(this.itrForm);
-  //     return;
-  //   }
-
-  //   if (this.selectedITRItems.length < 1) {
-  //     Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
-  //     return;
-  //   }
-
-  //   if (this.itrForm.valid && this.itrItems.length > 0) {
-
-  //     this.logger.printLogs('i', 'ITR Form', this.itr);
-  //     this.Save(this.itr);
-
-  //   }
-
-  // }
-
 
   Save(itr: any) {
     if (!this.isITR) {

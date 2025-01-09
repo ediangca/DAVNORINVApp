@@ -103,7 +103,6 @@ export class ParComponent implements OnInit, AfterViewInit {
   isOpen = false;
 
   today: string | undefined;
-  private logger: LogsService;
   legend: string | undefined | null;
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
@@ -141,13 +140,18 @@ export class ParComponent implements OnInit, AfterViewInit {
     ],
   };
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, 
+  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService,
     private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService
+    private printService: PrintService, private logger: LogsService
   ) {
-    this.checkPrivileges();
-    this.logger = new LogsService();
+    this.ngOnInit();
+  }
 
+
+  ngOnInit(): void {
+
+    this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
     this.parForm = this.fb.group({
@@ -181,15 +185,6 @@ export class ParComponent implements OnInit, AfterViewInit {
       date_Acquired: [this.today, Validators.required],
     });
 
-    // this.getALLPAR();
-    // this.getUserAccount();
-    this.roleNoFromToken = this.auth.getRoleFromToken();
-
-  }
-
-
-  ngOnInit(): void {
-    this.checkPrivileges();
     this.getALLPAR();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -206,6 +201,13 @@ export class ParComponent implements OnInit, AfterViewInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    window.addEventListener('load', () => {
+      this.initializeTooltips();
+      this.checkPrivileges();
+    });
+  }
+
   private checkPrivileges(): void {
     this.store.loadPrivileges();
     this.canCreate = this.store.isAllowedAction('PAR', 'create');
@@ -216,12 +218,6 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.canUnpost = this.store.isAllowedAction('PAR', 'unpost');
 
     this.canPTR = this.store.isAllowedAction('PTR', 'create');
-  }
-
-  ngAfterViewInit(): void {
-    window.addEventListener('load', () => {
-      this.initializeTooltips();
-    });
   }
 
   private initializeTooltips() {

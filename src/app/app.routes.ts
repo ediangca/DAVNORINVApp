@@ -44,6 +44,7 @@ export const routes: Routes = [
       { path: 'ics', component: IcsComponent, data: { title: 'ICS' } },
       { path: 'global', component: GlobalComponent, data: { title: 'Global Settings' },
         children: [
+          // { path: '', component: PlaceholderComponent, data: { title: 'Global Settings'} },
           { path: '', redirectTo: 'itemcategory', pathMatch: 'full' }, // Default route for global settings
           { path: 'itemcategory', component: ItemgroupComponent, data: { title: 'Item Group' } },
           { path: 'company', component: CompanyComponent, data: { title: 'Company' } },

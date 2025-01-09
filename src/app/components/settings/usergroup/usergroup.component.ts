@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -11,6 +11,7 @@ import { AuthService } from '../../../services/auth.service';
 import { LogsService } from '../../../services/logs.service';
 import { Privilege } from '../../../models/Privilege';
 import { when } from 'jquery';
+import { StoreService } from '../../../services/store.service';
 
 @Component({
   selector: 'app-usergroup',
@@ -19,7 +20,7 @@ import { when } from 'jquery';
   templateUrl: './usergroup.component.html',
   styleUrl: './usergroup.component.css'
 })
-export class UsergroupComponent implements OnInit {
+export class UsergroupComponent implements OnInit, AfterViewInit {
 
 
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
@@ -28,6 +29,7 @@ export class UsergroupComponent implements OnInit {
   public roleNoFromToken: string = '*';
 
   public userGroups: any = [];
+  totalItems: number = 0;
   searchKey: string = '';
 
   public userGroup: any;
@@ -43,23 +45,45 @@ export class UsergroupComponent implements OnInit {
   public ug: any | undefined | null = null;
   isLoading: boolean = false;
 
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
 
-  constructor(private fb: FormBuilder, private api: ApiService, private auth: AuthService, 
+  constructor(private fb: FormBuilder, private api: ApiService, 
+    private auth: AuthService, private store: StoreService,
     private logger: LogsService) {
+
+    this.ngOnInit();
+  }
+  ngAfterViewInit(): void {
+    this.checkPrivileges();
+  }
+
+  ngOnInit(): void {
+    this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.checkPrivileges();
 
     this.userGroupForm = this.fb.group({
       userGroupName: ['', Validators.required],
       notes: ['', Validators.required]
     });
 
-
-    this.roleNoFromToken = this.auth.getRoleFromToken();
-  }
-
-  ngOnInit(): void {
-    // this.global.setTitle("USER GROUP");
     this.getAllUserGroups();
     this.setupModalClose();
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('USER GROUPS', 'create');
+    this.canRetrieve = this.store.isAllowedAction('USER GROUPS', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('USER GROUPS', 'update');
+    this.canDelete = this.store.isAllowedAction('USER GROUPS', 'delete');
+    this.canPost = this.store.isAllowedAction('USER GROUPS', 'post');
+    this.canUnpost = this.store.isAllowedAction('USER GROUPS', 'unpost');
   }
 
   setupModalClose() {
@@ -124,14 +148,17 @@ export class UsergroupComponent implements OnInit {
     this.api.getAllUserGroups('*')
       .subscribe({
         next: (res) => {
+          
+          this.totalItems = res.length;
           this.userGroups = res.slice(0, 10);
+          this.logger.printLogs('i', 'LIST OF USER GROUPS', this.userGroups);
         },
         error: (err: any) => {
           console.log("Error Fetching User Groups:", err);
         }
       });
   }
-
+  
   onSubmit() {
     // const now = new Date();
 

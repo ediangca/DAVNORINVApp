@@ -101,7 +101,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
   isOpen = false;
 
   today: string | undefined;
-  private logger: LogsService;
 
   // Privilege Action Access
   canCreate: boolean = false;
@@ -122,12 +121,17 @@ export class PrsComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService
-  ) {
-    this.checkPrivileges();
-    this.logger = new LogsService();
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private vf: ValidateForm,
+    private auth: AuthService, private cdr: ChangeDetectorRef,
+    private printService: PrintService, private logger: LogsService) {
 
+    this.ngOnInit();
+  }
+
+  ngOnInit(): void {
+    this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
     this.prsForm = this.fb.group({
@@ -141,14 +145,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
     });
 
 
-    this.roleNoFromToken = this.auth.getRoleFromToken();
-  }
-
-  ngAfterViewInit(): void {
-  }
-
-  ngOnInit(): void {
-    this.checkPrivileges();
     this.getAllPRS();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -164,7 +160,11 @@ export class PrsComponent implements OnInit, AfterViewInit {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
   }
-  
+
+  ngAfterViewInit(): void {
+    this.checkPrivileges();
+  }
+
   private checkPrivileges(): void {
     this.store.loadPrivileges();
     this.canCreate = this.store.isAllowedAction('PRS', 'create');

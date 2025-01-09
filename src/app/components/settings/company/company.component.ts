@@ -6,13 +6,15 @@ import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
 import { ApiService } from '../../../services/api.service';
 import { window } from 'rxjs';
+import { StoreService } from '../../../services/store.service';
+import { LogsService } from '../../../services/logs.service';
 
 const $: any = window('$');
 
 @Component({
   selector: 'app-company',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, CommonModule, ReactiveFormsModule],
   templateUrl: './company.component.html',
   styleUrl: './company.component.css'
 })
@@ -23,6 +25,7 @@ export class CompanyComponent implements OnInit {
   @ViewChild('SectAddEditModalForm') SectAddEditModal!: ElementRef;
 
   public companies: any = [];
+  totalItems: number = 0;
   public departments: any = [];
   public sections: any = [];
 
@@ -42,21 +45,19 @@ export class CompanyComponent implements OnInit {
   currentEditId: number | null = null;
 
 
-  constructor(private fb: FormBuilder, private api: ApiService) {
+  // Privilege Action Access
+  canCreate: boolean = false;
+  canRetrieve: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+  canPost: boolean = false;
+  canUnpost: boolean = false;
 
-    this.companyForm = this.fb.group({
-      branchName: ['', Validators.required],
-      type: ['', Validators.required]
-    });
 
-    this.departmentForm = this.fb.group({
-      departmentName: ['', Validators.required],
-    });
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private logger: LogsService) {
 
-    this.sectionForm = this.fb.group({
-      sectionName: ['', Validators.required],
-    });
-
+    this.ngOnInit();
   }
 
   openAddEditModal() {
@@ -80,17 +81,45 @@ export class CompanyComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.checkPrivileges();
+
+    this.companyForm = this.fb.group({
+      branchName: ['', Validators.required],
+      type: ['', Validators.required]
+    });
+
+    this.departmentForm = this.fb.group({
+      departmentName: ['', Validators.required],
+    });
+
+    this.sectionForm = this.fb.group({
+      sectionName: ['', Validators.required],
+    });
+
     this.getCompanies();
     this.setupModalClose();
   }
 
   ngAfterViewInit(): void {
+
+    this.checkPrivileges();
     const accordionElement = document.getElementById('accordionPanelsStayOpenExample');
     if (accordionElement) {
       const accordion = new bootstrap.Collapse(accordionElement, {
         toggle: false
       });
     }
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('COMPANY', 'create');
+    this.canRetrieve = this.store.isAllowedAction('COMPANY', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('COMPANY', 'update');
+    this.canDelete = this.store.isAllowedAction('COMPANY', 'delete');
+    this.canPost = this.store.isAllowedAction('COMPANY', 'post');
+    this.canUnpost = this.store.isAllowedAction('COMPANY', 'unpost');
   }
 
   setupModalClose() {
@@ -196,7 +225,9 @@ export class CompanyComponent implements OnInit {
     this.api.getCompanies()
       .subscribe({
         next: (res) => {
+          this.totalItems = res.length;
           this.companies = res;
+          this.logger.printLogs('i', 'LIST OF COMPANY', this.companies);
         },
         error: (err: any) => {
           console.log("Error Fetching Company: ", err);

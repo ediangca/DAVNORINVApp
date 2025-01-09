@@ -99,7 +99,6 @@ export class RrspComponent {
   isOpen = false;
 
   today: string | undefined;
-  private logger: LogsService;
 
   // Privilege Action Access
   canCreate: boolean = false;
@@ -121,12 +120,18 @@ export class RrspComponent {
     },
   };
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private vf: ValidateForm,
+    private auth: AuthService, private cdr: ChangeDetectorRef,
+    private printService: PrintService, private logger: LogsService
   ) {
-    this.checkPrivileges();
-    this.logger = new LogsService();
+    this.ngOnInit();
+  }
 
+  ngOnInit(): void {
+
+    this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
     this.rrsepForm = this.fb.group({
@@ -140,14 +145,6 @@ export class RrspComponent {
       searchRRSEPItemKey: ['']
     });
 
-
-    this.roleNoFromToken = this.auth.getRoleFromToken();
-  }
-
-  ngAfterViewInit(): void {
-  }
-
-  ngOnInit(): void {
     this.checkPrivileges();
     this.getAllRRSEP();
     this.getUserAccount();
@@ -163,6 +160,11 @@ export class RrspComponent {
     } else {
       console.info('Action or isReady is not defined when ngOnInit is called.');
     }
+  }
+
+
+  ngAfterViewInit(): void {
+    this.checkPrivileges();
   }
 
   private checkPrivileges(): void {

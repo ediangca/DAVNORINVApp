@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import ValidateForm from '../../helpers/validateForm';
 import { catchError, defaultIfEmpty, firstValueFrom, of } from 'rxjs';
 import { StoreService } from '../../services/store.service';
+import { LogsService } from '../../services/logs.service';
 
 @Component({
   selector: 'app-items',
@@ -47,8 +48,16 @@ export class ItemsComponent implements OnInit {
   canPost: boolean = false;
   canUnpost: boolean = false;
 
-  constructor(private fb: FormBuilder, private api: ApiService, public vf: ValidateForm, private store: StoreService) {
+  constructor(private fb: FormBuilder, private api: ApiService, 
+    public vf: ValidateForm, private store: StoreService, private logger: LogsService) {
 
+    this.ngOnInit();
+  }
+
+
+  ngOnInit(): void {
+    this.resetForm();
+    this.checkPrivileges();
     this.itemForm = this.fb.group({
       description: ['', Validators.required],
       type: ['', Validators.required]
@@ -70,13 +79,6 @@ export class ItemsComponent implements OnInit {
           });
       }
     });
-    this.checkPrivileges();
-  }
-
-
-  ngOnInit(): void {
-    this.resetForm();
-    this.checkPrivileges();
   }
 
   private checkPrivileges(): void {

@@ -102,7 +102,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
   isOpen = false;
 
   today: string | undefined;
-  private logger: LogsService;
 
   // Privilege Action Access
   canCreate: boolean = false;
@@ -123,12 +122,22 @@ export class ReparComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService, private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService
+  constructor(private fb: FormBuilder, private api: ApiService, 
+    private store: StoreService, private vf: ValidateForm, 
+    private auth: AuthService, private cdr: ChangeDetectorRef,
+    private printService: PrintService,  private logger: LogsService
   ) {
-    this.checkPrivileges();
-    this.logger = new LogsService();
+    this.ngOnInit();
+  }
 
+  ngAfterViewInit(): void {
+    this.checkPrivileges();
+  }
+
+  ngOnInit(): void {
+    
+    this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
     this.parForm = this.fb.group({
@@ -162,16 +171,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
       date_Acquired: [this.today, Validators.required],
     });
 
-    // this.getALLPAR();
-    // this.getUserAccount();
-    this.roleNoFromToken = this.auth.getRoleFromToken();
-  }
-
-  ngAfterViewInit(): void {
-  }
-
-  ngOnInit(): void {
-    this.checkPrivileges();
     this.getALLREPAR();
     this.getUserAccount();
     this.getAllUserProfile();
@@ -273,7 +272,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
             this.isLoading = false; // Stop showing the loading spinner
           },
           error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching REPAR', err);
+            this.logger.printLogs('e', 'Error Fetching PTR', err);
           }
         });
 
@@ -775,7 +774,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
   onEditREPAR(par: any) {
     if (par.postFlag) {
-      Swal.fire('Information!', 'Cannot edit posted REPAR.', 'warning');
+      Swal.fire('Information!', 'Cannot edit posted PTR.', 'warning');
       return;
     }
 
@@ -813,13 +812,13 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.api.retrieveREPAR(this.currentEditId!)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving REPAR Item', res);
+          this.logger.printLogs('i', 'Retrieving PTR Item', res);
           this.repar = res.details;
           this.parItems = res.parItems;
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving REPAR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve REPAR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving PTR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve PTR Item.', 'error');
         }
       });
 
