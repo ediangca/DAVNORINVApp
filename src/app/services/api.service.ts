@@ -1190,7 +1190,7 @@ export class ApiService {
 
   //https://localhost:7289/api/Report/Offices?module={?}
   getAllOffices(module: string): Observable<any> {
-    // console.log("Search PRS by key: ", key);
+    console.log("Retrieve all Office under module : ", module);
     return this.http.get<any>(`${this.apiUrl}Report/Offices?module=` + module)
       .pipe(
         catchError(this.handleError)
@@ -1198,12 +1198,12 @@ export class ApiService {
   }
 
 
-  //https://localhost:7289/api/Report/Module?office={?}
-  getAllPARItemByOffice(office: string): Observable<any> {
-    // console.log("Search PRS by key: ", key);
-    return this.http.get<any>(`${this.apiUrl}Report/Module?office=` + office)
+  //https://localhost:7289/api/Report/{Module}?office={?}
+  getAllItemByOffice(module: string, office: string): Observable<any> {
+    console.log("Run Report: ", `${this.apiUrl}Report/${module.toUpperCase()}?office=` + office);
+    return this.http.get<any>(`${this.apiUrl}Report/${module.toUpperCase()}?office=` + office)
       .pipe(
-        catchError(this.handleError) 
+        catchError(this.handleError)
       );
   }
 

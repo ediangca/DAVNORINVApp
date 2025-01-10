@@ -23,10 +23,10 @@ export class ReportsComponent implements OnInit {
 
   reportsMap: { [key: string]: string } = {
     PAR: 'Property Acknowledgement Receipt',
-    ICS: 'Inventory Custodian Slip',
     PTR: 'Property Transfer Receipt',
-    ITR: 'Inventory Transfer Record',
     PRS: 'Property Return Slip',
+    ICS: 'Inventory Custodian Slip',
+    ITR: 'Inventory Transfer Record',
     RRSEP: 'Receipt Return Semi-Expandable Property'
   };
 
@@ -40,8 +40,9 @@ export class ReportsComponent implements OnInit {
   file: string | null = null;
 
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService,
-    private printService: PrintService, private logger: LogsService) {
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private printService: PrintService,
+    private logger: LogsService) {
     this.ngOnInit();
   }
 
@@ -110,19 +111,79 @@ export class ReportsComponent implements OnInit {
 
   onPrint() {
     if (this.file) {
-
       if (this.filterForm.valid) {
         let office = this.filterForm.value['office'];
-        this.api.getAllPARItemByOffice(office).subscribe({
+        let withaApprovedBy = '';
+
+        this.api.getAllItemByOffice(this.file, office).subscribe({
           next: (res) => {
             this.items = res; // Update the offices property
             this.logger.printLogs('i', `List of All ${this.file} Items under Offices under${office}`, res);
 
 
+            // Ensure par.parItems is an array or default to an empty array
+            const list = Array.isArray(this.items) ? this.items : [];
+
+            const showApprovedColumn = list.some((item: any) => item.approved);
+
+            // Create the table rows dynamically
+            const rows = list.map((item: any, index: number) => `
+                <tr ${item.parino ? `class="${item.parino} item-row"` : ''}>
+                  <td>${index + 1}</td>
+                  <td>${this.formatDate(item.date_Acquired) || 'N/A'}</td>
+                  <td>${item.description || 'N/A'}</td>
+                  <td>${item.serialNo || 'N/A'}</td>
+                  <!-- <td>${item.propertyNo || 'N/A'}</td>
+                  <td>${item.qty || '1'}</td> -->
+                  <td>${item.unit || 'pcs'}</td>
+                  <td>
+                  ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
+                  <td>${item.issuedBy || 'N/A'}</td>
+                  <td>${item.receivedBy || 'N/A'}</td>
+                  ${showApprovedColumn ? `<td>${item.approved ? item.approvedBy : 'N/A'}</td>` : ''}
+                  <td>${item.createdBy || 'N/A'}</td>
+                </tr>`).join('');
+
+
+            // Generate the full report content
+            const reportContent = `
+
+                  <div class="row mb-3">
+                    <div class="col text-center">
+                      <h5>${office}</h5>
+                    </div>
+                  </div>
+
+                      <!-- Table with List of Items -->
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr class="item-row">
+                                    <th>#</th>
+                                    <th>DATE ACQUIRED</th>
+                                    <th>DESCRIPTION</th>
+                                    <th>SERIAL NO.</th>
+                                    <th>PROPERTY NO.</th>
+                                    <!-- <th>QTY</th>
+                                    <th>UNIT</th> -->
+                                    <th>AMMOUNT</th>
+                                    <th>ISSUED BY</th>
+                                    <th>RECEIVED BY</th>
+                                    ${showApprovedColumn ? '<th>APPROVED BY</th>' : ''}
+                                    <th>CREATED BY</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>`;
+
+            // Print the report
+            this.printService.printReport('', reportContent);
             //PRINT
           },
           error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching Offices', err);
+            this.logger.printLogs('e', `Error Fetching PAR Items under Offices ${office}`, err);
             // Optionally, show an error message to the user
           }
         });
@@ -134,6 +195,27 @@ export class ReportsComponent implements OnInit {
 
   }
 
+  // Helper function to format the date
+  public formatDate(date: Date | string | null): string | null {
+    if (!date) return null;
+
+    // If the date is a string, convert it to a Date object
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
+
+    // Ensure it's a valid Date object
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else {
+      // Handle invalid date
+      this.logger.printLogs('w', 'Invalid Date Format', [date]);
+      return null;
+    }
+  }
 
   //Common Method - Advice to add in Helpers
   private validateFormFields(fg: FormGroup) {

@@ -234,9 +234,10 @@ export class PrintService {
 
   printReport(title: string, reportContent: string): void {
 
+    let titleContent = '<hr>';
     // Create an iframe element
     const iframe = document.createElement('iframe');
-
+    
     // Style the iframe to be invisible
     iframe.style.position = 'absolute';
     iframe.style.width = '0';
@@ -245,7 +246,16 @@ export class PrintService {
 
     // Append the iframe to the body
     document.body.appendChild(iframe);
+
+    if (!(title == '')) {
+      titleContent = `<div class="row mb-3" *ngif="!this.title">
+            <div class="col text-center">
+              <h5>${this.getTitleDetail(title) || ''}</h5>
+            </div>
+          </div>`
+    }
     this.setFooter(title);
+
 
     // Access the iframe's document
     const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
@@ -298,11 +308,8 @@ export class PrintService {
             </div>
             <img src="../../../assets/images/logo/logo-lg.png" alt="Logo Right" style="height: 80px;">
           </div>
-          <div class="row mb-3">
-            <div class="col text-center">
-              <h5>${this.getTitleDetail(title)}</h5>
-            </div>
-          </div>
+         
+          ${titleContent}
           ${reportContent}
 
             ${this.footer}
@@ -421,7 +428,7 @@ export class PrintService {
   }
 
 
-  getTitleDetail(title: string): String {
+  getTitleDetail(title: string): String | null {
 
     switch (title.toLowerCase()) {
       case 'par':
@@ -439,7 +446,7 @@ export class PrintService {
       case 'rrsep':
         return 'RECEIPT RETURN SEMI-EXPANDABLE PROPERTY'
       default:
-        return 'TITLE'
+        return null
     }
   }
 }

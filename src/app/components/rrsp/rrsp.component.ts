@@ -420,6 +420,7 @@ export class RrspComponent {
 
   onPostRRSEP(rrsep: any) {
 
+
     if (!rrsep.postFlag && !this.canPost) {
       Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
       return;
@@ -429,6 +430,7 @@ export class RrspComponent {
       Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
       return
     }
+
 
     if ((this.roleNoFromToken != 'System Administrator' && !rrsep.postFlag) || this.roleNoFromToken == 'System Administrator' || (rrsep.postFlag && this.canUnpost) || (!rrsep.postFlag && this.canPost)) {
       let rrsepNo = rrsep.rrsepNo;
