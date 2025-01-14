@@ -28,6 +28,13 @@ export class ApiService {
       );
   }
 
+  //Cencus List
+  getActivityLogs(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}Cencus/ActivityLog`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
   /*----------------------- COMPANY/BRANCH -----------------------*/
   // Branch List
   getCompanies(): Observable<any> {
@@ -848,6 +855,14 @@ export class ApiService {
   //ICSITEM List By ICS No.
   getAllICSItems(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}ICSItem`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //ICSITEM List all Posted Item.
+  getAllPostedICSItems(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}ICSItem/posted`)
       .pipe(
         catchError(this.handleError)
       );

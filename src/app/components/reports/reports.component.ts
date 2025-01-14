@@ -27,7 +27,9 @@ export class ReportsComponent implements OnInit {
     PRS: 'Property Return Slip',
     ICS: 'Inventory Custodian Slip',
     ITR: 'Inventory Transfer Record',
-    RRSEP: 'Receipt Return Semi-Expandable Property'
+    RRSEP: 'Receipt Return Semi-Expandable Property',
+    SOPA5: 'Summary of Property Above 50k',
+    SOPB5: 'Summary of Property Below 50k',
   };
 
 
@@ -124,27 +126,83 @@ export class ReportsComponent implements OnInit {
             // Ensure par.parItems is an array or default to an empty array
             const list = Array.isArray(this.items) ? this.items : [];
 
+            const isPARNo = list.some((item: any) => item.parNo);
+            const isREPARNo = list.some((item: any) => item.reparNo);
+            const isPRSNo = list.some((item: any) => item.prsNo);
+            const isICSNo = list.some((item: any) => item.icsNo);
+            const isITRNo = list.some((item: any) => item.itrNo);
+            const isRRSEPNo = list.some((item: any) => item.rrsepNo);
+            const showTransferTypeColumn = list.some((item: any) => item.transferType);
+            const showrReturnTypeColumn = list.some((item: any) => item.returnType);
             const showApprovedColumn = list.some((item: any) => item.approved);
 
             // Create the table rows dynamically
-            const rows = list.map((item: any, index: number) => `
-                <tr ${item.parino ? `class="${item.parino} item-row"` : ''}>
+            // const rows = list.map((item: any, index: number) => `
+            //     <tr ${item.parino ? `class="${item.parino} item-row"` : ''}>
+            //       <td>${index + 1}</td>
+            //       <td>${this.formatDate(item.date_Acquired) || 'N/A'}</td>
+            //       <td>${item.description || 'N/A'}</td>
+            //       <td>${item.serialNo || 'N/A'}</td>
+            //       <!-- <td>${item.propertyNo || 'N/A'}</td>
+            //       <td>${item.qty || '1'}</td> -->
+            //       <td>${item.unit || 'pcs'}</td>
+            //       <td>
+            //       ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            //       </td>
+            //       ${showTransferTypeColumn ? `<td>${item.transferType ? item.transferType : 'N/A'}</td>` : ''}
+            //       <td>${item.issuedBy || 'N/A'}</td>
+            //       <td>${item.receivedBy || 'N/A'}</td>
+            //       ${showApprovedColumn ? `<td>${item.approved ? item.approvedBy : 'N/A'}</td>` : ''}
+            //       <td>${item.createdBy || 'N/A'}</td>
+            //     </tr>`).join('');
+            let identifier = null;
+
+            let refHeader = "REF. NO."; // Default value
+
+            if (list.some((item: any) => item.parNo) && this.file == 'PAR') {
+              refHeader = "PAR NO.";
+            } else if (list.some((item: any) => item.reparNo) && this.file == 'PTR') {
+              refHeader = "PTR NO.";
+            } else if (list.some((item: any) => item.prsNo) && this.file == 'PRS') {
+              refHeader = "PRS NO.";
+            } else if (list.some((item: any) => item.icsNo) && this.file == 'ICS') {
+              refHeader = "ICS NO.";
+            } else if (list.some((item: any) => item.itrNo) && this.file == 'ITR') {
+              refHeader = "ITR NO.";
+            } else if (list.some((item: any) => item.rrsepNo) && this.file == 'RRSEP') {
+              refHeader = "RRSEP NO.";
+            }
+            const rows = list.map((item: any, index: number) => {
+              // Determine the first non-null/no empty value among the possible identifiers
+              identifier =
+                item.prsNo ||
+                item.reparNo ||
+                item.parNo ||
+                item.rrsepNo ||
+                item.itrNo ||
+                item.icsNo ||
+                null;
+
+              return `
+                <tr class="report-row ${item.parino ? item.parino : item.icsItemNo}">
                   <td>${index + 1}</td>
                   <td>${this.formatDate(item.date_Acquired) || 'N/A'}</td>
+                  ${identifier != null ? `<td>${identifier}</td>` : ''}
                   <td>${item.description || 'N/A'}</td>
                   <td>${item.serialNo || 'N/A'}</td>
-                  <!-- <td>${item.propertyNo || 'N/A'}</td>
-                  <td>${item.qty || '1'}</td> -->
-                  <td>${item.unit || 'pcs'}</td>
-                  <td>
-                  ${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </td>
+                  <td>${item.propertyNo || 'N/A'}</td>
+                  <!-- <td>${item.qty || 1}</td>
+                  <td>${item.unit || 'pcs'}</td> -->
+                  <td>${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                  ${showTransferTypeColumn ? `<td>${(item.transferType == 'Others'? item.transferOthersType : item.transferType)  || 'N/A'}</td>` : ''}
+                  ${showTransferTypeColumn ? `<td>${item.transferReason || 'N/A'}</td>` : ''}
+                  ${showrReturnTypeColumn ? `<td>${(item.returnType == 'Others'? item.returnOthersType : item.returnType)  || 'N/A'}</td>` : ''}
                   <td>${item.issuedBy || 'N/A'}</td>
                   <td>${item.receivedBy || 'N/A'}</td>
                   ${showApprovedColumn ? `<td>${item.approved ? item.approvedBy : 'N/A'}</td>` : ''}
                   <td>${item.createdBy || 'N/A'}</td>
-                </tr>`).join('');
-
+                </tr>`;
+            }).join('');
 
             // Generate the full report content
             const reportContent = `
@@ -158,15 +216,19 @@ export class ReportsComponent implements OnInit {
                       <!-- Table with List of Items -->
                         <table class="table table-bordered table-striped">
                             <thead>
-                                <tr class="item-row">
+                                <tr class="report-row">
                                     <th>#</th>
                                     <th>DATE ACQUIRED</th>
+                                    ${identifier != null ? `<th>${refHeader}</th>` : ''}
                                     <th>DESCRIPTION</th>
                                     <th>SERIAL NO.</th>
                                     <th>PROPERTY NO.</th>
                                     <!-- <th>QTY</th>
                                     <th>UNIT</th> -->
                                     <th>AMMOUNT</th>
+                                    ${showTransferTypeColumn ? '<th>TRANSFER TYPE</th>' : ''}
+                                    ${showTransferTypeColumn ? '<th>TRANSFER REASON</th>' : ''}
+                                    ${showrReturnTypeColumn ? '<th>RETURN TYPE</th>' : ''}
                                     <th>ISSUED BY</th>
                                     <th>RECEIVED BY</th>
                                     ${showApprovedColumn ? '<th>APPROVED BY</th>' : ''}

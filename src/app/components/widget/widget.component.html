@@ -1,18 +1,12 @@
-
-
 <div class="row">
   <div class="col-md-12 col-lg-12">
     <!-- Carousel -->
     <div class="card-carousel">
-      <button class="carousel-btn prev" id="prev"
-        aria-label="Previous Slide">‹</button>
+      <button class="carousel-btn prev" id="prev" aria-label="Previous Slide" (click)="moveToPrev()">‹</button>
       <div class="carousel-container">
         <div class="carousel-track" id="carousel-track">
           <!-- PAR -->
-          <div class="card l-bg-cherry"
-            data-aos="flip-left"
-            data-aos-easing="ease-out-cubic"
-            data-aos-duration="500">
+          <div class="card l-bg-cherry" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="500">
             <div class="card-statistic-3 p-4">
               <div class="card-icon card-icon-large">
                 <i class="fas fa-receipt"></i>
@@ -22,19 +16,16 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2
-                    class="d-flex align-items-center mb-0">{{census?.totalPAR  || 0}}</h2>
+                  <h2 class="d-flex align-items-center mb-0">{{census?.totalPAR || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
-                  <span>12.5% <i class="fa fa-arrow-up"></i></span>
+                  <!-- <span>12.5% <i class="fa fa-arrow-up"></i></span> -->
                 </div>
               </div>
             </div>
           </div>
           <!-- PTR -->
-          <div class="card l-bg-green-dark"
-            data-aos="flip-left"
-            data-aos-easing="ease-out-cubic"
+          <div class="card l-bg-green-dark" data-aos="flip-left" data-aos-easing="ease-out-cubic"
             data-aos-duration="1000">
             <div class="card-statistic-3 p-4">
               <div class="card-icon card-icon-large">
@@ -45,19 +36,16 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2
-                    class="d-flex align-items-center mb-0">{{census?.totalREPAR! || 0}}</h2>
+                  <h2 class="d-flex align-items-center mb-0">{{census?.totalREPAR! || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
-                  <span>12.5% <i class="fa fa-arrow-up"></i></span>
+                  <!-- <span>12.5% <i class="fa fa-arrow-up"></i></span> -->
                 </div>
               </div>
             </div>
           </div>
           <!-- PRS -->
-          <div class="card l-bg-blue-dark"
-            data-aos="flip-left"
-            data-aos-easing="ease-out-cubic"
+          <div class="card l-bg-blue-dark" data-aos="flip-left" data-aos-easing="ease-out-cubic"
             data-aos-duration="2500">
             <div class="card-statistic-3 p-4">
               <div class="card-icon card-icon-large">
@@ -68,19 +56,16 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2
-                    class="d-flex align-items-center mb-0">{{census?.totalPAR || 0}}</h2>
+                  <h2 class="d-flex align-items-center mb-0">{{census?.totalPRS || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
-                  <span>12.5% <i class="fa fa-arrow-up"></i></span>
+                  <!-- <span>12.5% <i class="fa fa-arrow-up"></i></span> -->
                 </div>
               </div>
             </div>
           </div>
           <!-- ICS -->
-          <div class="card l-bg-orange-dark"
-            data-aos="flip-left"
-            data-aos-easing="ease-out-cubic"
+          <div class="card l-bg-orange-dark" data-aos="flip-left" data-aos-easing="ease-out-cubic"
             data-aos-duration="2500">
             <div class="card-statistic-3 p-4">
               <div class="card-icon card-icon-large">
@@ -91,19 +76,16 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2
-                    class="d-flex align-items-center mb-0">{{census?.totalICS || 0}}</h2>
+                  <h2 class="d-flex align-items-center mb-0">{{census?.totalICS || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
-                  <span>12.5% <i class="fa fa-arrow-up"></i></span>
+                  <!-- <span>12.5% <i class="fa fa-arrow-up"></i></span> -->
                 </div>
               </div>
             </div>
           </div>
           <!-- ITR -->
-          <div class="card l-bg-green-dark"
-            data-aos="flip-left"
-            data-aos-easing="ease-out-cubic"
+          <div class="card l-bg-green-dark" data-aos="flip-left" data-aos-easing="ease-out-cubic"
             data-aos-duration="2000">
             <div class="card-statistic-3 p-4">
               <div class="card-icon card-icon-large">
@@ -114,19 +96,16 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2
-                    class="d-flex align-items-center mb-0">{{census?.totalITR || 0}}</h2>
+                  <h2 class="d-flex align-items-center mb-0">{{census?.totalITR || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
-                  <span>12.5% <i class="fa fa-arrow-up"></i></span>
+                  <!-- <span>12.5% <i class="fa fa-arrow-up"></i></span> -->
                 </div>
               </div>
             </div>
           </div>
           <!-- RRSP -->
-          <div class="card l-bg-blue-dark"
-            data-aos="flip-left"
-            data-aos-easing="ease-out-cubic"
+          <div class="card l-bg-blue-dark" data-aos="flip-left" data-aos-easing="ease-out-cubic"
             data-aos-duration="2500">
             <div class="card-statistic-3 p-4">
               <div class="card-icon card-icon-large">
@@ -137,11 +116,10 @@
               </div>
               <div class="row align-items-center mb-2 d-flex">
                 <div class="col-8">
-                  <h2
-                    class="d-flex align-items-center mb-0">{{census?.totalPAR || 0}}</h2>
+                  <h2 class="d-flex align-items-center mb-0">{{census?.totalRRSEP || 0}}</h2>
                 </div>
                 <div class="col-4 text-right">
-                  <span>12.5% <i class="fa fa-arrow-up"></i></span>
+                  <!-- <span>12.5% <i class="fa fa-arrow-up"></i></span> -->
                 </div>
               </div>
             </div>
@@ -149,8 +127,8 @@
           <!-- Repeat similar card structures as needed -->
         </div>
       </div>
-      <button class="carousel-btn next" id="next"
-        aria-label="Next Slide">›</button>
+      <button class="carousel-btn next" id="next" aria-label="Next Slide"
+      (click)="moveToPrev()">›</button>
     </div>
   </div>
   <div class="col-md-12 col-lg-8">
@@ -158,10 +136,7 @@
   <div class="col-md-12 col-lg-4">
 
     <!-- RECENTLY ADDED -->
-    <div class="card logs"
-      data-aos="fade-left"
-      data-aos-easing="linear"
-      data-aos-duration="500">
+    <div class="card logs" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="500">
       <div class="card-header">
         <div class="flex-wrap d-flex justify-content-between">
           <div class="header-title">
@@ -179,50 +154,47 @@
         </div>
       </div>
       <div class="card-body">
-        <div
-          class="mb-2 d-flex profile-media align-items-top">
-          <div
-            class="mt-1 profile-dots-pills border-primary">
+        <ng-container *ngFor="let i of activities">
+          <div class="mb-2 pb-1 d-flex profile-media align-items-top">
+            <div class="mt-1 profile-dots-pills border-primary">
+            </div>
+            <div class="ms-4">
+              <h6 class="mb-1">{{i.tableName+'-'+ i.recordID}}</h6>
+              <span class="mb-0">{{'Action by '+ (i.actionByName? i.actionByName : i.actionBy)}}</span><br>
+              <span class="mb-0 fst-italic" style="font-size: 11px;">{{formatDate(i.activityDate)}}</span> 
+            </div>
+          </div>
+        </ng-container>
+        <!-- <div class="mb-2 d-flex profile-media align-items-top">
+          <div class="mt-1 profile-dots-pills border-primary">
           </div>
           <div class="ms-4">
             <h6 class="mb-1">Affiliate Payout</h6>
-            <span
-              class="mb-0">11 JUL 7:64 PM</span>
+            <span class="mb-0">11 JUL 7:64 PM</span>
           </div>
         </div>
-        <div
-          class="mb-2 d-flex profile-media align-items-top">
-          <div
-            class="mt-1 profile-dots-pills border-primary">
+        <div class="mb-2 d-flex profile-media align-items-top">
+          <div class="mt-1 profile-dots-pills border-primary">
           </div>
-          <div
-            class="ms-4">
+          <div class="ms-4">
             <h6 class="mb-1">New user added</h6>
-            <span
-              class="mb-0">11 JUL 1:21 AM</span>
+            <span class="mb-0">11 JUL 1:21 AM</span>
           </div>
         </div>
-        <div
-          class="mb-1 d-flex profile-media align-items-top">
-          <div
-            class="mt-1 profile-dots-pills border-primary">
+        <div class="mb-1 d-flex profile-media align-items-top">
+          <div class="mt-1 profile-dots-pills border-primary">
           </div>
-          <div
-            class="ms-4"><h6 class="mb-1">Product added</h6>
-            <span
-              class="mb-0">11 JUL 4:50 AM</span>
+          <div class="ms-4">
+            <h6 class="mb-1">Product added</h6>
+            <span class="mb-0">11 JUL 4:50 AM</span>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
     <!-- TOTAL CENSUS -->
-    <div class="card user-census"
-      data-aos="fade-up"
-      data-aos-easing="linear"
-      data-aos-duration="500">
-      <div
-        class="card-body d-flex justify-content-around align-items-center text-center">
+    <div class="card user-census" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="500">
+      <div class="card-body d-flex justify-content-around align-items-center text-center">
         <!-- Items Section -->
         <div class="d-flex flex-column align-items-center">
           <div class="d-flex">

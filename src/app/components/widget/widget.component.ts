@@ -1,10 +1,13 @@
 import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, OnDestroy } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import AOS from 'aos';
+import { LogsService } from '../../services/logs.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-widget',
   standalone: true,
+    imports: [CommonModule],
   templateUrl: './widget.component.html',
   styleUrls: ['./widget.component.css']
 })
@@ -12,6 +15,7 @@ import AOS from 'aos';
 export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
   census: any | null = null;
+  activities: any = [];
   prevBtn!: HTMLButtonElement;
   nextBtn!: HTMLButtonElement;
   track!: HTMLElement;
@@ -19,8 +23,8 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   currentIndex = 0;
 
 
-  constructor(private api: ApiService) {
-
+  constructor(private api: ApiService, private logger:LogsService) {
+    this.ngOnInit()
   }
   ngOnChanges(changes: SimpleChanges): void {
     this.getTotalParCencus();
@@ -29,9 +33,11 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   ngOnInit(): void {
     // Fetch data from API
     this.getTotalParCencus();
+    this.getActivityLogs();
   }
 
   ngAfterViewInit(): void {
+    AOS.init();
     // Query DOM elements after view initialization
     this.prevBtn = document.getElementById("prev") as HTMLButtonElement;
     this.nextBtn = document.getElementById("next") as HTMLButtonElement;
@@ -46,12 +52,11 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     window.addEventListener('resize', () => this.updateCarousel());
 
     // Initialize AOS
-    AOS.init();
   }
 
   ngOnDestroy(): void {
     // Clean up event listeners
-    this.prevBtn.removeEventListener('click', () => this.moveToPrev());
+    this.prevBtn.removeEventListener('click', () => this.moveToPrev()); 
     this.nextBtn.removeEventListener('click', () => this.moveToNext());
     window.removeEventListener('resize', () => this.updateCarousel());
   }
@@ -67,6 +72,20 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
       },
     });
   }
+  
+  getActivityLogs() {
+    this.api.getActivityLogs().subscribe({
+      next: (res) => {
+        this.activities = res.slice(0,5);
+        console.log('ActivityLog : ', this.activities);
+      },
+      error: (err: any) => {
+        console.log('Error Fetching Activity Log:', err);
+      },
+    });
+  }
+
+
   updateCarousel() {
     // Get the width of a single card, including margin (adjust the 20 if your margin is different)
     const cardWidth = this.cards[0].offsetWidth + 30;
@@ -105,6 +124,28 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     if (this.currentIndex > 0) {
       this.currentIndex--;
       this.updateCarousel();
+    }
+  }
+  
+  // Helper function to format the date
+  public formatDate(date: Date | string | null): string | null {
+    if (!date) return null;
+
+    // If the date is a string, convert it to a Date object
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
+
+    // Ensure it's a valid Date object
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else {
+      // Handle invalid date
+      this.logger.printLogs('w', 'Invalid Date Format', [date]);
+      return null;
     }
   }
 

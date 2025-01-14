@@ -44,7 +44,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   curYear: number = new Date().getFullYear();
   header: boolean | null = false;
   windowWidth: number = 0;
-  logger: LogsService;
 
   isMinimizeSideBar = false;
   isOpen = false;
@@ -64,8 +63,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private api: ApiService,
     private auth: AuthService,
     public store: StoreService,
+    private logger : LogsService
   ) {
-    this.logger = new LogsService();
+    this.ngOnInit();
+  }
+
+  ngOnInit(): void {
+    // this.setupSidebarToggle();
     this.getUserProfile();
 
     this.router.events.pipe(
@@ -81,11 +85,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
       this.setTitle(title);  // Or false, based on your requirement
     });
-  }
-
-  ngOnInit(): void {
-    // this.setupSidebarToggle();
-
     this.logger.printLogs('i', 'Hide Header and Widget:', [this.header]);
   }
 

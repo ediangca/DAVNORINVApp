@@ -603,14 +603,14 @@ export class RrspComponent {
 
   }
 
-  onAddPARItem() {
+  onAddICSItem() {
     const RRSEPNo: string = this.rrsepForm.value['rrsepNo'];
     if (!RRSEPNo) {
       Swal.fire('INFORMATION!', 'Please input RRSEP No. first before adding item', 'warning');
       return;
     }
 
-    this.api.getAllICSItems()
+    this.api.getAllPostedICSItems()
       .subscribe({
         next: (res) => {
           this.icsItems = res;

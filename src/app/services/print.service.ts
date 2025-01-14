@@ -237,7 +237,7 @@ export class PrintService {
     let titleContent = '<hr>';
     // Create an iframe element
     const iframe = document.createElement('iframe');
-    
+
     // Style the iframe to be invisible
     iframe.style.position = 'absolute';
     iframe.style.width = '0';
@@ -274,10 +274,16 @@ export class PrintService {
               right: 0;
             }
             .item-row > th, .item-row > td {
-              font-size: 12px;
+              font-size: 11px;
+            }
+            .report-row > th {
+              font-size: 10px;
+            }
+            .report-row  > td {
+              font-size: 8px;
             }
             p {
-              font-size: 12px;
+              font-size: 11px;
             }
             .watermark {
               position: absolute;
