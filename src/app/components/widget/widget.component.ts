@@ -31,13 +31,18 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   }
 
   ngOnInit(): void {
-    // Fetch data from API
+    // Fetch data from API 
     this.getTotalParCencus();
     this.getActivityLogs();
   }
 
   ngAfterViewInit(): void {
-    AOS.init();
+    AOS.init(); 
+    this.prevBtn = document.getElementById("prev") as HTMLButtonElement;
+    this.nextBtn = document.getElementById("next") as HTMLButtonElement;
+    this.track = document.getElementById("carousel-track") as HTMLElement;
+    this.cards = Array.from(this.track.children) as HTMLElement[];
+
     // Query DOM elements after view initialization
     this.prevBtn = document.getElementById("prev") as HTMLButtonElement;
     this.nextBtn = document.getElementById("next") as HTMLButtonElement;

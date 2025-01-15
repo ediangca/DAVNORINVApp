@@ -4,6 +4,13 @@
   /* Hide overflow initially */
 }
 
+.table td,
+.table th {
+  white-space: normal; /* Allows the text to wrap */
+  word-wrap: break-word; /* Breaks long words to fit within the cell */
+  max-width: 200px; /* Optional: Sets a maximum width for the columns */
+}
+
 /* When focused, allow scrolling */
 .data-scrollbar.focused {
   overflow-y: auto;

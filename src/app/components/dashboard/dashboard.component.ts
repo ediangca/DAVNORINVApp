@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, HostListener, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewInit, ElementRef, Component, HostListener, OnInit, Renderer2, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
@@ -15,17 +15,49 @@ import { filter, map } from 'rxjs/operators';
 import { LogsService } from '../../services/logs.service';
 
 import AOS from 'aos';
+declare var bootstrap: any;
 import { ProfileComponent } from '../profile/profile.component';
+import { NgxScannerQrcodeComponent, NgxScannerQrcodeModule, ScannerQRCodeConfig, ScannerQRCodeResult } from 'ngx-scanner-qrcode';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, ReactiveFormsModule, HttpClientModule, CommonModule, AppComponent, MenuComponent, WidgetComponent],
+  imports: [RouterOutlet, RouterLink, ReactiveFormsModule, HttpClientModule, CommonModule, MenuComponent, WidgetComponent, NgxScannerQrcodeModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
 
+  @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
+  @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
+  @ViewChild('itemDetailsModalForm') itemDetailsModal!: ElementRef;
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#front_and_back_camera
+  public config: ScannerQRCodeConfig = {
+    constraints: {
+      video: {
+        width: window.innerWidth
+      },
+    },
+    canvasStyles: [
+      { /* layer */
+        lineWidth: 1,
+        fillStyle: '#00950685',
+        strokeStyle: '#00950685',
+      },
+      { /* text */
+        font: '20px serif',
+        fillStyle: '#ff0000',
+        strokeStyle: '#ff0000',
+      }
+    ],
+  };
+
+  fn: string = 'start';
+  onItemFound: boolean = false;
+  item: any | null | undefined;
+  itemKeys: string[] = [];
 
   accID: string | undefined;
 
@@ -56,14 +88,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
 
   constructor(
-    public ac: AppComponent,
-    private titleService: Title,
-    private route: ActivatedRoute,
-    private router: Router,
-    private api: ApiService,
-    private auth: AuthService,
-    public store: StoreService,
-    private logger : LogsService
+    public ac: AppComponent, private titleService: Title,
+    private route: ActivatedRoute, private router: Router,
+    private api: ApiService, private auth: AuthService,
+    public store: StoreService, private logger: LogsService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.ngOnInit();
   }
@@ -85,11 +114,37 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
       this.setTitle(title);  // Or false, based on your requirement
     });
+    this.setupModalClose();
     this.logger.printLogs('i', 'Hide Header and Widget:', [this.header]);
   }
 
   ngAfterViewInit(): void {
     AOS.init();
+  }
+  openModal(modalElement: ElementRef) {
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement.nativeElement, { backdrop: 'static' });
+      modal.show();
+
+    }
+  }
+
+  setupModalClose() {
+
+    const QRScannerModal = document.getElementById('QRScannerForm')!;
+    if (QRScannerModal) {
+
+      QRScannerModal.addEventListener('hidden.bs.modal', () => {
+        this.onCloseQRScanning(this.scannerAction)
+      });
+    }
+  }
+
+  closeModal(modalElement: ElementRef) {
+    const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
+    if (modal) {
+      modal.hide();
+    }
   }
 
   toggleHeaderAndWidgetDisplay(show: boolean) {
@@ -144,7 +199,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       .subscribe(res => {
         this.username = res || this.usernameFromToken;
       });
-      
+
     // Get Decoded role from token
     this.store.getRoleFromStore()
       .subscribe(res => {
@@ -239,6 +294,110 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   logout() {
     this.store.clearStore();
     this.auth.logout();
+  }
+
+  onCloseQRScanning(scannerAction: any) {
+    // Close the modal
+    this.closeModal(this.QRScannerModal!);
+    this.fn = 'stop';
+    scannerAction.stop();
+    scannerAction.isStart = false;
+    scannerAction.isLoading = false;
+
+  }
+
+
+  // Handle start/stop of QR scanning
+  public handle(scannerAction: any, fn: string, purpose: string): void {
+    this.scannerAction = scannerAction;
+    this.fn = fn;
+
+    this.onScanQR(); // Show the scanner modal
+
+    // Function to select a device, preferring the back camera
+    const playDeviceFacingBack = (devices: any[]) => {
+      const device = devices.find(f => /back|rear|environment/gi.test(f.label));
+      scannerAction.playDevice(device ? device.deviceId : devices[0].deviceId);
+    };
+
+    // Start or stop the scanning action
+    if (fn === 'start') {
+      scannerAction[fn](playDeviceFacingBack).subscribe(
+        (r: any) => console.log(fn, r),
+        alert
+      );
+      this.cdr.detectChanges();     // Trigger change detection to update button state
+    } else {
+      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      this.cdr.detectChanges();     // Trigger change detection to update button state
+    }
+  }
+  onScanQR() {
+
+    const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
+    QRmodal.show();
+  }
+  // Event handler when QR code is scanned
+  public onEvent(results: ScannerQRCodeResult[], action?: any): void {
+    this.onItemFound = false;
+    if (results && results.length) {
+      if (results) {
+        action.pause(); // Pause scanning if needed
+
+        console.log('QR value', results[0].value);
+        console.log('Scanned Data:', results); // Handle scanned results here
+
+        this.api.retrieveITEMByQRCode(results[0].value)
+          .subscribe({
+            next: (res) => {
+              console.log('Retrieve ITEMS', res);
+              this.item = res[0];
+              this.itemKeys = Object.keys(this.item || {});
+
+              //PROMT THE MODAL TO ASK TO VIEW
+              if (!res[0]) {
+                Swal.fire('No Item Found', `QR Code ${results[0].value} not found`, 'info');
+                return
+              }
+              Swal.fire({
+                title: 'PROPERTY FOUND',
+                text: 'Do you want to view the Property?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // this.openModal(this.itemDetailsModal);  
+                  this.cdr.detectChanges(); // Notify Angular of the changes
+                  setTimeout(() => this.openModal(this.itemDetailsModal), 200); // Added a small delay
+
+                }
+              });
+
+
+            },
+            error: (err: any) => {
+              this.logger.printLogs('w', 'Problem with Retreiving ITEM', err);
+              Swal.fire('Item not Found', `QR Code ${results[0].value} not found`, 'info');
+            }
+          });
+
+      }
+
+    }
+  }
+  // get itemKeys(): string[] {
+  //   return this.item ? Object.keys(this.item) : [];
+  // }
+
+  resumeScanning(scannerAction: any): void {
+    // Add any conditions or user prompts if needed before resuming
+
+    scannerAction.play().subscribe(
+      (r: any) => console.log('Resuming Scan:', r),
+      (error: any) => console.error('Error while resuming scan:', error)
+    );
   }
 
 

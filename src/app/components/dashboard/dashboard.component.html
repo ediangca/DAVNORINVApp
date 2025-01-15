@@ -127,7 +127,9 @@
                   you monitor your Asset and Equipement Inventory.</p>
               </div>
               <div>
-                <a href class="btn btn-link btn-soft-light">
+                <button class="btn btn-link btn-soft-light text-white" type="button"
+                  (click)="handle(scannerAction, scannerAction.isStart ? 'stop' : 'start', 'retreive')"
+                  [class.btn-warning]="scannerAction?.isStart" [disabled]="scannerAction?.isLoading || false">
                   <i class="fa-solid fa-qrcode"></i>
                   <!-- <svg class="icon-20" width="20"
                     viewBox="0 0 24 24" fill="none"
@@ -140,7 +142,7 @@
                       fill="currentColor"></path>
                   </svg> -->
                   Scann here!
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -189,5 +191,61 @@
       </div>
     </div>
   </footer>
+
+
+  <!-- QR CODE SCANNER -->
+  <div #QRScannerForm class="modal fade" id="QRScannerForm">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Please Scan the QR of the Item</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="onCloseQRScanning(scannerAction)"></button>
+        </div>
+        <div class="modal-body item-body scrollable">
+          <!-- ngx-scanner-qrcode -->
+          <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
+          </ngx-scanner-qrcode>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+            (click)="onCloseQRScanning(scannerAction)">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill" *ngIf="scannerAction?.isPause"
+            (click)="resumeScanning(scannerAction)">Scan Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div #itemDetailsModalForm class="modal fade" id="itemDetailsModal" tabindex="-1"
+    aria-labelledby="itemDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="itemDetailsModalLabel">Item Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row table-responsive scrollable p-0 m-0">
+            <div class="col p-0 m-0 table-body  ">
+              <table class="table table-bordered table-striped">
+                <tbody>
+                  <tr *ngFor="let key of itemKeys">
+                    <td *ngIf="item[key] && (key != 'SourceTable' && key != 'ITEMID')"><strong>{{ key }}</strong></td>
+                    <td *ngIf="item[key] && (key != 'SourceTable' && key != 'ITEMID')">{{ item[key] }}</td>
+
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </main>

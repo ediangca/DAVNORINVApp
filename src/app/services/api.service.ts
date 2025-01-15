@@ -1222,6 +1222,13 @@ export class ApiService {
       );
   }
 
+  retrieveITEMByQRCode(qrcode: string): Observable<any> {
+    console.log("Scan Item: ", `${this.apiUrl}Report/GetItemsByQRCode?qrcode=` + qrcode);
+    return this.http.get<any>(`${this.apiUrl}Report/GetItemsByQRCode?qrcode=` + qrcode)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
 
   /*----------------------- ERROR HANDLING -----------------------*/

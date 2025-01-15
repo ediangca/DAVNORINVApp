@@ -1511,8 +1511,6 @@ export class ParComponent implements OnInit, AfterViewInit {
               }
             });
         }
-
-
       }
 
     }
@@ -1565,7 +1563,6 @@ export class ParComponent implements OnInit, AfterViewInit {
     scannerAction.stop();
     scannerAction.isStart = false;
     scannerAction.isLoading = false;
-
   }
 
   onTypeChange(event: Event) {
