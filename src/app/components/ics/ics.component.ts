@@ -11,7 +11,7 @@ import { Item } from '../../models/Item';
 import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 import { PrintService } from '../../services/print.service';
-import { forkJoin, Observable } from 'rxjs';
+import { delay, finalize, forkJoin, map, Observable } from 'rxjs';
 import { ICSItem } from '../../models/ICSItem';
 
 // import * as bootstrap from 'bootstrap';
@@ -151,6 +151,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
 
     this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.getUserAccount();
     this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
@@ -187,8 +188,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
       date_Acquired: [this.today, Validators.required],
     });
 
-    this.getALLICS();
-    this.getUserAccount();
     this.getAllUserProfile();
     this.setupModalClose();
     // Check if action is defined and has the isReady property
@@ -204,7 +203,9 @@ export class IcsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    window.addEventListener('load', () => {
     this.checkPrivileges();
+    });
   }
 
   private checkPrivileges(): void {
@@ -267,6 +268,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
+          this.getAllICS();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Account from Store Service', err);
@@ -274,24 +276,72 @@ export class IcsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  getALLICS() {
-    this.isLoading = true; // Stop showing the loading spinner
-    // Simulate an API call with a delay
-    setTimeout(() => {
-      this.api.getAllICS()
-        .subscribe({
-          next: (res) => {
-            this.totalItems = res.length;
-            this.icss = res.slice(0, 10);
-            this.logger.printLogs('i', 'LIST OF ICS', this.icss);
-            this.isLoading = false; // Stop showing the loading spinner
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching ICS', err);
+  getAllICS() {
+    this.isLoading = true; // Start spinner
+    this.api.getAllICS()
+      .pipe(
+        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        map((res) => {
+          // Filter results based on `createdBy` and slice for pagination
+          this.logger.printLogs('i', 'Show ICSs only for Administrator || User Account :', this.userAccount.userID);
+          this.logger.printLogs('i', 'List of Originated ICSs', res);
+          if (this.userAccount.userGroupName === 'System Administrator') {
+            return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
-        });
-
-    }, 3000); // Simulate a 2-second delay
+          const filteredICSs = res.filter((ics: any) =>
+            ics.createdBy === this.userAccount.userID
+          );
+          this.totalItems = filteredICSs.length;
+          return filteredICSs.slice(0, 10); // Limit to the first 10 items
+        }),
+        finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+      )
+      .subscribe({
+        next: (filteredICSs) => {
+          this.icss = filteredICSs;
+          this.logger.printLogs('i', 'List of ICSs', this.icss);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching ICSs', err);
+        }
+      });
+  }
+  
+  onSearchICS() {
+    if (!this.searchKey) {
+      this.getAllICS(); // Call existing function to populate all ICSs when no search key is entered
+    } else {
+      if (this.searchKey.trim()) {
+        this.isLoading = true; // Start spinner
+        this.api.searchICS(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .pipe(
+            map((res) => {
+              // Filter results based on `createdBy` and slice for pagination
+              this.logger.printLogs('i', 'Show ICSs only for Administrator || User Account :', this.userAccount.userID);
+              this.logger.printLogs('i', 'List of Originated ICSs', res);
+              if (this.userAccount.userGroupName === 'System Administrator') {
+                return res.slice(0, 10); // For administrators, show all records, limited to 10
+              }
+              // Filter or process the response if needed
+              const filteredICSs = res.filter((ics: any) =>
+                ics.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+              );
+              this.totalItems = filteredICSs.length;
+              return filteredICSs.slice(0, 10); // Limit to 10 results for display
+            }),
+            finalize(() => this.isLoading = false) // Ensure spinner stops
+          )
+          .subscribe({
+            next: (filteredICSs) => {
+              this.icss = filteredICSs; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH ICSs', this.icss);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching ICSs on Search', err);
+            }
+          });
+      }
+    }
   }
 
   getAllUserProfile() {
@@ -544,27 +594,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onSearchICS() {
-    //Populate all ICS
-    if (!this.searchKey) {
-      this.getALLICS();
-    } else {
-      if (this.searchKey.trim()) {
-        this.api.searchICS(this.searchKey)
-          .subscribe({
-            next: (res) => {
-              this.icss = res;
-              this.logger.printLogs('i', 'SEARCH ICS', this.icss);
-              this.icss = res.slice(0, 10);
-            },
-            error: (err: any) => {
-              console.log("Error Fetching ICS:", err);
-            }
-          });
-      }
-    }
-  }
-
   onKeyUp(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.onSearchICS();
@@ -670,7 +699,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
             });
 
             this.resetForm();
-            this.getALLICS();
+            this.getAllICS();
           },
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving ICS', err);
@@ -734,7 +763,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', ics);
           Swal.fire('Updated!', res.message, 'warning');
-          this.getALLICS();
+          this.getAllICS();
 
         },
         error: (err: any) => {
@@ -774,7 +803,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
           this.api.postICS(ics.icsNo, !ics.postFlag)
             .subscribe({
               next: (res) => {
-                this.getALLICS();
+                this.getAllICS();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
               },
@@ -934,7 +963,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
         this.api.deleteICS(icsNo)
           .subscribe({
             next: (res) => {
-              this.getALLICS();
+              this.getAllICS();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {

@@ -12,7 +12,7 @@ import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 
 import { PrintService } from '../../services/print.service';
-import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { catchError, delay, finalize, forkJoin, map, Observable, of } from 'rxjs';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -131,6 +131,7 @@ export class RrspComponent {
   ngOnInit(): void {
 
     this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.getUserAccount();
     this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
@@ -145,9 +146,6 @@ export class RrspComponent {
       searchRRSEPItemKey: ['']
     });
 
-    this.checkPrivileges();
-    this.getAllRRSEP();
-    this.getUserAccount();
     this.getAllUserProfile();
     this.setupModalClose();
     // Check if action is defined and has the isReady property
@@ -164,7 +162,9 @@ export class RrspComponent {
 
 
   ngAfterViewInit(): void {
-    this.checkPrivileges();
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
   }
 
   private checkPrivileges(): void {
@@ -226,6 +226,7 @@ export class RrspComponent {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
+          this.getAllRRSEP();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Account from Store Service', err);
@@ -234,23 +235,68 @@ export class RrspComponent {
   }
 
   getAllRRSEP() {
-    this.isLoading = true;
-
-    setTimeout(() => {
-      this.api.getAllRRSEP()
-        .subscribe({
-          next: (res) => {
-            this.totalItems = res.length;
-            this.rrseps = res;
-            this.logger.printLogs('i', 'LIST OF RRSEP', this.rrseps);
-            this.isLoading = false;
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching RRSEP', err);
+    this.isLoading = true; // Start spinner
+    this.api.getAllRRSEP()
+      .pipe(
+        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        map((res) => {
+          // Filter results based on `createdBy` and slice for pagination
+          this.logger.printLogs('i', 'Show RRSEPs only for Administrator || User Account :', this.userAccount.userID);
+          this.logger.printLogs('i', 'List of Originated RRSEPs', res);
+          if (this.userAccount.userGroupName === 'System Administrator') {
+            return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
-        });
+          const filteredRRSEPs = res.filter((rrsep: any) =>
+            rrsep.createdBy === this.userAccount.userID
+          );
+          this.totalItems = filteredRRSEPs.length;
+          return filteredRRSEPs.slice(0, 10); // Limit to the first 10 items
+        }),
+        finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+      )
+      .subscribe({
+        next: (filteredRRSEPs) => {
+          this.rrseps = filteredRRSEPs;
+          this.logger.printLogs('i', 'List of RRSEPs', this.rrseps);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching RRSEPs', err);
+        }
+      });
+  }
 
-    }, 3000);
+  onSearchRRSEP() {
+    if (!this.searchKey) {
+      this.getAllRRSEP(); // Call existing function to populate all PARs when no search key is entered
+    } else {
+      if (this.searchKey.trim()) {
+        this.isLoading = true; // Start spinner
+        this.api.searchRRSEP(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .pipe(
+            map((res) => {
+              // Filter or process the response if needed
+              if (this.userAccount.userGroupName === 'System Administrator') {
+                return res.slice(0, 10); // For administrators, show all records, limited to 10
+              }
+              const filteredRRSEPs = res.filter((itr: any) =>
+                itr.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+              );
+              this.totalItems = filteredRRSEPs.length;
+              return filteredRRSEPs.slice(0, 10); // Limit to 10 results for display
+            }),
+            finalize(() => this.isLoading = false) // Ensure spinner stops
+          )
+          .subscribe({
+            next: (filteredRRSEPs) => {
+              this.rrseps = filteredRRSEPs; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH RRSEPs', this.rrseps);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching RRSEPs on Search', err);
+            }
+          });
+      }
+    }
   }
 
   getAllUserProfile() {
@@ -263,26 +309,6 @@ export class RrspComponent {
           this.logger.printLogs('e', 'Error Fetching User Profiles', err);
         }
       });
-  }
-
-  onSearchRRSEP() {
-    if (!this.searchKey) {
-      this.getAllRRSEP();
-    } else {
-      if (this.searchKey.trim()) {
-        this.api.searchRRSEP(this.searchKey)
-          .subscribe({
-            next: (res) => {
-              this.rrseps = res;
-              this.logger.printLogs('i', 'SEARCH RRSEP', this.rrseps);
-              this.rrseps = this.rrseps.slice(0, 10);
-            },
-            error: (err: any) => {
-              console.log("Error Fetching RRSEP:", err);
-            }
-          });
-      }
-    }
   }
 
   onKeyUp(event: KeyboardEvent): void {

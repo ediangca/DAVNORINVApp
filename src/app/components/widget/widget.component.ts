@@ -81,7 +81,7 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   getActivityLogs() {
     this.api.getActivityLogs().subscribe({
       next: (res) => {
-        this.activities = res.slice(0,5);
+        this.activities = res.slice(0,10);
         console.log('ActivityLog : ', this.activities);
       },
       error: (err: any) => {

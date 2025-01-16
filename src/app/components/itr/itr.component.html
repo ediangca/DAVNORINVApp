@@ -45,6 +45,7 @@
             <th>Issued By</th>
             <th>Recieved By</th>
             <th>Approved By</th>
+            <th>Created By</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -61,6 +62,7 @@
             <td>{{i.issued}}</td>
             <td>{{i.received}}</td>
             <td>{{i.approved}}</td>
+            <td>{{i.created}}</td>
             <td>
               <form class="d-flex justify-content-end align-items-center">
                 @if(i.userName == "admin"){

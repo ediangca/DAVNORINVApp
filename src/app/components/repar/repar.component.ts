@@ -12,7 +12,7 @@ import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 
 import { PrintService } from '../../services/print.service';
-import { forkJoin, Observable } from 'rxjs';
+import { delay, finalize, forkJoin, map, Observable } from 'rxjs';
 
 
 // import * as bootstrap from 'bootstrap';
@@ -122,21 +122,24 @@ export class ReparComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(private fb: FormBuilder, private api: ApiService, 
-    private store: StoreService, private vf: ValidateForm, 
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService,  private logger: LogsService
+    private printService: PrintService, private logger: LogsService
   ) {
     this.ngOnInit();
   }
 
   ngAfterViewInit(): void {
-    this.checkPrivileges();
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
   }
 
   ngOnInit(): void {
-    
+
     this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.getUserAccount();
     this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
@@ -171,8 +174,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
       date_Acquired: [this.today, Validators.required],
     });
 
-    this.getALLREPAR();
-    this.getUserAccount();
     this.getAllUserProfile();
     this.setupModalClose();
     // Check if action is defined and has the isReady property
@@ -252,6 +253,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
+          this.getAllPTR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Account from Store Service', err);
@@ -259,24 +261,72 @@ export class ReparComponent implements OnInit, AfterViewInit {
       });
   }
 
-  getALLREPAR() {
-    this.isLoading = true; // Stop showing the loading spinner
-    // Simulate an API call with a delay
-    setTimeout(() => {
-      this.api.getAllREPAR()
-        .subscribe({
-          next: (res) => {
-            this.totalItems = res.length;
-            this.ptrs = res.slice(0, 10);
-            this.logger.printLogs('i', 'LIST OF PTR', this.ptrs);
-            this.isLoading = false; // Stop showing the loading spinner
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching PTR', err);
+  getAllPTR() {
+    this.isLoading = true; // Start spinner
+    this.api.getAllREPAR()
+      .pipe(
+        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        map((res) => {
+          // Filter results based on `createdBy` and slice for pagination
+          this.logger.printLogs('i', 'Show PTRs only for Administrator || User Account :', this.userAccount.userID);
+          this.logger.printLogs('i', 'List of Originated PTRs', res);
+          if (this.userAccount.userGroupName === 'System Administrator') {
+            return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
-        });
+          const filteredPTRs = res.filter((ptr: any) =>
+            ptr.createdBy === this.userAccount.userID
+          );
+          this.totalItems = filteredPTRs.length;
+          return filteredPTRs.slice(0, 10); // Limit to the first 10 items
+        }),
+        finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+      )
+      .subscribe({
+        next: (filteredPTRs) => {
+          this.ptrs = filteredPTRs;
+          this.logger.printLogs('i', 'List of PTRs', this.ptrs);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching PTRs', err);
+        }
+      });
+  }
 
-    }, 3000); // Simulate a 2-second delay
+  onSearchPTR() {
+    if (!this.searchKey) {
+      this.getAllPTR(); // Call existing function to populate all PARs when no search key is entered
+    } else {
+      if (this.searchKey.trim()) {
+        this.isLoading = true; // Start spinner
+        this.api.searchREPAR(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .pipe(
+            map((res) => {
+              // Filter results based on `createdBy` and slice for pagination
+              this.logger.printLogs('i', 'Show PTRs only for Administrator || User Account :', this.userAccount.userID);
+              this.logger.printLogs('i', 'List of Originated PTRs', res);
+              if (this.userAccount.userGroupName === 'System Administrator') {
+                return res.slice(0, 10); // For administrators, show all records, limited to 10
+              }
+              // Filter or process the response if needed
+              const filteredPTRs = res.filter((ptr: any) =>
+                ptr.issuedBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+              );
+              this.totalItems = filteredPTRs.length;
+              return filteredPTRs.slice(0, 10); // Limit to 10 results for display
+            }),
+            finalize(() => this.isLoading = false) // Ensure spinner stops
+          )
+          .subscribe({
+            next: (filteredPTRs) => {
+              this.ptrs = filteredPTRs; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH PTRs', this.ptrs);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching PTR on Search', err);
+            }
+          });
+      }
+    }
   }
 
   getAllUserProfile() {
@@ -291,8 +341,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
         }
       });
   }
-
-
 
   getAllItems() {
     //Populate all User Profile
@@ -328,8 +376,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
       );
     }
   }
-
-
 
   searchItem() {
     //Populate all Item
@@ -396,28 +442,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
       });
   }
 
-
-
-  onSearchPTR() {
-    //Populate all PTR
-    if (!this.searchKey) {
-      this.getALLREPAR();
-    } else {
-      if (this.searchKey.trim()) {
-        this.api.searchREPAR(this.searchKey)
-          .subscribe({
-            next: (res) => {
-              this.ptrs = res;
-              this.logger.printLogs('i', 'SEARCH PTR', this.ptrs);
-              this.ptrs = res.slice(0, 10);
-            },
-            error: (err: any) => {
-              console.log("Error Fetching PTR:", err);
-            }
-          });
-      }
-    }
-  }
+  
 
   onKeyUp(event: KeyboardEvent) {
     if (event.key === 'Enter') {
@@ -681,7 +706,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
           });
 
           this.resetForm();
-          this.getALLREPAR();
+          this.getAllPTR();
 
         },
         error: (err: any) => {
@@ -700,7 +725,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'Saved Success', res);
           Swal.fire('Saved', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
-          this.getALLREPAR();
+          this.getAllPTR();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
@@ -718,7 +743,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', this.parItems);
           Swal.fire('Updated!', res.message, 'warning');
-          this.getALLREPAR();
+          this.getAllPTR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating PAR Item', err);
@@ -756,7 +781,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
           this.api.postREPAR(reparNo, !ptr.postFlag)
             .subscribe({
               next: (res) => {
-                this.getALLREPAR();
+                this.getAllPTR();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
               },
@@ -918,7 +943,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
         this.api.deleteREPAR(reparNo)
           .subscribe({
             next: (res) => {
-              this.getALLREPAR();
+              this.getAllPTR();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {

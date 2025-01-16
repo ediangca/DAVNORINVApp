@@ -11,7 +11,7 @@ import { Item } from '../../models/Item';
 import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 import { PrintService } from '../../services/print.service';
-import { forkJoin, Observable } from 'rxjs';
+import { delay, finalize, forkJoin, map, Observable } from 'rxjs';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -151,6 +151,7 @@ export class ParComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
 
     this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.getUserAccount();
     this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
@@ -185,8 +186,6 @@ export class ParComponent implements OnInit, AfterViewInit {
       date_Acquired: [this.today, Validators.required],
     });
 
-    this.getALLPAR();
-    this.getUserAccount();
     this.getAllUserProfile();
     this.setupModalClose();
     // Check if action is defined and has the isReady property
@@ -285,6 +284,8 @@ export class ParComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
+          this.logger.printLogs('i', 'Fetching User Account from Store Service', this.userAccount);
+          this.getAllPAR(); // Method name corrected for consistent casing
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Account from Store Service', err);
@@ -292,25 +293,96 @@ export class ParComponent implements OnInit, AfterViewInit {
       });
   }
 
-  getALLPAR() {
-    this.isLoading = true; // Stop showing the loading spinner
-    // Simulate an API call with a delay
-    setTimeout(() => {
-      this.api.getAllPAR()
-        .subscribe({
-          next: (res) => {
-            this.totalItems = res.length;
-            this.pars = res;
-            this.logger.printLogs('i', 'LIST OF PARS', this.pars);
-            this.pars = res.slice(0, 10);
-            this.isLoading = false; // Stop showing the loading spinner
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching User Groups', err);
+  getAllPAR() {
+    this.isLoading = true; // Start spinner
+    this.api.getAllPAR()
+      .pipe(
+        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        map((res) => {
+          // Filter results based on `createdBy` and slice for pagination
+          this.logger.printLogs('i', 'Show PARS only for Administrator || User Account :', this.userAccount.userID);
+          this.logger.printLogs('i', 'List of Originated PARs', res);
+          if (this.userAccount.userGroupName === 'System Administrator') {
+            return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
-        });
 
-    }, 3000); // Simulate a 2-second delay
+          // For regular users, filter data based on `receivedBy` or relevant fields
+          const filteredPARs = res.filter((par: any) =>
+            par.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+          );
+          this.totalItems = filteredPARs.length;
+          return filteredPARs.slice(0, 10); // Limit to 10 results
+
+        }),
+        finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+      )
+      .subscribe({
+        next: (filteredPARs) => {
+          this.pars = filteredPARs;
+          this.logger.printLogs('i', 'List of PARs', this.pars);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching PARs', err);
+        }
+      });
+  }
+
+  // onSearchPAR() {
+  //   //Populate all User Groups
+  //   if (!this.searchKey) {
+  //     this.getAllPAR();
+  //   } else {
+  //     if (this.searchKey.trim()) {
+  //       this.api.searchPAR(this.searchKey)
+  //         .subscribe({
+  //           next: (res) => {
+  //             this.pars = res;
+  //             this.logger.printLogs('i', 'SEARCH PARS', this.pars);
+  //             this.pars = this.pars.slice(0, 10);
+  //           },
+  //           error: (err: any) => {
+  //             console.log("Error Fetching PARS:", err);
+  //           }
+  //         });
+  //     }
+  //   }
+  // }
+
+  onSearchPAR() {
+    if (!this.searchKey) {
+      this.getAllPAR(); // Call existing function to populate all PARs when no search key is entered
+    } else {
+      if (this.searchKey.trim()) {
+        this.isLoading = true; // Start spinner
+        this.api.searchPAR(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .pipe(
+            map((res) => {
+              // Filter results based on `createdBy` and slice for pagination
+              this.logger.printLogs('i', 'Show PARS only for Administrator || User Account :', this.userAccount.userID);
+              this.logger.printLogs('i', 'List of Originated PARs', res);
+              if (this.userAccount.userGroupName === 'System Administrator') {
+                return res.slice(0, 10); // For administrators, show all records, limited to 10
+              }
+              // Filter or process the response if needed
+              const filteredPARs = res.filter((par: any) =>
+                par.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+              );
+              this.totalItems = filteredPARs.length;
+              return filteredPARs.slice(0, 10); // Limit to 10 results for display
+            }),
+            finalize(() => this.isLoading = false) // Ensure spinner stops
+          )
+          .subscribe({
+            next: (filteredPARs) => {
+              this.pars = filteredPARs; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH PARS', this.pars);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching PARS on Search', err);
+            }
+          });
+      }
+    }
   }
 
   getAllUserProfile() {
@@ -325,8 +397,6 @@ export class ParComponent implements OnInit, AfterViewInit {
         }
       });
   }
-
-
 
   getAllItems() {
     //Populate all User Profile
@@ -565,26 +635,7 @@ export class ParComponent implements OnInit, AfterViewInit {
   //     });
   // }
 
-  onSearchPAR() {
-    //Populate all User Groups
-    if (!this.searchKey) {
-      this.getALLPAR();
-    } else {
-      if (this.searchKey.trim()) {
-        this.api.searchPAR(this.searchKey)
-          .subscribe({
-            next: (res) => {
-              this.pars = res;
-              this.logger.printLogs('i', 'SEARCH PARS', this.pars);
-              this.pars = this.pars.slice(0, 10);
-            },
-            error: (err: any) => {
-              console.log("Error Fetching PARS:", err);
-            }
-          });
-      }
-    }
-  }
+
 
   onKeyUp(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
@@ -747,7 +798,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
           });
           this.resetForm();
-          this.getALLPAR();
+          this.getAllPAR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving PAR Items', err);
@@ -781,7 +832,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', this.parItems);
           Swal.fire('Updated!', res.message, 'warning');
-          this.getALLPAR();
+          this.getAllPAR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating PAR Item', err);
@@ -820,7 +871,7 @@ export class ParComponent implements OnInit, AfterViewInit {
           this.api.postPAR(par.parNo, !par.postFlag)
             .subscribe({
               next: (res) => {
-                this.getALLPAR();
+                this.getAllPAR();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
               },
@@ -981,7 +1032,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         this.api.deletePAR(parNo)
           .subscribe({
             next: (res) => {
-              this.getALLPAR();
+              this.getAllPAR();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {

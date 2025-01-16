@@ -12,7 +12,7 @@ import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 
 import { PrintService } from '../../services/print.service';
-import { forkJoin, Observable } from 'rxjs';
+import { delay, finalize, forkJoin, map, Observable } from 'rxjs';
 import { ICSItem } from '../../models/ICSItem';
 
 
@@ -104,7 +104,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   isOpen = false;
 
   today: string | undefined;
-  
+
   // Privilege Action Access
   canCreate: boolean = false;
   canRetrieve: boolean = false;
@@ -124,8 +124,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(private fb: FormBuilder, private api: ApiService, 
-    private store: StoreService, private vf: ValidateForm, 
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService, private logger: LogsService
   ) {
@@ -135,6 +135,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
 
     this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.getUserAccount();
     this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
@@ -169,8 +170,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
       date_Acquired: [this.today, Validators.required],
     });
 
-    this.getALLITR();
-    this.getUserAccount();
     this.getAllUserProfile();
     this.setupModalClose();
     // Check if action is defined and has the isReady property
@@ -186,7 +185,9 @@ export class ItrComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.checkPrivileges();
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
   }
 
   private checkPrivileges(): void {
@@ -255,6 +256,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
+          this.getAllITR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Account from Store Service', err);
@@ -262,24 +264,77 @@ export class ItrComponent implements OnInit, AfterViewInit {
       });
   }
 
-  getALLITR() {
-    this.isLoading = true; // Stop showing the loading spinner
-    // Simulate an API call with a delay
-    setTimeout(() => {
-      this.api.getAllITR()
-        .subscribe({
-          next: (res) => {
-            this.totalItems = res.length;
-            this.itrs = res;
-            this.logger.printLogs('i', 'LIST OF ITR', this.itrs);
-            this.isLoading = false; // Stop showing the loading spinner
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching User Groups', err);
+  getAllITR() {
+    this.isLoading = true; // Start spinner
+    this.api.getAllITR()
+      .pipe(
+        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        map((res) => {
+          // Filter results based on `createdBy` and slice for pagination
+          this.logger.printLogs('i', 'Show ITRs only for Administrator || User Account :', this.userAccount.userID);
+          this.logger.printLogs('i', 'List of Originated ITRs', res);
+          if (this.userAccount.userGroupName === 'System Administrator') {
+            return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
-        });
+          const filteredITRs = res.filter((itr: any) =>
+            itr.createdBy === this.userAccount.userID
+          );
+          this.totalItems = filteredITRs.length;
+          return filteredITRs.slice(0, 10); // Limit to the first 10 items
+        }),
+        finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+      )
+      .subscribe({
+        next: (filteredITRs) => {
+          this.itrs = filteredITRs;
+          this.logger.printLogs('i', 'List of ITRs', this.itrs);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching ITRs', err);
+        }
+      });
+  }
 
-    }, 3000); // Simulate a 2-second delay
+  onSearchITR() {
+    if (!this.searchKey) {
+      this.getAllITR(); // Call existing function to populate all PARs when no search key is entered
+    } else {
+      if (this.searchKey.trim()) {
+        this.isLoading = true; // Start spinner
+        this.api.searchITR(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .pipe(
+            map((res) => {
+              // Filter or process the response if needed
+              if (this.userAccount.userGroupName === 'System Administrator') {
+                return res.slice(0, 10); // For administrators, show all records, limited to 10
+              }
+              const filteredITRs = res.filter((itr: any) =>
+                itr.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+              );
+              this.totalItems = filteredITRs.length;
+              return filteredITRs.slice(0, 10); // Limit to 10 results for display
+            }),
+            finalize(() => this.isLoading = false) // Ensure spinner stops
+          )
+          .subscribe({
+            next: (filteredITRs) => {
+              this.itrs = filteredITRs; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH ITRs', this.itrs);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching ITRs on Search', err);
+            }
+          });
+      }
+    }
+  }
+
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onSearchITR();
+    } else {
+      this.onSearchITR();
+    }
   }
 
   getAllUserProfile() {
@@ -293,8 +348,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
         }
       });
   }
-
-
 
   getAllItems() {
     //Populate all User Profile
@@ -398,34 +451,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onSearchITR() {
-    //Populate all ITR
-    if (!this.searchKey) {
-      this.getALLITR();
-    } else {
-      if (this.searchKey.trim()) {
-        this.api.searchITR(this.searchKey)
-          .subscribe({
-            next: (res) => {
-              this.itrs = res;
-              this.logger.printLogs('i', 'SEARCH ITR', this.itrs);
-              this.itrs = res.slice(0, 10);
-            },
-            error: (err: any) => {
-              console.log("Error Fetching ITR:", err);
-            }
-          });
-      }
-    }
-  }
-
-  onKeyUp(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      this.onSearchITR();
-    } else {
-      this.onSearchITR();
-    }
-  }
 
   onAutoSuggestReceived() {
     this.receivedID = null;
@@ -678,7 +703,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'Saved Success', res);
           Swal.fire('Saved', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
-          this.getALLITR();
+          this.getAllITR();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
@@ -700,7 +725,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
       Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
       return
     }
-    
+
     if ((this.roleNoFromToken != 'System Administrator' && !itr.postFlag) || this.roleNoFromToken == 'System Administrator' || (itr.postFlag && this.canUnpost) || (!itr.postFlag && this.canPost)) {
       let itrNo = itr.itrNo;
 
@@ -717,7 +742,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
           this.api.postITR(itrNo, !itr.postFlag)
             .subscribe({
               next: (res) => {
-                this.getALLITR();
+                this.getAllITR();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
               },
@@ -858,7 +883,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
         this.api.deleteITR(itrNo)
           .subscribe({
             next: (res) => {
-              this.getALLITR();
+              this.getAllITR();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {

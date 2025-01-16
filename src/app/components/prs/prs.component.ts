@@ -12,7 +12,7 @@ import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 
 import { PrintService } from '../../services/print.service';
-import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { catchError, delay, finalize, forkJoin, map, Observable, of } from 'rxjs';
 
 
 // import * as bootstrap from 'bootstrap';
@@ -131,6 +131,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.getUserAccount();
     this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
@@ -145,8 +146,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
     });
 
 
-    this.getAllPRS();
-    this.getUserAccount();
     this.getAllUserProfile();
     this.setupModalClose();
     // Check if action is defined and has the isReady property
@@ -231,6 +230,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
+          this.getAllPRS();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Account from Store Service', err);
@@ -239,23 +239,34 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   getAllPRS() {
-    this.isLoading = true;
-
-    setTimeout(() => {
-      this.api.getAllPRS()
-        .subscribe({
-          next: (res) => {
-            this.totalItems = res.length;
-            this.prss = res.slice(0, 10);
-            this.logger.printLogs('i', 'LIST OF PRS', this.prss);
-            this.isLoading = false;
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching PRS', err);
+    this.isLoading = true; // Start spinner
+    this.api.getAllPRS()
+      .pipe(
+        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        map((res) => {
+          // Filter results based on `createdBy` and slice for pagination
+          this.logger.printLogs('i', 'Show PRSs only for Administrator || User Account :', this.userAccount.userID);
+          this.logger.printLogs('i', 'List of Originated PRSs', res);
+          if (this.userAccount.userGroupName === 'System Administrator') {
+            return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
-        });
-
-    }, 3000);
+          const filteredPRSs = res.filter((prs: any) =>
+            prs.createdBy === this.userAccount.userID
+          );
+          this.totalItems = filteredPRSs.length;
+          return filteredPRSs.slice(0, 10); // Limit to the first 10 items
+        }),
+        finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+      )
+      .subscribe({
+        next: (filteredPRSs) => {
+          this.prss = filteredPRSs;
+          this.logger.printLogs('i', 'List of PRSs', this.prss);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching PRSs', err);
+        }
+      });
   }
 
   getAllUserProfile() {
@@ -271,20 +282,36 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   onSearchPRS() {
-    //Populate all PRS
     if (!this.searchKey) {
-      this.getAllPRS();
+      this.getAllPRS(); // Call existing function to populate all PARs when no search key is entered
     } else {
       if (this.searchKey.trim()) {
-        this.api.searchPRS(this.searchKey)
+        this.isLoading = true; // Start spinner
+        this.api.searchPRS(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .pipe(
+            map((res) => {
+              // Filter results based on `createdBy` and slice for pagination
+              this.logger.printLogs('i', 'Show PRSs only for Administrator || User Account :', this.userAccount.userID);
+              this.logger.printLogs('i', 'List of Originated PRSs', res);
+              if (this.userAccount.userGroupName === 'System Administrator') {
+                return res.slice(0, 10); // For administrators, show all records, limited to 10
+              }
+              // Filter or process the response if needed
+              const filteredPRSs = res.filter((prs: any) =>
+                prs.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+              );
+              this.totalItems = filteredPRSs.length;
+              return filteredPRSs.slice(0, 10); // Limit to 10 results for display
+            }),
+            finalize(() => this.isLoading = false) // Ensure spinner stops
+          )
           .subscribe({
-            next: (res) => {
-              this.prss = res;
-              this.logger.printLogs('i', 'SEARCH PRS', this.prss);
-              this.prss = this.prss.slice(0, 10);
+            next: (filteredPRSs) => {
+              this.prss = filteredPRSs; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH PRSs', this.prss);
             },
             error: (err: any) => {
-              console.log("Error Fetching PRS:", err);
+              this.logger.printLogs('e', 'Error Fetching PRSs on Search', err);
             }
           });
       }
