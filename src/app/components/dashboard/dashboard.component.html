@@ -15,7 +15,7 @@
         </div>
       </div>
       <!--logo End-->
-      <h4 class="logo-title">DDN AEINV</h4>
+      <h4 class="logo-title fw-bold text-primary">DDN AEINV</h4>
     </a>
     <a class="sidebar-toggle" id="sidebarToggle" data-toggle="sidebar" type="button" (click)="toggleSidebarItems()"
       data-active="true">
@@ -154,13 +154,14 @@
   </div>
 
   <div class="container-fluid content-inner py-0">
-    <router-outlet>
-    </router-outlet>
     <div class="row mt-n5">
       <div class="col">
-        <app-widget class="widget"></app-widget>
+        <router-outlet>
+        </router-outlet>
       </div>
     </div>
+    
+    <app-widget class="widget"></app-widget>
   </div>
   <!-- Footer Section Start -->
 

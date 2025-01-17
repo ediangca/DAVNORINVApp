@@ -35,6 +35,15 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+  
+  //TotalAbove50ItemsByOffice List
+  getTotalAbove50ItemsByOffice(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}Cencus/TotalAbove50ItemsByOffice`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
   /*----------------------- COMPANY/BRANCH -----------------------*/
   // Branch List
   getCompanies(): Observable<any> {

@@ -38,14 +38,14 @@ import AOS from 'aos';
   ]
 })
 export class AppComponent implements OnInit {
-  appName: string = 'DDNAEINVAPP';
+  appName: string = 'DDNAEINV';
   faCoffee = faCoffee;
 
   public assetPath: string = 'assets/images/dashboard/top-header.png';
   public logoPath: string = 'assets/images/logo/logo-sm.png';
 
   ToasterPosition = ToasterPosition
-  title: string = "DDNAEINVAPP";
+  title: string = "DDNAEINV";
 
   constructor() {
   }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
@@ -17,7 +17,7 @@ import { LogsService } from '../../services/logs.service';
   templateUrl: './items.component.html',
   styleUrl: './items.component.css'
 })
-export class ItemsComponent implements OnInit {
+export class ItemsComponent implements OnInit, AfterViewInit {
 
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
 
@@ -56,7 +56,6 @@ export class ItemsComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.resetForm();
     this.checkPrivileges();
     this.itemForm = this.fb.group({
       description: ['', Validators.required],
@@ -78,6 +77,13 @@ export class ItemsComponent implements OnInit {
             }
           });
       }
+    });
+    this.resetForm();
+  }
+
+  ngAfterViewInit(): void {
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
     });
   }
 

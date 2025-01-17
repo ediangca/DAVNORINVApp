@@ -2,9 +2,9 @@
   <div class="col-md-12 col-lg-12">
     <!-- Carousel -->
     <div class="card-carousel">
-      <button class="carousel-btn prev" id="prev" aria-label="Previous Slide">‹</button>
+      <button #prev class="carousel-btn prev" id="prev" (click)="moveToPrev()" aria-label="Previous Slide">‹</button>
       <div class="carousel-container">
-        <div class="carousel-track" id="carousel-track">
+        <div #carouseltrack class="carousel-track" id="carouseltrack">
           <!-- PAR -->
           <div class="card l-bg-cherry" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="500">
             <div class="card-statistic-3 p-4">
@@ -127,57 +127,44 @@
           <!-- Repeat similar card structures as needed -->
         </div>
       </div>
-      <button class="carousel-btn next" id="next" aria-label="Next Slide">›</button>
+      <button #next class="carousel-btn next" id="next" (click)="moveToNext()" aria-label="Next Slide">›</button>
     </div>
   </div>
   <div class="col-md-12 col-lg-8">
-    
+
     <!-- HORIZONTAL GRAPH -->
-    <div class="card"  data-aos="fade-right" data-aos-easing="linear" data-aos-duration="500">
-       <div class="card-body">
-          <h2 class="counter mb-3">$3450</h2>
-          <p class="mb-2">Your Current Balance</p> 
-          <h6>20% ($520)</h6>
-          <a href="#" class="mt-4 btn btn-danger d-block rounded">Add credit</a>
-          <div class="mt-3">
-             <div class="pb-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                   <p class="mb-0">Insurance</p>
-                   <h4>18</h4>
-                </div>
-                <div class="progress bg-soft-info shadow-none w-100" style="height: 10px">
-                   <div class="progress-bar bg-info" data-toggle="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-             </div>
-             <div class="pb-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                   <p class="mb-0">Savings</p>
-                   <h4>124</h4>
-                </div>
-                <div class="progress bg-soft-success shadow-none w-100" style="height: 10px">
-                   <div class="progress-bar bg-success" data-toggle="progress-bar" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-             </div>
-             <div class="pb-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                   <p class="mb-0">Investment</p>
-                   <h4>74</h4>
-                </div>
-                <div class="progress bg-soft-primary shadow-none w-100" style="height: 10px">
-                   <div class="progress-bar bg-primary" data-toggle="progress-bar" role="progressbar" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-             </div>
-             <div>
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                   <p class="mb-0">Progress</p>
-                   <h4>89</h4>
-                </div>
-                <div class="progress bg-soft-success shadow-none w-100" style="height: 10px">
-                   <div class="progress-bar bg-success" data-toggle="progress-bar" role="progressbar" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-             </div>
-          </div>
-       </div>
+    <div class="card" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="500">
+      <div class="card-body">
+        <h2 class="counter mb-3">Current Inventory by Office</h2>
+        <!-- Vertical Divider -->
+        <hr class="border border-secodary border-1 opacity-75">
+        <!-- <p class="mb-2">By Office</p>  -->
+        <!-- <h6>20% ($520)</h6> -->
+        <!-- <a href="#" class="mt-4 btn btn-danger d-block rounded">Add credit</a> -->
+        <div class="mt-3">
+          <ng-container *ngFor="let i of totalItemsByOffice">
+            <div class="pb-3">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <p class="mb-0">{{ i.office }}</p>
+                <h4>{{ i.totalEntries || 0 }}
+
+                  <small class="fs-6 text-{{i.module == 'PARS'? 'primary':'warning'}}">
+                    <i class="fa fa-arrow-{{i.module == 'PARS'? 'up':'down'}}"></i> 50K
+                  </small>
+                </h4>
+              </div>
+              <div class="progress bg-soft-info shadow-none w-100" role="progressbar" aria-label="Progress example"
+                [attr.aria-valuenow]="i.percentage" attr.aria-valuemin="0" attr.aria-valuemax="100">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" [ngClass]="{ 'bg-danger': i.percentage < 50, 'bg-info': i.percentage >= 50 && i.percentage <= 60,
+                'bg-warning': i.percentage > 70 && i.percentage <= 80, 'bg-success': i.percentage > 90 }"
+                  [style.width.%]="i.percentage"></div>
+              </div>
+            </div>
+          </ng-container>
+
+
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-md-12 col-lg-4">
@@ -208,7 +195,7 @@
             <div class="ms-4">
               <h6 class="mb-1">{{i.tableName+'-'+ i.recordID}}</h6>
               <span class="mb-0">{{'Action by '+ (i.actionByName? i.actionByName : i.actionBy)}}</span><br>
-              <span class="mb-0 fst-italic" style="font-size: 11px;">{{formatDate(i.activityDate)}}</span> 
+              <span class="mb-0 fst-italic" style="font-size: 11px;">{{formatDate(i.activityDate)}}</span>
             </div>
           </div>
         </ng-container>
