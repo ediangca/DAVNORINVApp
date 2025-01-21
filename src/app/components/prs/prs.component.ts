@@ -23,7 +23,7 @@ declare var bootstrap: any;
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxScannerQrcodeModule],
   templateUrl: './prs.component.html',
-  styleUrl: './prs.component.css'
+  styleUrl: './prs.component.css',
 })
 export class PrsComponent implements OnInit, AfterViewInit {
 
@@ -51,6 +51,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
   items: any = [];
   searchKey: string = '';
   parItemKey: string = '';
+
+  activePARItemKey: string = ''
 
   activeInput: 'received' | 'issued' | 'approved' | null = null;
   receivedByID: string | null = null;
@@ -161,7 +163,9 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.checkPrivileges();
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
   }
 
   private checkPrivileges(): void {
@@ -251,7 +255,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
             return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
           const filteredPRSs = res.filter((prs: any) =>
-            prs.createdBy === this.userAccount.userID
+            prs.createdBy === this.userAccount.userID ||
+            prs.receivedBy === this.userAccount.userID
           );
           this.totalItems = filteredPRSs.length;
           return filteredPRSs.slice(0, 10); // Limit to the first 10 items
@@ -298,7 +303,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
               }
               // Filter or process the response if needed
               const filteredPRSs = res.filter((prs: any) =>
-                prs.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+                prs.createdBy === this.userAccount.userID ||
+                prs.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredPRSs.length;
               return filteredPRSs.slice(0, 10); // Limit to 10 results for display
@@ -324,6 +330,55 @@ export class PrsComponent implements OnInit, AfterViewInit {
     } else {
       this.onSearchPRS();
     }
+  }
+
+  onSearchActivePARItem() {
+    if (!this.activePARItemKey) {
+      this.getAllPostedPARItem(); // Call existing function to populate all PARs when no search key is entered
+    } else {
+      if (this.activePARItemKey.trim()) {
+        this.api.searchAllPostedPARItem(this.activePARItemKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .subscribe({
+            next: (res) => {
+
+              this.logger.printLogs('i', `LIST OF ACTIVE PAR ITEM KEY ${this.activePARItemKey.trim()}`, res);
+              this.parItems = res
+
+              this.parItems = this.parItems.filter(
+                item => !this.prsItems.some(prsItem => prsItem.parino === item.parino) &&
+                  item.prsFlag === false).slice(0, 10);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching SEARCH ACTIVE PAR ITEM', err);
+            }
+          });
+
+      }
+    }
+  }
+
+  getAllPostedPARItem() {
+    this.api.getAllPostedPARItem()
+      .subscribe({
+        next: (res) => {
+          this.parItems = res;
+
+          this.logger.printLogs('i', 'LIST OF ACTIVE PAR ITEM ', this.parItems);
+
+          this.parItems = this.parItems.filter(
+            item => !this.prsItems.some(prsItem => prsItem.parino === item.parino) &&
+              item.prsFlag === false
+          ).slice(0, 10);
+
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching ACTIVE PAR ITEM ', err);
+        }
+      });
+  }
+
+  onKeyUpPARItem(event: KeyboardEvent): void {
+    this.onSearchActivePARItem();
   }
 
   // Function to display the QR Scanner modal
@@ -672,10 +727,13 @@ export class PrsComponent implements OnInit, AfterViewInit {
       Swal.fire('INFORMATION!', 'Please input PRS No. first before adding item', 'warning');
       return;
     }
-    this.api.getAllPARItem()
+    // this.api.getAllPARItem
+    this.api.getAllPostedPARItem()
       .subscribe({
         next: (res) => {
           this.parItems = res;
+
+          this.logger.printLogs('i', 'LIST OF ACTIVE PAR ITEM ', this.parItems);
 
           this.parItems = this.parItems.filter(
             item => !this.prsItems.some(prsItem => prsItem.parino === item.parino) &&

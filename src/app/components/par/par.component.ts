@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxScannerQrcodeModule, LOAD_WASM, ScannerQRCodeConfig, ScannerQRCodeResult, NgxScannerQrcodeComponent } from 'ngx-scanner-qrcode';
@@ -139,6 +139,8 @@ export class ParComponent implements OnInit, AfterViewInit {
       }
     ],
   };
+
+  qrCode = ''
 
   constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService,
     private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
@@ -308,7 +310,8 @@ export class ParComponent implements OnInit, AfterViewInit {
 
           // For regular users, filter data based on `receivedBy` or relevant fields
           const filteredPARs = res.filter((par: any) =>
-            par.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+            par.createdBy === this.userAccount.userID ||
+            par.receivedBy === this.userAccount.userID
           );
           this.totalItems = filteredPARs.length;
           return filteredPARs.slice(0, 10); // Limit to 10 results
@@ -365,7 +368,8 @@ export class ParComponent implements OnInit, AfterViewInit {
               }
               // Filter or process the response if needed
               const filteredPARs = res.filter((par: any) =>
-                par.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+                par.createdBy === this.userAccount.userID ||
+              par.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredPARs.length;
               return filteredPARs.slice(0, 10); // Limit to 10 results for display
@@ -1539,31 +1543,48 @@ export class ParComponent implements OnInit, AfterViewInit {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-        if (this.purpose == 'get') {
-          this.itemForm.patchValue({
-            qrCode: results[0].value
-          });
-          this.onCloseQRScanning(this.scannerAction);
-        } else {
-          this.api.retrievePARITEMByQRCode(results[0].value)
-            .subscribe({
-              next: (res) => {
-                console.log('Retrieve PAR ITEMS', res);
-                this.item = res[0];
-
-                console.log('Show Items', this.item);
-
-                this.onRetrievePAR(res[0].parNo);
-
-              },
-              error: (err: any) => {
-                this.logger.printLogs('w', 'Problem with Retreiving PAR', err);
-                Swal.fire('Item not Found', `QR Code ${results[0].value} not found in PAR`, 'info');
-              }
-            });
-        }
+        this.qrCode = results[0].value
+        this.validateQR(this.qrCode)
       }
 
+    }
+  }
+
+  onEnter(): void {
+    console.log('Enter key pressed. QR Value:', this.qrCode);
+
+    // Add your logic here
+    if (this.qrCode.trim() !== '') {
+      // Example: Perform a search action
+      console.log('Performing search for:', this.qrCode);
+      this.validateQR(this.qrCode)
+    }
+  }
+
+  validateQR(qr: string): void {
+    
+    if (this.purpose == 'get') {
+      this.itemForm.patchValue({
+        qrCode: qr
+      });
+      this.onCloseQRScanning(this.scannerAction);
+    } else {
+      this.api.retrievePARITEMByQRCode(qr)
+        .subscribe({
+          next: (res) => {
+            console.log('Retrieve PAR ITEMS', res);
+            this.item = res[0];
+
+            console.log('Show Items', this.item);
+
+            this.onRetrievePAR(res[0].parNo);
+
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Problem with Retreiving PAR', err);
+            Swal.fire('Item not Found', `QR Code ${qr} not found in PAR`, 'info');
+          }
+        });
     }
   }
 

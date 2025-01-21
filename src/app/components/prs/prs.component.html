@@ -740,7 +740,7 @@
 <!-- ITEM LIST VIEW MODAL -->
 <div #ListItemModalForm class="modal fade" id="ListItemModalForm" tabindex="-1" aria-labelledby="ItemModalFormLabel"
   aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-l">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="ItemModalFormLabel">List of Item</h1>
@@ -751,13 +751,17 @@
         <!-- ITEM DETAILS -->
         <div class="row">
           <div class="col-lg-12">
+
+            <input type="text" class="form-control rounded-pill" type="search" [(ngModel)]="activePARItemKey"
+              (keyup)="onSearchActivePARItem()" placeholder="Search here.." aria-label="Search">
+
+            <hr class="border border-secodary border-1 opacity-75">
+
             <table class="table table-bordered">
               <thead>
                 <tr>
                   <th>PAR/PTR No.</th>
                   <th>Description</th>
-                  <th>Property No</th>
-                  <th>Cost</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -766,11 +770,10 @@
                   <tr *ngIf="ii.prsFlag==false">
                     <td>{{ii.reparNo? ii.reparNo: ii.parNo }}</td>
                     <td>{{ii.description}}</td>
-                    <td>{{ii.propertyNo}}</td>
-                    <td>{{ii.amount}}</td>
                     <td>
-                      <a class="delete" type="button" (click)="onAddItem(ii)"><i
-                          class="fa-sharp-duotone  fa-solid fa-plus" data-toggle="tooltip" title="Delete"></i></a>
+                      <button class="btn btn-sm btn-primary rounded-pill" type="button" (click)="onAddItem(ii)">
+                        <i class="fa-thin fa-plus"></i> Add
+                      </button>
                     </td>
                   </tr>
                 </ng-container>
@@ -778,6 +781,50 @@
             </table>
           </div>
         </div>
+
+        <!-- <div class="accordion" id="parAccordion">
+              <ng-container *ngFor="let ii of parItems; let i = index">
+                <div class="accordion-item" *ngIf="ii.prsFlag == false">
+                  <h2 class="accordion-header" id="heading{{i}}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                      [attr.data-bs-target]="'#collapse' + i" aria-expanded="true"
+                      [attr.aria-controls]="'collapse' + i">
+                      <strong>PAR/PTR No.:</strong> {{ ii.reparNo ? ii.reparNo : ii.parNo }} - {{ ii.description }}
+                    </button>
+
+                  </h2>
+                  <div [id]="'collapse' + i" class="accordion-collapse collapse"  [attr.aria-labelledby]="'heading' + i"
+                    data-bs-parent="#parAccordion">
+                    <div class="accordion-body">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Property No</th>
+                            <th>Cost</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{ii.propertyNo}}</td>
+                            <td>{{ii.amount}}</td>
+                            <td>
+                              <button class="btn btn-sm btn-primary" type="button" (click)="onAddItem(ii)">
+                                <i class="fa fa-plus"></i> Add
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div> -->
+
+
+
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"

@@ -138,6 +138,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
     ],
   };
 
+  qrCode = ''
 
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private vf: ValidateForm,
@@ -204,7 +205,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     window.addEventListener('load', () => {
-    this.checkPrivileges();
+      this.checkPrivileges();
     });
   }
 
@@ -268,6 +269,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
+          this.logger.printLogs('i', 'Fetching User Account from Store Service', this.userAccount);
           this.getAllICS();
         },
         error: (err: any) => {
@@ -289,7 +291,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
             return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
           const filteredICSs = res.filter((ics: any) =>
-            ics.createdBy === this.userAccount.userID
+            ics.createdBy === this.userAccount.userID ||
+            ics.receivedBy === this.userAccount.userID
           );
           this.totalItems = filteredICSs.length;
           return filteredICSs.slice(0, 10); // Limit to the first 10 items
@@ -306,7 +309,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
         }
       });
   }
-  
+
   onSearchICS() {
     if (!this.searchKey) {
       this.getAllICS(); // Call existing function to populate all ICSs when no search key is entered
@@ -324,7 +327,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
               }
               // Filter or process the response if needed
               const filteredICSs = res.filter((ics: any) =>
-                ics.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+                ics.createdBy === this.userAccount.userID ||
+              ics.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredICSs.length;
               return filteredICSs.slice(0, 10); // Limit to 10 results for display
@@ -1488,33 +1492,51 @@ export class IcsComponent implements OnInit, AfterViewInit {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-        if (this.purpose == 'get') {
-          this.itemForm.patchValue({
-            qrCode: results[0].value
-          });
-          this.onCloseQRScanning(this.scannerAction);
-        } else {
-          this.api.retrieveicsITEMByQRCode(results[0].value)
-            .subscribe({
-              next: (res) => {
-                console.log('Retrieve ICS ITEMS', res);
-                this.item = res[0];
-
-                console.log('Show Items', this.item);
-
-                this.onRetrieveICS(res[0].parNo);
-
-              },
-              error: (err: any) => {
-                this.logger.printLogs('w', 'Problem with Retreiving ICS', err);
-                Swal.fire('Item not Found', `QR Code ${results[0].value} not found in ICS`, 'info');
-              }
-            });
-        }
+        this.qrCode = results[0].value
+        this.validateQR(this.qrCode)
       }
     }
   }
 
+  onEnter(): void {
+    console.log('Enter key pressed. QR Value:', this.qrCode);
+
+    // Add your logic here
+    if (this.qrCode.trim() !== '') {
+      // Example: Perform a search action
+      console.log('Performing search for:', this.qrCode);
+      this.validateQR(this.qrCode)
+    }
+  }
+
+  
+
+  validateQR(qr: string): void {
+    if (this.purpose == 'get') {
+      this.itemForm.patchValue({
+        qrCode: qr
+      });
+      this.onCloseQRScanning(this.scannerAction);
+    } else {
+      this.api.retrieveicsITEMByQRCode(qr)
+        .subscribe({
+          next: (res) => {
+            console.log('Retrieve ICS ITEMS', res);
+            this.item = res[0];
+
+            console.log('Show Items', this.item);
+
+            this.onRetrieveICS(res[0].parNo);
+
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Problem with Retreiving ICS', err);
+            Swal.fire('Item not Found', `QR Code ${qr} not found in ICS`, 'info');
+          }
+        });
+    }
+  }
+  
   onRetrieveICS(icsNo: string) {
     this.api.retrieveICS(icsNo)
       .subscribe({
@@ -1554,6 +1576,9 @@ export class IcsComponent implements OnInit, AfterViewInit {
       (error: any) => console.error('Error while resuming scan:', error)
     );
   }
+
+  
+
 
   onCloseQRScanning(scannerAction: any) {
     // Close the modal

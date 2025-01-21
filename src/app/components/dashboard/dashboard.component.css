@@ -3,6 +3,9 @@
   overflow-y: hidden;
   /* Hide overflow initially */
 }
+/* .main-content .content-inner {
+  min-height: calc(100vh - 17.6rem);
+} */
 
 .table td,
 .table th {

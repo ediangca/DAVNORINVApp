@@ -274,7 +274,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
             return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
           const filteredPTRs = res.filter((ptr: any) =>
-            ptr.createdBy === this.userAccount.userID
+            ptr.createdBy === this.userAccount.userID ||
+            ptr.receivedBy === this.userAccount.userID
           );
           this.totalItems = filteredPTRs.length;
           return filteredPTRs.slice(0, 10); // Limit to the first 10 items
@@ -309,7 +310,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
               }
               // Filter or process the response if needed
               const filteredPTRs = res.filter((ptr: any) =>
-                ptr.issuedBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+                ptr.issuedBy === this.userAccount.userID ||
+              ptr.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredPTRs.length;
               return filteredPTRs.slice(0, 10); // Limit to 10 results for display
@@ -442,7 +444,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
       });
   }
 
-  
+
 
   onKeyUp(event: KeyboardEvent) {
     if (event.key === 'Enter') {
@@ -533,6 +535,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
     this.approvedID = userProfile.userID;
     this.logger.printLogs('i', 'Selected to Approved', userProfile);
+
+    if (this.parForm!) {
+      this.parForm.patchValue({
+        userID3: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
 
     this.reparForm.patchValue({
       userID3: userProfile.fullName  // Patch the selected IID to the form

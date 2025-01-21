@@ -699,6 +699,24 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+  
+  //PARITEM Active List 
+  getAllPostedPARItem(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}PARITEM/posted/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  //PARITEM Active List By Key
+  searchAllPostedPARItem(key: string): Observable<any> {
+    // 'https://localhost:7289/api/PARITEM/Active/Search?key=123123
+    return this.http.get<any>(`${this.apiUrl}PARITEM/posted/Search?key=` + key)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
   //PARITEM List By PAR No.
   getAllPARItemByPARNo(parNo: String): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}PARITEM/Search?key=` + parNo)
@@ -872,6 +890,15 @@ export class ApiService {
   //ICSITEM List all Posted Item.
   getAllPostedICSItems(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}ICSItem/posted`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  //PARITEM Active List By Key
+  searchAllPostedICSItem(key: string): Observable<any> {
+    // 'https://localhost:7289/api/ICSItem/posted/Search?key=123123
+    return this.http.get<any>(`${this.apiUrl}ICSItem/posted/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
       );

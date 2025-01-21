@@ -3,7 +3,7 @@ import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MenuComponent } from '../menu/menu.component';
 import { StoreService } from '../../services/store.service';
@@ -23,13 +23,13 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, ReactiveFormsModule, HttpClientModule, CommonModule, MenuComponent, WidgetComponent, NgxScannerQrcodeModule],
+  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, ReactiveFormsModule, HttpClientModule, MenuComponent, WidgetComponent, NgxScannerQrcodeModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
+  @ViewChild('QRScannerForm', { static: true }) QRScannerModal!: ElementRef;
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   @ViewChild('itemDetailsModalForm') itemDetailsModal!: ElementRef;
 
@@ -37,20 +37,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   public config: ScannerQRCodeConfig = {
     constraints: {
       video: {
-        width: window.innerWidth
+        width: window.innerWidth,  // Use dynamic width, it adjusts to the device size
+        height: window.innerHeight, // Set dynamic height as well
+        facingMode: 'environment',  // Prefer the back camera for scanning
       },
     },
     canvasStyles: [
       { /* layer */
-        lineWidth: 1,
-        fillStyle: '#00950685',
-        strokeStyle: '#00950685',
+        lineWidth: 3,               // Increase line width to improve visibility on canvas
+        fillStyle: 'rgba(0, 149, 6, 0.5)',  // Apply semi-transparent background for the layer
+        strokeStyle: '#009506',
+        globalCompositeOperation: 'source-over', // Make sure layers do not overwrite each other
       },
       { /* text */
-        font: '20px serif',
-        fillStyle: '#ff0000',
-        strokeStyle: '#ff0000',
-      }
+        font: '24px Arial, sans-serif',  // Increase font size for better readability
+        fillStyle: '#ff0000',             // Keep bright color for contrast
+        strokeStyle: '#ffffff',         // White stroke for contrast on dark background
+        lineWidth: 2,                   // Increase stroke width around the text for visibility
+        textAlign: 'center',            // Center the text if needed
+        textBaseline: 'middle',         // Align text to the middle of the canvas
+      },
     ],
   };
 
@@ -85,6 +91,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   track!: HTMLElement;
   cards!: HTMLElement[];
   currentIndex = 0;
+
+  qrCode = ''
 
 
   constructor(
@@ -347,41 +355,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-        this.api.retrieveITEMByQRCode(results[0].value)
-          .subscribe({
-            next: (res) => {
-              console.log('Retrieve ITEMS', res);
-              this.item = res[0];
-              this.itemKeys = Object.keys(this.item || {});
-
-              //PROMT THE MODAL TO ASK TO VIEW
-              if (!res[0]) {
-                Swal.fire('No Item Found', `QR Code ${results[0].value} not found`, 'info');
-                return
-              }
-              Swal.fire({
-                title: 'PROPERTY FOUND',
-                text: 'Do you want to view the Property?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No',
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  // this.openModal(this.itemDetailsModal);  
-                  this.cdr.detectChanges(); // Notify Angular of the changes
-                  setTimeout(() => this.openModal(this.itemDetailsModal), 200); // Added a small delay
-
-                }
-              });
-
-
-            },
-            error: (err: any) => {
-              this.logger.printLogs('w', 'Problem with Retreiving ITEM', err);
-              Swal.fire('Item not Found', `QR Code ${results[0].value} not found`, 'info');
-            }
-          });
+        this.qrCode = results[0].value
+        this.validateQR(this.qrCode);
 
       }
 
@@ -400,7 +375,73 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     );
   }
 
+  // onEnter(event: KeyboardEvent): void {
+  //   const inputValue = (event.target as HTMLInputElement).value; // Get the input value
+  //   console.log('Enter key pressed. Value:', inputValue);
 
+  //   // Add your logic here
+  //   if (inputValue.trim() !== '') {
+  //     // Perform the search or any action
+  //       this.validateQR(inputValue)
+  //   }
+  // }
+  onEnter(): void {
+    console.log('Enter key pressed. QR Value:', this.qrCode);
+
+    // Add your logic here
+    if (this.qrCode.trim() !== '') {
+      // Example: Perform a search action
+      console.log('Performing search for:', this.qrCode);
+      this.validateQR(this.qrCode)
+    }
+  }
+
+
+
+  validateQR(qr: string): void {
+    this.api.retrieveITEMByQRCode(qr)
+      .subscribe({
+        next: (res) => {
+          console.log('Retrieve ITEMS', res);
+          this.item = res[0];
+          this.itemKeys = Object.keys(this.item || {});
+
+          //PROMT THE MODAL TO ASK TO VIEW
+          if (!res[0]) {
+            Swal.fire('Property not Found', `QR Code ${qr} not found`, 'info');
+            this.qrCode = ''
+            return
+          }
+
+          Swal.fire({
+            title: 'PROPERTY FOUND',
+            text: 'Do you want to view the Property?',
+            icon: 'question',
+            showCancelButton: true, // Show cancel button
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            allowEscapeKey: true, // Enable close on escape
+            allowOutsideClick: true, // Enable close by clicking outside
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Notify Angular of the changes
+              this.cdr.detectChanges();
+
+              // Delay before opening the modal
+              setTimeout(() => this.openModal(this.itemDetailsModal), 200);
+            }
+          });
+
+          this.qrCode = ''
+
+
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Problem with Retreiving ITEM', err);
+          Swal.fire('Item not Found', `QR Code ${qr} not found`, 'info');
+        }
+      });
+  }
 }
 
 

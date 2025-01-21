@@ -782,7 +782,7 @@
 <!-- ITEM LIST VIEW MODAL -->
 <div #ListItemModalForm class="modal fade" id="ListItemModalForm" tabindex="-1" aria-labelledby="ItemModalFormLabel"
   aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-l">
+  <div class="modal-dialog modal-dialog-centered modal-lG">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="ItemModalFormLabel">List of Item</h1>
@@ -793,13 +793,17 @@
         <!-- ITEM DETAILS -->
         <div class="row">
           <div class="col-lg-12">
+
+            <input type="text" class="form-control rounded-pill" type="search" [(ngModel)]="activceICSItemKey"
+              (keyup)="onSearchPostedICSItem()" placeholder="Search here.." aria-label="Search">
+
+            <hr class="border border-secodary border-1 opacity-75">
+
             <table class="table table-bordered">
               <thead>
                 <tr>
-                  <th>PAR/PTR No.</th>
+                  <th>ICS/ITR No.</th>
                   <th>Description</th>
-                  <th>Property No</th>
-                  <th>Cost</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -808,11 +812,10 @@
                   <tr *ngIf="ii.rrsepFlag==false">
                     <td>{{ii.itrNo? ii.itrNo: ii.icsNo }}</td>
                     <td>{{ii.description}}</td>
-                    <td>{{ii.propertyNo}}</td>
-                    <td>{{ii.amount}}</td>
                     <td>
-                      <a class="delete" type="button" (click)="onAddItem(ii)"><i
-                          class="fa-sharp-duotone  fa-solid fa-plus" data-toggle="tooltip" title="Delete"></i></a>
+                      <button class="btn btn-sm btn-primary rounded-pill" type="button" (click)="onAddItem(ii)"  data-toggle="tooltip" title="Delete">
+                        <i class="fa-thin fa-plus"></i> Add
+                      </button>
                     </td>
                   </tr>
                 </ng-container>

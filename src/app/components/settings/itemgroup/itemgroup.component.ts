@@ -54,7 +54,9 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.checkPrivileges();
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
   }
 
   private checkPrivileges(): void {

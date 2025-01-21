@@ -50,6 +50,8 @@ export class RrspComponent {
   searchKey: string = '';
   parItemKey: string = '';
 
+  activceICSItemKey: string = ''
+
   activeInput: 'received' | 'issued' | 'approved' | null = null;
   receivedByID: string | null = null;
   issuedByID: string | null = null;
@@ -246,8 +248,9 @@ export class RrspComponent {
           if (this.userAccount.userGroupName === 'System Administrator') {
             return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
-          const filteredRRSEPs = res.filter((rrsep: any) =>
-            rrsep.createdBy === this.userAccount.userID
+          const filteredRRSEPs = res.filter((rrsp: any) =>
+            rrsp.createdBy === this.userAccount.userID ||
+            rrsp.receivedBy === this.userAccount.userID
           );
           this.totalItems = filteredRRSEPs.length;
           return filteredRRSEPs.slice(0, 10); // Limit to the first 10 items
@@ -278,8 +281,9 @@ export class RrspComponent {
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 10); // For administrators, show all records, limited to 10
               }
-              const filteredRRSEPs = res.filter((itr: any) =>
-                itr.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+              const filteredRRSEPs = res.filter((rrsp: any) =>
+                rrsp.createdBy === this.userAccount.userID ||
+                rrsp.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredRRSEPs.length;
               return filteredRRSEPs.slice(0, 10); // Limit to 10 results for display
@@ -317,6 +321,60 @@ export class RrspComponent {
     } else {
       this.onSearchRRSEP();
     }
+  }
+
+  onSearchPostedICSItem() {
+    if (!this.activceICSItemKey) {
+      this.getAllPostedICSItems(); // Call existing function to populate all PARs when no search key is entered
+    } else {
+      if (this.activceICSItemKey.trim()) {
+        this.api.searchAllPostedICSItem(this.activceICSItemKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .subscribe({
+            next: (res) => {
+
+              this.icsItems = res;
+              
+              this.logger.printLogs('i', `LIST OF ACTIVE ICS ITEM KEY ${this.activceICSItemKey.trim()}`, res);
+              
+              this.icsItems = this.icsItems.filter(
+                item => !this.rrsepItems.some(rrsepItem => rrsepItem.icsItemNo === item.icsItemNo) &&
+                  item.rrsepFlag === false).slice(0,10)
+
+              this.logger.printLogs('i', `LIST OF ACTIVE RRSEP ITEM `, this.rrsepItems);
+              this.icsItems = res
+
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching SEARCH ACTIVE ICS ITEM', err);
+            }
+          });
+
+      }
+    }
+  }
+
+  getAllPostedICSItems() {
+    this.api.getAllPostedICSItems()
+      .subscribe({
+        next: (res) => {
+          this.icsItems = res;
+
+          this.logger.printLogs('i', 'LIST OF ACTIVE ICS ITEM ', this.icsItems);
+          
+          this.icsItems = this.icsItems.filter(
+            item => !this.rrsepItems.some(rrsepItem => rrsepItem.icsItemNo === item.icsItemNo) &&
+              item.rrsepFlag === false).slice(0,10);
+
+          this.logger.printLogs('i', 'LIST OF ACTIVE RRSEP ITEM ', this.rrsepItems);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching Items', err);
+        }
+      });
+  }
+
+  onKeyUpPARItem(event: KeyboardEvent): void {
+    this.onSearchPostedICSItem();
   }
 
   // Function to display the QR Scanner modal

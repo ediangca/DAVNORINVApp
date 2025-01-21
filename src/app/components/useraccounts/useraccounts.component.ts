@@ -93,8 +93,11 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.loadPositions();
     this.setupModalClose();
   }
+  
   ngAfterViewInit(): void {
-    this.checkPrivileges();
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
   }
 
   private checkPrivileges(): void {

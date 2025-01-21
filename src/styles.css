@@ -529,3 +529,41 @@ max-width: 400px;
 .modal form label {
   font-weight: normal;
 }
+
+
+/* QR CODE MODAL OVERLAY*/
+
+.qr-overlay {
+  position: absolute;    
+  top: 19px;
+  left: 30px;
+  width: 88%;
+  height: 75%;
+  z-index: 2;
+  pointer-events: none; 
+  /* background-color: rgba(0, 0, 0, 0.7);  */
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.qr-overlay-line {
+  width: 80%;
+  height: 1px;
+  background-color: var(--bs-primary);
+  animation: scan-line 1s infinite ease-in-out;
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-2550%);
+  }
+  50% {
+    transform: translateY(2550%);
+  }
+  100% {
+    transform: translateY(-2550%);
+  }
+}

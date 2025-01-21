@@ -40,7 +40,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
   canPost: boolean = false;
   canUnpost: boolean = false;
 
-  constructor(private fb: FormBuilder, private api: ApiService, 
+  constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private logger: LogsService) {
 
     this.ngOnInit();
@@ -53,9 +53,12 @@ export class PositionsComponent implements OnInit, AfterViewInit {
     this.getAllPositions();
     this.setupModalClose();
   }
-  
+
   ngAfterViewInit(): void {
-    this.checkPrivileges();
+
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
   }
 
   private checkPrivileges(): void {

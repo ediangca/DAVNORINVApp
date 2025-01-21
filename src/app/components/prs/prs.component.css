@@ -54,7 +54,7 @@
 /* General styling */
 th,
 td {
-  white-space: normal;
+  /* white-space: normal; */
   /* Allow text to wrap */
   padding: 8px;
   /* Adjust padding */
@@ -306,3 +306,4 @@ table tbody tr:nth-child(even) {
   /* Set a reasonable max-height or adjust as needed */
   padding: 15px;
 }
+

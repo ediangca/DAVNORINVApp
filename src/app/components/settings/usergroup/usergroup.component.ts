@@ -60,7 +60,9 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
     this.ngOnInit();
   }
   ngAfterViewInit(): void {
-    this.checkPrivileges();
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
   }
 
   ngOnInit(): void {

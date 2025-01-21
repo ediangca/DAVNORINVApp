@@ -89,15 +89,17 @@
                 }@else{
                 <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditPAR(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
-                <a *ngIf="canDelete" class="delete" type="button" (click)="onDelete(p)"><i
-                    class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
+                <a *ngIf="canDelete  && p.createdBy === userAccount.userID" class="delete" type="button"
+                  (click)="onDelete(p)"><i class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip"
+                    title="Delete"></i></a>
                 <a *ngIf="canRetrieve" class="success" type="button" (click)="onViewPAR(p)">
                   <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
                 </a>
                 <a class="seconadry" type="button" (click)="onPrintPAR(p.parNo!)">
                   <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
                 </a>
-                <a *ngIf="canPTR" class="primary" type="button" (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
+                <a *ngIf="canPTR  && (p.receivedBy=== userAccount.userID || p.createdBy== userAccount.userID )"
+                  class="primary" type="button" (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
                     data-toggle="tooltip" title="PTR"></i></a>
                 }
               </form>
@@ -409,7 +411,9 @@
 
           <button id="closeBut" type="button" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal"
             (click)="closeModal(AddEditModal)">Close</button>
-          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)"  type="button" class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
+          <button
+            *ngIf="(isEditMode && canUpdate && par.createdBy === userAccount.userID) || (!isEditMode && canCreate)"
+            type="button" class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
             'Save'
             }}</button>
 
@@ -1147,8 +1151,19 @@
       </div>
       <div class="modal-body item-body scrollable">
         <!-- ngx-scanner-qrcode -->
+        <div class="qr-overlay">
+          <div class="qr-overlay-line"></div>
+        </div>
+
         <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
         </ngx-scanner-qrcode>
+
+        <div *ngIf="this.purpose != 'get'" class="formGroup mt-2">
+          <label class="fst-italic text-primary" for="qrCodeField">If the QR code is unclear and cannot be detected by
+            the camera, please use the input field provided below to enter the information manually.</label>
+          <input class="form-control rounded-pill mt-3" id="qrCodeField" type="text" placeholder="Enter QR Here.."
+            aria-label="Search" [(ngModel)]="qrCode" (keydown.enter)="onEnter()" />
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"

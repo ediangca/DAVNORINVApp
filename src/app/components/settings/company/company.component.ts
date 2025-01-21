@@ -5,11 +5,9 @@ import Swal from 'sweetalert2';
 
 import * as bootstrap from 'bootstrap';
 import { ApiService } from '../../../services/api.service';
-import { window } from 'rxjs';
 import { StoreService } from '../../../services/store.service';
 import { LogsService } from '../../../services/logs.service';
 
-const $: any = window('$');
 
 @Component({
   selector: 'app-company',
@@ -103,13 +101,18 @@ export class CompanyComponent implements OnInit {
 
   ngAfterViewInit(): void {
 
-    this.checkPrivileges();
     const accordionElement = document.getElementById('accordionPanelsStayOpenExample');
     if (accordionElement) {
       const accordion = new bootstrap.Collapse(accordionElement, {
         toggle: false
       });
     }
+
+    
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
+
   }
 
   private checkPrivileges(): void {

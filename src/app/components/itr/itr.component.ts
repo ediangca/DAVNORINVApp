@@ -277,7 +277,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
             return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
           const filteredITRs = res.filter((itr: any) =>
-            itr.createdBy === this.userAccount.userID
+            itr.createdBy === this.userAccount.userID ||
+            itr.receivedBy === this.userAccount.userID
           );
           this.totalItems = filteredITRs.length;
           return filteredITRs.slice(0, 10); // Limit to the first 10 items
@@ -309,7 +310,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
                 return res.slice(0, 10); // For administrators, show all records, limited to 10
               }
               const filteredITRs = res.filter((itr: any) =>
-                itr.createdBy?.toLowerCase() === this.userAccount.userID?.toLowerCase()
+                itr.createdBy === this.userAccount.userID ||
+                itr.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredITRs.length;
               return filteredITRs.slice(0, 10); // Limit to 10 results for display

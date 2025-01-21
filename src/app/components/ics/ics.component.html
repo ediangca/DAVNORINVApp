@@ -83,7 +83,7 @@
                 <a class="seconadry" type="button" (click)="onPrintICS(i.icsNo!)">
                   <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
                 </a>
-                <a *ngIf="canITR" class="primary" type="button" (click)="onRepar(i)"><i
+                <a *ngIf="canITR && (i.receivedBy=== userAccount.userID || i.createdBy== userAccount.userID )" class="primary" type="button" (click)="onRepar(i)"><i
                     class="fa-solid fa-share-from-square" data-toggle="tooltip" title="ITR"></i></a>
                 }
               </form>
@@ -1191,8 +1191,18 @@
       </div>
       <div class="modal-body item-body scrollable">
         <!-- ngx-scanner-qrcode -->
-        <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
-        </ngx-scanner-qrcode>
+          <div class="qr-overlay">
+            <div class="qr-overlay-line"></div>
+          </div>
+          
+          <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
+          </ngx-scanner-qrcode>
+
+          <div *ngIf="this.purpose != 'get'" class="formGroup mt-2">
+            <label class="fst-italic text-primary" for="qrCodeField">If the QR code is unclear and cannot be detected by the camera, please use the input field provided below to enter the information manually.</label>
+            <input class="form-control rounded-pill mt-3" id="qrCodeField" type="text" placeholder="Enter QR Here.." aria-label="Search"
+              [(ngModel)]="qrCode" (keydown.enter)="onEnter()" />
+          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"

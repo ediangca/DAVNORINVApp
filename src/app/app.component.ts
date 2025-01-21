@@ -35,7 +35,8 @@ import AOS from 'aos';
         animate('0.5s')
       ])
     ])
-  ]
+  ],
+
 })
 export class AppComponent implements OnInit {
   appName: string = 'DDNAEINV';
