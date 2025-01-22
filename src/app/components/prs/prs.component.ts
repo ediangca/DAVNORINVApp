@@ -123,6 +123,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
     },
   };
 
+  qrCode = ''
+
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
@@ -194,10 +196,10 @@ export class PrsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addModalHiddenListener(icsModal: boolean, modalId: string) {
+  addModalHiddenListener(parModal: boolean, modalId: string) {
     const modal = document.getElementById(modalId);
     modal?.addEventListener('hidden.bs.modal', () =>
-      icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+      parModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
 
 
@@ -256,6 +258,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
           }
           const filteredPRSs = res.filter((prs: any) =>
             prs.createdBy === this.userAccount.userID ||
+            prs.issuedBy === this.userAccount.userID ||
             prs.receivedBy === this.userAccount.userID
           );
           this.totalItems = filteredPRSs.length;
@@ -304,6 +307,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
               // Filter or process the response if needed
               const filteredPRSs = res.filter((prs: any) =>
                 prs.createdBy === this.userAccount.userID ||
+                prs.issuedBy === this.userAccount.userID ||
                 prs.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredPRSs.length;
@@ -1165,7 +1169,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   resetForm() {
-    console.log('Resetting Form...');
+    // console.log('Resetting Form...');
     this.isEditMode = false;
     this.currentEditId = null;
     this.prs = null;
@@ -1191,18 +1195,18 @@ export class PrsComponent implements OnInit, AfterViewInit {
   resetItemForm() {
     this.isEditItemMode = false;
     this.isModalOpen = false;
-    this.itemForm.reset({
-      iid: '',
-      qrCode: '',
-      description: '',
-      brand: '',
-      model: '',
-      serialNo: '',
-      propertyNo: '',
-      unit: '',
-      amount: '',
-      date_Acquired: this.today,
-    });
+    // this.itemForm.reset({
+    //   iid: '',
+    //   qrCode: '',
+    //   description: '',
+    //   brand: '',
+    //   model: '',
+    //   serialNo: '',
+    //   propertyNo: '',
+    //   unit: '',
+    //   amount: '',
+    //   date_Acquired: this.today,
+    // });
     // Clear related data
     this.propertyNo = null;
     this.IIDKey = null;
@@ -1254,27 +1258,44 @@ export class PrsComponent implements OnInit, AfterViewInit {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-
-        this.api.retrievePARITEMByQRCode(results[0].value)
-          .subscribe({
-            next: (res) => {
-              console.log('Retrieve PRS ITEMS', res);
-              this.item = res[0];
-
-              console.log('Show Items', this.item);
-
-              this.onRetrievePRS(res[0].prsNo);
-
-            },
-            error: (err: any) => {
-              this.logger.printLogs('w', 'Problem with Retreiving PRS', err);
-              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in PRS`, 'info');
-            }
-          });
+        this.qrCode = results[0].value
+        this.validateQR(this.qrCode)
 
       }
 
     }
+  }
+
+  onEnter(): void {
+    console.log('Enter key pressed. QR Value:', this.qrCode);
+
+    // Add your logic here
+    if (this.qrCode.trim() !== '') {
+      // Example: Perform a search action
+      console.log('Performing search for:', this.qrCode);
+      this.validateQR(this.qrCode)
+    }
+  }
+
+  validateQR(qr: string): void {
+    this.qrCode = ''
+    this.api.retrievePARITEMByQRCode(qr)
+      .subscribe({
+        next: (res) => {
+          console.log('Retrieve PRS ITEMS', res);
+          this.item = res[0];
+
+          console.log('Show Items', this.item);
+
+          this.onRetrievePRS(res[0].prsNo);
+
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Problem with Retreiving PRS', err);
+          Swal.fire('Item not Found', `QR Code ${qr} not found in PRS`, 'info');
+        }
+      });
+
   }
 
   onRetrievePRS(prsNo: string) {
@@ -1286,7 +1307,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
           Swal.fire({
             title: 'Do you want to view the PRS Details?',
-            text: 'Item Found from  PRS #' + this.prs.prsNo,
+            text: 'Item Found from  PRS #' + prsNo,
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',

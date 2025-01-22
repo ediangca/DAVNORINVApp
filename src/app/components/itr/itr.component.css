@@ -54,7 +54,7 @@
 /* General styling */
 th,
 td {
-  /* white-space: normal; */
+  white-space: normal;
   /* Allow text to wrap */
   padding: 8px;
   /* Adjust padding */

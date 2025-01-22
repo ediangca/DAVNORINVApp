@@ -592,8 +592,8 @@
 
                     <div class="col d-flex justify-content-end align-items-center h-100">
                       <div class="searchbar">
-                        <input class="search_input" type="text" name="searchPRSItemKey"
-                          formControlName="searchPRSItemKey" (keyup)="searchPRSItem()" placeholder="Search...">
+                        <input class="search_input" type="text" name="searchRRSEPItemKey"
+                          formControlName="searchRRSEPItemKey" (keyup)="searchPRSItem()" placeholder="Search...">
                         <a type="button" class="search_icon" (click)="searchPRSItem()">
                           <i class="fas fa-search"></i>
                         </a>
@@ -766,8 +766,19 @@
       </div>
       <div class="modal-body item-body scrollable">
         <!-- ngx-scanner-qrcode -->
+        <div class="qr-overlay">
+          <div class="qr-overlay-line"></div>
+        </div>
+
         <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
         </ngx-scanner-qrcode>
+
+        <div class="formGroup mt-2">
+          <label class="fst-italic text-primary" for="qrCodeField">If the QR code is unclear and cannot be detected by
+            the camera, please use the input field provided below to enter the information manually.</label>
+          <input class="form-control rounded-pill mt-3" id="qrCodeField" type="text" placeholder="Enter QR Here.."
+            aria-label="Search" [(ngModel)]="qrCode" (keydown.enter)="onEnter()" />
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
@@ -782,7 +793,7 @@
 <!-- ITEM LIST VIEW MODAL -->
 <div #ListItemModalForm class="modal fade" id="ListItemModalForm" tabindex="-1" aria-labelledby="ItemModalFormLabel"
   aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lG">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="ItemModalFormLabel">List of Item</h1>
@@ -813,7 +824,8 @@
                     <td>{{ii.itrNo? ii.itrNo: ii.icsNo }}</td>
                     <td>{{ii.description}}</td>
                     <td>
-                      <button class="btn btn-sm btn-primary rounded-pill" type="button" (click)="onAddItem(ii)"  data-toggle="tooltip" title="Delete">
+                      <button class="btn btn-sm btn-primary rounded-pill" type="button" (click)="onAddItem(ii)"
+                        data-toggle="tooltip" title="Delete">
                         <i class="fa-thin fa-plus"></i> Add
                       </button>
                     </td>

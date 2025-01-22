@@ -121,6 +121,7 @@ export class RrspComponent {
       },
     },
   };
+  qrCode = ''
 
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private vf: ValidateForm,
@@ -182,7 +183,7 @@ export class RrspComponent {
   setupModalClose() {
     this.addModalHiddenListener(true, 'AddEditModalForm');
     this.addModalHiddenListener(true, 'ViewModalForm');
-    // this.addModalHiddenListener(false, 'ItemModalForm');
+    this.addModalHiddenListener(false, 'ItemModalForm');
     this.addModalHiddenListener(false, 'ViewItemModalForm');
 
     const QRScannerModal = document.getElementById('QRScannerForm')!;
@@ -198,8 +199,12 @@ export class RrspComponent {
   addModalHiddenListener(icsModal: boolean, modalId: string) {
     const modal = document.getElementById(modalId);
     modal?.addEventListener('hidden.bs.modal', () =>
-      icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+      icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm()
+  );
+    
   }
+  
+
 
 
   openModal(modalElement: ElementRef) {
@@ -250,6 +255,7 @@ export class RrspComponent {
           }
           const filteredRRSEPs = res.filter((rrsp: any) =>
             rrsp.createdBy === this.userAccount.userID ||
+            rrsp.issuedBy === this.userAccount.userID ||
             rrsp.receivedBy === this.userAccount.userID
           );
           this.totalItems = filteredRRSEPs.length;
@@ -283,6 +289,7 @@ export class RrspComponent {
               }
               const filteredRRSEPs = res.filter((rrsp: any) =>
                 rrsp.createdBy === this.userAccount.userID ||
+                rrsp.issuedBy === this.userAccount.userID ||
                 rrsp.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredRRSEPs.length;
@@ -333,12 +340,12 @@ export class RrspComponent {
             next: (res) => {
 
               this.icsItems = res;
-              
+
               this.logger.printLogs('i', `LIST OF ACTIVE ICS ITEM KEY ${this.activceICSItemKey.trim()}`, res);
-              
+
               this.icsItems = this.icsItems.filter(
                 item => !this.rrsepItems.some(rrsepItem => rrsepItem.icsItemNo === item.icsItemNo) &&
-                  item.rrsepFlag === false).slice(0,10)
+                  item.rrsepFlag === false).slice(0, 10)
 
               this.logger.printLogs('i', `LIST OF ACTIVE RRSEP ITEM `, this.rrsepItems);
               this.icsItems = res
@@ -360,10 +367,10 @@ export class RrspComponent {
           this.icsItems = res;
 
           this.logger.printLogs('i', 'LIST OF ACTIVE ICS ITEM ', this.icsItems);
-          
+
           this.icsItems = this.icsItems.filter(
             item => !this.rrsepItems.some(rrsepItem => rrsepItem.icsItemNo === item.icsItemNo) &&
-              item.rrsepFlag === false).slice(0,10);
+              item.rrsepFlag === false).slice(0, 10);
 
           this.logger.printLogs('i', 'LIST OF ACTIVE RRSEP ITEM ', this.rrsepItems);
         },
@@ -1129,14 +1136,14 @@ export class RrspComponent {
   }
 
   resetForm() {
-    console.log('Resetting Form...');
+    // console.log('Resetting Form...');
     this.isEditMode = false;
     this.currentEditId = null;
     this.rrsep = null;
     this.isModalOpen = false;
     this.item = null;
     this.isOpen = false;
-    this.rrseps = [];
+    this.icsItems = [];
     this.rrsepItems = [];
     this.selectedParItems = [];
     this.parItemKey = '';
@@ -1157,18 +1164,18 @@ export class RrspComponent {
   resetItemForm() {
     this.isEditItemMode = false;
     this.isModalOpen = false;
-    this.itemForm.reset({
-      iid: '',
-      qrCode: '',
-      description: '',
-      brand: '',
-      model: '',
-      serialNo: '',
-      propertyNo: '',
-      unit: '',
-      amount: '',
-      date_Acquired: this.today,
-    });
+    // this.itemForm.reset({
+    //   iid: '',
+    //   qrCode: '',
+    //   description: '',
+    //   brand: '',
+    //   model: '',
+    //   serialNo: '',
+    //   propertyNo: '',
+    //   unit: '',
+    //   amount: '',
+    //   date_Acquired: this.today,
+    // });
     // Clear related data
     this.propertyNo = null;
     this.IIDKey = null;
@@ -1220,31 +1227,47 @@ export class RrspComponent {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-
-        this.api.retrievePARITEMByQRCode(results[0].value)
-          .subscribe({
-            next: (res) => {
-              console.log('Retrieve PRS ITEMS', res);
-              this.item = res[0];
-
-              console.log('Show Items', this.item);
-
-              this.onRetrievePRS(res[0].rrsepNo);
-
-            },
-            error: (err: any) => {
-              this.logger.printLogs('w', 'Problem with Retreiving PRS', err);
-              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in PRS`, 'info');
-            }
-          });
+        this.qrCode = results[0].value
+        this.validateQR(this.qrCode)
 
       }
 
     }
   }
+  onEnter(): void {
+    console.log('Enter key pressed. QR Value:', this.qrCode);
 
-  onRetrievePRS(rrsepNo: string) {
-    this.api.retrievePRS(rrsepNo)
+    // Add your logic here
+    if (this.qrCode.trim() !== '') {
+      // Example: Perform a search action
+      console.log('Performing search for:', this.qrCode);
+      this.validateQR(this.qrCode)
+    }
+  }
+
+  validateQR(qr: string): void {
+    this.qrCode = ''
+    this.api.retrieveicsITEMByQRCode(qr)
+      .subscribe({
+        next: (res) => {
+          console.log('Retrieve RRSEP ITEMS', res);
+          this.item = res[0];
+
+          console.log('Show Items', this.item);
+
+          this.onRetrieveRRSEP(res[0].rrsepNo);
+
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Problem with Retreiving RRSEP', err);
+          Swal.fire('Item not Found', `QR Code ${qr} not found in RRSEP`, 'info');
+        }
+      });
+
+  }
+
+  onRetrieveRRSEP(rrsepNo: string) {
+    this.api.retrieveRRSEP(rrsepNo)
       .subscribe({
         next: (res) => {
           console.log('Retrieve RRSEP', res);
@@ -1252,7 +1275,7 @@ export class RrspComponent {
 
           Swal.fire({
             title: 'Do you want to view the RRSEP Details?',
-            text: 'Item Found from  RRSEP #' + this.rrsep.rrsepNo,
+            text: 'Item Found from  RRSEP #' + rrsepNo,
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',

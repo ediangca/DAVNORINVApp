@@ -123,6 +123,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
       },
     },
   };
+  qrCode = ''
 
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private vf: ValidateForm,
@@ -1207,38 +1208,55 @@ export class ItrComponent implements OnInit, AfterViewInit {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-
-        this.api.retrieveicsITEMByQRCode(results[0].value)
-          .subscribe({
-            next: (res) => {
-              console.log('Retrieve ICS ITEMS', res);
-              this.item = res[0];
-
-              console.log('Show Items', this.item);
-
-              this.onRetrieveITR(res[0].itrNo);
-
-            },
-            error: (err: any) => {
-              this.logger.printLogs('w', 'Problem with Retreiving ITR', err);
-              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in ITR`, 'info');
-            }
-          });
+        this.qrCode = results[0].value
+        this.validateQR(this.qrCode)
 
       }
 
     }
   }
 
-  onRetrieveITR(itrNO: string) {
-    this.api.retrieveITR(itrNO)
+  onEnter(): void {
+    console.log('Enter key pressed. QR Value:', this.qrCode);
+
+    // Add your logic here
+    if (this.qrCode.trim() !== '') {
+      // Example: Perform a search action
+      console.log('Performing search for:', this.qrCode);
+      this.validateQR(this.qrCode)
+    }
+  }
+
+  validateQR(qr: string): void {
+    this.qrCode = ''
+    this.api.retrieveicsITEMByQRCode(qr)
+      .subscribe({
+        next: (res) => {
+          console.log('Retrieve ICS ITEMS', res);
+          this.item = res[0];
+
+          console.log('Show Items', this.item);
+
+          this.onRetrieveITR(res[0].itrNo);
+
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Problem with Retreiving ITR', err);
+          Swal.fire('Item not Found', `QR Code ${qr} not found in ITR`, 'info');
+        }
+      });
+
+  }
+
+  onRetrieveITR(itrNo: string) {
+    this.api.retrieveITR(itrNo)
       .subscribe({
         next: (res) => {
           console.log('Retrieve PTR', res);
           this.itr = res.details;
 
           Swal.fire({
-            title: 'Item Found from ITR #' + this.itr.itrNo,
+            title: 'Item Found from ITR #' + itrNo,
             text: 'Do you want to view the ITR Details?',
             icon: 'question',
             showCancelButton: true,

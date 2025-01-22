@@ -121,6 +121,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
       },
     },
   };
+  qrCode = ''
 
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private vf: ValidateForm,
@@ -311,7 +312,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
               // Filter or process the response if needed
               const filteredPTRs = res.filter((ptr: any) =>
                 ptr.issuedBy === this.userAccount.userID ||
-              ptr.receivedBy === this.userAccount.userID
+                ptr.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredPTRs.length;
               return filteredPTRs.slice(0, 10); // Limit to 10 results for display
@@ -1385,38 +1386,55 @@ export class ReparComponent implements OnInit, AfterViewInit {
         console.log('QR value', results[0].value);
         console.log('Scanned Data:', results); // Handle scanned results here
 
-
-        this.api.retrievePARITEMByQRCode(results[0].value)
-          .subscribe({
-            next: (res) => {
-              console.log('Retrieve PAR ITEMS', res);
-              this.item = res[0];
-
-              console.log('Show Items', this.item);
-
-              this.onRetrieveREPAR(res[0].reparNo);
-
-            },
-            error: (err: any) => {
-              this.logger.printLogs('w', 'Problem with Retreiving PTR', err);
-              Swal.fire('Item not Found', `QR Code ${results[0].value} not found in PTR`, 'info');
-            }
-          });
+        this.qrCode = results[0].value
+        this.validateQR(this.qrCode)
 
       }
 
     }
   }
 
-  onRetrieveREPAR(reparNO: string) {
-    this.api.retrieveREPAR(reparNO)
+  onEnter(): void {
+    console.log('Enter key pressed. QR Value:', this.qrCode);
+
+    // Add your logic here
+    if (this.qrCode.trim() !== '') {
+      // Example: Perform a search action
+      console.log('Performing search for:', this.qrCode);
+      this.validateQR(this.qrCode)
+    }
+  }
+
+  validateQR(qr: string): void {
+    this.qrCode = ''
+    this.api.retrievePARITEMByQRCode(qr)
+      .subscribe({
+        next: (res) => {
+          console.log('Retrieve PAR ITEMS', res);
+          this.item = res[0];
+
+          console.log('Show Items', this.item);
+
+          this.onRetrieveREPAR(res[0].reparNo);
+
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Problem with Retreiving PTR', err);
+          Swal.fire('Item not Found', `QR Code ${qr} not found in PTR`, 'info');
+        }
+      });
+
+  }
+
+  onRetrieveREPAR(reparNo: string) {
+    this.api.retrieveREPAR(reparNo)
       .subscribe({
         next: (res) => {
           console.log('Retrieve PTR', res);
           this.par = res.details;
 
           Swal.fire({
-            title: 'Item Found from PTR #' + this.par.reparNo,
+            title: 'Item Found from PTR #' + reparNo,
             text: 'Do you want to view the PTR Details?',
             icon: 'question',
             showCancelButton: true,

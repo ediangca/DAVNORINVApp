@@ -369,7 +369,7 @@ export class ParComponent implements OnInit, AfterViewInit {
               // Filter or process the response if needed
               const filteredPARs = res.filter((par: any) =>
                 par.createdBy === this.userAccount.userID ||
-              par.receivedBy === this.userAccount.userID
+                par.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredPARs.length;
               return filteredPARs.slice(0, 10); // Limit to 10 results for display
@@ -1108,6 +1108,22 @@ export class ParComponent implements OnInit, AfterViewInit {
         Swal.fire('Information!', 'QRCode already exists!', 'warning');
         return;
       }
+      // IF EXIST FROM ICS ITEMS
+
+      if (await this.isExistFromICS(SerialNo)) {
+        Swal.fire('Information!', 'Serial No. already exists in ICS items!', 'warning');
+        return;
+      }
+
+      if (await this.isExistFromICS(PropertyNo)) {
+        Swal.fire('Information!', 'Property No. already exists in ICS items!', 'warning');
+        return;
+      }
+
+      if (await this.isExistFromICS(QRCode)) {
+        Swal.fire('Information!', 'QRCode already exists in ICS items!', 'warning');
+        return;
+      }
 
       this.item = new Item(null, PARNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
       this.parItems.push(this.item);
@@ -1180,9 +1196,9 @@ export class ParComponent implements OnInit, AfterViewInit {
     });
   }
 
-  isExistOnUpdate(parINo: number | null, key: string | null): Promise<boolean> {
+  isExistFromICS(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.api.scanExistingUniquePARItem(parINo!, key!)
+      this.api.scanUniqueICSItem(key!)
         .subscribe({
           next: (res) => {
             res.length > 0 ? resolve(true) : resolve(false);
@@ -1191,6 +1207,27 @@ export class ParComponent implements OnInit, AfterViewInit {
             this.logger.printLogs('e', 'Error', err);
             Swal.fire('Denied', err, 'warning');
             resolve(true); // Consider an item as existing in case of error.
+          }
+        });
+    });
+  }
+
+  isExistOnUpdate(parINo: number | null, key: string | null): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (!parINo) {
+        resolve(false); // Consider an item as existing in case of error.
+        this.logger.printLogs('e', 'NO PARINO', 'FOR UPDATE ITEM IN CREATING NEW PAR ITEM.');
+        return
+      }
+      this.api.scanExistingUniquePARItem(parINo!, key!)
+        .subscribe({
+          next: (res) => {
+            res.length > 0 ? resolve(true) : resolve(false);
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error', err);
+            Swal.fire('Denied', err, 'warning');
+            resolve(false); // Consider an item as existing in case of error.
           }
         });
     });
@@ -1562,7 +1599,7 @@ export class ParComponent implements OnInit, AfterViewInit {
   }
 
   validateQR(qr: string): void {
-    
+    this.qrCode = ''
     if (this.purpose == 'get') {
       this.itemForm.patchValue({
         qrCode: qr
@@ -1588,15 +1625,15 @@ export class ParComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onRetrievePAR(parNO: string) {
-    this.api.retrievePAR(parNO)
+  onRetrievePAR(parNo: string) {
+    this.api.retrievePAR(parNo)
       .subscribe({
         next: (res) => {
           console.log('Retrieve PAR', res);
           this.par = res[0];
 
           Swal.fire({
-            title: 'Item Found from PAR #' + this.par.parNo + "",
+            title: 'Item Found from PAR #' + parNo + "",
             text: 'Do you want to view the PAR?',
             icon: 'question',
             showCancelButton: true,

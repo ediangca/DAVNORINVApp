@@ -502,7 +502,8 @@
         <div class="modal-footer">
           <button id="closeBut" type="button" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal"
             (click)="closeModal(AddEditModal)">Close</button>
-          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button" class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
+          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
+            class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' :
             'Save'
             }}</button>
         </div>
@@ -666,7 +667,7 @@
                         </thead>
                         <tbody>
                           <ng-container *ngFor="let p of itrItems; let i = index">
-                            <tr>
+                            <tr [class.border-warning]="item?.qrCode == p.qrCode">
                               <td>
                                 <a class="success" type="button" (click)="onViewItem(p)">
                                   <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
@@ -1169,8 +1170,19 @@
       </div>
       <div class="modal-body item-body scrollable">
         <!-- ngx-scanner-qrcode -->
+        <div class="qr-overlay">
+          <div class="qr-overlay-line"></div>
+        </div>
+
         <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
         </ngx-scanner-qrcode>
+
+        <div class="formGroup mt-2">
+          <label class="fst-italic text-primary" for="qrCodeField">If the QR code is unclear and cannot be detected by
+            the camera, please use the input field provided below to enter the information manually.</label>
+          <input class="form-control rounded-pill mt-3" id="qrCodeField" type="text" placeholder="Enter QR Here.."
+            aria-label="Search" [(ngModel)]="qrCode" (keydown.enter)="onEnter()" />
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"

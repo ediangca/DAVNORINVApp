@@ -98,7 +98,9 @@
                 <a class="seconadry" type="button" (click)="onPrintPAR(p.parNo!)">
                   <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
                 </a>
-                <a *ngIf="canPTR  && (p.receivedBy=== userAccount.userID || p.createdBy== userAccount.userID )"
+                <a *ngIf="canPTR  && (p.receivedBy=== userAccount.userID || p.createdBy== userAccount.userID ||
+                  userAccount.userGroupName === 'System Administrator'
+                )"
                   class="primary" type="button" (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
                     data-toggle="tooltip" title="PTR"></i></a>
                 }

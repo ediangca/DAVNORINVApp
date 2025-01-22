@@ -1102,8 +1102,19 @@
       </div>
       <div class="modal-body item-body scrollable">
         <!-- ngx-scanner-qrcode -->
+        <div class="qr-overlay">
+          <div class="qr-overlay-line"></div>
+        </div>
+
         <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
         </ngx-scanner-qrcode>
+
+        <div class="formGroup mt-2">
+          <label class="fst-italic text-primary" for="qrCodeField">If the QR code is unclear and cannot be detected by
+            the camera, please use the input field provided below to enter the information manually.</label>
+          <input class="form-control rounded-pill mt-3" id="qrCodeField" type="text" placeholder="Enter QR Here.."
+            aria-label="Search" [(ngModel)]="qrCode" (keydown.enter)="onEnter()" />
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"

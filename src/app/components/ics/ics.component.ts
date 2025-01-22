@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
 import { PrintService } from '../../services/print.service';
 import { delay, finalize, forkJoin, map, Observable } from 'rxjs';
 import { ICSItem } from '../../models/ICSItem';
+import { when } from 'jquery';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -328,7 +329,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
               // Filter or process the response if needed
               const filteredICSs = res.filter((ics: any) =>
                 ics.createdBy === this.userAccount.userID ||
-              ics.receivedBy === this.userAccount.userID
+                ics.receivedBy === this.userAccount.userID
               );
               this.totalItems = filteredICSs.length;
               return filteredICSs.slice(0, 10); // Limit to 10 results for display
@@ -876,7 +877,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
     this.ics = ics;
     this.isITR = false;
     this.currentEditId = ics.icsNo;
-    this.logger.printLogs('i', 'Viewingggggggggggggggggg ICS', ics);
+    this.logger.printLogs('i', 'Viewing ICS', ics);
 
     if (!this.onItemFound) {
       this.item = null;
@@ -1004,11 +1005,11 @@ export class IcsComponent implements OnInit, AfterViewInit {
     const Date_Acquired: Date = this.itemForm.value['date_Acquired'];
 
 
-
     if (!(await this.isItemFound())) {
       Swal.fire('Information!', 'Item not available!', 'warning');
       return;
     }
+
     if (await this.isListed(SerialNo)) {
       Swal.fire('Information!', 'Serial No. already listed!', 'warning');
       return;
@@ -1022,20 +1023,38 @@ export class IcsComponent implements OnInit, AfterViewInit {
       return;
     }
 
+
     if (!this.isEditItemMode) {
 
-      if (await this.isExist(PropertyNo)) {
-        Swal.fire('Information!', 'Property No. already exists!', 'warning');
+      if (await this.isExist(SerialNo)) {
+        Swal.fire('Information!', 'Serial No. already exist!', 'warning');
         return;
       }
 
-      if (await this.isExist(SerialNo)) {
-        Swal.fire('Information!', 'Serial No. already exists!', 'warning');
+      if (await this.isExist(PropertyNo)) {
+        Swal.fire('Information!', 'Property No. already exist!', 'warning');
         return;
       }
 
       if (await this.isExist(QRCode)) {
-        Swal.fire('Information!', 'QRCode already exists!', 'warning');
+        Swal.fire('Information!', 'QRCode already exist!', 'warning');
+        return;
+      }
+
+      // IF EXIST FROM PAR ITEMS
+
+      if (await this.isExistFromPAR(SerialNo)) {
+        Swal.fire('Information!', 'Serial No. already exist in PAR items!', 'warning');
+        return;
+      }
+
+      if (await this.isExistFromPAR(PropertyNo)) {
+        Swal.fire('Information!', 'Property No. already exist in PAR items!', 'warning');
+        return;
+      }
+
+      if (await this.isExistFromPAR(QRCode)) {
+        Swal.fire('Information!', 'QRCode already exist in PAR items!', 'warning');
         return;
       }
 
@@ -1061,19 +1080,19 @@ export class IcsComponent implements OnInit, AfterViewInit {
       });
 
     } else {
+      if (await  this.isExistOnUpdate(this.ICSItemNo, SerialNo)) {
+        Swal.fire('Information!', 'Serial No. already exist!', 'warning');
+        return;
+      }
 
       if (await this.isExistOnUpdate(this.ICSItemNo, PropertyNo)) {
-        Swal.fire('Information!', 'Property No. already exists!', 'warning');
+        Swal.fire('Information!', 'Property No. already exist!', 'warning');
         return;
       }
 
-      if (await this.isExistOnUpdate(this.ICSItemNo, SerialNo)) {
-        Swal.fire('Information!', 'Serial No. already exists!', 'warning');
-        return;
-      }
 
       if (await this.isExistOnUpdate(this.ICSItemNo, QRCode)) {
-        Swal.fire('Information!', 'QRCode already exists!', 'warning');
+        Swal.fire('Information!', 'QRCode already exist!', 'warning');
         return;
       }
 
@@ -1093,14 +1112,37 @@ export class IcsComponent implements OnInit, AfterViewInit {
   isListed(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
       // this.icsItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key ).length > 0 ? resolve(true) : resolve(false);
+
+
       if (this.isEditItemMode) {
         this.icsItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 1 ? resolve(true) : resolve(false);
+        // switch (field) {
+        //   case "serial":
+        //     this.icsItems.filter(items => items.serialNo === key).length > 1 ? resolve(true) : resolve(false);
+        //     break;
+        //   case "property":
+        //     this.icsItems.filter(items => items.propertyNo === key).length > 1 ? resolve(true) : resolve(false);
+        //     break;
+        //   case "qr":
+        //     this.icsItems.filter(items => items.qrCode === key).length > 1 ? resolve(true) : resolve(false);
+        //     break;
+        // }
       } else {
+        // switch (field) {
+        //   case "serial":
+        //     this.icsItems.filter(items => items.serialNo === key).length > 0 ? resolve(true) : resolve(false);
+        //     break;
+        //   case "property":
+        //     this.icsItems.filter(items => items.propertyNo === key).length > 0 ? resolve(true) : resolve(false);
+        //     break;
+        //   case "qr":
+        //     this.icsItems.filter(items => items.qrCode === key).length > 0 ? resolve(true) : resolve(false);
+        //     break;
+        // }
         this.icsItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 0 ? resolve(true) : resolve(false);
       }
     });
   }
-
 
   isExist(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -1118,8 +1160,30 @@ export class IcsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  isExistFromPAR(key: string | null): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.api.scanUniquePARItem(key!)
+        .subscribe({
+          next: (res) => {
+            res.length > 0 ? resolve(true) : resolve(false);
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error', err);
+            Swal.fire('Denied', err, 'warning');
+            resolve(true); // Consider an item as existing in case of error.
+          }
+        });
+    });
+  }
+
+
   isExistOnUpdate(ICSItemNo: number | null, key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      if(!ICSItemNo){
+        resolve(false); // Consider an item as existing in case of error.
+        this.logger.printLogs('e', 'NO ICSItemNo', 'FOR UPDATE ITEM IN CREATING NEW ICS ITEM.');
+        return
+      }
       this.api.scanExistingUniqueICSItem(ICSItemNo!, key!)
         .subscribe({
           next: (res) => {
@@ -1509,9 +1573,10 @@ export class IcsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  
+
 
   validateQR(qr: string): void {
+    this.qrCode = ''
     if (this.purpose == 'get') {
       this.itemForm.patchValue({
         qrCode: qr
@@ -1526,7 +1591,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
             console.log('Show Items', this.item);
 
-            this.onRetrieveICS(res[0].parNo);
+            this.onRetrieveICS(res[0].icsNo);
 
           },
           error: (err: any) => {
@@ -1536,7 +1601,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
         });
     }
   }
-  
+
   onRetrieveICS(icsNo: string) {
     this.api.retrieveICS(icsNo)
       .subscribe({
@@ -1545,7 +1610,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
           this.ics = res[0];
 
           Swal.fire({
-            title: 'Item Found from ICS #' + this.ics.icsNo + "",
+            title: 'Item Found from ICS #' + icsNo + "",
             text: 'Do you want to view the ICS?',
             icon: 'question',
             showCancelButton: true,
@@ -1554,6 +1619,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
           }).then((result) => {
             if (result.isConfirmed) {
               this.onItemFound = true;
+              this.onCloseQRScanning(this.scannerAction);
               this.onViewICS(this.ics);
             } else {
               this.resumeScanning(this.scannerAction);
@@ -1577,7 +1643,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
     );
   }
 
-  
+
 
 
   onCloseQRScanning(scannerAction: any) {
