@@ -57,27 +57,18 @@
             <form class [formGroup]="filterForm" ng-reflect-form="[object Object]"
                 class="ng-untouched ng-pristine ng-invalid">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5">Office</h1>
+                    <h1 class="modal-title fs-5">Choose Office</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         (click)="closeModal(filterModal)"></button>
                 </div>
                 <div class="modal-body item-body scrollable">
                     <div class="formGroup row">
                         <div class="col">
-
-                            @if (filterForm.controls['office'].invalid &&
-                            filterForm.hasError('required', 'office') &&
-                            filterForm.get('office')?.touched ||
-                            (filterForm.controls['office'].dirty &&
-                            filterForm.hasError('required', 'office'))) {
-                            <small class="text-danger">* Office is required</small>
-                            }
-                            <div class="form-field d-flex align-items-center"
-                                [class.error]="filterForm.controls['office'].invalid && filterForm.hasError('required', 'office')  && 
-                    filterForm.get('office')?.touched || (filterForm.controls['office'].dirty && filterForm.hasError('required', 'office'))">
+                         
+                            <div class="form-field d-flex align-items-center">
                                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
                                 <select class="form-select" formControlName="office" name="office" id="office">
-                                    <option value>Select Office</option>
+                                    <option value>All Office</option>
                                     <option *ngFor="let o of offices" [value]="o.office">{{ o.office }}</option>
                                 </select>
                             </div>

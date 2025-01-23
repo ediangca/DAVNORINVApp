@@ -76,12 +76,12 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   private checkPrivileges(): void {
     this.store.loadPrivileges();
-    this.canCreate = this.store.isAllowedAction('REPORT', 'create');
-    this.canRetrieve = this.store.isAllowedAction('REPORT', 'retrieve');
-    this.canUpdate = this.store.isAllowedAction('REPORT', 'update');
-    this.canDelete = this.store.isAllowedAction('REPORT', 'delete');
-    this.canPost = this.store.isAllowedAction('REPORT', 'post');
-    this.canUnpost = this.store.isAllowedAction('REPORT', 'unpost');
+    this.canCreate = this.store.isAllowedAction('REPORTS', 'create');
+    this.canRetrieve = this.store.isAllowedAction('REPORTS', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('REPORTS', 'update');
+    this.canDelete = this.store.isAllowedAction('REPORTS', 'delete');
+    this.canPost = this.store.isAllowedAction('REPORTS', 'post');
+    this.canUnpost = this.store.isAllowedAction('REPORTS', 'unpost');
 
   }
 
@@ -167,10 +167,12 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     if (this.file) {
   
       
-      if (!this.canRetrieve && !this.filterForm.valid) {
-        this.validateFormFields(this.filterForm);
-      }
-
+      // if (this.canRetrieve && !this.filterForm.valid) {
+      //   this.validateFormFields(this.filterForm);
+      //   Swal.fire('INFORMATION!', 'Choose an Office First.', 'info');
+      //   return
+      // }
+      this.office = this.filterForm.value['office'];;
       
       this.api.getAllItemByOffice(this.file, this.office!).subscribe({
         next: (res) => {
@@ -234,7 +236,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
           }
           const rows = list.map((item: any, index: number) => {
             // Determine the first non-null/no empty value among the possible identifiers
-            identifier =
+            identifier = 
               item.prsNo ||
               item.reparNo ||
               item.parNo ||
@@ -256,7 +258,11 @@ export class ReportsComponent implements OnInit, AfterViewInit {
                 <td>${(item.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 ${showTransferTypeColumn ? `<td>${(item.transferType == 'Others' ? item.transferOthersType : item.transferType) || 'N/A'}</td>` : ''}
                 ${showTransferTypeColumn ? `<td>${item.transferReason || 'N/A'}</td>` : ''}
-                ${showrReturnTypeColumn ? `<td>${(item.returnType == 'Others' ? item.returnOthersType : item.returnType) || 'N/A'}</td>` : ''}
+                ${showrReturnTypeColumn ? `<td>${(item.returnType == 'Others' ? item.returnOthersType : item.returnType) || 'N/A'}</td>` : ''} 
+                <!-- 
+                ${showTransferTypeColumn ? `<td class="text-center">${item.reparNo || item.itrNo || '-'}</td>` : ''}
+                ${showrReturnTypeColumn ? `<td class="text-center">${item.prsNo || item.rrsepNo || '-'}</td>` : ''} 
+                -->
                 <td>${item.issuedBy || 'N/A'}</td>
                 <td>${item.receivedBy || 'N/A'}</td>
                 ${showApprovedColumn ? `<td>${item.approved ? item.approvedBy : 'N/A'}</td>` : ''}
@@ -289,6 +295,10 @@ export class ReportsComponent implements OnInit, AfterViewInit {
                                   ${showTransferTypeColumn ? '<th>TRANSFER TYPE</th>' : ''}
                                   ${showTransferTypeColumn ? '<th>TRANSFER REASON</th>' : ''}
                                   ${showrReturnTypeColumn ? '<th>RETURN TYPE</th>' : ''}
+                                  <!-- 
+                                  ${showTransferTypeColumn ? '<th>TRANSFER NO.</th>' : ''}
+                                  ${showrReturnTypeColumn ? '<th>RETURN NO.</th>' : ''}
+                                   -->
                                   <th>ISSUED BY</th>
                                   <th>RECEIVED BY</th>
                                   ${showApprovedColumn ? '<th>APPROVED BY</th>' : ''}
