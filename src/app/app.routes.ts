@@ -21,6 +21,7 @@ import { PositionsComponent } from './components/settings/positions/positions.co
 import { UsergroupComponent } from './components/settings/usergroup/usergroup.component';
 import { RrspComponent } from './components/rrsp/rrsp.component';
 import { PrsComponent } from './components/prs/prs.component';
+import { OthersComponent } from './components/others/others.component';
 
 //
   // { path: 'dashboard', component: DashboardComponent, resolve: { username: UserResolver }, canActivate: [authGuard], data: { title: 'Dashboard' } },
@@ -37,11 +38,12 @@ export const routes: Routes = [
     children: [
       { path: 'items', component: ItemsComponent, data: { title: 'Items' } },
       { path: 'par', component: ParComponent, data: { title: 'PAR' } },
+      { path: 'ics', component: IcsComponent, data: { title: 'ICS' } },
+      { path: 'opr', component: OthersComponent, data: { title: 'OPR' } },
       { path: 'repar', component: ReparComponent, data: { title: 'PTR' } },
       { path: 'itr', component: ItrComponent, data: { title: 'ITR' } },
-      { path: 'rrsp', component: RrspComponent, data: { title: 'RRSP' } },
       { path: 'prs', component: PrsComponent, data: { title: 'PRS' } },
-      { path: 'ics', component: IcsComponent, data: { title: 'ICS' } },
+      { path: 'rrsp', component: RrspComponent, data: { title: 'RRSP' } },
       { path: 'global', component: GlobalComponent, data: { title: 'Global Settings' },
         children: [
           // { path: '', component: PlaceholderComponent, data: { title: 'Global Settings'} },

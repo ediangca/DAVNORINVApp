@@ -505,7 +505,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
     });
 
     // Check specific modules for "GLOBAL" module logic
-    const importantModules = ['ITEM CATEGORY', 'COMPANY', 'POSITION', 'USER GROUPS'];
+    const importantModules = ['ITEM CATEGORY', 'COMPANY', 'POSITION', 'USER GROUPS', 'REPORTS'];
     const isAnyActive = this.privileges
       .filter(item => importantModules.includes(item.moduleName))
       .some(item => item.isActive); // At least one is active
