@@ -5,6 +5,7 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../environment/environment';
 import { Item } from '../models/Item';
 import { ICSItem } from '../models/ICSItem';
+import { OPRItem } from '../models/OPRItem';
 
 
 @Injectable({
@@ -761,10 +762,10 @@ export class ApiService {
   }
 
   //Update
-  updatePARItem(parNo: string, parItems: Item[]): Observable<any> {
+  updatePARItem(parNo: string, updatedItems: Item[]): Observable<any> {
     console.log("Update PAR No. >>> : ", parNo);
-    console.log("Update PAR Item >>> : ", parItems);
-    return this.http.put<any>(`${this.apiUrl}PARITEM/Update?parNo=` + parNo, parItems)
+    console.log("Update PAR Item >>> : ", updatedItems);
+    return this.http.put<any>(`${this.apiUrl}PARITEM/Update?parNo=` + parNo, updatedItems)
       .pipe(
         catchError(this.handleError)
       );
@@ -1128,7 +1129,7 @@ export class ApiService {
   }
 
 
-  /*----------------------- PRS -----------------------*/
+  /*----------------------- RRSEP -----------------------*/
   getAllRRSEP(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}RRSEP/`)
       .pipe(
@@ -1197,6 +1198,170 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+/*----------------------- OPR -----------------------*/
+  //PAR List
+  getAllOPR(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}OPR/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  //Search
+  searchOPR(key: string): Observable<any> {
+    // console.log("Search OPR by key: ", key);
+    return this.http.get<any>(`${this.apiUrl}OPR/Search?key=` + key)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Create
+  createOPR(OPR: any): Observable<any> {
+    console.log("Create OPR: ", OPR);
+    return this.http.post<any>(`${this.apiUrl}OPR/Create/`, OPR)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve
+  retrieveOPR(oprNo: string): Observable<any> {
+    console.log("Retrieve OPR No.: ", oprNo);
+    return this.http.get<any>(`${this.apiUrl}OPR/` + oprNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update
+  updateOPR(id: string, OPR: any): Observable<any> {
+    console.log("Update OPR: ", OPR);
+    return this.http.put<any>(`${this.apiUrl}OPR/Update?id=` + id, OPR)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Delete
+  deleteOPR(id: string): Observable<any> {
+    console.log("Delete OPR: ", id);
+    return this.http.delete<any>(`${this.apiUrl}OPR/Delete?id=` + id)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // https://localhost:7289/api/OPR/Post?id=PAR012312412&postVal=true
+  //Update Post Flag
+  postOPR(oprNo: string, postVal: boolean): Observable<any> {
+    console.log("Update OPR No. >>> : ", oprNo);
+    console.log("Update Post flag >>> : ", postVal);
+    return this.http.put<any>(`${this.apiUrl}OPR/Post?id=${oprNo}`, postVal)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  /*----------------------- OPR ITEMS -----------------------*/
+  //OPRITEM List By PAR No.
+  getAllOPRItem(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  //OPRITEM Active List 
+  getAllPostedOPRItem(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/posted/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  //OPRITEM Active List By Key
+  searchAllPostedOPRItem(key: string): Observable<any> {
+    // 'https://localhost:7289/api/OPRITEM/Active/Search?key=123123
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/posted/Search?key=` + key)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  //OPRITEM List By OPR No.
+  getAllOPRItemByPARNo(parNo: String): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/Search?key=` + parNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Create
+  createOPRItem(oprItems: OPRItem[]): Observable<any> {
+    console.log("Create PAR Item: ", oprItems);
+    return this.http.post<any>(`${this.apiUrl}OPRITEM/Create/`, oprItems)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve
+  retrieveOPRItem(oprINo: number): Observable<any[]> {
+    console.log("Retrieve PAR Item OPRINO.: ", oprINo);
+    return this.http.get<Item[]>(`${this.apiUrl}OPRITEM/` + oprINo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve By PAR No.
+  retrieveOPRItemByOPRNo(oprNo: string): Observable<Item[]> {
+    console.log("Retrieve OPR Item by OPR No.: ", oprNo);
+    return this.http.get<Item[]>(`${this.apiUrl}OPRITEM/OPRNO/` + oprNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve By QR Code
+  retrieveOPRITEMByQRCode(qrcode: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/QRCode/${qrcode}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update
+  updateOPRItem(oprNo: string, updatedItems: OPRItem[]): Observable<any> {
+    console.log("Update OPR No. >>> : ", oprNo);
+    console.log("Update OPR Item >>> : ", updatedItems);
+    return this.http.put<any>(`${this.apiUrl}OPRITEM/Update?oprNo=` + oprNo, updatedItems)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+
+  // https://localhost:7289/api/PARITEM/Scan?parNo=PAR012312412&key=6742378-65432
+  //Scan Key
+  scanUniqueOPRItem(key: string,): Observable<any> {
+    console.log("Update OPR Item Key >>> : ", key);
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/ScanUnique?key=${key}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  // https://localhost:7289/api/PARITEM/Scan?parNo=PAR012312412&key=6742378-65432
+  //Scan Key
+  scanExistingUniqueOPRItem(parINo: number, key: string): Observable<any> {
+    console.log("Update OPR Item No. >>> : ", parINo);
+    console.log("Update OPR Item Key >>> : ", key);
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/ScanExistingUnique?parINo=${parINo}&key=${key}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
 
   /*----------------------- Privilege -----------------------*/
 
