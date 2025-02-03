@@ -362,7 +362,7 @@
         </div>
         <div class="modal-footer">
           <button id="closeBut" type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
-            (click)="resetForm()">Close</button>
+            (click)="onCloseProfile()">Close</button>
           <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
             class="btn btn-primary rounded-pill" (click)="onSubmitProfile()">{{ isEditMode ?
             'Update' :

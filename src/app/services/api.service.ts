@@ -1199,7 +1199,7 @@ export class ApiService {
       );
   }
 /*----------------------- OPR -----------------------*/
-  //PAR List
+  //OPR List
   getAllOPR(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}OPR/`)
       .pipe(
@@ -1225,7 +1225,7 @@ export class ApiService {
   }
 
   //Retrieve
-  retrieveOPR(oprNo: string): Observable<any> {
+  retrieveOPR(oprNo: number): Observable<any> {
     console.log("Retrieve OPR No.: ", oprNo);
     return this.http.get<any>(`${this.apiUrl}OPR/` + oprNo)
       .pipe(
@@ -1234,7 +1234,7 @@ export class ApiService {
   }
 
   //Update
-  updateOPR(id: string, OPR: any): Observable<any> {
+  updateOPR(id: number, OPR: any): Observable<any> {
     console.log("Update OPR: ", OPR);
     return this.http.put<any>(`${this.apiUrl}OPR/Update?id=` + id, OPR)
       .pipe(
@@ -1243,7 +1243,7 @@ export class ApiService {
   }
 
   //Delete
-  deleteOPR(id: string): Observable<any> {
+  deleteOPR(id: number): Observable<any> {
     console.log("Delete OPR: ", id);
     return this.http.delete<any>(`${this.apiUrl}OPR/Delete?id=` + id)
       .pipe(
@@ -1253,7 +1253,7 @@ export class ApiService {
 
   // https://localhost:7289/api/OPR/Post?id=PAR012312412&postVal=true
   //Update Post Flag
-  postOPR(oprNo: string, postVal: boolean): Observable<any> {
+  postOPR(oprNo: number, postVal: boolean): Observable<any> {
     console.log("Update OPR No. >>> : ", oprNo);
     console.log("Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}OPR/Post?id=${oprNo}`, postVal)
@@ -1261,6 +1261,83 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+
+  /*----------------------- OPTR -----------------------*/
+  //REPAR List
+  getAllOPTR(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}OPTR/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  //Search
+  searchOPTR(key: string): Observable<any> {
+    // console.log("Search PAR by key: ", key);
+    return this.http.get<any>(`${this.apiUrl}OPTR/Search?key=` + key)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Create
+  createOPTR(details: any, updatedItems: any[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+
+    console.log("Create OPTR Payload: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}OPTR/Create/`, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve
+  retrieveOPTR(optrNo: string): Observable<any> {
+    console.log("Retrieve OPTR No.: ", optrNo);
+    return this.http.get<any[]>(`${this.apiUrl}OPTR/` + optrNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update
+  updateOPTR(details: any, updatedItems: any[]): Observable<any> {
+
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+    console.log("Update OPTR: ", details);
+    console.log("Update request Payload: ", requestPayload);
+    return this.http.put<any>(`${this.apiUrl}OPTR/Update?id=` + details.optrNo, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Delete
+  deleteOPTR(id: string): Observable<any> {
+    console.log("Delete OPTR: ", id);
+    return this.http.delete<any>(`${this.apiUrl}OPTR/Delete?id=` + id)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+
+  // https://localhost:7289/api/REPAR/Post?id=PAR012312412-0001&postVal=true
+  //Update Post Flag
+  postOPTR(reparNo: string, postVal: boolean): Observable<any> {
+    console.log("Update REPAR No. >>> : ", reparNo);
+    console.log("Update Post flag >>> : ", postVal);
+    return this.http.put<any>(`${this.apiUrl}REPAR/Post?id=${reparNo}`, postVal)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
 
   /*----------------------- OPR ITEMS -----------------------*/
   //OPRITEM List By PAR No.
@@ -1289,8 +1366,8 @@ export class ApiService {
   }
   
   //OPRITEM List By OPR No.
-  getAllOPRItemByPARNo(parNo: String): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}OPRITEM/Search?key=` + parNo)
+  getAllOPRItemByOPRNo(oprNo: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/Search?key=` + oprNo)
       .pipe(
         catchError(this.handleError)
       );
@@ -1314,8 +1391,8 @@ export class ApiService {
       );
   }
 
-  //Retrieve By PAR No.
-  retrieveOPRItemByOPRNo(oprNo: string): Observable<Item[]> {
+  //Retrieve By OPR No.
+  retrieveOPRItemByOPRNo(oprNo: number): Observable<Item[]> {
     console.log("Retrieve OPR Item by OPR No.: ", oprNo);
     return this.http.get<Item[]>(`${this.apiUrl}OPRITEM/OPRNO/` + oprNo)
       .pipe(
@@ -1332,7 +1409,7 @@ export class ApiService {
   }
 
   //Update
-  updateOPRItem(oprNo: string, updatedItems: OPRItem[]): Observable<any> {
+  updateOPRItem(oprNo: number, updatedItems: OPRItem[]): Observable<any> {
     console.log("Update OPR No. >>> : ", oprNo);
     console.log("Update OPR Item >>> : ", updatedItems);
     return this.http.put<any>(`${this.apiUrl}OPRITEM/Update?oprNo=` + oprNo, updatedItems)
@@ -1353,10 +1430,10 @@ export class ApiService {
   }
   // https://localhost:7289/api/PARITEM/Scan?parNo=PAR012312412&key=6742378-65432
   //Scan Key
-  scanExistingUniqueOPRItem(parINo: number, key: string): Observable<any> {
-    console.log("Update OPR Item No. >>> : ", parINo);
+  scanExistingUniqueOPRItem(oprINo: number, key: string): Observable<any> {
+    console.log("Update OPR Item No. >>> : ", oprINo);
     console.log("Update OPR Item Key >>> : ", key);
-    return this.http.get<any>(`${this.apiUrl}OPRITEM/ScanExistingUnique?parINo=${parINo}&key=${key}`)
+    return this.http.get<any>(`${this.apiUrl}OPRITEM/ScanExistingUnique?oprINo=${oprINo}&key=${key}`)
       .pipe(
         catchError(this.handleError)
       );

@@ -92,11 +92,21 @@ export class MenuComponent implements AfterViewInit {
     this.router.navigate([`/dashboard/${route}`]);
   }
 
-  toggleDropdown() {
-
+  toggleDropdown(dropdownMenu: string) {
     // console.log("click master-list!");
-    const dropdown = document.getElementById('master-menu');
-    const navDropdown = document.getElementById('masterlist-link')!;
+    let dropdownId: string;
+    const dropdown = document.getElementById(dropdownMenu);
+    switch (dropdownMenu) {
+      case 'master-menu':
+          dropdownId = 'masterlist-link';
+          break;
+      case 'issue-menu':
+          dropdownId = 'issue-link';
+          break;
+      default:
+          dropdownId = 'default-link'; // Optional fallback
+  }
+    const navDropdown = document.getElementById(dropdownId)!;
     if (dropdown) {
       // Check if the 'sidebar-mini' class exists
       if (dropdown.classList.contains('show')) {

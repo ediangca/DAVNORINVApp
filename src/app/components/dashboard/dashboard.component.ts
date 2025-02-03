@@ -176,6 +176,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   setTitle(pageTitle: string) {
+    this.pageTitle = pageTitle
     this.titleService.setTitle(this.ac.appName + " - " + pageTitle);
   }
 

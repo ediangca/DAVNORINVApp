@@ -243,16 +243,16 @@
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline" *ngIf="p.moduleName === 'PAR' || p.moduleName === 'ICS' ||  p.moduleName === 'OPR' || 
-                    p.moduleName === 'PTR' || p.moduleName === 'ITR' || 
-                    p.moduleName === 'PRS' || p.moduleName === 'RRSEP' || p.moduleName === 'USER ACCOUNTS'">
+                    p.moduleName === 'PTR' || p.moduleName === 'ITR' || p.moduleName === 'OPTR' || 
+                    p.moduleName === 'PRS' || p.moduleName === 'RRSEP' || p.moduleName === 'OPRR' ||  p.moduleName === 'USER ACCOUNTS'">
                       <input class="form-check-input" id="{{p.moduleName}}-p" type="checkbox" [checked]="p.post"
                         (change)="toggleSelection('post', p, $event)" [disabled]="!p.isActive" />
                     </div>
                   </td>
                   <td class="text-center">
                     <div class="form-check form-switch form-check-inline" *ngIf="p.moduleName === 'PAR' || p.moduleName === 'ICS' || p.moduleName === 'OPR' || 
-                    p.moduleName === 'PTR' || p.moduleName === 'ITR' || 
-                    p.moduleName === 'PRS' || p.moduleName === 'RRSEP' || p.moduleName === 'USER ACCOUNTS'">
+                    p.moduleName === 'PTR' || p.moduleName === 'ITR' ||  p.moduleName === 'OPTR' || 
+                    p.moduleName === 'PRS' || p.moduleName === 'RRSEP' || p.moduleName === 'OPRR' ||  p.moduleName === 'USER ACCOUNTS'">
                       <input class="form-check-input" id="{{p.moduleName}}-up" type="checkbox" [checked]="p.unpost"
                         (change)="toggleSelection('unpost', p, $event)" [disabled]="!p.isActive" />
                     </div>

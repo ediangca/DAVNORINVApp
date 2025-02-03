@@ -93,6 +93,11 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.loadPositions();
     this.setupModalClose();
   }
+
+  setupModalClose() {
+    this.closeModal(this.AddEditModal);
+    this.closeModal(this.ProfileModal);
+  }
   
   ngAfterViewInit(): void {
     window.addEventListener('load', () => {
@@ -116,6 +121,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   }
 
   openAProfileModal() {
+    console.log('Open Modal Profile >>> ');
     const modal = new bootstrap.Modal(this.ProfileModal.nativeElement);
     modal.show();
   }
@@ -127,6 +133,11 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         modal.hide();
       }
     }
+  }
+
+  onCloseProfile(){
+    this.closeModal(this.ProfileModal)
+    this.resetForm();
   }
 
   // Load UserGroup
@@ -197,7 +208,8 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       data => {
         this.departments = data;
         console.log("Load Department", this.departments);
-        if (this.userProfile) {
+        if (this.userProfile.depID) {
+          console.log("Load User Prifle Department", this.departments);
           this.loadSections(this.userProfile.depID);
         }
       },
@@ -224,33 +236,37 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   // Load Sections
   loadSections(depID: string): void {
-    this.api.getSectionsByDepID(depID!).subscribe(
-      data => {
-        this.sections = data;
-        console.log("Load Section", this.sections);
+    if (depID) {
+
+      this.api.getSectionsByDepID(depID).subscribe(
+        data => {
+          this.sections = data;
+          console.log("Load Section", this.sections);
 
 
-        if (!this.isModalOpen && this.userProfile) {
-          this.userProfileForm.patchValue({
-            lastname: this.userProfile.lastname,
-            firstname: this.userProfile.firstname,
-            middlename: this.userProfile.middlename,
-            sex: this.userProfile.sex,
-            branchID: this.userProfile.branchID,
-            depID: this.userProfile.depID,
-            secID: this.userProfile.secID,
-            positionID: this.userProfile.positionID
-          });
+          if (!this.isModalOpen && this.userProfile) {
+            this.userProfileForm.patchValue({
+              lastname: this.userProfile.lastname,
+              firstname: this.userProfile.firstname,
+              middlename: this.userProfile.middlename,
+              sex: this.userProfile.sex,
+              branchID: this.userProfile.branchID ? this.userProfile.branchID : this.userProfileForm.value['branchID'],
+              depID: this.userProfile.depID ? this.userProfile.depID : this.userProfileForm.value['depID'],
+              secID: this.userProfile.secID ? this.userProfile.secID : this.userProfileForm.value['secID'],
+              positionID: this.userProfile.positionID
+            });
 
-          console.log("Submit Profile", this.userProfileForm.value);
+            console.log("Submit Profile", this.userProfileForm.value);
 
-          this.openAProfileModal();
+            this.openAProfileModal();
+            this.isModalOpen = true;
+          }
+        },
+        err => {
+          console.error('Error: loading Sections => ', err);
         }
-      },
-      err => {
-        console.error('Error: loading Sections => ', err);
-      }
-    );
+      );
+    }
   }
 
   getAllUserAccounts() {
@@ -300,9 +316,11 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
                   positionID: this.userProfile.positionID || ''
                 });
 
-                console.log("Submit Profile", this.userProfileForm.value);
+                console.log("Submit Profile  >>>>>>", this.userProfileForm.value);
 
                 this.openAProfileModal();
+
+                this.isModalOpen = true;
               }
             }
 
@@ -606,7 +624,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   UpdateProfile(userProfile: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,
@@ -688,10 +706,6 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  setupModalClose() {
-    this.closeModal(this.AddEditModal);
-    this.closeModal(this.ProfileModal);
-  }
 
   resetForm() {
     this.isEditMode = false;

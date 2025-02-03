@@ -38,8 +38,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
   oprs: any = [];
   totalItems: number = 0;
   opr!: any;
-  parItems: any[] = [];
-  selectedParItems: Item[] = []; // Array to track selected items from repar
+  oprItems: any[] = [];
+  selectedOPRItems: Item[] = []; // Array to track selected items from repar
   userProfiles: any = [];
   items: any = [];
   searchKey: string = '';
@@ -66,7 +66,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
   models: any[] = [];
   descriptions: any[] = [];
 
-  item: Item | null | undefined;
+  item: any | null | undefined;
   itemName: string | null | undefined
   userAccount: any;
   userProfile: any;
@@ -74,20 +74,21 @@ export class OthersComponent implements OnInit, AfterViewInit {
   itemForm!: FormGroup;
   isEditMode: boolean = false;
   isEditItemMode: boolean = false;
-  currentEditId: string | null = null;
+  currentEditId: number | null = null;
 
   generatedREPARNo: string | null | undefined;
   noOfParItems: number = 0;
 
-  parINo: number | null = null;
+  oprINo: number | null = null;
   propertyNo: string | null = null;
 
   typeOptions: string[] = ['Personal', 'Donation', 'Tie-up'];
+  transferOptions: string[] = ['Borrow', 'Reassignment', 'Relocation'];
   isCustomType = false;
 
-  isRepar: boolean = false;
-  reparForm!: FormGroup;
-  repar: any | null | undefined;
+  isOPTR: boolean = false;
+  optrForm!: FormGroup;
+  optr: any | null | undefined;
   searchPARItems: Item[] = [];
 
   isNewItem: boolean = false;
@@ -165,7 +166,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       userID2: ['', Validators.required],
     });
 
-    this.reparForm = this.fb.group({
+    this.optrForm = this.fb.group({
       searchPARItemKey: [''],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
@@ -211,12 +212,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   private checkPrivileges(): void {
     this.store.loadPrivileges();
-    this.canCreate = this.store.isAllowedAction('PAR', 'create');
-    this.canRetrieve = this.store.isAllowedAction('PAR', 'retrieve');
-    this.canUpdate = this.store.isAllowedAction('PAR', 'update');
-    this.canDelete = this.store.isAllowedAction('PAR', 'delete');
-    this.canPost = this.store.isAllowedAction('PAR', 'post');
-    this.canUnpost = this.store.isAllowedAction('PAR', 'unpost');
+    this.canCreate = this.store.isAllowedAction('OPR', 'create');
+    this.canRetrieve = this.store.isAllowedAction('OPR', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('OPR', 'update');
+    this.canDelete = this.store.isAllowedAction('OPR', 'delete');
+    this.canPost = this.store.isAllowedAction('OPR', 'post');
+    this.canUnpost = this.store.isAllowedAction('OPR', 'unpost');
 
     this.canPTR = this.store.isAllowedAction('PTR', 'create');
   }
@@ -242,10 +243,10 @@ export class OthersComponent implements OnInit, AfterViewInit {
       });
     }
   }
-  addModalHiddenListener(parModal: boolean, modalId: string) {
+  addModalHiddenListener(oprModal: boolean, modalId: string) {
     const modal = document.getElementById(modalId);
     modal?.addEventListener('hidden.bs.modal', () =>
-      parModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+      oprModal && !this.isEditMode ? this.resetForm() : (!this.isEditItemMode ? this.resetItemForm() : ''));
   }
 
   openModal(modalElement: ElementRef) {
@@ -443,8 +444,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
       });
     }
 
-    if (this.reparForm!) {
-      this.reparForm.patchValue({
+    if (this.optrForm!) {
+      this.optrForm.patchValue({
         userID1: userProfile.fullName  // Patch the selected IID to the form
       });
     }
@@ -527,7 +528,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.approvedID = userProfile.userID;
     this.logger.printLogs('i', 'Selected to Approved', userProfile);
 
-    this.reparForm.patchValue({
+    this.optrForm.patchValue({
       userID3: userProfile.fullName  // Patch the selected IID to the form
     });
 
@@ -536,16 +537,16 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
   searchPARItem() {
-    this.parItemKey = this.reparForm.value['searchPARItemKey'];
+    this.parItemKey = this.optrForm.value['searchPARItemKey'];
     console.log(this.parItemKey);
 
     // Populate all items if the search key is empty
     if (!this.parItemKey || this.parItemKey.trim() === "") {
-      this.parItems = [...this.searchPARItems];  // Reset to full list
+      this.oprItems = [...this.searchPARItems];  // Reset to full list
     } else {
       const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
 
-      this.parItems = this.searchPARItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
+      this.oprItems = this.searchPARItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
         item.propertyNo!.toLowerCase().includes(searchKey) ||
         item.qrCode!.toLowerCase().includes(searchKey)
       );
@@ -642,7 +643,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.isEditMode && this.parItems.length < 1) {
+    if (this.isEditMode && this.oprItems.length < 1) {
       Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
       return;
     }
@@ -672,22 +673,22 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
 
-  onSubmitREPAR() {
+  onSubmitOPTR() {
 
-    if (!this.reparForm.valid) {
-      this.vf.validateFormFields(this.reparForm);
+    if (!this.optrForm.valid) {
+      this.vf.validateFormFields(this.optrForm);
       Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
       return;
     }
 
-    if (this.selectedParItems.length < 1) {
+    if (this.selectedOPRItems.length < 1) {
       Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
       return;
     }
 
-    if (this.reparForm.valid && this.parItems.length > 0) {
+    if (this.optrForm.valid && this.oprItems.length > 0) {
 
-      this.logger.printLogs('i', 'REPAR Form', this.opr);
+      this.logger.printLogs('i', 'OPTR Form', this.opr);
       this.Save(this.opr);
 
     }
@@ -696,7 +697,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
 
   Save(opr: any) {
-    if (!this.isRepar) {
+    if (!this.isOPTR) {
       this.logger.printLogs('i', 'Saving OPR', opr);
       this.api.createOPR(opr)
         .subscribe({
@@ -718,11 +719,11 @@ export class OthersComponent implements OnInit, AfterViewInit {
         });
     } else {
 
-      this.repar = {
-        parNo: opr.oprNo,
-        ttype: this.reparForm.value['type'],
-        otype: this.reparForm.value['others'],
-        reason: this.reparForm.value['reason'],
+      this.optr = {
+        oprNo: opr.oprNo,
+        ttype: this.optrForm.value['type'],
+        otype: this.optrForm.value['others'],
+        reason: this.optrForm.value['reason'],
         receivedBy: this.receivedID,
         issuedBy: this.issuedByID,
         approvedBy: this.approvedID,
@@ -733,26 +734,27 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
       Swal.fire({
         title: 'Confirmation',
-        text: 'Do you want to PTR Selected Item(s)?',
+        text: 'Do you want to OPTR Selected Item(s)?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
         cancelButtonText: 'No',
       }).then((result) => {
         if (result.isConfirmed) {
-          this.logger.printLogs('i', 'Saving REPAR', this.repar);
+          this.logger.printLogs('i', 'Saving OPTR', this.optr);
+          this.logger.printLogs('i', 'Saving OPTR Items', this.selectedOPRItems);
 
-          this.api.createREPAR(this.repar, this.selectedParItems)
+          this.api.createOPTR(this.optr, this.selectedOPRItems)
             .subscribe({
               next: (res) => {
-                this.logger.printLogs('i', 'Saved Success', res);
+                this.logger.printLogs('i', 'OPTR Saved Success', res);
                 Swal.fire('Saved', res.message, 'success');
-                this.logger.printLogs('i', 'Saved Success', res.details);
+                // this.logger.printLogs('i', 'Saved Success', res.details);
 
                 this.closeModal(this.ViewModal);
               },
               error: (err: any) => {
-                this.logger.printLogs('e', 'Error Saving REPAR', err);
+                this.logger.printLogs('e', 'Error Saving OPTR', err);
                 Swal.fire('Denied', err, 'warning');
               }
             });
@@ -763,10 +765,10 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
   saveParItems() {
-    this.api.createPARItem(this.parItems)  // Send the array of items
+    this.api.createPARItem(this.oprItems)  // Send the array of items
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', this.parItems);
+          this.logger.printLogs('i', 'Saved Success', this.oprItems);
 
           // Handle success, e.g., show a success message
           Swal.fire({
@@ -799,7 +801,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.api.updateOPR(this.currentEditId!, par)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', par);
+          this.logger.printLogs('i', 'OPR Saved Success', par);
           this.updateOPRItem();
 
         },
@@ -812,11 +814,11 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   }
   updateOPRItem() {
-    this.api.updateOPRItem(this.currentEditId!, this.parItems)
+    this.api.updateOPRItem(this.currentEditId!, this.oprItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Updated Success', this.parItems);
-          Swal.fire('Updated!', res.message, 'warning');
+          this.logger.printLogs('i', 'Updated Success', this.oprItems);
+          Swal.fire('Updated!', res.message, 'success');
           this.getAllOPR();
         },
         error: (err: any) => {
@@ -877,6 +879,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    this.oprItems = []
     this.isEditMode = true;
     this.opr = opr;
     this.currentEditId = opr.oprNo;
@@ -911,7 +914,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving OPR Item', res);
-          this.parItems = res;
+          this.oprItems = res;
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
@@ -926,8 +929,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   onViewOPR(opr: any) {
     this.opr = opr;
-    this.isRepar = false;
-    this.currentEditId = opr.parNo;
+    this.isOPTR = false;
+    this.currentEditId = opr.oprNo;
     this.logger.printLogs('i', 'Viewing OPR', opr);
 
     if (!this.onItemFound) {
@@ -948,8 +951,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving OPR Item', res);
-          this.parItems = res;
-          this.searchPARItems = this.parItems;
+          this.oprItems = res;
+          this.searchPARItems = this.oprItems;
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
@@ -961,43 +964,44 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   }
 
-  onRepar(par: any) {
-    if (!par.postFlag) {
-      Swal.fire('Information!', 'Cannot REPAR unposted PAR.', 'warning');
+  onTransfer(opr: any) {
+    if (!opr.postFlag) {
+      Swal.fire('Information!', 'Cannot Transfer unposted OPR.', 'warning');
       return;
     }
 
-    this.isRepar = true;
-    this.opr = par;
-    this.logger.printLogs('i', 'Restoring PAR', par);
+    this.isOPTR = true;
+    this.opr = opr;
+    this.logger.printLogs('i', 'Restoring OPR', opr);
 
-    this.issuedByID = par.receivedBy;
+    this.issuedByID = opr.receivedBy;
 
-    this.reparForm.patchValue({
-      userID2: par.receivedBy,
+    this.optrForm.patchValue({
+      userID2: opr.receivedBy,
       userID1: '', //Received BY
       userID3: '', //Approved BY
       type: '',
       searchPARItemKey: [''],
     });
 
-    this.api.retrievePARItemByParNo(this.opr.parNo)
+    this.api.retrieveOPRItemByOPRNo(this.opr.oprNo)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PAR Item', res);
-          this.parItems = res.filter((item: any) => item.reparFlag === false);
-          this.searchPARItems = this.parItems;
+          this.logger.printLogs('i', 'Retrieving OPR Item', res);
+          this.oprItems = res.filter((item: any) => item.optrFlag === false);
+          this.searchPARItems = this.oprItems;
 
-          this.noOfParItems = this.parItems.filter((group: any) => group.reparFlag === false).length;
-          this.logger.printLogs('i', 'Number of PAR Item Retrieved', this.noOfParItems);
+          this.noOfParItems = this.oprItems.filter((group: any) => group.optrFlag === false).length;
+          this.logger.printLogs('i', 'Number of OPR Item Retrieved', this.noOfParItems);
+
+          this.openModal(this.ViewModal); // Open the modal after patching
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPR Item.', 'error');
         }
       });
 
-    this.openModal(this.ViewModal); // Open the modal after patching
 
   }
 
@@ -1044,7 +1048,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const OPRNo: string = this.opr? this.opr.oprNo: 0;
+    const OPRNo: string = this.opr ? this.opr.oprNo : 0;
     const IID: string = this.itemForm.value['iid'];
     const Brand: string = this.itemForm.value['brand'];
     const Model: string = this.itemForm.value['model'];
@@ -1110,14 +1114,28 @@ export class OthersComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      this.item = new Item(null, OPRNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
-      this.parItems.push(this.item);
-      this.logger.printLogs('i', 'PAR ITEMS', this.parItems);
+      this.item = {
+        oprINo: null,
+        oprNo: OPRNo,
+        iid: this.iid!,
+        brand: Brand,
+        model: Model,
+        description: Description,
+        serialNo: SerialNo,
+        propertyNo: PropertyNo,
+        qrCode: QRCode,
+        unit: Unit,
+        amount: Amount,
+        date_Acquired: Date_Acquired,
+      };
+
+      this.oprItems.push(this.item);
+      this.logger.printLogs('i', 'OPR ITEMS', this.oprItems);
       this.resetItemForm();
 
       Swal.fire({
         title: 'Save',
-        text: 'Do you want to add new Item?',
+        text: 'Do you want to add new OPR Item?',
         icon: 'success',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -1130,24 +1148,39 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
     } else {
 
-      if (await this.isExistOnUpdate(this.parINo, PropertyNo)) {
+      if (await this.isExistOnUpdate(this.oprINo, PropertyNo)) {
         Swal.fire('Information!', 'Property No. already exists!', 'warning');
         return;
       }
 
-      if (await this.isExistOnUpdate(this.parINo, SerialNo)) {
+      if (await this.isExistOnUpdate(this.oprINo, SerialNo)) {
         Swal.fire('Information!', 'Serial No. already exists!', 'warning');
         return;
       }
 
-      if (await this.isExistOnUpdate(this.parINo, QRCode)) {
+      if (await this.isExistOnUpdate(this.oprINo, QRCode)) {
         Swal.fire('Information!', 'QRCode already exists!', 'warning');
         return;
       }
 
-      const index = this.parItems.findIndex(i => i.propertyNo === this.item!.propertyNo);
+      const index = this.oprItems.findIndex(i => i.propertyNo === this.item!.propertyNo);
       if (index !== -1) {
-        this.parItems[index] = new Item(this.parINo, OPRNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
+
+        this.item = {
+          oprINo: this.oprINo,
+          oprNo: OPRNo,
+          iid: this.iid!,
+          brand: Brand,
+          model: Model,
+          description: Description,
+          serialNo: SerialNo,
+          propertyNo: PropertyNo,
+          qrCode: QRCode,
+          unit: Unit,
+          amount: Amount,
+          date_Acquired: Date_Acquired,
+        };
+        this.oprItems[index] = this.item
         Swal.fire('Success!', 'Item updated successfully!', 'success');
         this.resetItemForm();
         this.closeModal(this.ItemModal);
@@ -1158,16 +1191,16 @@ export class OthersComponent implements OnInit, AfterViewInit {
   isListed(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (this.isEditItemMode) {
-        this.parItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 1 ? resolve(true) : resolve(false);
+        this.oprItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 1 ? resolve(true) : resolve(false);
       } else {
-        this.parItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 0 ? resolve(true) : resolve(false);
+        this.oprItems.filter(items => items.serialNo === key || items.propertyNo === key || items.qrCode === key).length > 0 ? resolve(true) : resolve(false);
       }
     });
   }
 
   isExist(key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.api.scanUniquePARItem(key!)
+      this.api.scanUniqueOPRItem(key!)
         .subscribe({
           next: (res) => {
             res.length > 0 ? resolve(true) : resolve(false);
@@ -1197,14 +1230,14 @@ export class OthersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  isExistOnUpdate(parINo: number | null, key: string | null): Promise<boolean> {
+  isExistOnUpdate(oprINo: number | null, key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (!parINo) {
+      if (!oprINo) {
         resolve(false); // Consider an item as existing in case of error.
-        this.logger.printLogs('e', 'NO PARINO', 'FOR UPDATE ITEM IN CREATING NEW PAR ITEM.');
+        this.logger.printLogs('e', 'NO OPRINO', 'FOR UPDATE ITEM IN CREATING NEW OPR ITEM.');
         return
       }
-      this.api.scanExistingUniquePARItem(parINo!, key!)
+      this.api.scanExistingUniqueOPRItem(oprINo!, key!)
         .subscribe({
           next: (res) => {
             res.length > 0 ? resolve(true) : resolve(false);
@@ -1238,11 +1271,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
 
 
-  onEditItem(item: Item) {
+  onEditItem(item: any) {
     this.isEditItemMode = true;
     this.item = item;
-    this.parINo = item.parino;
+    this.oprINo = item.oprINo;
     this.propertyNo = item.propertyNo;
+
 
     if (this.ViewItemModal) {
       const modalElement = this.ViewItemModal.nativeElement;
@@ -1252,10 +1286,13 @@ export class OthersComponent implements OnInit, AfterViewInit {
       if (modalInstance && modalInstance._isShown) {
         this.closeModal(this.ViewItemModal)
       }
-    }
+    } 
+      this.logger.printLogs('i', 'Restore Item', [item]);
+      this.onRetrieveItem(item)
 
-    this.logger.printLogs('i', 'Restore Item', [item]);
+  }
 
+  onRetrieveItem(item: any) {
     this.api.retrieveItem(item.iid!)
       .subscribe({
         next: (res) => {
@@ -1285,9 +1322,9 @@ export class OthersComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onViewItem(item: Item) {
+  onViewItem(item: any) {
     this.item = item;
-    this.parINo = item.parino;
+    this.oprINo = item.oprINo;
     this.propertyNo = item.propertyNo;
 
     this.logger.printLogs('i', 'View Item', [item]);
@@ -1301,16 +1338,16 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
           this.itemName = res.description;
 
-          if (item.reparFlag) {
-            this.api.retrieveREPAR(item.reparNo!)
+          if (item.optrFlag) {
+            this.api.retrieveOPTR(item.optrNo!)
               .subscribe({
                 next: (res) => {
-                  this.repar = res.details;
-                  this.logger.printLogs('i', 'Retreived REPAR No: ' + item.reparNo!, res.details);
+                  this.optr = res.details;
+                  this.logger.printLogs('i', 'Retreived OPTR No: ' + item.optrNo!, res.details);
                   this.openModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
-                  this.logger.printLogs('e', 'Error Retreiving REPAR', err);
+                  this.logger.printLogs('e', 'Error Retreiving OPTR', err);
                   Swal.fire('Denied', err, 'warning');
                 }
               });
@@ -1396,7 +1433,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       if (result.isConfirmed) {
         // Execute delete Item where propertyNo matches to list
         if (this.propertyNo) {
-          this.parItems = this.parItems.filter(items => items.propertyNo !== this.propertyNo);
+          this.oprItems = this.oprItems.filter(items => items.propertyNo !== this.propertyNo);
           Swal.fire('Deleted!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid property number.', 'warning');
@@ -1410,14 +1447,14 @@ export class OthersComponent implements OnInit, AfterViewInit {
     const input = event.target as HTMLInputElement;
     const isChecked: boolean = input.checked;
 
-    const index = this.selectedParItems.indexOf(item);
+    const index = this.selectedOPRItems.indexOf(item);
 
     if (isChecked && index === -1) {
       // If checked and item is not in the list, add it
-      this.selectedParItems.push(item);
+      this.selectedOPRItems.push(item);
     } else if (!isChecked && index > -1) {
       // If unchecked and item is in the list, remove it
-      this.selectedParItems.splice(index, 1);
+      this.selectedOPRItems.splice(index, 1);
     }
     this.displaySelectedItems();
   }
@@ -1428,14 +1465,14 @@ export class OthersComponent implements OnInit, AfterViewInit {
     const isChecked: boolean = input.checked;
 
     // Loop through all items
-    this.parItems.forEach(item => {
-      item.reparFlag = isChecked; // Update reparFlag based on checkbox state
-      const index = this.selectedParItems.indexOf(item);
+    this.oprItems.forEach(item => {
+      item.optrFlag = isChecked; // Update reparFlag based on checkbox state
+      const index = this.selectedOPRItems.indexOf(item);
 
       if (isChecked && index === -1) {
-        this.selectedParItems.push(item); // Add to selected items if checked and not already in the list
+        this.selectedOPRItems.push(item); // Add to selected items if checked and not already in the list
       } else if (!isChecked && index > -1) {
-        this.selectedParItems.splice(index, 1); // Remove from selected items if unchecked
+        this.selectedOPRItems.splice(index, 1); // Remove from selected items if unchecked
       }
     });
 
@@ -1444,7 +1481,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   // Optional function to get the currently selected items
   displaySelectedItems() {
-    this.logger.printLogs('i', 'List of selected PAR Items', this.selectedParItems!);
+    this.logger.printLogs('i', 'List of selected PAR Items', this.selectedOPRItems!);
   }
 
   //Common Method - Advice to add in Helpers
@@ -1463,13 +1500,13 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.isEditMode = false;
     this.currentEditId = null;
     this.isModalOpen = false;
-    this.isRepar = false;
+    this.isOPTR = false;
     this.item = null;
     this.isOpen = false;
     this.userProfiles = [];
-    this.parItems = [];
+    this.oprItems = [];
     this.searchPARItems = [];
-    this.selectedParItems = [];
+    this.selectedOPRItems = [];
     this.parItemKey = '';
     this.searchKey = '';
 
@@ -1480,7 +1517,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       userID1: '',
       userID2: '',
     });
-    this.reparForm.reset({
+    this.optrForm.reset({
       searchPARItemKey: '',
       userID1: '',
       userID2: '',
@@ -1502,18 +1539,21 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.brands = [];
     this.models = [];
     this.descriptions = [];
-    this.itemForm.reset({
-      iid: '',
-      description: '',
-      brand: '',
-      model: '',
-      serialNo: '',
-      propertyNo: '',
-      qrCode: '',
-      unit: '',
-      amount: '',
-      date_Acquired: this.today,
-    });
+
+    if (this.isEditItemMode) {
+      this.itemForm.reset({
+        iid: '',
+        description: '',
+        brand: '',
+        model: '',
+        serialNo: '',
+        propertyNo: '',
+        qrCode: '',
+        unit: '',
+        amount: '',
+        date_Acquired: this.today,
+      });
+    }
   }
 
 
@@ -1591,35 +1631,35 @@ export class OthersComponent implements OnInit, AfterViewInit {
       });
       this.onCloseQRScanning(this.scannerAction);
     } else {
-      this.api.retrievePARITEMByQRCode(qr)
+      this.api.retrieveOPRITEMByQRCode(qr)
         .subscribe({
           next: (res) => {
-            console.log('Retrieve PAR ITEMS', res);
+            console.log('Retrieve OPR ITEMS', res);
             this.item = res[0];
 
             console.log('Show Items', this.item);
 
-            this.onRetrievePAR(res[0].parNo);
+            this.onRetrieveOPR(res[0].oprNo);
 
           },
           error: (err: any) => {
-            this.logger.printLogs('w', 'Problem with Retreiving PAR', err);
-            Swal.fire('Item not Found', `QR Code ${qr} not found in PAR`, 'info');
+            this.logger.printLogs('w', 'Problem with Retreiving OPR', err);
+            Swal.fire('Item not Found', `QR Code ${qr} not found in OPR`, 'info');
           }
         });
     }
   }
 
-  onRetrievePAR(parNo: string) {
-    this.api.retrievePAR(parNo)
+  onRetrieveOPR(oprNo: number) {
+    this.api.retrieveOPR(oprNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PAR', res);
+          console.log('Retrieve OPR', res);
           this.opr = res[0];
 
           Swal.fire({
-            title: 'Item Found from PAR #' + parNo + "",
-            text: 'Do you want to view the PAR?',
+            title: 'Item Found from OPR #000' + oprNo + "",
+            text: 'Do you want to view the OPR?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -1635,7 +1675,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('w', 'Problem Retreiving PAR', err);
+          this.logger.printLogs('w', 'Problem Retreiving OPR', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
@@ -1669,7 +1709,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       // Wait for Angular to render the input field before focusing
       this.oprForm.get('itemsource')?.markAsUntouched();
       this.oprForm.get('others')?.markAsTouched();
-      this.oprForm.get('others')?.setValue(null); 
+      this.oprForm.get('others')?.setValue(null);
     }
   }
 
@@ -1677,23 +1717,23 @@ export class OthersComponent implements OnInit, AfterViewInit {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.isCustomType = selectedValue === 'Others';
     if (!this.isCustomType) {
-      this.reparForm.get('type')?.setValue(selectedValue);
-      this.reparForm.get('others')?.setValue('N/A');
+      this.optrForm.get('type')?.setValue(selectedValue);
+      this.optrForm.get('others')?.setValue('N/A');
     } else {
       // Wait for Angular to render the input field before focusing
-      this.reparForm.get('type')?.markAsUntouched();
-      this.reparForm.get('others')?.markAsTouched();
-      this.reparForm.get('others')?.setValue(null);
+      this.optrForm.get('type')?.markAsUntouched();
+      this.optrForm.get('others')?.markAsTouched();
+      this.optrForm.get('others')?.setValue(null);
     }
   }
 
-  onPrintPAR(parNo: string) {
+  onPrint(oprNo: number) {
 
-    this.api.retrievePAR(parNo)
+    this.api.retrieveOPR(oprNo)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PAR', res);
-          const par = res[0];
+          this.logger.printLogs('i', 'Retrieving OPR', res);
+          const opr = res[0];
 
 
           // Use forkJoin to wait for both observables to complete
@@ -1702,11 +1742,11 @@ export class OthersComponent implements OnInit, AfterViewInit {
             this.printService.setIssuedBy(res[0].issuedBy)
           ] as Observable<any>[]).subscribe(() => {
 
-            this.api.retrievePARItemByParNo(parNo!)
+            this.api.retrieveOPRItemByOPRNo(oprNo!)
               .subscribe({
                 next: (res) => {
 
-                  this.logger.printLogs('i', 'Retrieving PAR Item', res);
+                  this.logger.printLogs('i', 'Retrieving OPR Item', res);
                   const parItems = res;
 
                   // Ensure par.parItems is an array or default to an empty array
@@ -1732,17 +1772,14 @@ export class OthersComponent implements OnInit, AfterViewInit {
                   // Generate the full report content
                   const reportContent = `
 
-                  <div class="watermark">PAR</div>
+                  <div class="watermark">OPR</div>
 
                   <div class="row">
-                    <div class="col-12">
-                      <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${par.lgu || 'Default N/A'}</span></p>
+                    <div class="col-6">
+                      <p class="fs-6">SOURCE OF ITEM: <span class="fw-bold border-bottom ms-1">${opr.itemSource || 'Default N/A'}</span></p>
                     </div>
                     <div class="col-6">
-                      <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${par.fund || 'Default N/A'}</span></p>
-                    </div>
-                    <div class="col-6">
-                      <p class="text-end fs-6">PAR NO.: <span class="fw-bold border-bottom ms-1">${par.parNo || 'Default N/A'}</span></p>
+                      <p class="fs-6">OWNERSHIP: <span class="fw-bold border-bottom ms-1">${opr.ownership || 'Default N/A'}</span></p>
                     </div>
                   </div>
 
@@ -1765,12 +1802,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
                         </table>`;
 
                   // Print the report
-                  this.printService.printReport('PAR', reportContent);
+                  this.printService.printReport('OPR', reportContent);
 
                 },
                 error: (err: any) => {
-                  this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
-                  Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
+                  this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
+                  Swal.fire('Info', 'No OPR Item yet added.', 'info');
                 }
               });
 
@@ -1778,8 +1815,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPR.', 'error');
           return;
         }
       });

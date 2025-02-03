@@ -22,6 +22,7 @@ import { UsergroupComponent } from './components/settings/usergroup/usergroup.co
 import { RrspComponent } from './components/rrsp/rrsp.component';
 import { PrsComponent } from './components/prs/prs.component';
 import { OthersComponent } from './components/others/others.component';
+import { OptrComponent } from './components/optr/optr.component';
 
 //
   // { path: 'dashboard', component: DashboardComponent, resolve: { username: UserResolver }, canActivate: [authGuard], data: { title: 'Dashboard' } },
@@ -42,8 +43,9 @@ export const routes: Routes = [
       { path: 'opr', component: OthersComponent, data: { title: 'OPR' } },
       { path: 'repar', component: ReparComponent, data: { title: 'PTR' } },
       { path: 'itr', component: ItrComponent, data: { title: 'ITR' } },
+      { path: 'optr', component: OptrComponent, data: { title: 'OPTR' } },
       { path: 'prs', component: PrsComponent, data: { title: 'PRS' } },
-      { path: 'rrsp', component: RrspComponent, data: { title: 'RRSP' } },
+      { path: 'rrsp', component: RrspComponent, data: { title: 'RRSEP' } },
       { path: 'global', component: GlobalComponent, data: { title: 'Global Settings' },
         children: [
           // { path: '', component: PlaceholderComponent, data: { title: 'Global Settings'} },

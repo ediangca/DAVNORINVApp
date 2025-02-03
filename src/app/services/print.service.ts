@@ -102,9 +102,9 @@ export class PrintService {
   setFooter(title: string) {
     // Normalize title
     title = title.toLocaleLowerCase();
-    title = (title === "par" || title === "ics") ? 'par' : title;
+    title = (title === "par" || title === "ics" || title === "opr") ? 'standard' : title;
 
-    if (title === "par" || title === "ics") {
+    if (title === "standard") {
       this.footer = `
         <div class="row mt-3">
             <div class="col-12 border">
@@ -248,7 +248,7 @@ export class PrintService {
     document.body.appendChild(iframe);
 
     if (!(title == '')) {
-      titleContent = `<div class="row mb-3" *ngif="!this.title">
+      titleContent = `<div class="row mb-3">
             <div class="col text-center">
               <h5>${this.getTitleDetail(title) || ''}</h5>
             </div>
@@ -451,6 +451,8 @@ export class PrintService {
         return 'PROPERTY RETURN SLIP'
       case 'rrsep':
         return 'RECEIPT RETURN SEMI-EXPANDABLE PROPERTY'
+      case 'opr':
+        return 'OTHER PROPERTY RECEIPT'
       default:
         return null
     }

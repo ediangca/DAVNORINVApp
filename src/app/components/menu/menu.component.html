@@ -1,28 +1,23 @@
 <!-- Sidebar Menu Start -->
 <ul class="navbar-nav iq-main-menu" id="sidebar-menu">
   <li class="nav-item static-item">
-    <a class="nav-link static-item disabled" href="#"
-      tabindex="-1">
+    <a class="nav-link static-item disabled" href="#" tabindex="-1">
       <span class="default-icon">Home</span>
       <span class="mini-icon">-</span>
     </a>
   </li>
+  <!-- DASHBOARD -->
   <li class="nav-item">
-    
-      <!-- [routerLink]="['dashboard']" -->
-    <a class="nav-link" [ngClass]="{'active': title === 'Dashboard'}"
-      href="/dashboard"
+
+    <!-- [routerLink]="['dashboard']" -->
+    <a class="nav-link" [ngClass]="{'active': title === 'Dashboard'}" href="/dashboard"
       routerLinkActive="router-link-active">
       <i class="icon">
-        <svg width="20" viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="icon-20">
+        <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
           <path opacity="0.4"
             d="M16.0756 2H19.4616C20.8639 2 22.0001 3.14585 22.0001 4.55996V7.97452C22.0001 9.38864 20.8639 10.5345 19.4616 10.5345H16.0756C14.6734 10.5345 13.5371 9.38864 13.5371 7.97452V4.55996C13.5371 3.14585 14.6734 2 16.0756 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M4.53852 2H7.92449C9.32676 2 10.463 3.14585 10.463 4.55996V7.97452C10.463 9.38864 9.32676 10.5345 7.92449 10.5345H4.53852C3.13626 10.5345 2 9.38864 2 7.97452V4.55996C2 3.14585 3.13626 2 4.53852 2ZM4.53852 13.4655H7.92449C9.32676 13.4655 10.463 14.6114 10.463 16.0255V19.44C10.463 20.8532 9.32676 22 7.92449 22H4.53852C3.13626 22 2 20.8532 2 19.44V16.0255C2 14.6114 3.13626 13.4655 4.53852 13.4655ZM19.4615 13.4655H16.0755C14.6732 13.4655 13.537 14.6114 13.537 16.0255V19.44C13.537 20.8532 14.6732 22 16.0755 22H19.4615C20.8637 22 22 20.8532 22 19.44V16.0255C22 14.6114 20.8637 13.4655 19.4615 13.4655Z"
             fill="currentColor"></path>
         </svg>
@@ -31,16 +26,13 @@
     </a>
   </li>
 
-  <li class="nav-item"  *ngIf="isModuleActive('ITEMS')">
-    <a class="nav-link collapsed" id="masterlist-link" type="button"
-      data-bs-toggle="collapse" aria-expanded="false"
-      (click)="toggleDropdown()"
-      aria-controls="master-menu">
+  <!-- MASTER LIST -->
+  <li class="nav-item" *ngIf="isModuleActive('ITEMS')">
+
+    <a class="nav-link collapsed" id="masterlist-link" type="button" data-bs-toggle="collapse" aria-expanded="false"
+      (click)="toggleDropdown('master-menu')" aria-controls="master-menu">
       <i class="icon">
-        <svg width="20" viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="icon-20">
+        <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
           <path opacity="0.4"
             d="M10.0833 15.958H3.50777C2.67555 15.958 2 16.6217 2 17.4393C2 18.2559 2.67555 18.9207 3.50777 18.9207H10.0833C10.9155 18.9207 11.5911 18.2559 11.5911 17.4393C11.5911 16.6217 10.9155 15.958 10.0833 15.958Z"
             fill="currentColor"></path>
@@ -57,363 +49,666 @@
       </i>
       <span class="item-name">Master List</span>
       <i class="right-icon">
-        <svg class="icon-18"
-          xmlns="http://www.w3.org/2000/svg"
-          width="18" fill="none"
-          viewBox="0 0 24 24"
+        <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
-          <path stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2" d="M9 5l7 7-7 7" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
       </i>
     </a>
-    <ul class="collapse sub-nav" id="master-menu"
-      data-bs-parent="#sidebar-menu"
-      id="master-menu" class="collapse sub-nav">
+    <ul class="collapse sub-nav" id="master-menu" data-bs-parent="#sidebar-menu" id="master-menu"
+      class="collapse sub-nav">
       <li class="nav-item">
-        <a class="nav-link" [ngClass]="{'active': title === 'Items'}"
-          [routerLink]="['items']"
-          (click)="toggleSidebar(true)"
-          routerLinkActive="router-link-active">
+        <a class="nav-link" [ngClass]="{'active': title === 'Items'}" [routerLink]="['items']"
+          (click)="toggleSidebar(true)" routerLinkActive="router-link-active">
 
-          <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-            data-bs-placement="right"
-            data-bs-custom-class="custom-tooltip"
-            title="<b>ITEMS</b>">
-            <svg class="icon-20" width="20"
-              viewBox="0 0 24 24" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
+          <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+            data-bs-custom-class="custom-tooltip" title="<b>ITEMS</b>">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path opacity="0.4"
                 d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
                 fill="currentColor"></path>
-              <path fill-rule="evenodd"
-                clip-rule="evenodd"
+              <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
                 fill="currentColor"></path>
             </svg>
           </i>
-          <i class="sidenav-mini-icon" data-bs-toggle="tooltip"
-            data-bs-html="true"
-            data-bs-placement="right"
-            data-bs-custom-class="custom-tooltip"
-            title="<b>ITEMS</b>"> I </i>
+          <i class="sidenav-mini-icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+            data-bs-custom-class="custom-tooltip" title="<b>ITEMS</b>"> I </i>
           <span class="item-name">Items</span>
         </a>
       </li>
     </ul>
   </li>
 
-  <li *ngIf="isModuleActive('PAR') || isModuleActive('ICS')"><hr class="hr-horizontal"></li>
+  <!-- PAR & ICS -->
+  <li *ngIf="isModuleActive('PAR') || isModuleActive('ICS') || isModuleActive('OPR')">
+    <hr class="hr-horizontal">
+  </li>
+  <li class="nav-item static-item" *ngIf="isModuleActive('PAR') || isModuleActive('ICS') || isModuleActive('OPR')
+  isModuleActive('PTR') || isModuleActive('ITR') || isModuleActive('OPTR')
+  isModuleActive('PRS') || isModuleActive('RRSEP') || isModuleActive('OPRR')  ">
+    <a class="nav-link static-item disabled" href="#" tabindex="-1">
+      <span class="default-icon">Inventory</span>
+      <span class="mini-icon">INV</span>
+    </a>
+  </li>
+
+  <!-- ISSUE LIST -->
+  <li class="nav-item" *ngIf="isModuleActive('PAR') || isModuleActive('ICS') || isModuleActive('OPR')">
+
+    <a class="nav-link collapsed" id="issue-link" type="button" data-bs-toggle="collapse" aria-expanded="false"
+      (click)="toggleDropdown('issue-menu')" aria-controls="issue-menu">
+      <i class="icon">
+        <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
+          <path opacity="0.4"
+            d="M10.0833 15.958H3.50777C2.67555 15.958 2 16.6217 2 17.4393C2 18.2559 2.67555 18.9207 3.50777 18.9207H10.0833C10.9155 18.9207 11.5911 18.2559 11.5911 17.4393C11.5911 16.6217 10.9155 15.958 10.0833 15.958Z"
+            fill="currentColor"></path>
+          <path opacity="0.4"
+            d="M22.0001 6.37867C22.0001 5.56214 21.3246 4.89844 20.4934 4.89844H13.9179C13.0857 4.89844 12.4102 5.56214 12.4102 6.37867C12.4102 7.1963 13.0857 7.86 13.9179 7.86H20.4934C21.3246 7.86 22.0001 7.1963 22.0001 6.37867Z"
+            fill="currentColor"></path>
+          <path
+            d="M8.87774 6.37856C8.87774 8.24523 7.33886 9.75821 5.43887 9.75821C3.53999 9.75821 2 8.24523 2 6.37856C2 4.51298 3.53999 3 5.43887 3C7.33886 3 8.87774 4.51298 8.87774 6.37856Z"
+            fill="currentColor"></path>
+          <path
+            d="M21.9998 17.3992C21.9998 19.2648 20.4609 20.7777 18.5609 20.7777C16.6621 20.7777 15.1221 19.2648 15.1221 17.3992C15.1221 15.5325 16.6621 14.0195 18.5609 14.0195C20.4609 14.0195 21.9998 15.5325 21.9998 17.3992Z"
+            fill="currentColor"></path>
+        </svg>
+      </i>
+      <span class="item-name">Issuance</span>
+      <i class="right-icon">
+        <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </i>
+    </a>
+    <ul class="collapse sub-nav" id="issue-menu" data-bs-parent="#sidebar-menu" id="issue-menu"
+      class="collapse sub-nav">
+      <!-- PAR -->
+      <li class="nav-item" *ngIf="isModuleActive('PAR')">
+        <a class="nav-link" [ngClass]="{'active': title === 'PAR'}" [routerLink]="['par']" (click)="toggleSidebar(true)"
+          routerLinkActive="router-link-active"
+          data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+          data-bs-custom-class="custom-tooltip" title="<b>PAR</b> - <em>PROPERTY ACKNOWLEDGMENT RECEIPT</em>">
+
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> P </i>
+          <span class="item-name">PARS</span>
+        </a>
+      </li>
+
+      <!-- ICS -->
+      <li class="nav-item" *ngIf="isModuleActive('ICS')">
+        <a class="nav-link" [ngClass]="{'active': title === 'ICS'}" [routerLink]="['ics']" (click)="toggleSidebar(true)"
+          routerLinkActive="router-link-active"
+          data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+          data-bs-custom-class="custom-tooltip" title="<b>ICS</b> - <em>INVENTORY CUSTODIAN SLIP</em>">
+
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> I </i>
+          <span class="item-name">ICS</span>
+        </a>
+      </li>
+
+      <!-- OPR -->
+      <li class="nav-item" *ngIf="isModuleActive('OPR')">
+        <a class="nav-link" [ngClass]="{'active': title === 'OPR'}" [routerLink]="['opr']" (click)="toggleSidebar(true)"
+          routerLinkActive="router-link-active"
+          data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+          data-bs-custom-class="custom-tooltip" title="<b>OPR</b> - <em>OTHER PROPERTY RECEIPT</em>">
+
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> O </i>
+          <span class="item-name">OPR</span>
+        </a>
+      </li>
+
+    </ul>
+  </li>
+  <!-- DIVIDER -->
+  <!-- 
   <li class="nav-item static-item" *ngIf="isModuleActive('PAR') && isModuleActive('ICS')">
-    <a class="nav-link static-item disabled" href="#"
-      tabindex="-1">
+    <a class="nav-link static-item disabled" href="#" tabindex="-1">
       <span class="default-icon">Issuance</span>
       <span class="mini-icon">-</span>
     </a>
   </li>
-
+   -->
+  <!-- PAR -->
+  <!--
   <li class="nav-item" *ngIf="isModuleActive('PAR')">
-    <a class="nav-link" [ngClass]="{'active': title === 'PAR'}"
-      [routerLink]="['par']"
-      (click)="toggleSidebar(true)"
+    <a class="nav-link" [ngClass]="{'active': title === 'PAR'}" [routerLink]="['par']" (click)="toggleSidebar(true)"
       routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>PAR</b> - <em>PROPERTY ACKNOWLEDGMENT RECEIPT</em>">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>PAR</b> - <em>PROPERTY ACKNOWLEDGMENT RECEIPT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
             fill="currentColor"></path>
         </svg>
       </i>
       <span class="item-name">PAR</span>
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>PAR</b> - <em>PROPERTY ACKNOWLEDGMENT RECEIPT</em>">
-        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg"> <path opacity="0.4"
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>PAR</b> - <em>PROPERTY ACKNOWLEDGMENT RECEIPT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
             d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
-            fill="currentColor"></path> <path fill-rule="evenodd"
-            clip-rule="evenodd"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
-            fill="currentColor"></path> </svg>
+            fill="currentColor"></path>
+        </svg>
       </i>
     </a>
   </li>
-
+-->
+  <!-- ICS -->
+  <!--
   <li class="nav-item" *ngIf="isModuleActive('ICS')">
-    <a class="nav-link" [ngClass]="{'active': title === 'ICS'}"
-      [routerLink]="['ics']"
-      (click)="toggleSidebar(true)"
+    <a class="nav-link" [ngClass]="{'active': title === 'ICS'}" [routerLink]="['ics']" (click)="toggleSidebar(true)"
       routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>ICS</b> - <em>INVENTORY CUSTODIAN SLIP</em>">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>ICS</b> - <em>INVENTORY CUSTODIAN SLIP</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
             fill="currentColor"></path>
         </svg>
       </i>
       <span class="item-name">ICS</span>
 
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>ICS</b> - <em>INVENTORY CUSTODIAN SLIP</em>">
-        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg"> <path opacity="0.4"
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>ICS</b> - <em>INVENTORY CUSTODIAN SLIP</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
             d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
-            fill="currentColor"></path> <path fill-rule="evenodd"
-            clip-rule="evenodd"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
-            fill="currentColor"></path> </svg>
+            fill="currentColor"></path>
+        </svg>
       </i>
     </a>
   </li>
-  
+  -->
+  <!-- OPR -->
+  <!--
   <li class="nav-item" *ngIf="isModuleActive('OPR')">
-    <a class="nav-link" [ngClass]="{'active': title === 'OPR'}"
-      [routerLink]="['opr']"
-      (click)="toggleSidebar(true)"
+    <a class="nav-link" [ngClass]="{'active': title === 'OPR'}" [routerLink]="['opr']" (click)="toggleSidebar(true)"
       routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>OPR</b> - <em>OTHER PROPERTY RECEIPT</em>">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>OPR</b> - <em>OTHER PROPERTY RECEIPT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
             fill="currentColor"></path>
         </svg>
       </i>
       <span class="item-name">OPR</span>
 
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>OPR</b> - <em>OTHER PROPERTY RECEIPT</em>">
-        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg"> <path opacity="0.4"
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>OPR</b> - <em>OTHER PROPERTY RECEIPT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
             d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
-            fill="currentColor"></path> <path fill-rule="evenodd"
-            clip-rule="evenodd"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
-            fill="currentColor"></path> </svg>
+            fill="currentColor"></path>
+        </svg>
       </i>
     </a>
   </li>
+  -->
+  <!-- TRANSFER DIVIDER -->
+  <!--   
+  <li *ngIf="isModuleActive('PTR') || isModuleActive('ITR') || isModuleActive('OPTR')">
+    <hr class="hr-horizontal">
+  </li>
+   -->
+  <!-- TRANSFER LIST -->
+  <li class="nav-item" *ngIf="isModuleActive('PTR') || isModuleActive('ITR') || isModuleActive('OPTR')">
 
-  <li *ngIf="isModuleActive('PTR') || isModuleActive('ITR')"><hr class="hr-horizontal"></li>
-  <li class="nav-item static-item"  *ngIf="isModuleActive('PTR') && isModuleActive('ITR')">
-    <a class="nav-link static-item disabled" href="#"
-      tabindex="-1">
+    <a class="nav-link collapsed" id="transfer-link" type="button" data-bs-toggle="collapse" aria-expanded="false"
+      (click)="toggleDropdown('transfer-menu')" aria-controls="transfer-menu">
+      <i class="icon">
+        <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
+          <path opacity="0.4"
+            d="M10.0833 15.958H3.50777C2.67555 15.958 2 16.6217 2 17.4393C2 18.2559 2.67555 18.9207 3.50777 18.9207H10.0833C10.9155 18.9207 11.5911 18.2559 11.5911 17.4393C11.5911 16.6217 10.9155 15.958 10.0833 15.958Z"
+            fill="currentColor"></path>
+          <path opacity="0.4"
+            d="M22.0001 6.37867C22.0001 5.56214 21.3246 4.89844 20.4934 4.89844H13.9179C13.0857 4.89844 12.4102 5.56214 12.4102 6.37867C12.4102 7.1963 13.0857 7.86 13.9179 7.86H20.4934C21.3246 7.86 22.0001 7.1963 22.0001 6.37867Z"
+            fill="currentColor"></path>
+          <path
+            d="M8.87774 6.37856C8.87774 8.24523 7.33886 9.75821 5.43887 9.75821C3.53999 9.75821 2 8.24523 2 6.37856C2 4.51298 3.53999 3 5.43887 3C7.33886 3 8.87774 4.51298 8.87774 6.37856Z"
+            fill="currentColor"></path>
+          <path
+            d="M21.9998 17.3992C21.9998 19.2648 20.4609 20.7777 18.5609 20.7777C16.6621 20.7777 15.1221 19.2648 15.1221 17.3992C15.1221 15.5325 16.6621 14.0195 18.5609 14.0195C20.4609 14.0195 21.9998 15.5325 21.9998 17.3992Z"
+            fill="currentColor"></path>
+        </svg>
+      </i>
+      <span class="item-name">Transfer</span>
+      <i class="right-icon">
+        <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </i>
+    </a>
+    <ul class="collapse sub-nav" id="transfer-menu" data-bs-parent="#sidebar-menu" id="transfer-menu"
+      class="collapse sub-nav">
+      <!-- PTR -->
+      <li class="nav-item" *ngIf="isModuleActive('PTR')">
+        <a class="nav-link" [ngClass]="{'active': title === 'PTR'}" [routerLink]="['repar']"
+          (click)="toggleSidebar(true)" routerLinkActive="router-link-active" data-bs-toggle="tooltip"
+          data-bs-html="true" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+          title="<b>PTR</b> - <em>PROPERTY TRANSFER RECEIPT</em>">
+
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> PT </i>
+          <span class="item-name">PTR</span>
+        </a>
+      </li>
+      <!-- ITR -->
+      <li class="nav-item" *ngIf="isModuleActive('ITR')">
+        <a class="nav-link" [ngClass]="{'active': title === 'ITR'}" [routerLink]="['itr']" (click)="toggleSidebar(true)"
+          routerLinkActive="router-link-active" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+          data-bs-custom-class="custom-tooltip" title="<b>ITR</b> - <em>INVENTORY TRANSFER REPORT</em>">
+
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> IT </i>
+          <span class="item-name">ITR</span>
+        </a>
+      </li>
+      <!-- OPTR -->
+      <li class="nav-item" *ngIf="isModuleActive('OPTR')">
+        <a class="nav-link" [ngClass]="{'active': title === 'OPTR'}" [routerLink]="['optr']"
+          (click)="toggleSidebar(true)" routerLinkActive="router-link-active" data-bs-toggle="tooltip"
+          data-bs-html="true" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+          title="<b>OPTR</b> - <em>OTHER PROPERTY TRANSFER REPORT</em>">
+
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> OT </i>
+          <span class="item-name">OPTR</span>
+        </a>
+      </li>
+
+    </ul>
+  </li>
+  <!-- LABEL TRANSFER
+  <li class="nav-item static-item" *ngIf="isModuleActive('PTR') && isModuleActive('ITR')">
+    <a class="nav-link static-item disabled" href="#" tabindex="-1">
       <span class="default-icon">Transfer</span>
       <span class="mini-icon">-</span>
     </a>
   </li>
-
-  <li class="nav-item"  *ngIf="isModuleActive('PTR')">
-    <a class="nav-link" [ngClass]="{'active': title === 'PTR'}"
-      [routerLink]="['repar']"
-      (click)="toggleSidebar(true)"
+   -->
+  <!--
+  <li class="nav-item" *ngIf="isModuleActive('PTR')">
+    <a class="nav-link" [ngClass]="{'active': title === 'PTR'}" [routerLink]="['repar']" (click)="toggleSidebar(true)"
       routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>PTR</b> - <em>PROPERTY TRANSFER RECEIPT</em>">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>PTR</b> - <em>PROPERTY TRANSFER RECEIPT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
             fill="currentColor"></path>
         </svg>
       </i>
       <span class="item-name">PTR
-        <!-- <span class="badge rounded-pill bg-success item-name">UI</span> -->
       </span>
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>PTR</b> - <em>PROPERTY TRANSFER RECEIPT</em>">
-        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg"> <path opacity="0.4"
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>PTR</b> - <em>PROPERTY TRANSFER RECEIPT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
             d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
-            fill="currentColor"></path> <path fill-rule="evenodd"
-            clip-rule="evenodd"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
-            fill="currentColor"></path> </svg>
+            fill="currentColor"></path>
+        </svg>
       </i>
     </a>
   </li>
-
-  <li class="nav-item"  *ngIf="isModuleActive('ITR')">
-    <a class="nav-link" [ngClass]="{'active': title === 'ITR'}"
-      [routerLink]="['itr']"
-      (click)="toggleSidebar(true)"
+ 
+  <li class="nav-item" *ngIf="isModuleActive('ITR')">
+    <a class="nav-link" [ngClass]="{'active': title === 'ITR'}" [routerLink]="['itr']" (click)="toggleSidebar(true)"
       routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>ITR</b> - <em>INVENTORY TRANSFER REPORT</em>">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>ITR</b> - <em>INVENTORY TRANSFER REPORT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
             fill="currentColor"></path>
         </svg>
       </i>
       <span class="item-name">ITR</span>
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>ITR</b> - <em>INVENTORY TRANSFER REPORT</em>">
-        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg"> <path opacity="0.4"
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>ITR</b> - <em>INVENTORY TRANSFER REPORT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
             d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
-            fill="currentColor"></path> <path fill-rule="evenodd"
-            clip-rule="evenodd"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
-            fill="currentColor"></path> </svg>
+            fill="currentColor"></path>
+        </svg>
       </i>
     </a>
   </li>
 
-  <li  *ngIf="isModuleActive('PRS') || isModuleActive('RRSEP')"><hr class="hr-horizontal"></li>
+  <li class="nav-item" *ngIf="isModuleActive('OPTR')">
+    <a class="nav-link" [ngClass]="{'active': title === 'OPTR'}" [routerLink]="['optr']" (click)="toggleSidebar(true)"
+      routerLinkActive="router-link-active">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>OPTR</b> - <em>OTHER PROPERTY TRANSFER REPORT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
+            d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+            fill="currentColor"></path>
+        </svg>
+      </i>
+      <span class="item-name">OPTR</span>
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>OPTR</b> - <em>OTHER PROPERTY TRANSFER REPORT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
+            d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
+            fill="currentColor"></path>
+        </svg>
+      </i>
+    </a>
+  </li>
+  -->
+  <!-- RETURN DIVIDER -->
+  <!--   
+  <li *ngIf="isModuleActive('PRS') || isModuleActive('RRSEP')">
+    <hr class="hr-horizontal">
+  </li> 
+  -->
 
-  <li class="nav-item static-item"  *ngIf="isModuleActive('PRS') && isModuleActive('RRSEP')">
-    <a class="nav-link static-item disabled" href="#"
-      tabindex="-1">
+  <!-- RETURN LIST -->
+  <li class="nav-item" *ngIf="isModuleActive('PRS') || isModuleActive('RRSEP') || isModuleActive('OPRR')">
+
+    <a class="nav-link collapsed" id="return-link" type="button" data-bs-toggle="collapse" aria-expanded="false"
+      (click)="toggleDropdown('return-menu')" aria-controls="return-menu">
+      <i class="icon">
+        <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
+          <path opacity="0.4"
+            d="M10.0833 15.958H3.50777C2.67555 15.958 2 16.6217 2 17.4393C2 18.2559 2.67555 18.9207 3.50777 18.9207H10.0833C10.9155 18.9207 11.5911 18.2559 11.5911 17.4393C11.5911 16.6217 10.9155 15.958 10.0833 15.958Z"
+            fill="currentColor"></path>
+          <path opacity="0.4"
+            d="M22.0001 6.37867C22.0001 5.56214 21.3246 4.89844 20.4934 4.89844H13.9179C13.0857 4.89844 12.4102 5.56214 12.4102 6.37867C12.4102 7.1963 13.0857 7.86 13.9179 7.86H20.4934C21.3246 7.86 22.0001 7.1963 22.0001 6.37867Z"
+            fill="currentColor"></path>
+          <path
+            d="M8.87774 6.37856C8.87774 8.24523 7.33886 9.75821 5.43887 9.75821C3.53999 9.75821 2 8.24523 2 6.37856C2 4.51298 3.53999 3 5.43887 3C7.33886 3 8.87774 4.51298 8.87774 6.37856Z"
+            fill="currentColor"></path>
+          <path
+            d="M21.9998 17.3992C21.9998 19.2648 20.4609 20.7777 18.5609 20.7777C16.6621 20.7777 15.1221 19.2648 15.1221 17.3992C15.1221 15.5325 16.6621 14.0195 18.5609 14.0195C20.4609 14.0195 21.9998 15.5325 21.9998 17.3992Z"
+            fill="currentColor"></path>
+        </svg>
+      </i>
+      <span class="item-name">Return</span>
+      <i class="right-icon">
+        <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </i>
+    </a>
+    <ul class="collapse sub-nav" id="return-menu" data-bs-parent="#sidebar-menu" id="return-menu"
+      class="collapse sub-nav">
+      <!-- PRS -->
+      <li class="nav-item" *ngIf="isModuleActive('PRS')">
+        <a class="nav-link" [ngClass]="{'active': title === 'PRS'}" [routerLink]="['prs']" (click)="toggleSidebar(true)"
+          routerLinkActive="router-link-active" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+          data-bs-custom-class="custom-tooltip" title="<b>PRS</b> - <em>PROPERTY RETURN SLIP</em>">
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> PR </i>
+          <span class="item-name">PRS</span>
+        </a>
+      </li>
+      <!-- RRSP -->
+      <li class="nav-item" *ngIf="isModuleActive('RRSEP')">
+        <a class="nav-link" [ngClass]="{'active': title === 'RRSEP'}" [routerLink]="['rrsp']"
+          (click)="toggleSidebar(true)" routerLinkActive="router-link-active" data-bs-toggle="tooltip"
+          data-bs-html="true" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+          title="<b>RRSP</b> - <em>RECEIPT RETURN SEMI-EXPANDABLE PROPERTY</em>">
+
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> RE </i>
+          <span class="item-name">RRSEP</span>
+        </a>
+      </li>
+      <!-- OPRR -->
+      <li class="nav-item" *ngIf="isModuleActive('OPRR')">
+        <a class="nav-link" [ngClass]="{'active': title === 'OPRR'}" [routerLink]="['optrr']"
+          (click)="toggleSidebar(true)" routerLinkActive="router-link-active" data-bs-toggle="tooltip"
+          data-bs-html="true" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+          title="<b>OPRR</b> - <em>OTHER PROPERTY RETURN REPORT</em>">
+
+          <i class="icon">
+            <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.4"
+                d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+                fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+                fill="currentColor"></path>
+            </svg>
+          </i>
+          <i class="sidenav-mini-icon"> RO </i>
+          <span class="item-name">OPTR</span>
+        </a>
+      </li>
+
+    </ul>
+  </li>
+  <!-- LABEL RETURN
+  <li class="nav-item static-item" *ngIf="isModuleActive('PRS') && isModuleActive('RRSEP')">
+    <a class="nav-link static-item disabled" href="#" tabindex="-1">
       <span class="default-icon">Return</span>
       <span class="mini-icon">-</span>
     </a>
   </li>
-
-  <li class="nav-item"  *ngIf="isModuleActive('PRS')">
-    <a class="nav-link" [ngClass]="{'active': title === 'PRS'}"
-      [routerLink]="['prs']"
-      (click)="toggleSidebar(true)"
+  -->
+  <!--
+  <li class="nav-item" *ngIf="isModuleActive('PRS')">
+    <a class="nav-link" [ngClass]="{'active': title === 'PRS'}" [routerLink]="['prs']" (click)="toggleSidebar(true)"
       routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>PRS</b> - <em>PROPERTY RETURN SLIP</em>">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>PRS</b> - <em>PROPERTY RETURN SLIP</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
             fill="currentColor"></path>
         </svg>
       </i>
       <span class="item-name">PRS</span>
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>PRS</b> - <em>PROPERTY RETURN SLIP</em>">
-        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg"> <path opacity="0.4"
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>PRS</b> - <em>PROPERTY RETURN SLIP</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
             d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
-            fill="currentColor"></path> <path fill-rule="evenodd"
-            clip-rule="evenodd"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
-            fill="currentColor"></path> </svg>
+            fill="currentColor"></path>
+        </svg>
       </i>
     </a>
   </li>
-
   <li class="nav-item" *ngIf="isModuleActive('RRSEP')">
-    <a class="nav-link" [ngClass]="{'active': title === 'RRSP'}"
-      [routerLink]="['rrsp']"
+    <a class="nav-link" [ngClass]="{'active': title === 'RRSP'}" [routerLink]="['rrsp']"
       routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>RRSP</b> - <em>RECEIPT RETURN SEMI-EXPANDABLE PROPERTY</em>">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>RRSP</b> - <em>RECEIPT RETURN SEMI-EXPANDABLE PROPERTY</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
             fill="currentColor"></path>
         </svg>
       </i>
       <span class="item-name">RRSP</span>
-      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true"
-        data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
-        title="<b>RRSP</b> - <em>RECEIPT RETURN SEMI-EXPANDABLE PROPERTY</em>">
-        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg"> <path opacity="0.4"
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>RRSP</b> - <em>RECEIPT RETURN SEMI-EXPANDABLE PROPERTY</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
             d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
-            fill="currentColor"></path> <path fill-rule="evenodd"
-            clip-rule="evenodd"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
-            fill="currentColor"></path> </svg>
+            fill="currentColor"></path>
+        </svg>
       </i>
     </a>
   </li>
+  <li class="nav-item" *ngIf="isModuleActive('OPRR')">
+    <a class="nav-link" [ngClass]="{'active': title === 'OPRR'}" [routerLink]="['oprr']"
+      routerLinkActive="router-link-active">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>OPRR</b> - <em>OTHER PROPERTY RETURN REPORT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
+            d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
+            fill="currentColor"></path>
+        </svg>
+      </i>
+      <span class="item-name">OPRR</span>
+      <i class="icon" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
+        data-bs-custom-class="custom-tooltip" title="<b>OPRR</b> - <em>OTHER PROPERTY RETURN REPORT</em>">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4"
+            d="M16.34 1.99976H7.67C4.28 1.99976 2 4.37976 2 7.91976V16.0898C2 19.6198 4.28 21.9998 7.67 21.9998H16.34C19.73 21.9998 22 19.6198 22 16.0898V7.91976C22 4.37976 19.73 1.99976 16.34 1.99976Z"
+            fill="currentColor"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M11.1246 8.18921C11.1246 8.67121 11.5156 9.06421 11.9946 9.06421C12.4876 9.06421 12.8796 8.67121 12.8796 8.18921C12.8796 7.70721 12.4876 7.31421 12.0046 7.31421C11.5196 7.31421 11.1246 7.70721 11.1246 8.18921ZM12.8696 11.362C12.8696 10.88 12.4766 10.487 11.9946 10.487C11.5126 10.487 11.1196 10.88 11.1196 11.362V15.782C11.1196 16.264 11.5126 16.657 11.9946 16.657C12.4766 16.657 12.8696 16.264 12.8696 15.782V11.362Z"
+            fill="currentColor"></path>
+        </svg>
+      </i>
+    </a>
+  </li>
+  -->
 
-  <li  *ngIf="isModuleActive('GLOBAL') || isModuleActive('USER ACCOUNTS') || isModuleActive('REPORTS')"><hr class="hr-horizontal"></li>
+  <li *ngIf="isModuleActive('GLOBAL') || isModuleActive('USER ACCOUNTS') || isModuleActive('REPORTS')">
+    <hr class="hr-horizontal">
+  </li>
   <li class="nav-item static-item">
-    <a class="nav-link static-item disabled" href="#"
-      tabindex="-1">
-      <span class="default-icon">Settings</span>
-      <span class="mini-icon">-</span>
+    <a class="nav-link static-item disabled" href="#" tabindex="-1">
+      <span class="default-icon">General</span>
+      <span class="mini-icon">GS</span>
     </a>
   </li>
 
-  <li class="nav-item" *ngIf="isModuleActive('GLOBAL') || isModuleActive('ITEM CATEGORY') || isModuleActive('COMPANY') || isModuleActive('USER GROUP')">
-    <a class="nav-link" [ngClass]="{'active': title === 'Item Group'}"
-      [routerLink]="['global']"
-      (click)="toggleSidebar(true)"
-      routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
+  <li class="nav-item"
+    *ngIf="isModuleActive('GLOBAL') || isModuleActive('ITEM CATEGORY') || isModuleActive('COMPANY') || isModuleActive('USER GROUP')">
+    <a class="nav-link" [ngClass]="{'active': title === 'Item Group'}" [routerLink]="['global']"
+      (click)="toggleSidebar(true)" routerLinkActive="router-link-active">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
         data-bs-title="GLOBAL SETTINGS">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M21.25 13.4764C20.429 13.4764 19.761 12.8145 19.761 12.001C19.761 11.1865 20.429 10.5246 21.25 10.5246C21.449 10.5246 21.64 10.4463 21.78 10.3076C21.921 10.1679 22 9.97864 22 9.78146L21.999 7.10415C21.999 4.84102 20.14 3 17.856 3H6.144C3.86 3 2.001 4.84102 2.001 7.10415L2 9.86766C2 10.0648 2.079 10.2541 2.22 10.3938C2.36 10.5325 2.551 10.6108 2.75 10.6108C3.599 10.6108 4.239 11.2083 4.239 12.001C4.239 12.8145 3.571 13.4764 2.75 13.4764C2.336 13.4764 2 13.8093 2 14.2195V16.8949C2 19.158 3.858 21 6.143 21H17.857C20.142 21 22 19.158 22 16.8949V14.2195C22 13.8093 21.664 13.4764 21.25 13.4764Z"
             fill="currentColor"></path>
@@ -422,23 +717,18 @@
             fill="currentColor"></path>
         </svg>
       </i>
-      <span class="item-name">Global
+      <span class="item-name">Settings
         <!-- <span class="badge rounded-pill bg-success item-name">UI</span> -->
       </span>
     </a>
   </li>
 
   <li class="nav-item" *ngIf="isModuleActive('USER ACCOUNTS')">
-    <a class="nav-link" [ngClass]="{'active': title === 'User Account'}"
-      [routerLink]="['useraccounts']"
-      (click)="toggleSidebar(true)"
-      routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
+    <a class="nav-link" [ngClass]="{'active': title === 'User Account'}" [routerLink]="['useraccounts']"
+      (click)="toggleSidebar(true)" routerLinkActive="router-link-active">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
         data-bs-title="USER ACCOUNTS">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M11.9488 14.54C8.49884 14.54 5.58789 15.1038 5.58789 17.2795C5.58789 19.4562 8.51765 20.0001 11.9488 20.0001C15.3988 20.0001 18.3098 19.4364 18.3098 17.2606C18.3098 15.084 15.38 14.54 11.9488 14.54Z"
             fill="currentColor"></path>
@@ -465,21 +755,15 @@
     </a>
   </li>
   <li class="nav-item" *ngIf="isModuleActive('REPORTS')">
-    <a class="nav-link" [ngClass]="{'active': title === 'Reports'}"
-      [routerLink]="['reports']"
-      (click)="toggleSidebar(true)"
-      routerLinkActive="router-link-active">
-      <i class="icon" data-bs-toggle="tooltip" data-bs-placement="right"
-        data-bs-custom-class="custom-tooltip"
+    <a class="nav-link" [ngClass]="{'active': title === 'Reports'}" [routerLink]="['reports']"
+      (click)="toggleSidebar(true)" routerLinkActive="router-link-active">
+      <i class="icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
         data-bs-title="REPORTS">
-        <svg class="icon-20" width="20"
-          viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+        <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
             d="M16.191 2H7.81C4.77 2 3 3.78 3 6.83V17.16C3 20.26 4.77 22 7.81 22H16.191C19.28 22 21 20.26 21 17.16V6.83C21 3.78 19.28 2 16.191 2Z"
             fill="currentColor"></path>
-          <path fill-rule="evenodd"
-            clip-rule="evenodd"
+          <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.07996 6.6499V6.6599C7.64896 6.6599 7.29996 7.0099 7.29996 7.4399C7.29996 7.8699 7.64896 8.2199 8.07996 8.2199H11.069C11.5 8.2199 11.85 7.8699 11.85 7.4289C11.85 6.9999 11.5 6.6499 11.069 6.6499H8.07996ZM15.92 12.7399H8.07996C7.64896 12.7399 7.29996 12.3899 7.29996 11.9599C7.29996 11.5299 7.64896 11.1789 8.07996 11.1789H15.92C16.35 11.1789 16.7 11.5299 16.7 11.9599C16.7 12.3899 16.35 12.7399 15.92 12.7399ZM15.92 17.3099H8.07996C7.77996 17.3499 7.48996 17.1999 7.32996 16.9499C7.16996 16.6899 7.16996 16.3599 7.32996 16.1099C7.48996 15.8499 7.77996 15.7099 8.07996 15.7399H15.92C16.319 15.7799 16.62 16.1199 16.62 16.5299C16.62 16.9289 16.319 17.2699 15.92 17.3099Z"
             fill="currentColor"></path>
         </svg>
