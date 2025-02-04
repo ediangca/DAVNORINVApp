@@ -97,6 +97,7 @@ table thead th.sticky-header {
 /* Ensures padding and alignment are consistent with other cells */
 table th,
 table td {
+  white-space: normal;
   padding: 8px 16px;
   /* Adjust padding as necessary */
   text-align: left;

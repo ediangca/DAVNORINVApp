@@ -39,8 +39,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   ptrs: any = [];
   totalItems: number = 0;
-  par!: any | null;
-  parItems: Item[] = [];
+  opr!: any | null;
+  oprItems: any[] = [];
   selectedParItems: Item[] = []; // Array to track selected items from repar
   userProfiles: any = [];
   items: any = [];
@@ -69,25 +69,25 @@ export class OptrComponent implements OnInit, AfterViewInit {
   itemName: string | null | undefined
   userAccount: any;
   userProfile: any;
-  parForm!: FormGroup;
+  oprForm!: FormGroup;
   itemForm!: FormGroup;
   isEditMode: boolean = false;
   isEditItemMode: boolean = false;
-  currentEditId: string | null = null;
+  currentEditId: number | null = null;
 
   generatedREPARNo: string | null | undefined;
   noOfParItems: number = 0;
 
-  parINo: number | null = null;
+  oprINo: number | null = null;
   propertyNo: string | null = null;
 
   typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
   isCustomType = false;
 
-  isRepar: boolean = false;
-  reparForm!: FormGroup;
-  repar: any | null | undefined;
-  searchPARItems: Item[] = [];
+  isOPTR: boolean = false;
+  optrForm!: FormGroup;
+  optr: any | null | undefined;
+  searchOPRItems: Item[] = [];
 
   isNewItem: boolean = false;
   accID: string = "unknown";
@@ -144,10 +144,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
-    this.parForm = this.fb.group({
-      lgu: ['', Validators.required],
-      fund: ['', Validators.required],
-      parNo: ['', Validators.required],
+    this.oprForm = this.fb.group({
       type: ['', Validators.required],
       others: ['', Validators.required],
       reason: ['', Validators.required],
@@ -156,7 +153,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
       userID3: ['', Validators.required],
     });
 
-    this.reparForm = this.fb.group({
+    this.optrForm = this.fb.group({
       searchPARItemKey: [''],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
@@ -191,12 +188,12 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   private checkPrivileges(): void {
     this.store.loadPrivileges();
-    this.canCreate = this.store.isAllowedAction('PTR', 'create');
-    this.canRetrieve = this.store.isAllowedAction('PTR', 'retrieve');
-    this.canUpdate = this.store.isAllowedAction('PTR', 'update');
-    this.canDelete = this.store.isAllowedAction('PTR', 'delete');
-    this.canPost = this.store.isAllowedAction('PTR', 'post');
-    this.canUnpost = this.store.isAllowedAction('PTR', 'unpost');
+    this.canCreate = this.store.isAllowedAction('OPTR', 'create');
+    this.canRetrieve = this.store.isAllowedAction('OPTR', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('OPTR', 'update');
+    this.canDelete = this.store.isAllowedAction('OPTR', 'delete');
+    this.canPost = this.store.isAllowedAction('OPTR', 'post');
+    this.canUnpost = this.store.isAllowedAction('OPTR', 'unpost');
   }
 
   setupModalClose() {
@@ -254,7 +251,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
-          this.getAllPTR();
+          this.getAllOPTR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Account from Store Service', err);
@@ -262,70 +259,70 @@ export class OptrComponent implements OnInit, AfterViewInit {
       });
   }
 
-  getAllPTR() {
+  getAllOPTR() {
     this.isLoading = true; // Start spinner
-    this.api.getAllREPAR()
+    this.api.getAllOPTR()
       .pipe(
         delay(3000), // Add delay using RxJS operators (simulated for testing)
         map((res) => {
           // Filter results based on `createdBy` and slice for pagination
-          this.logger.printLogs('i', 'Show PTRs only for Administrator || User Account :', this.userAccount.userID);
-          this.logger.printLogs('i', 'List of Originated PTRs', res);
+          this.logger.printLogs('i', 'Show OPTRs only for Administrator || User Account :', this.userAccount.userID);
+          this.logger.printLogs('i', 'List of Originated OPTRs', res);
           if (this.userAccount.userGroupName === 'System Administrator') {
             return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
-          const filteredPTRs = res.filter((ptr: any) =>
+          const filtered = res.filter((ptr: any) =>
             ptr.createdBy === this.userAccount.userID ||
             ptr.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filteredPTRs.length;
-          return filteredPTRs.slice(0, 10); // Limit to the first 10 items
+          this.totalItems = filtered.length;
+          return filtered.slice(0, 10); // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
       )
       .subscribe({
-        next: (filteredPTRs) => {
-          this.ptrs = filteredPTRs;
-          this.logger.printLogs('i', 'List of PTRs', this.ptrs);
+        next: (filtered) => {
+          this.ptrs = filtered;
+          this.logger.printLogs('i', 'List of OPTRs', this.ptrs);
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Fetching PTRs', err);
+          this.logger.printLogs('e', 'Error Fetching OPTRs', err);
         }
       });
   }
 
-  onSearchPTR() {
+  onSearchOPTR() {
     if (!this.searchKey) {
-      this.getAllPTR(); // Call existing function to populate all PARs when no search key is entered
+      this.getAllOPTR(); // Call existing function to populate all PARs when no search key is entered
     } else {
       if (this.searchKey.trim()) {
         this.isLoading = true; // Start spinner
-        this.api.searchREPAR(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+        this.api.searchOPTR(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
           .pipe(
             map((res) => {
               // Filter results based on `createdBy` and slice for pagination
-              this.logger.printLogs('i', 'Show PTRs only for Administrator || User Account :', this.userAccount.userID);
-              this.logger.printLogs('i', 'List of Originated PTRs', res);
+              this.logger.printLogs('i', 'Show OPTRs only for Administrator || User Account :', this.userAccount.userID);
+              this.logger.printLogs('i', 'List of Originated OPTRs', res);
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 10); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
-              const filteredPTRs = res.filter((ptr: any) =>
-                ptr.issuedBy === this.userAccount.userID ||
-                ptr.receivedBy === this.userAccount.userID
+              const filtered = res.filter((optr: any) =>
+                optr.issuedBy === this.userAccount.userID ||
+                optr.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filteredPTRs.length;
-              return filteredPTRs.slice(0, 10); // Limit to 10 results for display
+              this.totalItems = filtered.length;
+              return filtered.slice(0, 10); // Limit to 10 results for display
             }),
             finalize(() => this.isLoading = false) // Ensure spinner stops
           )
           .subscribe({
-            next: (filteredPTRs) => {
-              this.ptrs = filteredPTRs; // Assign the processed result to the component variable
-              this.logger.printLogs('i', 'SEARCH PTRs', this.ptrs);
+            next: (filtered) => {
+              this.ptrs = filtered; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH OPTRs', this.ptrs);
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error Fetching PTR on Search', err);
+              this.logger.printLogs('e', 'Error Fetching OPTRs on Search', err);
             }
           });
       }
@@ -364,16 +361,16 @@ export class OptrComponent implements OnInit, AfterViewInit {
   }
 
   searchPARItem() {
-    this.parItemKey = this.reparForm.value['searchPARItemKey'];
+    this.parItemKey = this.optrForm.value['searchPARItemKey'];
     console.log(this.parItemKey);
 
     // Populate all items if the search key is empty
     if (!this.parItemKey || this.parItemKey.trim() === "") {
-      this.parItems = [...this.searchPARItems];  // Reset to full list
+      this.oprItems = [...this.searchOPRItems];  // Reset to full list
     } else {
       const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
 
-      this.parItems = this.searchPARItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
+      this.oprItems = this.searchOPRItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
         item.propertyNo!.toLowerCase().includes(searchKey) ||
         item.qrCode!.toLowerCase().includes(searchKey)
       );
@@ -448,11 +445,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
 
   onKeyUp(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      this.onSearchPTR();
-    } else {
-      this.onSearchPTR();
-    }
+    this.getAllOPTR();
   }
 
 
@@ -490,14 +483,14 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.receivedID = userProfile.userID;
     this.logger.printLogs('i', 'Selected to Received', userProfile);
 
-    if (this.parForm!) {
-      this.parForm.patchValue({
+    if (this.oprForm!) {
+      this.oprForm.patchValue({
         userID1: userProfile.fullName  // Patch the selected IID to the form
       });
     }
 
-    if (this.reparForm!) {
-      this.reparForm.patchValue({
+    if (this.optrForm!) {
+      this.optrForm.patchValue({
         userID1: userProfile.fullName  // Patch the selected IID to the form
       });
     }
@@ -537,13 +530,13 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.approvedID = userProfile.userID;
     this.logger.printLogs('i', 'Selected to Approved', userProfile);
 
-    if (this.parForm!) {
-      this.parForm.patchValue({
+    if (this.oprForm!) {
+      this.oprForm.patchValue({
         userID3: userProfile.fullName  // Patch the selected IID to the form
       });
     }
 
-    this.reparForm.patchValue({
+    this.optrForm.patchValue({
       userID3: userProfile.fullName  // Patch the selected IID to the form
     });
 
@@ -552,9 +545,9 @@ export class OptrComponent implements OnInit, AfterViewInit {
   }
 
   onAddPARItem() {
-    const PARNo: string = this.parForm.value['parNo'];
-    if (!PARNo) {
-      Swal.fire('INFORMATION!', 'Please input PAR No. first before adding item', 'warning');
+    const OPRNo: string = this.oprForm.value['oprNo'];
+    if (!OPRNo) {
+      Swal.fire('INFORMATION!', 'Please input OPR No. first before adding item', 'warning');
       return;
     }
     this.openItemModal(this.ItemModal);
@@ -563,39 +556,29 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   onSubmit() {
 
-    if (!this.parForm.valid) {
-      this.vf.validateFormFields(this.parForm);
+    if (!this.oprForm.valid) {
+      this.vf.validateFormFields(this.oprForm);
       return;
     }
 
-    if (this.parItems.length < 1) {
+    if (this.oprItems.length < 1) {
       Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
       return;
     }
 
-    this.currentEditId = this.par.reparNo;
+    this.currentEditId = this.opr.optrNo;
 
-    if (this.parForm.valid && this.parItems.length > 0) {
+    if (this.oprForm.valid && this.oprItems.length > 0) {
 
-      this.logger.printLogs('i', 'PAR Form', this.parForm.value);
+      this.logger.printLogs('i', 'OPR Form', this.oprForm.value);
 
-      // this.par = {
-      //   parNo: this.parForm.value['parNo'],
-      //   lgu: this.parForm.value['lgu'],
-      //   fund: this.parForm.value['fund'],
-      //   receivedBy: this.parForm.value['userID1'],
-      //   issuedBy: this.parForm.value['userID2'],
-      //   postFlag: false,
-      //   voidFlag: false,
-      //   createdBy: this.userAccount.userID,
-      // }
 
-      this.repar = {
-        reparNo: this.currentEditId,
-        parNo: this.parForm.value['parNo'],
-        ttype: this.parForm.value['type'],
-        otype: this.parForm.value['others'],
-        reason: this.parForm.value['reason'],
+      this.optr = {
+        optrNo: this.currentEditId,
+        oprNo: this.opr.oprNo,
+        ttype: this.oprForm.value['type'],
+        otype: this.oprForm.value['others'],
+        reason: this.oprForm.value['reason'],
         receivedBy: this.receivedID,
         issuedBy: this.issuedID,
         approvedBy: this.approvedID,
@@ -604,158 +587,43 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
 
       if (this.isEditMode) {
-        this.Update(this.repar)
+        this.Update(this.optr)
       }
-      // else {
-      //   this.Save(this.par);
-      // }
-
+    
     }
 
   }
 
-  onSubmitREPAR() {
+  Update(optr: any) {
+    this.logger.printLogs('i', 'Updating OPTR', optr);
 
-    if (!this.reparForm.valid) {
-      this.vf.validateFormFields(this.reparForm);
-      return;
-    }
-
-    if (this.selectedParItems.length < 1) {
-      Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
-      return;
-    }
-
-    if (this.reparForm.valid && this.parItems.length > 0) {
-
-      this.logger.printLogs('i', 'REPAR Form', this.par);
-      this.Save(this.par);
-
-    }
-
-  }
-
-
-  Save(par: any) {
-    if (!this.isRepar) {
-      this.logger.printLogs('i', 'Saving PAR', par);
-      this.api.createPAR(par)
-        .subscribe({
-          next: (res) => {
-            this.logger.printLogs('i', 'Saved Success', par);
-            this.saveParItems();
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Saving PAR', err);
-            Swal.fire('Denied', err, 'warning');
-          }
-        });
-    } else {
-
-
-      this.repar = {
-        reparNo: par.reparNo,
-        parNo: par.parNo,
-        receivedBy: this.reparForm.value['userID1'],
-        issuedBy: par.receivedBy,
-        postFlag: false,
-        voidFlag: false,
-        createdBy: this.userAccount.userID,
-      }
-
-      Swal.fire({
-        title: 'Confirmation',
-        text: 'Do you want to REPAR Selected Item(s)?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.logger.printLogs('i', 'Saving REPAR', this.repar);
-
-          this.api.createREPAR(this.repar, this.selectedParItems)
-            .subscribe({
-              next: (res) => {
-                this.logger.printLogs('i', 'Saved Success', res);
-                Swal.fire('Saved', res.message, 'success');
-                this.logger.printLogs('i', 'Saved Success', res.details);
-
-                this.closeModal(this.ViewModal);
-              },
-              error: (err: any) => {
-                this.logger.printLogs('e', 'Error Saving REPAR', err);
-                Swal.fire('Denied', err, 'warning');
-              }
-            });
-        }
-      });
-
-    }
-  }
-
-  saveParItems() {
-    this.api.createPARItem(this.parItems)  // Send the array of items
-      .subscribe({
-        next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', this.parItems);
-
-          // Handle success, e.g., show a success message
-          Swal.fire({
-            title: 'Saved',
-            text: 'Do you want to add new PAR?',
-            icon: 'success',
-            showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-          }).then((result) => {
-            if (!result.isConfirmed) {
-              this.closeModal(this.AddEditModal);
-            }
-          });
-
-          this.resetForm();
-          this.getAllPTR();
-
-        },
-        error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving PAR Items', err);
-          Swal.fire('Denied', err, 'warning');
-        }
-      });
-  }
-
-  Update(repar: any) {
-    this.logger.printLogs('i', 'Updating REPAR', repar);
-
-    this.api.updateREPAR(this.repar, this.parItems)
+    this.api.updateOPTR(this.optr, this.oprItems)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', res);
           Swal.fire('Saved', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
-          this.getAllPTR();
+          this.getAllOPTR();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving REPAR', err);
+          this.logger.printLogs('e', 'Error Saving OPTR', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
 
   }
 
-
-  updatePARItems() {
-    this.api.updatePARItem(this.currentEditId!, this.parItems)
+  updateOPRItems() {
+    this.api.updateOPRItem(this.currentEditId!, this.oprItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Updated Success', this.parItems);
+          this.logger.printLogs('i', 'Updated Success', this.oprItems);
           Swal.fire('Updated!', res.message, 'warning');
-          this.getAllPTR();
+          this.getAllOPTR();
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Updating PAR Item', err);
+          this.logger.printLogs('e', 'Error Updating OPR Item', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
@@ -790,7 +658,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
           this.api.postREPAR(reparNo, !ptr.postFlag)
             .subscribe({
               next: (res) => {
-                this.getAllPTR();
+                this.getAllOPTR();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
               },
@@ -806,9 +674,9 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   }
 
-  onEditREPAR(par: any) {
-    if (par.postFlag) {
-      Swal.fire('Information!', 'Cannot edit posted PTR.', 'warning');
+  onEditOPTR(opr: any) {
+    if (opr.postFlag) {
+      Swal.fire('Information!', 'Cannot edit posted OPTR.', 'warning');
       return;
     }
 
@@ -823,36 +691,37 @@ export class OptrComponent implements OnInit, AfterViewInit {
     }
 
     this.isEditMode = true;
-    this.par = par;
-    this.currentEditId = par.reparNo;
-    this.issuedID = par.issuedBy
-    this.approvedID = par.approvedBy
-    this.receivedID = par.receivedBy
+    this.opr = opr;
+    this.currentEditId = opr.optrNo;
+    this.issuedID = opr.issuedBy
+    this.approvedID = opr.approvedBy
+    this.receivedID = opr.receivedBy
 
-    this.logger.printLogs('i', 'Restoring PAR', par);
+    this.logger.printLogs('i', 'Restoring OPR', opr);
 
-    this.parForm.patchValue({
-      lgu: par.lgu,
-      fund: par.fund,
-      parNo: par.parNo,
-      type: par.ttype,
-      others: par.otype,
-      reason: par.reason,
-      userID1: par.received,
-      userID2: par.issued,
-      userID3: par.approved,
+    this.oprForm.patchValue({
+      lgu: opr.lgu,
+      fund: opr.fund,
+      parNo: opr.parNo,
+      type: opr.ttype,
+      others: opr.otype,
+      reason: opr.reason,
+      userID1: opr.received,
+      userID2: opr.issued,
+      userID3: opr.approved,
     });
 
-    this.api.retrieveREPAR(this.currentEditId!)
+    this.api.retrieveOPTR(this.currentEditId!+"")
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PTR Item', res);
-          this.repar = res.details;
-          this.parItems = res.parItems;
+          this.optr = res.details;
+          this.logger.printLogs('i', 'Retrieving OPTR', this.optr);
+          this.oprItems = res.parItems;
+          this.logger.printLogs('i', 'Retrieving OPTR Item', this.oprItems);
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PTR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PTR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving OPTR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPTR Item.', 'error');
         }
       });
 
@@ -861,35 +730,35 @@ export class OptrComponent implements OnInit, AfterViewInit {
   }
 
 
-  onViewREPAR(par: any) {
-    this.par = par;
-    this.currentEditId = par.reparNo;
-    this.logger.printLogs('i', 'Viewing REPAR', par);
+  onViewOPTR(opr: any) {
+    this.opr = opr;
+    this.currentEditId = opr.optrNo;
+    this.logger.printLogs('i', 'Viewing OPTR', opr);
 
     if (!this.onItemFound) {
       this.item = null;
     }
 
-    this.parForm.patchValue({
-      lgu: par.lgu,
-      fund: par.fund,
-      parNo: par.parNo,
-      userID1: par.receivedBy, // These will now be patched correctly
-      userID2: par.issuedBy,
-      userID3: par.approvedBy
+    this.oprForm.patchValue({
+      lgu: opr.lgu,
+      fund: opr.fund,
+      parNo: opr.parNo,
+      userID1: opr.receivedBy, // These will now be patched correctly
+      userID2: opr.issuedBy,
+      userID3: opr.approvedBy
     });
 
-    this.api.retrieveREPAR(this.currentEditId!)
+    this.api.retrieveOPTR(this.currentEditId!+"")
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving REPAR Item', res);
-          this.par = res.details;
-          this.parItems = res.parItems;
-          this.searchPARItems = this.parItems;
+          this.logger.printLogs('i', 'Retrieving OPTR Item', res);
+          this.opr = res.details;
+          this.oprItems = res.oprItems;
+          this.optr = this.oprItems;
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving OPTR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPTR Item.', 'error');
         }
       });
 
@@ -897,34 +766,34 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   }
 
-  onRepar(par: any) {
-    if (!par.postFlag) {
-      Swal.fire('Information!', 'Cannot REPAR unposted PAR.', 'warning');
+  onOPTR(opr: any) {
+    if (!opr.postFlag) {
+      Swal.fire('Information!', 'Cannot OPTR unposted PAR.', 'warning');
       return;
     }
 
-    this.isRepar = true;
-    this.par = par;
-    this.logger.printLogs('i', 'Restoring PAR', par);
+    this.isOPTR = true;
+    this.opr = opr;
+    this.logger.printLogs('i', 'Restoring OPR', opr);
 
-    this.reparForm.patchValue({
-      userID2: par.receivedBy,
+    this.optrForm.patchValue({
+      userID2: opr.receivedBy,
       searchPARItemKey: [''],
     });
 
-    this.api.retrievePARItemByParNo(this.par.parNo)
+    this.api.retrieveOPRItemByOPRNo(this.opr.oprNo)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PAR Item', res);
-          this.parItems = res;
-          this.searchPARItems = this.parItems;
+          this.logger.printLogs('i', 'Retrieving OPR Item', res);
+          this.oprItems = res;
+          this.searchOPRItems = this.oprItems;
 
-          this.noOfParItems = this.parItems.filter((group: any) => group.reparFlag === false).length;
-          this.logger.printLogs('i', 'Number of PAR Item Retrieved', this.noOfParItems);
+          this.noOfParItems = this.oprItems.filter((group: any) => group.optrFlag === false).length;
+          this.logger.printLogs('i', 'Number of OPR Item Retrieved', this.noOfParItems);
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPR Item.', 'error');
         }
       });
 
@@ -932,31 +801,31 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   }
 
-  onDelete(par: any) {
+  onDelete(opr: any) {
 
-    if (par.postFlag) {
-      Swal.fire('Information!', 'Cannot delete posted REPAR.', 'warning');
+    if (opr.postFlag) {
+      Swal.fire('Information!', 'Cannot delete posted OPTR.', 'warning');
       return;
     }
 
-    let reparNo = par.reparNo;
+    let optrNo = opr.optrNo;
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Remove REPAR #' + reparNo,
+      text: 'Remove OPTR #' + optrNo,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.api.deleteREPAR(reparNo)
+        this.api.deleteOPTR(optrNo)
           .subscribe({
             next: (res) => {
-              this.getAllPTR();
+              this.getAllOPTR();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error on Deleting PAR', err);
+              this.logger.printLogs('e', 'Error on Deleting OPTR', err);
               Swal.fire('Denied', err, 'warning');
             }
           });
@@ -975,7 +844,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const PARNo: string = this.parForm.value['parNo'];
+    const OPRNo: string = this.oprForm.value['oprNo'];
     const IID: string = this.itemForm.value['iid'];
     const Brand: string = this.itemForm.value['brand'];
     const Model: string = this.itemForm.value['model'];
@@ -1011,9 +880,9 @@ export class OptrComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      this.item = new Item(null, PARNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
-      this.parItems.push(this.item);
-      this.logger.printLogs('i', 'PAR ITEMS', this.parItems);
+      this.item = new Item(null, OPRNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
+      this.oprItems.push(this.item);
+      this.logger.printLogs('i', 'OPR ITEMS', this.oprItems);
       this.resetItemForm();
 
       Swal.fire({
@@ -1031,24 +900,24 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
     } else {
 
-      if (await this.isExistOnUpdate(this.parINo, PropertyNo)) {
+      if (await this.isExistOnUpdate(this.oprINo, PropertyNo)) {
         Swal.fire('Information!', 'Property No. already exists!', 'warning');
         return;
       }
 
-      if (await this.isExistOnUpdate(this.parINo, SerialNo)) {
+      if (await this.isExistOnUpdate(this.oprINo, SerialNo)) {
         Swal.fire('Information!', 'Serial No. already exists!', 'warning');
         return;
       }
 
-      if (await this.isExistOnUpdate(this.parINo, QRCode)) {
+      if (await this.isExistOnUpdate(this.oprINo, QRCode)) {
         Swal.fire('Information!', 'QRCode already exists!', 'warning');
         return;
       }
 
-      const index = this.parItems.findIndex(i => i.propertyNo === this.item!.propertyNo);
+      const index = this.oprItems.findIndex(i => i.propertyNo === this.item!.propertyNo);
       if (index !== -1) {
-        this.parItems[index] = new Item(this.parINo, PARNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
+        this.oprItems[index] = new Item(this.oprINo, OPRNo, this.iid!, Brand, Model, Description, SerialNo, PropertyNo, QRCode, Unit, Amount, Date_Acquired, false, null);
         Swal.fire('Success!', 'Item updated successfully!', 'success');
         this.resetItemForm();
         this.closeModal(this.ItemModal);
@@ -1109,10 +978,10 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
 
 
-  onEditItem(item: Item) {
+  onEditItem(item: any) {
     this.isEditItemMode = true;
     this.item = item;
-    this.parINo = item.parino;
+    this.oprINo = item.oprino;
     this.propertyNo = item.propertyNo;
 
     if (this.ViewItemModal) {
@@ -1156,9 +1025,9 @@ export class OptrComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onViewItem(item: Item) {
+  onViewItem(item: any) {
     this.item = item;
-    this.parINo = item.parino;
+    this.oprINo = item.oprINo;
     this.propertyNo = item.propertyNo;
 
     this.logger.printLogs('i', 'View Item', [item]);
@@ -1176,12 +1045,12 @@ export class OptrComponent implements OnInit, AfterViewInit {
             this.api.retrieveREPAR(item.reparNo!)
               .subscribe({
                 next: (res) => {
-                  this.repar = res.details;
-                  this.logger.printLogs('i', 'Retreived REPAR No: ' + item.reparNo!, res.details);
+                  this.optr = res.details;
+                  this.logger.printLogs('i', 'Retreived OPTR No: ' + item.reparNo!, res.details);
                   this.openItemModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
-                  this.logger.printLogs('e', 'Error Retreiving REPAR', err);
+                  this.logger.printLogs('e', 'Error Retreiving OPTR', err);
                   Swal.fire('Denied', err, 'warning');
                 }
               });
@@ -1219,7 +1088,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onDeleteItem(item: Item) {
+  onDeleteItem(item: any) {
     this.item = item;
     this.propertyNo = item.propertyNo;
 
@@ -1234,7 +1103,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
       if (result.isConfirmed) {
         // Execute delete Item where propertyNo matches to list
         if (this.propertyNo) {
-          this.parItems = this.parItems.filter(items => items.propertyNo !== this.propertyNo);
+          this.oprItems = this.oprItems.filter(items => items.propertyNo !== this.propertyNo);
           Swal.fire('Deleted!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid property number.', 'warning');
@@ -1265,12 +1134,12 @@ export class OptrComponent implements OnInit, AfterViewInit {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.isCustomType = selectedValue == 'Others';
     if (!this.isCustomType) {
-      this.parForm.get('type')?.setValue(selectedValue);
-      this.parForm?.get('others')?.setValue('N/A');
+      this.oprForm.get('type')?.setValue(selectedValue);
+      this.oprForm?.get('others')?.setValue('N/A');
     } else {
-      this.parForm?.get('others')?.setValue(null);
-      this.parForm.get('type')?.markAsUntouched();
-      this.parForm.get('others')?.markAsTouched();
+      this.oprForm?.get('others')?.setValue(null);
+      this.oprForm.get('type')?.markAsUntouched();
+      this.oprForm.get('others')?.markAsTouched();
     }
   }
 
@@ -1296,19 +1165,19 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.isEditMode = false;
     this.currentEditId = null;
     this.isModalOpen = false;
-    this.isRepar = false;
+    this.isOPTR = false;
     this.item = null;
     this.isOpen = false;
-    this.parForm.reset({
+    this.oprForm.reset({
       userID1: '',
       userID2: '',
       userID3: ''
     });
-    this.reparForm.reset({
+    this.optrForm.reset({
       userID1: '',
       userID2: ''
     });
-    this.parItems = [];
+    this.oprItems = [];
     this.selectedParItems = [];
     this.parItemKey = '';
     this.searchKey = '';
@@ -1407,35 +1276,35 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   validateQR(qr: string): void {
     this.qrCode = ''
-    this.api.retrievePARITEMByQRCode(qr)
+    this.api.retrieveOPRITEMByQRCode(qr)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PAR ITEMS', res);
+          console.log('Retrieve OPR ITEMS', res);
           this.item = res[0];
 
           console.log('Show Items', this.item);
 
-          this.onRetrieveREPAR(res[0].reparNo);
+          this.onRetrieveOPTR(res[0].reparNo);
 
         },
         error: (err: any) => {
-          this.logger.printLogs('w', 'Problem with Retreiving PTR', err);
-          Swal.fire('Item not Found', `QR Code ${qr} not found in PTR`, 'info');
+          this.logger.printLogs('w', 'Problem with Retreiving OPTR', err);
+          Swal.fire('Item not Found', `QR Code ${qr} not found in OPTR`, 'info');
         }
       });
 
   }
 
-  onRetrieveREPAR(reparNo: string) {
-    this.api.retrieveREPAR(reparNo)
+  onRetrieveOPTR(optrNo: string) {
+    this.api.retrieveOPTR(optrNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PTR', res);
-          this.par = res.details;
+          console.log('Retrieve OPTR', res);
+          this.opr = res.details;
 
           Swal.fire({
-            title: 'Item Found from PTR #' + reparNo,
-            text: 'Do you want to view the PTR Details?',
+            title: 'Item Found from OPTR #' + optrNo,
+            text: 'Do you want to view the OPTR Details?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -1444,14 +1313,14 @@ export class OptrComponent implements OnInit, AfterViewInit {
             if (result.isConfirmed) {
               this.onItemFound = true;
               this.onCloseQRScanning(this.scannerAction);
-              this.onViewREPAR(this.par);
+              this.onViewOPTR(this.opr);
             } else {
               this.resumeScanning(this.scannerAction);
             }
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('w', 'Problem Retreiving PTR', err);
+          this.logger.printLogs('w', 'Problem Retreiving OPTR', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
@@ -1475,20 +1344,35 @@ export class OptrComponent implements OnInit, AfterViewInit {
     scannerAction.isLoading = false;
 
   }
+  
+  onSourceTypeChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.isCustomType = selectedValue === 'Others';
+    if (!this.isCustomType) {
+      this.oprForm.get('itemsource')?.setValue(selectedValue);
+      this.oprForm.get('others')?.setValue('N/A');
+    } else {
+      // Wait for Angular to render the input field before focusing
+      this.oprForm.get('itemsource')?.markAsUntouched();
+      this.oprForm.get('others')?.markAsTouched();
+      this.oprForm.get('others')?.setValue(null);
+    }
+  }
 
-  onPrintREPAR(reparNo: string) {
 
-    this.api.retrieveREPAR(reparNo)
+  onPrintOPTR(optrNo: string) {
+
+    this.api.retrieveOPTR(optrNo)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving REPAR', res);
-          const repar = res.details;
-          const parItems = res.parItems;
+          this.logger.printLogs('i', 'Retrieving OPTR', res);
+          const optr = res.details;
+          const oprItems = res.parItems;
 
-          this.printService.setModel(repar);
+          this.printService.setModel(optr);
 
           // Ensure par.parItems is an array or default to an empty array
-          const items = Array.isArray(parItems) ? parItems : [];
+          const items = Array.isArray(oprItems) ? oprItems : [];
           // Use forkJoin to wait for both observables to complete
           forkJoin([
             this.printService.setReceivedBy(res.details.receivedBy),
@@ -1496,9 +1380,9 @@ export class OptrComponent implements OnInit, AfterViewInit {
             this.printService.setApprovedBy(res.details.approvedBy)
           ] as Observable<any>[]).subscribe(() => {
             // Once both services complete, continue with the report generation
-            const parItems = res.parItems;
-            this.searchPARItems = this.parItems;
-            const items = Array.isArray(parItems) ? parItems : [];
+            const oprItems = res.parItems;
+            this.searchOPRItems = this.oprItems;
+            const items = Array.isArray(oprItems) ? oprItems : [];
 
             const rows = items.map((item: any, index: number) => `
               <tr ${item.qrCode ? `class="${item.qrCode}  item-row"` : ''}>
@@ -1524,17 +1408,17 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
           <div class="row">
             <div class="col-12">
-              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${repar.lgu || 'Default LGU'}</span></p>
+              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${optr.lgu || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${repar.fund || 'Default LGU'}</span></p>
+              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${optr.fund || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6 text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${repar.reparNo || 'Default PTR No.'}</span></p>
+              <p class="fs-6 text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${optr.reparNo || 'Default PTR No.'}</span></p>
             </div>
             <div class="col-6">
               <p class="fs-6">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">
-              ${(((repar.ttype + '').toString().toLowerCase() == "others") ? repar.ttype + ' - ' + repar.otype : repar.ttype) || 'N/A'}
+              ${(((optr.ttype + '').toString().toLowerCase() == "others") ? optr.ttype + ' - ' + optr.otype : optr.ttype) || 'N/A'}
               </span></p>
             </div>
             <div class="col-6">
@@ -1562,7 +1446,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
             </table>`;
 
             // Print the report
-            this.printService.printReport('PTR', reportContent);
+            this.printService.printReport('OPTR', reportContent);
 
           });
         },

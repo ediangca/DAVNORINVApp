@@ -7,6 +7,15 @@
   min-height: calc(100vh - 17.6rem);
 } */
 
+
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+}
+
+
 .table td,
 .table th {
   white-space: normal; /* Allows the text to wrap */
@@ -114,3 +123,9 @@
   }
 } 
 */
+
+@media (max-width: 768px) {
+  .iq-banner:not(.hide) + .content-inner {
+      margin-top: 0px !important;
+  }
+}

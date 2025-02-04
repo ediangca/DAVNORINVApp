@@ -176,8 +176,43 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   setTitle(pageTitle: string) {
+    let desc = ''
+    switch (pageTitle) {
+      case 'PAR':
+        desc = '(PROPERTY ACKNOWLEDGMENT RECEIPT)';
+        break;
+      case 'ICS':
+        desc = '(INVENTORY CUSTODIAN SLIP)';
+        break;
+      case 'OPR':
+        desc = '(OTHER PROPERTY RECEIPT)';
+        break;
+      case 'PTR':
+        desc = '(PROPERTY TRANSFER RECEIPT)';
+        break;
+      case 'ITR':
+        desc = '(INVENTORY TRANSFER REPORT)';
+        break;
+      case 'OPTR':
+        desc = '(OTHER PROPERTY TRANSFER REPORT)';
+        break;
+      case 'PRS':
+        desc = '(PROPERTY RETURN SLIP)';
+        break;
+      case 'RRSEP':
+        desc = '(RECEIPT RETURN SEMI-EXPANDABLE PROPERTY)';
+        break;
+      case 'OPRR':
+        desc = '(OTHER PROPERTY RETURN REPORT)';
+        break;
+      default:
+        desc = ''; // Optional fallback
+    }
+
     this.pageTitle = pageTitle
-    this.titleService.setTitle(this.ac.appName + " - " + pageTitle);
+
+
+    this.titleService.setTitle(`${this.ac.appName}  -  ${pageTitle } ${desc} `);
   }
 
   getPageTitle() {

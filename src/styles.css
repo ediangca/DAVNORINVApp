@@ -23,10 +23,6 @@ body {
   background-position: bottom right;
 }
 
-.content-inner {
-  max-height: 100vh !important;
-}
-
 /* --- FORMS --- */
 
 .outer {

@@ -132,7 +132,7 @@ export class PrintService {
               <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
             </div>
           </div>`;
-    } else if (title === "ptr" || title === "itr") {
+    } else if (title === "ptr" || title === "itr" || title === "optr")  {
       this.footer = `
         <div class="row mt-3">
           <div class="col-2 border">
@@ -441,18 +441,20 @@ export class PrintService {
         return 'PROPERTY ACKNOWLEDGEMENT RECEIPT'
       case 'ics':
         return 'INVENTORY CUSTODIAN SLIP'
-      case 're-':
+      case 'opr':
+        return 'OTHER PROPERTY RECEIPT'
+      case 'ptr':
         return 'PROPERTY TRANSFER RECEIPT'
       case 'itr':
         return 'INVENTORY TRANFER REPORT'
-      case 'ptr':
-        return 'PROPERTY TRANSFER REPORT'
+      case 'optr':
+        return 'OTHER PROPERTY TRANSFER REPORT'
       case 'prs':
         return 'PROPERTY RETURN SLIP'
       case 'rrsep':
         return 'RECEIPT RETURN SEMI-EXPANDABLE PROPERTY'
-      case 'opr':
-        return 'OTHER PROPERTY RECEIPT'
+      case 'oprr':
+        return 'OTHER PROPERTY RETURN REPORT'
       default:
         return null
     }

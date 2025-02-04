@@ -21,7 +21,7 @@ import { PositionsComponent } from './components/settings/positions/positions.co
 import { UsergroupComponent } from './components/settings/usergroup/usergroup.component';
 import { RrspComponent } from './components/rrsp/rrsp.component';
 import { PrsComponent } from './components/prs/prs.component';
-import { OthersComponent } from './components/others/others.component';
+import { OthersComponent } from './components/opr/others.component';
 import { OptrComponent } from './components/optr/optr.component';
 
 //

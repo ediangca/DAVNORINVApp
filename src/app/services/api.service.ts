@@ -1409,7 +1409,7 @@ export class ApiService {
   }
 
   //Update
-  updateOPRItem(oprNo: number, updatedItems: OPRItem[]): Observable<any> {
+  updateOPRItem(oprNo: number, updatedItems: any[]): Observable<any> {
     console.log("Update OPR No. >>> : ", oprNo);
     console.log("Update OPR Item >>> : ", updatedItems);
     return this.http.put<any>(`${this.apiUrl}OPRITEM/Update?oprNo=` + oprNo, updatedItems)

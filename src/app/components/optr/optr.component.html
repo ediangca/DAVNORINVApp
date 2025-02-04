@@ -1,4 +1,3 @@
-<p>optr works!</p>
 <div class="row mt-5 d-none d-sm-block" style="height: 10px;"></div>
 
 <div class="container-fluid">
@@ -14,7 +13,7 @@
               <input type="text" class="form-control rounded-pill" type="search" [(ngModel)]="searchKey"
                 (keyup)="onKeyUp($event)" placeholder="Search here.." aria-label="Search">
               <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
-                (click)="onSearchPTR()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
+                (click)="onSearchOPTR()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
 
             <button class="btn btn-dark rounded-pill d-flex justify-content-center align-items-center" type="button"
@@ -42,7 +41,7 @@
           <tr>
             <th></th>
             <th>Date Created</th>
-            <th>PTR No.</th>
+            <th>OPTR No.</th>
             <th>Issued By</th>
             <th>Recieved By</th>
             <th>Approved By</th>
@@ -59,7 +58,7 @@
               </a>
             </td>
             <td>{{formatDate(p.date_Created)}}</td>
-            <td>{{p.reparNo}}</td>
+            <td>{{'OPTR-000'+p.optrNo}}</td>
             <td>{{p.issued}}</td>
             <td>{{p.received}}</td>
             <td>{{p.approved}}</td>
@@ -70,14 +69,14 @@
                 <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
                     title="System Default"></i></span>
                 }@else{
-                <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditREPAR(p)"><i
+                <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditOPTR(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
                 <a *ngIf="canDelete" class="delete" type="button" (click)="onDelete(p)"><i
                     class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
-                <a *ngIf="canRetrieve" class="success" type="button" (click)="onViewREPAR(p)">
+                <a *ngIf="canRetrieve" class="success" type="button" (click)="onViewOPTR(p)">
                   <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
                 </a>
-                <a class="seconadry" type="button" (click)="onPrintREPAR(p.reparNo)">
+                <a class="seconadry" type="button" (click)="onPrintOPTR(p.optrNo)">
                   <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
                 </a>
                 }
@@ -111,13 +110,13 @@
 <div #AddEditModalForm class="modal fade" id="AddEditModalForm">
   <div class="modal-dialog modal-dialog-centered  modal-xl">
     <div class="modal-content formGroup">
-      <form class [formGroup]="parForm" class="ng-untouched ng-pristine ng-invalid">
+      <form class [formGroup]="oprForm" class="ng-untouched ng-pristine ng-invalid">
         <div class="modal-header">
           <div class="d-flex flex-column">
             <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
               isEditMode
               ?
-              'Edit PTR #' + currentEditId: 'Add New PTR'}} </h1>
+              'Edit OPTR #000' + currentEditId: 'Add New OPTR'}} </h1>
             <span><em> Property Transfer
                 Receipt</em></span>
           </div>
@@ -128,89 +127,59 @@
         <div class="modal-body p-0 m-0">
 
           <div class="card m-0">
+            
+            <!-- CARD HEADER -->
             <div class="card-header py-2">
+
               <div class="row">
-                <div class="col-lg">
-
-                  @if(!(parForm.controls['lgu'].invalid &&
-                  parForm.hasError('required', 'lgu') &&
-                  parForm.get('lgu')?.touched ||
-                  (parForm.controls['lgu'].dirty &&
-                  parForm.hasError('required', 'lgu')))){
-                  <small class="text-info">*
-                    LGU</small>
-                  }@else {
-                  <small class="text-danger" *ngIf="parForm.controls['lgu'].invalid &&
-                      parForm.hasError('required', 'lgu') &&
-                      parForm.get('lgu')?.touched ||
-                      (parForm.controls['lgu'].dirty &&
-                      parForm.hasError('required', 'lgu'))">*
-                    LGU is required</small>
-                  }
-
-                  <div class="form-field d-flex align-items-center" [class.error]="parForm.controls['lgu'].invalid &&
-              parForm.hasError('required', 'lgu') &&  parForm.get('lgu')?.touched || (parForm.controls['lgu'].dirty &&
-              parForm.hasError('required', 'lgu'))">
-
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="parForm.controls['lgu'].invalid &&
-                      parForm.hasError('required', 'lgu') &&  parForm.get('lgu')?.touched || (parForm.controls['lgu'].dirty &&
-                      parForm.hasError('required', 'lgu'))"></i>
-
-                    <input type="text" formControlName="lgu" name="lgu" id="lgu" placeholder="LGU" readonly>
-                  </div>
-
-                </div>
-              </div>
-              <div class="row d-flex flex-row">
                 <div class="col">
-                  @if(!(parForm.controls['fund'].invalid &&
-                  parForm.hasError('required', 'fund') &&
-                  parForm.get('fund')?.touched ||
-                  (parForm.controls['fund'].dirty &&
-                  parForm.hasError('required', 'fund')))){
-                  <small class="text-info">*
-                    FUND</small>
-                  }@else {
-                  <small class="text-danger" *ngIf="parForm.controls['fund'].invalid && parForm.hasError('required', 'fund') && parForm.get('fund')?.touched ||
-                        (parForm.controls['fund'].dirty && parForm.hasError('required', 'fund'))">*
-                    FUND is required</small>
-                  }
+                  <div class="simple-accordion">
+                    <button class="accordion-header" (click)="toggleAccordion()" [attr.aria-expanded]="isOpen">
+                      INFORMATION
+                      <i class="fa-sharp-duotone fa-solid {{ isOpen? 'fa-caret-up' : 'fa-caret-down' }} "></i>
+                    </button>
+                    <div class="accordion-content" [class.show]="isOpen">
 
-                  <div class="form-field d-flex align-items-center" [class.error]="parForm.controls['fund'].invalid && parForm.hasError('required', 'fund') &&  parForm.get('fund')?.touched ||
-                    (parForm.controls['fund'].dirty && parForm.hasError('required', 'fund'))">
+                      <div class="row d-flex flex-row">
+                        <div class="col">
+                          <small class="text-info">Source of Property</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source" readonly>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <small class="text-info">Owner/Source From</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership" readonly>
+                          </div>
+                        </div>
+                      </div>
 
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="parForm.controls['fund'].invalid && parForm.hasError('required', 'fund') &&  parForm.get('fund')?.touched ||
-                      (parForm.controls['fund'].dirty && parForm.hasError('required', 'fund'))"></i>
+                      <div class="row d-flex flex-row">
+                        <div class="col">
+                          <small class="text-info">RECEIVED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.received" class="form-control" placeholder="RECEIVED"
+                              readonly>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <small class="text-info">ISSUED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.issued" class="form-control" placeholder="Issued" readonly>
+                          </div>
+                        </div>
+                      </div>
 
-                    <input type="text" formControlName="fund" name="fund" id="fund" placeholder="FUND" readonly>
-                  </div>
-                </div>
-                <div class="col">
-
-                  @if(!(parForm.controls['parNo'].invalid &&
-                  parForm.hasError('required', 'parNo') &&
-                  parForm.get('parNo')?.touched ||
-                  (parForm.controls['parNo'].dirty &&
-                  parForm.hasError('required', 'parNo')))){
-                  <small class="text-info">*
-                    PAR No.</small>
-                  }@else {
-                  <small class="text-danger" *ngIf="parForm.controls['parNo'].invalid && parForm.hasError('required', 'parNo') && parForm.get('parNo')?.touched ||
-                          (parForm.controls['parNo'].dirty && parForm.hasError('required', 'parNo'))">*
-                    PAR No. is
-                    required</small>
-                  }
-
-                  <div class="form-field d-flex align-items-center" [class.error]="parForm.controls['parNo'].invalid && parForm.hasError('required', 'parNo') &&  parForm.get('parNo')?.touched ||
-                    (parForm.controls['parNo'].dirty && parForm.hasError('required', 'parNo'))">
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="parForm.controls['parNo'].invalid && parForm.hasError('required', 'parNo') &&  parForm.get('parNo')?.touched ||
-                    (parForm.controls['parNo'].dirty && parForm.hasError('required', 'parNo'))"></i>
-
-                    <input class="form-control is-invalid" type="text" formControlName="parNo" name="parNo" id="parNo"
-                      placeholder="PAR No." readonly>
+                    </div>
                   </div>
                 </div>
               </div>
+
             </div>
             <div class="card-body py-0">
 
@@ -241,12 +210,12 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr *ngIf="parItems.length<1">
+                          <tr *ngIf="oprItems.length<1">
                             <td colspan="8" class="text-danger text-center">*
                               Item
                               list required! Add at least one!</td>
                           </tr>
-                          <tr *ngFor="let p of parItems; let i = index">
+                          <tr *ngFor="let p of oprItems; let i = index">
                             <td>
                               <a class="success" type="button" (click)="onViewItem(p)">
                                 <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
@@ -299,43 +268,43 @@
                 <div class="col-4">
                   <!-- Transfer type -->
 
-                  @if(!(parForm.controls['type'].invalid &&
-                  parForm.hasError('required', 'type') &&
-                  parForm.get('type')?.touched ||
-                  (parForm.controls['type'].dirty &&
-                  parForm.hasError('required', 'type')))){
+                  @if(!(oprForm.controls['type'].invalid &&
+                  oprForm.hasError('required', 'type') &&
+                  oprForm.get('type')?.touched ||
+                  (oprForm.controls['type'].dirty &&
+                  oprForm.hasError('required', 'type')))){
                   <small class="text-info">* Transfer Type</small>
                   }@else{
                   <small class="text-danger"
-                    *ngIf="parForm.controls['type'].invalid &&
-                    parForm.hasError('required', 'type') &&
-                    parForm.get('type')?.touched ||
-                    (parForm.controls['type'].dirty &&
-                    parForm.hasError('required', 'type')) ||
-                    (isCustomType && ((parForm.controls['type'].invalid &&
-                  parForm.hasError('required', 'type') &&
-                  parForm.get('type')?.touched) || (parForm.controls['others'].dirty && parForm.hasError('required', 'others'))))">*
+                    *ngIf="oprForm.controls['type'].invalid &&
+                    oprForm.hasError('required', 'type') &&
+                    oprForm.get('type')?.touched ||
+                    (oprForm.controls['type'].dirty &&
+                    oprForm.hasError('required', 'type')) ||
+                    (isCustomType && ((oprForm.controls['type'].invalid &&
+                  oprForm.hasError('required', 'type') &&
+                  oprForm.get('type')?.touched) || (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))))">*
                     Transfer Type is required</small>
                   }
 
                   <!-- Other Transfer type -->
 
                   <small class="text-danger"
-                    *ngIf="isCustomType && parForm.controls['others'].invalid && parForm.get('others')?.touched">
+                    *ngIf="isCustomType && oprForm.controls['others'].invalid && oprForm.get('others')?.touched">
                     Specify 'Others' is required.
                   </small>
 
-                  <div class="form-field d-flex align-items-center" [class.error]="parForm.controls['type'].invalid && parForm.hasError('required', 'type')  && parForm.get('type')?.touched ||
-                    (parForm.controls['type'].dirty && parForm.hasError('required', 'type')) ||
-                    (isCustomType && parForm.controls['others'].invalid && parForm.hasError('required', 'others')  && parForm.get('others')?.touched ||
-                  (parForm.controls['others'].dirty && parForm.hasError('required', 'others'))) ||
-                    (isCustomType && parForm.get('others')?.invalid && parForm.get('others')?.touched)">
+                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['type'].invalid && oprForm.hasError('required', 'type')  && oprForm.get('type')?.touched ||
+                    (oprForm.controls['type'].dirty && oprForm.hasError('required', 'type')) ||
+                    (isCustomType && oprForm.controls['others'].invalid && oprForm.hasError('required', 'others')  && oprForm.get('others')?.touched ||
+                  (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))) ||
+                    (isCustomType && oprForm.get('others')?.invalid && oprForm.get('others')?.touched)">
 
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="parForm.controls['type'].invalid && parForm.hasError('required', 'type')  && parForm.get('type')?.touched ||
-                      (parForm.controls['type'].dirty && parForm.hasError('required', 'type')) ||
-                      (isCustomType && parForm.controls['others'].invalid && parForm.hasError('required', 'others')  && parForm.get('others')?.touched ||
-                    (parForm.controls['others'].dirty && parForm.hasError('required', 'others'))) ||
-                      (isCustomType && parForm.get('others')?.invalid && parForm.get('others')?.touched)">
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="oprForm.controls['type'].invalid && oprForm.hasError('required', 'type')  && oprForm.get('type')?.touched ||
+                      (oprForm.controls['type'].dirty && oprForm.hasError('required', 'type')) ||
+                      (isCustomType && oprForm.controls['others'].invalid && oprForm.hasError('required', 'others')  && oprForm.get('others')?.touched ||
+                    (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))) ||
+                      (isCustomType && oprForm.get('others')?.invalid && oprForm.get('others')?.touched)">
                     </i>
 
                     <select formControlName="type" name="type" id="type" class="form-select"
@@ -352,27 +321,27 @@
                 <div class="col-8">
                   <!-- Reason -->
 
-                  @if(!(parForm.controls['reason'].invalid &&
-                  parForm.hasError('required', 'reason') &&
-                  parForm.get('reason')?.touched ||
-                  (parForm.controls['reason'].dirty &&
-                  parForm.hasError('required', 'reason')))){
+                  @if(!(oprForm.controls['reason'].invalid &&
+                  oprForm.hasError('required', 'reason') &&
+                  oprForm.get('reason')?.touched ||
+                  (oprForm.controls['reason'].dirty &&
+                  oprForm.hasError('required', 'reason')))){
                   <small class="text-info">* Reason for Transfer</small>
                   }@else{
-                  <small class="text-danger" *ngIf="parForm.controls['reason'].invalid &&
-                parForm.hasError('required', 'reason') &&
-                parForm.get('reason')?.touched ||
-                (parForm.controls['reason'].dirty &&
-                parForm.hasError('required', 'reason'))">*
+                  <small class="text-danger" *ngIf="oprForm.controls['reason'].invalid &&
+                oprForm.hasError('required', 'reason') &&
+                oprForm.get('reason')?.touched ||
+                (oprForm.controls['reason'].dirty &&
+                oprForm.hasError('required', 'reason'))">*
                     Reason for Transfer is required</small>
                   }
-                  <div class="form-field d-flex align-items-center" [class.error]="parForm.controls['reason'].invalid &&
-                  parForm.hasError('required', 'reason') && parForm.get('reason')?.touched ||
-                  (parForm.controls['reason'].dirty && parForm.hasError('required', 'reason'))">
+                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['reason'].invalid &&
+                  oprForm.hasError('required', 'reason') && oprForm.get('reason')?.touched ||
+                  (oprForm.controls['reason'].dirty && oprForm.hasError('required', 'reason'))">
 
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="parForm.controls['reason'].invalid &&
-                    parForm.hasError('required', 'reason') && parForm.get('reason')?.touched ||
-                    (parForm.controls['reason'].dirty && parForm.hasError('required', 'reason'))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="oprForm.controls['reason'].invalid &&
+                    oprForm.hasError('required', 'reason') && oprForm.get('reason')?.touched ||
+                    (oprForm.controls['reason'].dirty && oprForm.hasError('required', 'reason'))"></i>
 
                     <textarea formControlName="reason" name="reason" id="reason" placeholder="Reason/s for Transfer"
                       rows="1" cols="50"></textarea>
@@ -388,8 +357,8 @@
                   <small class="text-info">*
                     Issued By</small>
 
-                  <div class="form-field d-flex align-items-center" [class.error]="parForm.controls['userID2'].invalid && parForm.hasError('required', 'userID2')  && parForm.get('userID2')?.touched ||
-                    (parForm.controls['userID2'].dirty && parForm.hasError('required', 'userID2'))">
+                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['userID2'].invalid && oprForm.hasError('required', 'userID2')  && oprForm.get('userID2')?.touched ||
+                    (oprForm.controls['userID2'].dirty && oprForm.hasError('required', 'userID2'))">
 
                     <input type="text" class="form-control" id="navbarDropdown" formControlName="userID2" name="userID2"
                       placeholder="Issued By" role="textbox" readonly>
@@ -401,32 +370,32 @@
                 <!-- Received By -->
                 <div class="col">
 
-                  @if(!(parForm.controls['userID1'].invalid &&
-                  parForm.hasError('required', 'userID1') &&
-                  parForm.get('userID1')?.touched ||
-                  (parForm.controls['userID1'].dirty &&
-                  parForm.hasError('required', 'userID1')))){
+                  @if(!(oprForm.controls['userID1'].invalid &&
+                  oprForm.hasError('required', 'userID1') &&
+                  oprForm.get('userID1')?.touched ||
+                  (oprForm.controls['userID1'].dirty &&
+                  oprForm.hasError('required', 'userID1')))){
                   <small class="text-info">*
                     Received By</small>
                   }@else {
-                  <small class="text-danger" *ngIf="parForm.controls['userID1'].invalid &&
-                    parForm.hasError('required', 'userID1') &&
-                    parForm.get('userID1')?.touched ||
-                    (parForm.controls['userID1'].dirty &&
-                    parForm.hasError('required', 'userID1'))">* Received By is
+                  <small class="text-danger" *ngIf="oprForm.controls['userID1'].invalid &&
+                    oprForm.hasError('required', 'userID1') &&
+                    oprForm.get('userID1')?.touched ||
+                    (oprForm.controls['userID1'].dirty &&
+                    oprForm.hasError('required', 'userID1'))">* Received By is
                     required</small>
                   }
 
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="parForm.controls['userID1'].invalid && parForm.hasError('required', 'userID1')  && parForm.get('userID1')?.touched ||
-                  (parForm.controls['userID1'].dirty && parForm.hasError('required', 'userID1')) || (parForm.get('userID1')?.touched && receivedID === null)">
+                    [class.error]="oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1')  && oprForm.get('userID1')?.touched ||
+                  (oprForm.controls['userID1'].dirty && oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null)">
                     <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(parForm.controls['userID1'].invalid && parForm.hasError('required', 'userID1') &&
-                    parForm.get('userID1')?.touched || (parForm.controls['userID1'].dirty &&
-                    parForm.hasError('required', 'userID1')) || (parForm.get('userID1')?.touched && receivedID === null))"></i>
+                      *ngIf="!(oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1') &&
+                    oprForm.get('userID1')?.touched || (oprForm.controls['userID1'].dirty &&
+                    oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null))"></i>
                     <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="parForm.controls['userID1'].invalid && parForm.hasError('required', 'userID1') &&  parForm.get('userID1')?.touched ||
-                    (parForm.controls['userID1'].dirty && parForm.hasError('required', 'userID1')) || (parForm.get('userID1')?.touched && receivedID === null)"></i>
+                      *ngIf="oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1') &&  oprForm.get('userID1')?.touched ||
+                    (oprForm.controls['userID1'].dirty && oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null)"></i>
 
                     <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
                       [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggestReceived()"
@@ -445,32 +414,32 @@
 
                 <!-- Approved By -->
                 <div class="col">
-                  @if(!(parForm.controls['userID3'].invalid &&
-                  parForm.hasError('required', 'userID3') &&
-                  parForm.get('userID3')?.touched ||
-                  (parForm.controls['userID3'].dirty &&
-                  parForm.hasError('required', 'userID3')))){
+                  @if(!(oprForm.controls['userID3'].invalid &&
+                  oprForm.hasError('required', 'userID3') &&
+                  oprForm.get('userID3')?.touched ||
+                  (oprForm.controls['userID3'].dirty &&
+                  oprForm.hasError('required', 'userID3')))){
                   <small class="text-info">*
                     Approved By</small>
                   }@else {
-                  <small class="text-danger" *ngIf="parForm.controls['userID3'].invalid &&
-                        parForm.hasError('required', 'userID3') &&
-                        parForm.get('userID3')?.touched ||
-                        (parForm.controls['userID3'].dirty &&
-                        parForm.hasError('required', 'userID3'))">* Approved By
+                  <small class="text-danger" *ngIf="oprForm.controls['userID3'].invalid &&
+                        oprForm.hasError('required', 'userID3') &&
+                        oprForm.get('userID3')?.touched ||
+                        (oprForm.controls['userID3'].dirty &&
+                        oprForm.hasError('required', 'userID3'))">* Approved By
                     is required *</small>
                   }
 
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="parForm.controls['userID3'].invalid && parForm.hasError('required', 'userID3')  && parForm.get('userID3')?.touched ||
-                    (parForm.controls['userID3'].dirty && parForm.hasError('required', 'userID3')) || (parForm.get('userID3')?.touched && approvedID === null)">
+                    [class.error]="oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3')  && oprForm.get('userID3')?.touched ||
+                    (oprForm.controls['userID3'].dirty && oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null)">
                     <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(parForm.controls['userID3'].invalid && parForm.hasError('required', 'userID3') &&
-                      parForm.get('userID3')?.touched || (parForm.controls['userID3'].dirty &&
-                      parForm.hasError('required', 'userID3')) || (parForm.get('userID3')?.touched && approvedID === null))"></i>
+                      *ngIf="!(oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3') &&
+                      oprForm.get('userID3')?.touched || (oprForm.controls['userID3'].dirty &&
+                      oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null))"></i>
                     <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="parForm.controls['userID3'].invalid && parForm.hasError('required', 'userID3') &&  parForm.get('userID3')?.touched ||
-                      (parForm.controls['userID3'].dirty && parForm.hasError('required', 'userID3')) || (parForm.get('userID3')?.touched && approvedID === null)"></i>
+                      *ngIf="oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3') &&  oprForm.get('userID3')?.touched ||
+                      (oprForm.controls['userID3'].dirty && oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null)"></i>
 
                     <input type="text" class="form-control" id="navbarDropdown" formControlName="userID3" name="userID3"
                       [(ngModel)]="approvedByID" placeholder="Approve By" (keyup)="onAutoSuggestApproved()"
@@ -511,7 +480,7 @@
 <div #ViewModalForm class="modal fade" id="ViewModalForm">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content formGroup">
-      <form class [formGroup]="reparForm">
+      <form class [formGroup]="optrForm">
         <div class="modal-header">
 
           <div class="d-flex flex-column">
@@ -545,7 +514,7 @@
                           <small class="text-info">LGU</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="par?.lgu" class="form-control" placeholder="LGU" readonly>
+                            <input type="text" [value]="opr?.lgu" class="form-control" placeholder="LGU" readonly>
                           </div>
                         </div>
                       </div>
@@ -555,14 +524,14 @@
                           <small class="text-info">FUND</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="par?.fund" class="form-control" placeholder="FUND" readonly>
+                            <input type="text" [value]="opr?.fund" class="form-control" placeholder="FUND" readonly>
                           </div>
                         </div>
                         <div class="col">
                           <small class="text-info">PAR No.</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="par?.parNo" class="form-control" placeholder="PAR No." readonly>
+                            <input type="text" [value]="opr?.parNo" class="form-control" placeholder="PAR No." readonly>
                           </div>
                         </div>
                       </div>
@@ -572,14 +541,14 @@
                           <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="par?.issued" class="form-control" placeholder="Issued" readonly>
+                            <input type="text" [value]="opr?.issued" class="form-control" placeholder="Issued" readonly>
                           </div>
                         </div>
                         <div class="col">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="par?.received" class="form-control" placeholder="RECEIVED"
+                            <input type="text" [value]="opr?.received" class="form-control" placeholder="RECEIVED"
                               readonly>
                           </div>
                         </div>
@@ -587,7 +556,7 @@
                           <small class="text-info">APPROVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="par?.approved" class="form-control" placeholder="RECEIVED"
+                            <input type="text" [value]="opr?.approved" class="form-control" placeholder="RECEIVED"
                               readonly>
                           </div>
                         </div>
@@ -641,7 +610,7 @@
                         </thead>
                         <tbody>
 
-                          <ng-container *ngFor="let p of parItems; let i = index">
+                          <ng-container *ngFor="let p of oprItems; let i = index">
 
                             <!-- *ngIf="(!isRepar || !p.reparFlag) && parItems.length > 0" -->
                             <tr [class.border-warning]="item?.qrCode == p.qrCode">
@@ -671,7 +640,7 @@
             </div>
             <!-- END OF CARD BODY -->
             <div class="card-footer">
-              <div class="row d-flex flex-row" *ngIf="noOfParItems > 0 && isRepar">
+              <div class="row d-flex flex-row" *ngIf="noOfParItems > 0 && isOPTR">
 
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
 
@@ -681,7 +650,7 @@
                   <div class="form-field d-flex align-items-center">
 
                     <select class="form-select" formControlName="userID2" name="userID2" id="userID2" readonly>
-                      <option [value]="par.receivedBy ">{{ par.received
+                      <option [value]="opr.receivedBy ">{{ opr.received
                         }}</option>
                     </select>
                   </div>
@@ -692,20 +661,21 @@
                   <small class="text-info">*
                     Issue To</small>
 
-                  <div class="form-field d-flex align-items-center" [class.error]="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1')  && reparForm.get('userID1')?.touched || (reparForm.controls['userID1'].dirty &&
-                  reparForm.hasError('required', 'userID1'))">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down" *ngIf="!(reparForm.controls['userID1'].invalid &&
-                  reparForm.hasError('required', 'userID1') &&
-                  reparForm.get('userID1')?.touched ||
-                  (reparForm.controls['userID1'].dirty &&
-                  reparForm.hasError('required', 'userID1')))"></i>
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&  reparForm.get('userID1')?.touched ||
-                  (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1'))"></i>
+                  <div class="form-field d-flex align-items-center" [class.error]="optrForm.controls['userID1'].invalid && optrForm.hasError('required', 'userID1')  
+                  && optrForm.get('userID1')?.touched || (optrForm.controls['userID1'].dirty &&
+                  optrForm.hasError('required', 'userID1'))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down" *ngIf="!(optrForm.controls['userID1'].invalid &&
+                  optrForm.hasError('required', 'userID1') &&
+                  optrForm.get('userID1')?.touched ||
+                  (optrForm.controls['userID1'].dirty &&
+                  optrForm.hasError('required', 'userID1')))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="optrForm.controls['userID1'].invalid && optrForm.hasError('required', 'userID1') &&  optrForm.get('userID1')?.touched ||
+                  (optrForm.controls['userID1'].dirty && optrForm.hasError('required', 'userID1'))"></i>
 
                     <select class="form-select" formControlName="userID1" name="userID1" id="userID1">
                       <option value>Issue To</option>
                       <ng-container *ngFor="let up of userProfiles">
-                        <option class="text-dark" [value]="up.userID" *ngIf="up.userID !== par.receivedBy">
+                        <option class="text-dark" [value]="up.userID" *ngIf="up.userID !== opr.receivedBy">
                           {{ up.fullName }}
                         </option>
                       </ng-container>
@@ -715,7 +685,7 @@
 
               </div>
 
-              <div class="row" *ngIf="noOfParItems < 1 && isRepar">
+              <div class="row" *ngIf="noOfParItems < 1 && isOPTR">
                 <div class="col">
                   <h6 class="p-3 text-center text-danger">ITEM(s) FULLY
                     REPARED.</h6>
@@ -728,12 +698,12 @@
         </div><!-- END OF MODAL BODY -->
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-warning rounded-pill" *ngIf="!par?.postFlag || false"
-            (click)="onEditREPAR(par)">Edit</button>
+          <button type="button" class="btn btn-warning rounded-pill" *ngIf="!opr?.postFlag || false"
+            (click)="onEditOPTR(opr)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill" *ngIf="isRepar && noOfParItems > 0"
-            (click)="onSubmitREPAR()">Save</button>
+          <button type="button" class="btn btn-primary rounded-pill" *ngIf="isOPTR" && noOfParItems > 0"
+            (click)="onSubmitOPTR()">Save</button>
         </div>
       </form>
     </div>
@@ -1081,7 +1051,7 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-warning rounded-pill" *ngIf="!par?.postFlag && isEditMode"
+        <button type="button" class="btn btn-warning rounded-pill" *ngIf="!opr?.postFlag && isEditMode"
           (click)="onEditItem(item!)">Edit</button>
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
           (click)="closeModal(ViewItemModal)">Close</button>
