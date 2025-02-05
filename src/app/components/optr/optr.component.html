@@ -52,7 +52,7 @@
         <tbody>
           <tr *ngFor="let p of ptrs">
             <td>
-              <a [ngClass]="p.postFlag ? 'primary' : 'secondary'" type="button" (click)="onPostREPAR(p)">
+              <a [ngClass]="p.postFlag ? 'primary' : 'secondary'" type="button" (click)="onPostOPTR(p)">
                 <i class="fa-sharp-duotone fa-solid fa-thumbtack" data-toggle="tooltip"
                   [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
               </a>
@@ -79,6 +79,10 @@
                 <a class="seconadry" type="button" (click)="onPrintOPTR(p.optrNo)">
                   <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
                 </a>
+                <a *ngIf="canCreate  && (p.receivedBy=== userAccount.userID || p.createdBy== userAccount.userID ||
+                  userAccount.userGroupName === 'System Administrator'
+                )" class="primary" type="button" (click)="onTransfer(p)"><i class="fa-solid fa-share-from-square"
+                    data-toggle="tooltip" title="Transfer"></i></a>
                 }
               </form>
             </td>
@@ -141,14 +145,14 @@
                     <div class="accordion-content" [class.show]="isOpen">
 
                       <div class="row d-flex flex-row">
-                        <div class="col">
+                        <div class="col-12 col-lg-6">
                           <small class="text-info">Source of Property</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
                             <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source" readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-6">
                           <small class="text-info">Owner/Source From</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
@@ -158,7 +162,7 @@
                       </div>
 
                       <div class="row d-flex flex-row">
-                        <div class="col">
+                        <div class="col-12 col-lg-6">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
@@ -166,7 +170,7 @@
                               readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-6">
                           <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
@@ -265,7 +269,7 @@
                   -->
 
               <div class="row d-flex flex-row">
-                <div class="col-4">
+                <div class="col-12 col-lg-4">
                   <!-- Transfer type -->
 
                   @if(!(oprForm.controls['type'].invalid &&
@@ -318,7 +322,7 @@
                       formControlName="others" placeholder="Specify" class="form-control">
                   </div>
                 </div>
-                <div class="col-8">
+                <div class="col-12 col-lg-8">
                   <!-- Reason -->
 
                   @if(!(oprForm.controls['reason'].invalid &&
@@ -352,7 +356,7 @@
               <div class="row d-flex flex-row">
 
                 <!-- Issued By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
 
                   <small class="text-info">*
                     Issued By</small>
@@ -368,7 +372,7 @@
                 </div>
 
                 <!-- Received By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
 
                   @if(!(oprForm.controls['userID1'].invalid &&
                   oprForm.hasError('required', 'userID1') &&
@@ -413,7 +417,7 @@
                 </div>
 
                 <!-- Approved By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
                   @if(!(oprForm.controls['userID3'].invalid &&
                   oprForm.hasError('required', 'userID3') &&
                   oprForm.get('userID3')?.touched ||
@@ -476,7 +480,7 @@
   </div>
 </div>
 
-<!-- PAR VIEW -->
+<!-- OPTR VIEW -->
 <div #ViewModalForm class="modal fade" id="ViewModalForm">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content formGroup">
@@ -485,7 +489,7 @@
 
           <div class="d-flex flex-column">
             <h1 class="modal-title fs-5" id="staticBackdropLabel">
-              PTR <em> {{ '#' + currentEditId
+              OPTR <em> {{ '#' + currentEditId
                 }}</em>
             </h1>
             <span><em>Property Transfer Receipt</em></span>
@@ -509,42 +513,50 @@
                     </button>
                     <div class="accordion-content" [class.show]="isOpen">
 
-                      <div class="row">
-                        <div class="col-lg">
-                          <small class="text-info">LGU</small>
+                      <div class="row d-flex flex-row">
+                        <div class="col-12 col-lg-6">
+                          <small class="text-info">Source of Property</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.lgu" class="form-control" placeholder="LGU" readonly>
+                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source" readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <small class="text-info">Owner/Source From</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership" readonly>
                           </div>
                         </div>
                       </div>
 
                       <div class="row d-flex flex-row">
-                        <div class="col">
-                          <small class="text-info">FUND</small>
+                        <div class="col-12 col-lg-4">
+                          <small class="text-info">Transfer</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.fund" class="form-control" placeholder="FUND" readonly>
+                            <input type="text" [value]="(opr?.ttype == 'Others')? opr?.otype : opr?.ttype" class="form-control" placeholder="Item Source" readonly>
                           </div>
                         </div>
-                        <div class="col">
-                          <small class="text-info">PAR No.</small>
+                        <div class="col-12 col-lg-8">
+                          <small class="text-info">Reason for Transfer</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.parNo" class="form-control" placeholder="PAR No." readonly>
+                            <input type="text" [value]="opr?.reason" class="form-control" placeholder="Ownership" readonly>
                           </div>
                         </div>
                       </div>
 
+                      <!-- SIGNATORIES -->
                       <div class="row d-flex flex-row">
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
                             <input type="text" [value]="opr?.issued" class="form-control" placeholder="Issued" readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
@@ -552,7 +564,7 @@
                               readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">APPROVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
@@ -568,7 +580,7 @@
               </div>
 
             </div>
-            <!-- END OF CARD HEADER -->
+            <!-- CARD BODY -->
             <div class="card-body py-0">
               <!-- ITEM TABLE -->
               <div class="row m-0">
@@ -638,7 +650,7 @@
               </div>
               <!-- END OF ITEM TABLE -->
             </div>
-            <!-- END OF CARD BODY -->
+            <!-- CARD FOOTER -->
             <div class="card-footer">
               <div class="row d-flex flex-row" *ngIf="noOfParItems > 0 && isOPTR">
 
@@ -1051,8 +1063,8 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-warning rounded-pill" *ngIf="!opr?.postFlag && isEditMode"
-          (click)="onEditItem(item!)">Edit</button>
+        <!-- <button type="button" class="btn btn-warning rounded-pill" *ngIf="!opr?.postFlag && isEditMode"
+          (click)="onEditItem(item!)">Edit</button> -->
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
           (click)="closeModal(ViewItemModal)">Close</button>
       </div>
@@ -1091,6 +1103,370 @@
         <button type="button" class="btn btn-primary rounded-pill" *ngIf="scannerAction?.isPause"
           (click)="resumeScanning(scannerAction)">Scan Again</button>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- TRANSFER -->
+<div #TransferModalForm class="modal fade" id="TransferModalForm">
+  <div class="modal-dialog modal-dialog-centered  modal-xl">
+    <div class="modal-content formGroup">
+      <form class [formGroup]="oprForm" class="ng-untouched ng-pristine ng-invalid">
+        <div class="modal-header">
+          <div class="d-flex flex-column">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
+              isEditMode
+              ?
+              'Edit RE-OPTR #000' + currentEditId: 'Add New OPTR'}} </h1>
+            <span><em> Property Transfer
+                Receipt</em></span>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="closeModal(AddEditModal)"></button>
+        </div>
+
+        <div class="modal-body p-0 m-0">
+
+          <div class="card m-0">
+            
+            <!-- CARD HEADER -->
+            <div class="card-header py-2">
+
+              <div class="row">
+                <div class="col">
+                  <div class="simple-accordion">
+                    <button class="accordion-header" (click)="toggleAccordion()" [attr.aria-expanded]="isOpen">
+                      INFORMATION
+                      <i class="fa-sharp-duotone fa-solid {{ isOpen? 'fa-caret-up' : 'fa-caret-down' }} "></i>
+                    </button>
+                    <div class="accordion-content" [class.show]="isOpen">
+
+                      <div class="row d-flex flex-row">
+                        <div class="col-12 col-lg-6">
+                          <small class="text-info">Source of Property</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source" readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <small class="text-info">Owner/Source From</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership" readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row d-flex flex-row">
+                        <div class="col-12 col-lg-6">
+                          <small class="text-info">RECEIVED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.received" class="form-control" placeholder="RECEIVED"
+                              readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <small class="text-info">ISSUED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="opr?.issued" class="form-control" placeholder="Issued" readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="card-body py-0">
+
+              <!-- ITEM TABLE -->
+              <div class="row m-0">
+                <div class="col py-0">
+                  <div class="row py-3 bg-primary">
+                    <div class="col">
+                      <h5 class="ms-3 text-light">
+                        List of Item
+                      </h5>
+                    </div>
+                  </div>
+                  <div class="row table-responsive p-0 m-0">
+                    <div class="col p-0 m-0 table-body scrollable ">
+                      <table class="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th class="sticky-header"></th>
+                            <th class="sticky-header">#</th>
+                            <th class="sticky-header">QTY</th>
+                            <th class="sticky-header">UNIT</th>
+                            <th class="sticky-header">DESCRIPTION</th>
+                            <th class="sticky-header">DATE ACQUIRED</th>
+                            <th class="sticky-header">PROPERTY NUMBER</th>
+                            <th class="sticky-header">AMOUNT</th>
+                            <th class="sticky-header">ACTION</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngIf="oprItems.length<1">
+                            <td colspan="8" class="text-danger text-center">*
+                              Item
+                              list required! Add at least one!</td>
+                          </tr>
+                          <tr *ngFor="let p of oprItems; let i = index">
+                            <td>
+                              <a class="success" type="button" (click)="onViewItem(p)">
+                                <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
+                              </a>
+                            </td>
+                            <td>{{i+1}}</td>
+                            <td>1</td>
+                            <td>{{p.unit}}</td>
+                            <td>{{p.description}}</td>
+                            <td>{{formatDate(p.date_Acquired)}}</td>
+                            <td>{{p.propertyNo}}</td>
+                            <td>{{ (p.amount || 0).toLocaleString('en-US', {
+                              minimumFractionDigits: 2, maximumFractionDigits: 2
+                              }) }}</td>
+                            <td>
+                              <form class="d-flex justify-content-end">
+                                <a class="delete" type="button" (click)="onDeleteItem(p)"><i
+                                    class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip"
+                                    title="Delete"></i></a>
+                              </form>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- END OF ITEM TABLE -->
+            </div>
+            <div class="card-footer py-2">
+              <!--
+              <a
+                class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+                type="button"
+                (click)="onAddPARItem()">
+                <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                  class="fs-6">NEW</span></a>
+                  -->
+
+              <div class="row d-flex flex-row">
+                <div class="col-12 col-lg-4">
+                  <!-- Transfer type -->
+
+                  @if(!(oprForm.controls['type'].invalid &&
+                  oprForm.hasError('required', 'type') &&
+                  oprForm.get('type')?.touched ||
+                  (oprForm.controls['type'].dirty &&
+                  oprForm.hasError('required', 'type')))){
+                  <small class="text-info">* Transfer Type</small>
+                  }@else{
+                  <small class="text-danger"
+                    *ngIf="oprForm.controls['type'].invalid &&
+                    oprForm.hasError('required', 'type') &&
+                    oprForm.get('type')?.touched ||
+                    (oprForm.controls['type'].dirty &&
+                    oprForm.hasError('required', 'type')) ||
+                    (isCustomType && ((oprForm.controls['type'].invalid &&
+                  oprForm.hasError('required', 'type') &&
+                  oprForm.get('type')?.touched) || (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))))">*
+                    Transfer Type is required</small>
+                  }
+
+                  <!-- Other Transfer type -->
+
+                  <small class="text-danger"
+                    *ngIf="isCustomType && oprForm.controls['others'].invalid && oprForm.get('others')?.touched">
+                    Specify 'Others' is required.
+                  </small>
+
+                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['type'].invalid && oprForm.hasError('required', 'type')  && oprForm.get('type')?.touched ||
+                    (oprForm.controls['type'].dirty && oprForm.hasError('required', 'type')) ||
+                    (isCustomType && oprForm.controls['others'].invalid && oprForm.hasError('required', 'others')  && oprForm.get('others')?.touched ||
+                  (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))) ||
+                    (isCustomType && oprForm.get('others')?.invalid && oprForm.get('others')?.touched)">
+
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="oprForm.controls['type'].invalid && oprForm.hasError('required', 'type')  && oprForm.get('type')?.touched ||
+                      (oprForm.controls['type'].dirty && oprForm.hasError('required', 'type')) ||
+                      (isCustomType && oprForm.controls['others'].invalid && oprForm.hasError('required', 'others')  && oprForm.get('others')?.touched ||
+                    (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))) ||
+                      (isCustomType && oprForm.get('others')?.invalid && oprForm.get('others')?.touched)">
+                    </i>
+
+                    <select formControlName="type" name="type" id="type" class="form-select"
+                      (change)="onTypeChange($event)">
+                      <option value>Transfer Type</option>
+                      <option *ngFor="let option of typeOptions" [value]="option">{{option}}</option>
+                      <option value="Others">Others</option>
+                    </select>
+
+                    <input *ngIf="isCustomType" type="text" id="others" #othersInput value="N/A"
+                      formControlName="others" placeholder="Specify" class="form-control">
+                  </div>
+                </div>
+                <div class="col-12 col-lg-8">
+                  <!-- Reason -->
+
+                  @if(!(oprForm.controls['reason'].invalid &&
+                  oprForm.hasError('required', 'reason') &&
+                  oprForm.get('reason')?.touched ||
+                  (oprForm.controls['reason'].dirty &&
+                  oprForm.hasError('required', 'reason')))){
+                  <small class="text-info">* Reason for Transfer</small>
+                  }@else{
+                  <small class="text-danger" *ngIf="oprForm.controls['reason'].invalid &&
+                oprForm.hasError('required', 'reason') &&
+                oprForm.get('reason')?.touched ||
+                (oprForm.controls['reason'].dirty &&
+                oprForm.hasError('required', 'reason'))">*
+                    Reason for Transfer is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['reason'].invalid &&
+                  oprForm.hasError('required', 'reason') && oprForm.get('reason')?.touched ||
+                  (oprForm.controls['reason'].dirty && oprForm.hasError('required', 'reason'))">
+
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="oprForm.controls['reason'].invalid &&
+                    oprForm.hasError('required', 'reason') && oprForm.get('reason')?.touched ||
+                    (oprForm.controls['reason'].dirty && oprForm.hasError('required', 'reason'))"></i>
+
+                    <textarea formControlName="reason" name="reason" id="reason" placeholder="Reason/s for Transfer"
+                      rows="1" cols="50"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row d-flex flex-row">
+
+                <!-- Issued By -->
+                <div class="col-12 col-lg-4">
+
+                  <small class="text-info">*
+                    Issued By</small>
+
+                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['userID2'].invalid && oprForm.hasError('required', 'userID2')  && oprForm.get('userID2')?.touched ||
+                    (oprForm.controls['userID2'].dirty && oprForm.hasError('required', 'userID2'))">
+
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID2" name="userID2"
+                      placeholder="Issued By" role="textbox" readonly>
+
+                  </div>
+
+                </div>
+
+                <!-- Received By -->
+                <div class="col-12 col-lg-4">
+
+                  @if(!(oprForm.controls['userID1'].invalid &&
+                  oprForm.hasError('required', 'userID1') &&
+                  oprForm.get('userID1')?.touched ||
+                  (oprForm.controls['userID1'].dirty &&
+                  oprForm.hasError('required', 'userID1')))){
+                  <small class="text-info">*
+                    Received By</small>
+                  }@else {
+                  <small class="text-danger" *ngIf="oprForm.controls['userID1'].invalid &&
+                    oprForm.hasError('required', 'userID1') &&
+                    oprForm.get('userID1')?.touched ||
+                    (oprForm.controls['userID1'].dirty &&
+                    oprForm.hasError('required', 'userID1'))">* Received By is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1')  && oprForm.get('userID1')?.touched ||
+                  (oprForm.controls['userID1'].dirty && oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null)">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1') &&
+                    oprForm.get('userID1')?.touched || (oprForm.controls['userID1'].dirty &&
+                    oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1') &&  oprForm.get('userID1')?.touched ||
+                    (oprForm.controls['userID1'].dirty && oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null)"></i>
+
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
+                      [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggestReceived()"
+                      role="textbox">
+                  </div>
+
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0 && activeInput === 'received'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectReceived(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Approved By -->
+                <div class="col-12 col-lg-4">
+                  @if(!(oprForm.controls['userID3'].invalid &&
+                  oprForm.hasError('required', 'userID3') &&
+                  oprForm.get('userID3')?.touched ||
+                  (oprForm.controls['userID3'].dirty &&
+                  oprForm.hasError('required', 'userID3')))){
+                  <small class="text-info">*
+                    Approved By</small>
+                  }@else {
+                  <small class="text-danger" *ngIf="oprForm.controls['userID3'].invalid &&
+                        oprForm.hasError('required', 'userID3') &&
+                        oprForm.get('userID3')?.touched ||
+                        (oprForm.controls['userID3'].dirty &&
+                        oprForm.hasError('required', 'userID3'))">* Approved By
+                    is required *</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3')  && oprForm.get('userID3')?.touched ||
+                    (oprForm.controls['userID3'].dirty && oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null)">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3') &&
+                      oprForm.get('userID3')?.touched || (oprForm.controls['userID3'].dirty &&
+                      oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3') &&  oprForm.get('userID3')?.touched ||
+                      (oprForm.controls['userID3'].dirty && oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null)"></i>
+
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID3" name="userID3"
+                      [(ngModel)]="approvedByID" placeholder="Approve By" (keyup)="onAutoSuggestApproved()"
+                      role="textbox">
+
+                  </div>
+
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0 && activeInput === 'approved'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectApproved(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal"
+            (click)="closeModal(AddEditModal)">Close</button>
+          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
+            class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save'
+            }}</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

@@ -161,7 +161,7 @@
                 </div>
               </div>
               <div class="row d-flex flex-row">
-                <div class="col">
+                <div class="col-12 col-lg-6">
                   @if(!(parForm.controls['fund'].invalid &&
                   parForm.hasError('required', 'fund') &&
                   parForm.get('fund')?.touched ||
@@ -184,7 +184,7 @@
                     <input type="text" formControlName="fund" name="fund" id="fund" placeholder="FUND" readonly>
                   </div>
                 </div>
-                <div class="col">
+                <div class="col-12 col-lg-6">
 
                   @if(!(parForm.controls['parNo'].invalid &&
                   parForm.hasError('required', 'parNo') &&
@@ -295,7 +295,7 @@
                   -->
 
               <div class="row d-flex flex-row">
-                <div class="col-4">
+                <div class="col-12 col-lg-4">
                   <!-- Transfer type -->
 
                   @if(!(parForm.controls['type'].invalid &&
@@ -348,7 +348,7 @@
                       formControlName="others" placeholder="Specify" class="form-control">
                   </div>
                 </div>
-                <div class="col-8">
+                <div class="col-12 col-lg-8">
                   <!-- Reason -->
 
                   @if(!(parForm.controls['reason'].invalid &&
@@ -382,7 +382,7 @@
               <div class="row d-flex flex-row">
 
                 <!-- Issued By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
 
                   <small class="text-info">*
                     Issued By</small>
@@ -398,7 +398,7 @@
                 </div>
 
                 <!-- Received By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
 
                   @if(!(parForm.controls['userID1'].invalid &&
                   parForm.hasError('required', 'userID1') &&
@@ -443,7 +443,7 @@
                 </div>
 
                 <!-- Approved By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
                   @if(!(parForm.controls['userID3'].invalid &&
                   parForm.hasError('required', 'userID3') &&
                   parForm.get('userID3')?.touched ||
@@ -538,7 +538,7 @@
                       <i class="fa-sharp-duotone fa-solid {{ isOpen? 'fa-caret-up' : 'fa-caret-down' }} "></i>
                     </button>
                     <div class="accordion-content" [class.show]="isOpen">
-
+                      <!-- LGU -->
                       <div class="row">
                         <div class="col-lg">
                           <small class="text-info">LGU</small>
@@ -548,16 +548,16 @@
                           </div>
                         </div>
                       </div>
-
+                      <!-- FUND & PAR NO -->
                       <div class="row d-flex flex-row">
-                        <div class="col">
+                        <div class="col-12 col-lg-6">
                           <small class="text-info">FUND</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
                             <input type="text" [value]="par?.fund" class="form-control" placeholder="FUND" readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-6">
                           <small class="text-info">PAR No.</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
@@ -566,15 +566,41 @@
                         </div>
                       </div>
 
+                      <!-- Transfer type && Reason -->
                       <div class="row d-flex flex-row">
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
+                          <!-- Transfer type -->
+                          <small class="text-info">Transfer Type</small>
+
+                          <div class="form-field d-flex align-items-center">
+
+                            <input type="text" [value]="par?.ttype" name="type" id="type" class="form-control"
+                              placeholder="Transfer type" readonly>
+
+                            <input type="text" *ngIf="par?.ttype == 'Others'" [value]="par?.otype" name="type" id="type"
+                              class="form-control" placeholder="Others" readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-8">
+                          <!-- Reason -->
+                          <small class="text-info">Reason for Transfer</small>
+                          <div class="form-field d-flex align-items-center">
+
+                            <textarea formControlName="reason" name="reason" id="reason" [value]="par?.reason"
+                              placeholder="Reason/s for Transfer" rows="1" cols="50" readonly></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- SIGNATORIES -->
+                      <div class="row d-flex flex-row">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
                             <input type="text" [value]="par?.issued" class="form-control" placeholder="Issued" readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
@@ -582,7 +608,7 @@
                               readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">APPROVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
@@ -598,7 +624,7 @@
               </div>
 
             </div>
-            <!-- END OF CARD HEADER -->
+            <!-- CARD BODY -->
             <div class="card-body py-0">
               <!-- ITEM TABLE -->
               <div class="row m-0">
@@ -668,7 +694,7 @@
               </div>
               <!-- END OF ITEM TABLE -->
             </div>
-            <!-- END OF CARD BODY -->
+            <!-- CARD FOOTER -->
             <div class="card-footer">
               <div class="row d-flex flex-row" *ngIf="noOfParItems > 0 && isRepar">
 
@@ -1080,8 +1106,8 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-warning rounded-pill" *ngIf="!par?.postFlag && isEditMode"
-          (click)="onEditItem(item!)">Edit</button>
+        <!-- <button type="button" class="btn btn-warning rounded-pill" *ngIf="!par?.postFlag && isEditMode"
+          (click)="onEditItem(item!)">Edit</button> -->
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
           (click)="closeModal(ViewItemModal)">Close</button>
       </div>

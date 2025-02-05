@@ -79,6 +79,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   fullname: string = "Account";
 
   pageTitle: string = "Dashboard";
+  pageDesc: string = "";
   curYear: number = new Date().getFullYear();
   header: boolean | null = false;
   windowWidth: number = 0;
@@ -176,43 +177,43 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   setTitle(pageTitle: string) {
-    let desc = ''
+
     switch (pageTitle) {
       case 'PAR':
-        desc = '(PROPERTY ACKNOWLEDGMENT RECEIPT)';
+        this.pageDesc = '(Property Acknowledgment Receipt)';
         break;
       case 'ICS':
-        desc = '(INVENTORY CUSTODIAN SLIP)';
+        this.pageDesc = '(Inventory Custodian Slip)';
         break;
       case 'OPR':
-        desc = '(OTHER PROPERTY RECEIPT)';
+        this.pageDesc = '(Other Property Receipt)';
         break;
       case 'PTR':
-        desc = '(PROPERTY TRANSFER RECEIPT)';
+        this.pageDesc = '(Property Transfer Receipt)';
         break;
       case 'ITR':
-        desc = '(INVENTORY TRANSFER REPORT)';
+        this.pageDesc = '(Inventory Transfer Report)';
         break;
       case 'OPTR':
-        desc = '(OTHER PROPERTY TRANSFER REPORT)';
+        this.pageDesc = '(Other Property Transfer Report)';
         break;
       case 'PRS':
-        desc = '(PROPERTY RETURN SLIP)';
+        this.pageDesc = '(Property Return Slip)';
         break;
       case 'RRSEP':
-        desc = '(RECEIPT RETURN SEMI-EXPANDABLE PROPERTY)';
+        this.pageDesc = '(Receipt Return Semi-Expandable Property)';
         break;
       case 'OPRR':
-        desc = '(OTHER PROPERTY RETURN REPORT)';
+        this.pageDesc = '(Other Property Return Report)';
         break;
       default:
-        desc = ''; // Optional fallback
+        this.pageDesc = ''; // Optional fallback
     }
 
     this.pageTitle = pageTitle
 
 
-    this.titleService.setTitle(`${this.ac.appName}  -  ${pageTitle } ${desc} `);
+    this.titleService.setTitle(`${this.ac.appName}  -  ${pageTitle} ${this.pageDesc} `);
   }
 
   getPageTitle() {

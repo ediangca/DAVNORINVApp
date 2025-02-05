@@ -1329,10 +1329,10 @@ export class ApiService {
 
   // https://localhost:7289/api/REPAR/Post?id=PAR012312412-0001&postVal=true
   //Update Post Flag
-  postOPTR(reparNo: string, postVal: boolean): Observable<any> {
-    console.log("Update REPAR No. >>> : ", reparNo);
+  postOPTR(optr: string, postVal: boolean): Observable<any> {
+    console.log("Update OPTR No. >>> : ", optr);
     console.log("Update Post flag >>> : ", postVal);
-    return this.http.put<any>(`${this.apiUrl}REPAR/Post?id=${reparNo}`, postVal)
+    return this.http.put<any>(`${this.apiUrl}OPTR/Post?id=${optr}`, postVal)
       .pipe(
         catchError(this.handleError)
       );

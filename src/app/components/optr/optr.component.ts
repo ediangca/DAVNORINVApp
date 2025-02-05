@@ -31,6 +31,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
   @ViewChild('ViewModalForm') ViewModal!: ElementRef;
   @ViewChild('ItemModalForm') ItemModal!: ElementRef;
   @ViewChild('ViewItemModalForm') ViewItemModal!: ElementRef;
+  
+  @ViewChild('TransferModalForm') TransferModalForm!: ElementRef;
   @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
 
   roleNoFromToken: string = "Role";
@@ -81,7 +83,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
   oprINo: number | null = null;
   propertyNo: string | null = null;
 
-  typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
+  typeOptions: string[] = ['Borrow', 'Donation', 'Reassignment', 'Relocation'];
   isCustomType = false;
 
   isOPTR: boolean = false;
@@ -110,6 +112,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
   canDelete: boolean = false;
   canPost: boolean = false;
   canUnpost: boolean = false;
+
+  canOPTR: boolean = false;
 
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   fn: string = 'start';
@@ -194,6 +198,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.canDelete = this.store.isAllowedAction('OPTR', 'delete');
     this.canPost = this.store.isAllowedAction('OPTR', 'post');
     this.canUnpost = this.store.isAllowedAction('OPTR', 'unpost');
+
   }
 
   setupModalClose() {
@@ -216,6 +221,13 @@ export class OptrComponent implements OnInit, AfterViewInit {
     const modal = document.getElementById(modalId);
     modal?.addEventListener('hidden.bs.modal', () =>
       parModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
+  }
+
+  openModal(modalElement: ElementRef) {
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement.nativeElement);
+      modal.show();
+    }
   }
 
   openPARModal(modalElement: ElementRef) {
@@ -589,7 +601,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
       if (this.isEditMode) {
         this.Update(this.optr)
       }
-    
+
     }
 
   }
@@ -630,24 +642,24 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   }
 
-  onPostREPAR(ptr: any) {
+  onPostOPTR(optr: any) {
 
-    if (!ptr.postFlag && !this.canPost) {
+    if (!optr.postFlag && !this.canPost) {
       Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
       return;
     }
 
-    if (ptr.postFlag && !this.canUnpost) {
+    if (optr.postFlag && !this.canUnpost) {
       Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
       return
     }
 
-    if ((this.roleNoFromToken != 'System Administrator' && !ptr.postFlag) || this.roleNoFromToken == 'System Administrator' || (ptr.postFlag && this.canUnpost) || (!ptr.postFlag && this.canPost)) {
-      let reparNo = ptr.reparNo;
+    if ((this.roleNoFromToken != 'System Administrator' && !optr.postFlag) || this.roleNoFromToken == 'System Administrator' || (optr.postFlag && this.canUnpost) || (!optr.postFlag && this.canPost)) {
+      let optrNo = optr.optrNo;
 
       Swal.fire({
         title: 'Are you sure?',
-        text: (ptr.postFlag ? 'Unpost' : 'Post') + ` PTR #${reparNo}`,
+        text: (optr.postFlag ? 'Unpost' : 'Post') + ` OPTR #000${optrNo}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -655,7 +667,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
       }).then((result) => {
         if (result.isConfirmed) {
 
-          this.api.postREPAR(reparNo, !ptr.postFlag)
+          this.api.postOPTR(optrNo, !optr.postFlag)
             .subscribe({
               next: (res) => {
                 this.getAllOPTR();
@@ -663,7 +675,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
                 Swal.fire('Success', res.message, 'success');
               },
               error: (err: any) => {
-                this.logger.printLogs('e', 'Error', ['Retrieving PTR Item!']);
+                this.logger.printLogs('e', 'Error', ['Retrieving OPTR Item!']);
                 Swal.fire('Warning', err, 'warning');
               }
             });
@@ -700,9 +712,6 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.logger.printLogs('i', 'Restoring OPR', opr);
 
     this.oprForm.patchValue({
-      lgu: opr.lgu,
-      fund: opr.fund,
-      parNo: opr.parNo,
       type: opr.ttype,
       others: opr.otype,
       reason: opr.reason,
@@ -711,7 +720,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
       userID3: opr.approved,
     });
 
-    this.api.retrieveOPTR(this.currentEditId!+"")
+    this.api.retrieveOPTR(this.currentEditId! + "")
       .subscribe({
         next: (res) => {
           this.optr = res.details;
@@ -740,21 +749,22 @@ export class OptrComponent implements OnInit, AfterViewInit {
     }
 
     this.oprForm.patchValue({
-      lgu: opr.lgu,
-      fund: opr.fund,
-      parNo: opr.parNo,
+      type: opr.ttype,
+      others: opr.otype,
+      reason: opr.reason,
       userID1: opr.receivedBy, // These will now be patched correctly
       userID2: opr.issuedBy,
       userID3: opr.approvedBy
     });
 
-    this.api.retrieveOPTR(this.currentEditId!+"")
+
+    this.api.retrieveOPTR(this.currentEditId! + "")
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving OPTR Item', res);
-          this.opr = res.details;
-          this.oprItems = res.oprItems;
-          this.optr = this.oprItems;
+          this.optr = res.details;
+          this.logger.printLogs('i', 'Retrieving OPTR', this.optr);
+          this.oprItems = res.parItems;
+          this.logger.printLogs('i', 'Retrieving OPTR Item', this.oprItems);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving OPTR Item', err);
@@ -798,6 +808,18 @@ export class OptrComponent implements OnInit, AfterViewInit {
       });
 
     this.openPARModal(this.ViewModal); // Open the modal after patching
+
+  }
+
+
+
+  onTransfer(opr: any) {
+    if (!opr.postFlag) {
+      Swal.fire('Information!', 'Cannot Re-Transfer unposted OTPR.', 'warning');
+      return;
+    }
+
+    this.openModal(this.TransferModalForm); // Open the modal after patching
 
   }
 
@@ -1344,7 +1366,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
     scannerAction.isLoading = false;
 
   }
-  
+
   onSourceTypeChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.isCustomType = selectedValue === 'Others';
@@ -1408,13 +1430,13 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
           <div class="row">
             <div class="col-12">
-              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${optr.lgu || 'Default LGU'}</span></p>
+              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${optr.itemSource || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${optr.fund || 'Default LGU'}</span></p>
+              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${optr.ownership || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6 text-end">PTR No.: <span class="fw-bold border-bottom ms-1">${optr.reparNo || 'Default PTR No.'}</span></p>
+              <p class="fs-6 text-end">OPTR No.: <span class="fw-bold border-bottom ms-1">${optr.optrNo || 'Default OPTR No.'}</span></p>
             </div>
             <div class="col-6">
               <p class="fs-6">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">

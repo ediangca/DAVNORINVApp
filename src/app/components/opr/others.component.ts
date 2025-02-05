@@ -83,7 +83,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
   propertyNo: string | null = null;
 
   typeOptions: string[] = ['Personal', 'Donation', 'Tie-up'];
-  transferOptions: string[] = ['Borrow', 'Reassignment', 'Relocation'];
+  transferOptions: string[] = ['Borrow', 'Donation', 'Reassignment', 'Relocation'];
   isCustomType = false;
 
   isOPTR: boolean = false;
@@ -118,7 +118,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
   canPost: boolean = false;
   canUnpost: boolean = false;
 
-  canPTR: boolean = false;
+  canOPTR: boolean = false;
 
   // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#front_and_back_camera
   public config: ScannerQRCodeConfig = {
@@ -219,7 +219,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.canPost = this.store.isAllowedAction('OPR', 'post');
     this.canUnpost = this.store.isAllowedAction('OPR', 'unpost');
 
-    this.canPTR = this.store.isAllowedAction('PTR', 'create');
+    this.canOPTR = this.store.isAllowedAction('OPTR', 'create');
   }
 
   private initializeTooltips() {

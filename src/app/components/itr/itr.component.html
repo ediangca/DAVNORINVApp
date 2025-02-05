@@ -163,7 +163,7 @@
                 </div>
               </div>
               <div class="row d-flex flex-row">
-                <div class="col">
+                <div class="col-12 col-lg-6">
                   <!-- @if(!(icsForm.controls['fund'].invalid &&
                   icsForm.hasError('required', 'fund') &&
                   icsForm.get('fund')?.touched ||
@@ -189,7 +189,7 @@
                     <input type="text" formControlName="fund" name="fund" id="fund" placeholder="FUND" readonly>
                   </div>
                 </div>
-                <div class="col">
+                <div class="col-12 col-lg-6">
                   <!--
                   @if(!(icsForm.controls['icsNo'].invalid &&
                   icsForm.hasError('required', 'icsNo') &&
@@ -291,6 +291,7 @@
               <!-- END OF ITEM TABLE -->
             </div>
             <div class="card-footer py-2">
+              <!-- ADD ITEM
               <div class="row">
                 <div class="col">
                   <a class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
@@ -298,9 +299,10 @@
                     <i class="fa-sharp-duotone fa-solid fa-plus"></i>&nbsp;
                     <span class="fs-6">ADD</span></a>
                 </div>
-              </div>
+              </div> 
+              -->
               <div class="row d-flex flex-row">
-                <div class="col-4">
+                <div class="col-12 col-lg-4">
                   <!-- Transfer type -->
 
                   @if(!(icsForm.controls['type'].invalid &&
@@ -353,7 +355,7 @@
                       formControlName="others" placeholder="Specify" class="form-control">
                   </div>
                 </div>
-                <div class="col-8">
+                <div class="col-12 col-lg-8">
                   <!-- Reason -->
 
                   @if(!(icsForm.controls['reason'].invalid &&
@@ -386,7 +388,7 @@
               <div class="row d-flex flex-row">
 
                 <!-- Issued By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
 
                   <small class="text-info">*
                     Issued By</small>
@@ -402,7 +404,7 @@
                 </div>
 
                 <!-- Received By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
 
                   @if(!(icsForm.controls['userID1'].invalid &&
                   icsForm.hasError('required', 'userID1') &&
@@ -447,7 +449,7 @@
                 </div>
 
                 <!-- Approved By -->
-                <div class="col">
+                <div class="col-12 col-lg-4">
                   @if(!(icsForm.controls['userID3'].invalid &&
                   icsForm.hasError('required', 'userID3') &&
                   icsForm.get('userID3')?.touched ||
@@ -554,13 +556,13 @@
                       </div>
 
                       <div class="row d-flex flex-row">
-                        <div class="col">
+                        <div class="col-12 col-lg-6">
                           <small class="text-info">FUND</small>
                           <div class="form-field d-flex align-items-center">
                             <input type="text" [value]="itr?.fund" class="form-control" placeholder="FUND" readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-6">
                           <small class="text-info">ICS No.</small>
                           <div class="form-field d-flex align-items-center">
                             <input type="text" [value]="itr?.icsNo" class="form-control" placeholder="PAR No." readonly>
@@ -570,7 +572,7 @@
 
                       <!-- Transfer type && Reason -->
                       <div class="row d-flex flex-row">
-                        <div class="col-4">
+                        <div class="col-12 col-lg-4">
                           <!-- Transfer type -->
                           <small class="text-info">Transfer Type</small>
 
@@ -583,32 +585,32 @@
                               class="form-control" placeholder="Others" readonly>
                           </div>
                         </div>
-                        <div class="col-8">
+                        <div class="col-12 col-lg-8">
                           <!-- Reason -->
                           <small class="text-info">Reason for Transfer</small>
                           <div class="form-field d-flex align-items-center">
 
                             <textarea formControlName="reason" name="reason" id="reason" [value]="itr?.reason"
-                              placeholder="Reason/s for Transfer" rows="1" cols="50"></textarea>
+                              placeholder="Reason/s for Transfer" rows="1" cols="50" readonly></textarea>
                           </div>
                         </div>
                       </div>
 
                       <div class="row d-flex flex-row">
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <input type="text" [value]="itr?.issued" class="form-control" placeholder="Issued" readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <input type="text" [value]="itr?.received" class="form-control" placeholder="RECEIVED"
                               readonly>
                           </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">APPROVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <input type="text" [value]="itr?.approved" class="form-control" placeholder="APPROVED"

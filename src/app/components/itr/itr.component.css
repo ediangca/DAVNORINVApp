@@ -294,7 +294,8 @@ table tbody tr:nth-child(even) {
 /* Accordion content */
 .accordion-content {
   max-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   transition: max-height 0.5s ease;
   background-color: #fff;
   padding: 0 15px;
@@ -302,7 +303,8 @@ table tbody tr:nth-child(even) {
 
 /* Show content when open */
 .accordion-content.show {
-  max-height: 280px;
+  max-height: 400px;
   /* Set a reasonable max-height or adjust as needed */
   padding: 15px;
 }
+

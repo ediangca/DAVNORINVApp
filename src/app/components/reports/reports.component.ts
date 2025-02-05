@@ -223,7 +223,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
           if (list.some((item: any) => item.parNo) && this.file == 'PAR') {
             refHeader = "PAR NO.";
-          } else if (list.some((item: any) => item.reparNo) && this.file == 'PTR') {
+          } else if (list.some((item: any) => item.reparNo) && this.file == 'PTR') { 
             refHeader = "PTR NO.";
           } else if (list.some((item: any) => item.prsNo) && this.file == 'PRS') {
             refHeader = "PRS NO.";
@@ -232,7 +232,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
           } else if (list.some((item: any) => item.itrNo) && this.file == 'ITR') {
             refHeader = "ITR NO.";
           } else if (list.some((item: any) => item.rrsepNo) && this.file == 'RRSEP') {
-            refHeader = "RRSEP NO.";
+            refHeader = "RRSEP NO.";  
           }
           const rows = list.map((item: any, index: number) => {
             // Determine the first non-null/no empty value among the possible identifiers
