@@ -50,7 +50,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of ptrs">
+          <tr *ngFor="let p of optrs">
             <td>
               <a [ngClass]="p.postFlag ? 'primary' : 'secondary'" type="button" (click)="onPostOPTR(p)">
                 <i class="fa-sharp-duotone fa-solid fa-thumbtack" data-toggle="tooltip"
@@ -91,7 +91,7 @@
       </table>
 
       <div class="clearfix" *ngIf="!isLoading">
-        <div class="hint-text">Showing <b>{{ptrs.length}}</b> out of
+        <div class="hint-text">Showing <b>{{optrs.length}}</b> out of
           <b>{{totalItems}}</b> entries
         </div>
         <!-- <ul class="pagination">
@@ -322,9 +322,8 @@
                       formControlName="others" placeholder="Specify" class="form-control">
                   </div>
                 </div>
+                <!-- Reason -->
                 <div class="col-12 col-lg-8">
-                  <!-- Reason -->
-
                   @if(!(oprForm.controls['reason'].invalid &&
                   oprForm.hasError('required', 'reason') &&
                   oprForm.get('reason')?.touched ||
@@ -714,8 +713,6 @@
             (click)="onEditOPTR(opr)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill" *ngIf="isOPTR" && noOfParItems > 0"
-            (click)="onSubmitOPTR()">Save</button>
         </div>
       </form>
     </div>
@@ -1112,15 +1109,12 @@
 <div #TransferModalForm class="modal fade" id="TransferModalForm">
   <div class="modal-dialog modal-dialog-centered  modal-xl">
     <div class="modal-content formGroup">
-      <form class [formGroup]="oprForm" class="ng-untouched ng-pristine ng-invalid">
+      <form class [formGroup]="optrForm" class="ng-untouched ng-pristine ng-invalid">
         <div class="modal-header">
           <div class="d-flex flex-column">
-            <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
-              isEditMode
-              ?
-              'Edit RE-OPTR #000' + currentEditId: 'Add New OPTR'}} </h1>
-            <span><em> Property Transfer
-                Receipt</em></span>
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">{{'RE-OPTR #000' + currentEditId}} </h1>
+            <span><em> Other Property Transfer
+                Report</em></span>
           </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
             (click)="closeModal(AddEditModal)"></button>
@@ -1147,32 +1141,39 @@
                           <small class="text-info">Source of Property</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source" readonly>
+                            <input type="text" [value]="optr?.itemSource" class="form-control" placeholder="Item Source" readonly>
                           </div>
                         </div>
                         <div class="col-12 col-lg-6">
                           <small class="text-info">Owner/Source From</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership" readonly>
+                            <input type="text" [value]="optr?.ownership" class="form-control" placeholder="Ownership" readonly>
                           </div>
                         </div>
                       </div>
 
                       <div class="row d-flex flex-row">
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.received" class="form-control" placeholder="RECEIVED"
+                            <input type="text" [value]="optr?.received" class="form-control" placeholder="RECEIVED"
                               readonly>
                           </div>
                         </div>
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.issued" class="form-control" placeholder="Issued" readonly>
+                            <input type="text" [value]="optr?.issued" class="form-control" placeholder="Issued" readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                          <small class="text-info">APPROVED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="optr?.approved" class="form-control" placeholder="Approved" readonly>
                           </div>
                         </div>
                       </div>
@@ -1184,7 +1185,6 @@
 
             </div>
             <div class="card-body py-0">
-
               <!-- ITEM TABLE -->
               <div class="row m-0">
                 <div class="col py-0">
@@ -1208,7 +1208,7 @@
                             <th class="sticky-header">DATE ACQUIRED</th>
                             <th class="sticky-header">PROPERTY NUMBER</th>
                             <th class="sticky-header">AMOUNT</th>
-                            <th class="sticky-header">ACTION</th>
+                            <th class="sticky-header" *ngIf="oprItems.length>1">ACTION</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1234,7 +1234,7 @@
                               }) }}</td>
                             <td>
                               <form class="d-flex justify-content-end">
-                                <a class="delete" type="button" (click)="onDeleteItem(p)"><i
+                                <a *ngIf="oprItems.length>1" class="delete" type="button" (click)="onDeleteItem(p)"><i
                                     class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip"
                                     title="Delete"></i></a>
                               </form>
@@ -1260,46 +1260,46 @@
                   -->
 
               <div class="row d-flex flex-row">
+                <!-- Transfer type -->
                 <div class="col-12 col-lg-4">
-                  <!-- Transfer type -->
 
-                  @if(!(oprForm.controls['type'].invalid &&
-                  oprForm.hasError('required', 'type') &&
-                  oprForm.get('type')?.touched ||
-                  (oprForm.controls['type'].dirty &&
-                  oprForm.hasError('required', 'type')))){
+                  @if(!(optrForm.controls['type'].invalid &&
+                  optrForm.hasError('required', 'type') &&
+                  optrForm.get('type')?.touched ||
+                  (optrForm.controls['type'].dirty &&
+                  optrForm.hasError('required', 'type')))){
                   <small class="text-info">* Transfer Type</small>
                   }@else{
                   <small class="text-danger"
-                    *ngIf="oprForm.controls['type'].invalid &&
-                    oprForm.hasError('required', 'type') &&
-                    oprForm.get('type')?.touched ||
-                    (oprForm.controls['type'].dirty &&
-                    oprForm.hasError('required', 'type')) ||
-                    (isCustomType && ((oprForm.controls['type'].invalid &&
-                  oprForm.hasError('required', 'type') &&
-                  oprForm.get('type')?.touched) || (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))))">*
+                    *ngIf="optrForm.controls['type'].invalid &&
+                    optrForm.hasError('required', 'type') &&
+                    optrForm.get('type')?.touched ||
+                    (optrForm.controls['type'].dirty &&
+                    optrForm.hasError('required', 'type')) ||
+                    (isCustomType && ((optrForm.controls['type'].invalid &&
+                  optrForm.hasError('required', 'type') &&
+                  optrForm.get('type')?.touched) || (optrForm.controls['others'].dirty && optrForm.hasError('required', 'others'))))">*
                     Transfer Type is required</small>
                   }
 
                   <!-- Other Transfer type -->
 
                   <small class="text-danger"
-                    *ngIf="isCustomType && oprForm.controls['others'].invalid && oprForm.get('others')?.touched">
+                    *ngIf="isCustomType && optrForm.controls['others'].invalid && optrForm.get('others')?.touched">
                     Specify 'Others' is required.
                   </small>
 
-                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['type'].invalid && oprForm.hasError('required', 'type')  && oprForm.get('type')?.touched ||
-                    (oprForm.controls['type'].dirty && oprForm.hasError('required', 'type')) ||
-                    (isCustomType && oprForm.controls['others'].invalid && oprForm.hasError('required', 'others')  && oprForm.get('others')?.touched ||
-                  (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))) ||
-                    (isCustomType && oprForm.get('others')?.invalid && oprForm.get('others')?.touched)">
+                  <div class="form-field d-flex align-items-center" [class.error]="optrForm.controls['type'].invalid && optrForm.hasError('required', 'type')  && optrForm.get('type')?.touched ||
+                    (optrForm.controls['type'].dirty && optrForm.hasError('required', 'type')) ||
+                    (isCustomType && optrForm.controls['others'].invalid && optrForm.hasError('required', 'others')  && optrForm.get('others')?.touched ||
+                  (optrForm.controls['others'].dirty && optrForm.hasError('required', 'others'))) ||
+                    (isCustomType && optrForm.get('others')?.invalid && optrForm.get('others')?.touched)">
 
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="oprForm.controls['type'].invalid && oprForm.hasError('required', 'type')  && oprForm.get('type')?.touched ||
-                      (oprForm.controls['type'].dirty && oprForm.hasError('required', 'type')) ||
-                      (isCustomType && oprForm.controls['others'].invalid && oprForm.hasError('required', 'others')  && oprForm.get('others')?.touched ||
-                    (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))) ||
-                      (isCustomType && oprForm.get('others')?.invalid && oprForm.get('others')?.touched)">
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="optrForm.controls['type'].invalid && optrForm.hasError('required', 'type')  && optrForm.get('type')?.touched ||
+                      (optrForm.controls['type'].dirty && optrForm.hasError('required', 'type')) ||
+                      (isCustomType && optrForm.controls['others'].invalid && optrForm.hasError('required', 'others')  && optrForm.get('others')?.touched ||
+                    (optrForm.controls['others'].dirty && optrForm.hasError('required', 'others'))) ||
+                      (isCustomType && optrForm.get('others')?.invalid && optrForm.get('others')?.touched)">
                     </i>
 
                     <select formControlName="type" name="type" id="type" class="form-select"
@@ -1313,30 +1313,30 @@
                       formControlName="others" placeholder="Specify" class="form-control">
                   </div>
                 </div>
+                <!-- Reason -->
                 <div class="col-12 col-lg-8">
-                  <!-- Reason -->
 
-                  @if(!(oprForm.controls['reason'].invalid &&
-                  oprForm.hasError('required', 'reason') &&
-                  oprForm.get('reason')?.touched ||
-                  (oprForm.controls['reason'].dirty &&
-                  oprForm.hasError('required', 'reason')))){
+                  @if(!(optrForm.controls['reason'].invalid &&
+                  optrForm.hasError('required', 'reason') &&
+                  optrForm.get('reason')?.touched ||
+                  (optrForm.controls['reason'].dirty &&
+                  optrForm.hasError('required', 'reason')))){
                   <small class="text-info">* Reason for Transfer</small>
                   }@else{
-                  <small class="text-danger" *ngIf="oprForm.controls['reason'].invalid &&
-                oprForm.hasError('required', 'reason') &&
-                oprForm.get('reason')?.touched ||
-                (oprForm.controls['reason'].dirty &&
-                oprForm.hasError('required', 'reason'))">*
+                  <small class="text-danger" *ngIf="optrForm.controls['reason'].invalid &&
+                optrForm.hasError('required', 'reason') &&
+                optrForm.get('reason')?.touched ||
+                (optrForm.controls['reason'].dirty &&
+                optrForm.hasError('required', 'reason'))">*
                     Reason for Transfer is required</small>
                   }
-                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['reason'].invalid &&
-                  oprForm.hasError('required', 'reason') && oprForm.get('reason')?.touched ||
-                  (oprForm.controls['reason'].dirty && oprForm.hasError('required', 'reason'))">
+                  <div class="form-field d-flex align-items-center" [class.error]="optrForm.controls['reason'].invalid &&
+                  optrForm.hasError('required', 'reason') && optrForm.get('reason')?.touched ||
+                  (optrForm.controls['reason'].dirty && optrForm.hasError('required', 'reason'))">
 
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="oprForm.controls['reason'].invalid &&
-                    oprForm.hasError('required', 'reason') && oprForm.get('reason')?.touched ||
-                    (oprForm.controls['reason'].dirty && oprForm.hasError('required', 'reason'))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="optrForm.controls['reason'].invalid &&
+                    optrForm.hasError('required', 'reason') && optrForm.get('reason')?.touched ||
+                    (optrForm.controls['reason'].dirty && optrForm.hasError('required', 'reason'))"></i>
 
                     <textarea formControlName="reason" name="reason" id="reason" placeholder="Reason/s for Transfer"
                       rows="1" cols="50"></textarea>
@@ -1352,12 +1352,9 @@
                   <small class="text-info">*
                     Issued By</small>
 
-                  <div class="form-field d-flex align-items-center" [class.error]="oprForm.controls['userID2'].invalid && oprForm.hasError('required', 'userID2')  && oprForm.get('userID2')?.touched ||
-                    (oprForm.controls['userID2'].dirty && oprForm.hasError('required', 'userID2'))">
-
+                  <div class="form-field d-flex align-items-center">
                     <input type="text" class="form-control" id="navbarDropdown" formControlName="userID2" name="userID2"
                       placeholder="Issued By" role="textbox" readonly>
-
                   </div>
 
                 </div>
@@ -1365,32 +1362,32 @@
                 <!-- Received By -->
                 <div class="col-12 col-lg-4">
 
-                  @if(!(oprForm.controls['userID1'].invalid &&
-                  oprForm.hasError('required', 'userID1') &&
-                  oprForm.get('userID1')?.touched ||
-                  (oprForm.controls['userID1'].dirty &&
-                  oprForm.hasError('required', 'userID1')))){
+                  @if(!(optrForm.controls['userID1'].invalid &&
+                  optrForm.hasError('required', 'userID1') &&
+                  optrForm.get('userID1')?.touched ||
+                  (optrForm.controls['userID1'].dirty &&
+                  optrForm.hasError('required', 'userID1')))){
                   <small class="text-info">*
                     Received By</small>
                   }@else {
-                  <small class="text-danger" *ngIf="oprForm.controls['userID1'].invalid &&
-                    oprForm.hasError('required', 'userID1') &&
-                    oprForm.get('userID1')?.touched ||
-                    (oprForm.controls['userID1'].dirty &&
-                    oprForm.hasError('required', 'userID1'))">* Received By is
+                  <small class="text-danger" *ngIf="optrForm.controls['userID1'].invalid &&
+                    optrForm.hasError('required', 'userID1') &&
+                    optrForm.get('userID1')?.touched ||
+                    (optrForm.controls['userID1'].dirty &&
+                    optrForm.hasError('required', 'userID1'))">* Received By is
                     required</small>
                   }
 
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1')  && oprForm.get('userID1')?.touched ||
-                  (oprForm.controls['userID1'].dirty && oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null)">
+                    [class.error]="optrForm.controls['userID1'].invalid && optrForm.hasError('required', 'userID1')  && optrForm.get('userID1')?.touched ||
+                  (optrForm.controls['userID1'].dirty && optrForm.hasError('required', 'userID1')) || (optrForm.get('userID1')?.touched && receivedID === null)">
                     <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1') &&
-                    oprForm.get('userID1')?.touched || (oprForm.controls['userID1'].dirty &&
-                    oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null))"></i>
+                      *ngIf="!(optrForm.controls['userID1'].invalid && optrForm.hasError('required', 'userID1') &&
+                    optrForm.get('userID1')?.touched || (optrForm.controls['userID1'].dirty &&
+                    optrForm.hasError('required', 'userID1')) || (optrForm.get('userID1')?.touched && receivedID === null))"></i>
                     <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="oprForm.controls['userID1'].invalid && oprForm.hasError('required', 'userID1') &&  oprForm.get('userID1')?.touched ||
-                    (oprForm.controls['userID1'].dirty && oprForm.hasError('required', 'userID1')) || (oprForm.get('userID1')?.touched && receivedID === null)"></i>
+                      *ngIf="optrForm.controls['userID1'].invalid && optrForm.hasError('required', 'userID1') &&  optrForm.get('userID1')?.touched ||
+                    (optrForm.controls['userID1'].dirty && optrForm.hasError('required', 'userID1')) || (optrForm.get('userID1')?.touched && receivedID === null)"></i>
 
                     <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
                       [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggestReceived()"
@@ -1409,32 +1406,32 @@
 
                 <!-- Approved By -->
                 <div class="col-12 col-lg-4">
-                  @if(!(oprForm.controls['userID3'].invalid &&
-                  oprForm.hasError('required', 'userID3') &&
-                  oprForm.get('userID3')?.touched ||
-                  (oprForm.controls['userID3'].dirty &&
-                  oprForm.hasError('required', 'userID3')))){
+                  @if(!(optrForm.controls['userID3'].invalid &&
+                  optrForm.hasError('required', 'userID3') &&
+                  optrForm.get('userID3')?.touched ||
+                  (optrForm.controls['userID3'].dirty &&
+                  optrForm.hasError('required', 'userID3')))){
                   <small class="text-info">*
                     Approved By</small>
                   }@else {
-                  <small class="text-danger" *ngIf="oprForm.controls['userID3'].invalid &&
-                        oprForm.hasError('required', 'userID3') &&
-                        oprForm.get('userID3')?.touched ||
-                        (oprForm.controls['userID3'].dirty &&
-                        oprForm.hasError('required', 'userID3'))">* Approved By
+                  <small class="text-danger" *ngIf="optrForm.controls['userID3'].invalid &&
+                        optrForm.hasError('required', 'userID3') &&
+                        optrForm.get('userID3')?.touched ||
+                        (optrForm.controls['userID3'].dirty &&
+                        optrForm.hasError('required', 'userID3'))">* Approved By
                     is required *</small>
                   }
 
                   <div class="form-field d-flex align-items-center"
-                    [class.error]="oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3')  && oprForm.get('userID3')?.touched ||
-                    (oprForm.controls['userID3'].dirty && oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null)">
+                    [class.error]="optrForm.controls['userID3'].invalid && optrForm.hasError('required', 'userID3')  && optrForm.get('userID3')?.touched ||
+                    (optrForm.controls['userID3'].dirty && optrForm.hasError('required', 'userID3')) || (optrForm.get('userID3')?.touched && approvedID === null)">
                     <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3') &&
-                      oprForm.get('userID3')?.touched || (oprForm.controls['userID3'].dirty &&
-                      oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null))"></i>
+                      *ngIf="!(optrForm.controls['userID3'].invalid && optrForm.hasError('required', 'userID3') &&
+                      optrForm.get('userID3')?.touched || (optrForm.controls['userID3'].dirty &&
+                      optrForm.hasError('required', 'userID3')) || (optrForm.get('userID3')?.touched && approvedID === null))"></i>
                     <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="oprForm.controls['userID3'].invalid && oprForm.hasError('required', 'userID3') &&  oprForm.get('userID3')?.touched ||
-                      (oprForm.controls['userID3'].dirty && oprForm.hasError('required', 'userID3')) || (oprForm.get('userID3')?.touched && approvedID === null)"></i>
+                      *ngIf="optrForm.controls['userID3'].invalid && optrForm.hasError('required', 'userID3') &&  optrForm.get('userID3')?.touched ||
+                      (optrForm.controls['userID3'].dirty && optrForm.hasError('required', 'userID3')) || (optrForm.get('userID3')?.touched && approvedID === null)"></i>
 
                     <input type="text" class="form-control" id="navbarDropdown" formControlName="userID3" name="userID3"
                       [(ngModel)]="approvedByID" placeholder="Approve By" (keyup)="onAutoSuggestApproved()"
@@ -1462,9 +1459,10 @@
 
           <button id="closeBut" type="button" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal"
             (click)="closeModal(AddEditModal)">Close</button>
-          <button *ngIf="(isEditMode && canUpdate) || (!isEditMode && canCreate)" type="button"
-            class="btn btn-primary rounded-pill" (click)="onSubmit()">{{ isEditMode ? 'Update' : 'Save'
+          <button *ngIf="isOPTR && canCreate" type="button"
+            class="btn btn-primary rounded-pill" (click)="onSubmitOPTR()">{{ isEditMode ? 'Update' : 'Save'
             }}</button>
+            
         </div>
       </form>
     </div>

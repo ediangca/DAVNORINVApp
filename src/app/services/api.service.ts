@@ -1292,6 +1292,20 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+  
+  //Create
+  createREOPTR(details: any, updatedItems: any[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+
+    console.log("Create OPTR Payload: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}OPTR/Transfer/`, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
   //Retrieve
   retrieveOPTR(optrNo: string): Observable<any> {
@@ -1394,7 +1408,16 @@ export class ApiService {
   //Retrieve By OPR No.
   retrieveOPRItemByOPRNo(oprNo: number): Observable<Item[]> {
     console.log("Retrieve OPR Item by OPR No.: ", oprNo);
-    return this.http.get<Item[]>(`${this.apiUrl}OPRITEM/OPRNO/` + oprNo)
+    return this.http.get<any[]>(`${this.apiUrl}OPRITEM/OPRNO/` + oprNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve By OPTR No.
+  retrieveOPRItemByOPTRNo(optrNo: string): Observable<Item[]> {
+    console.log("Retrieve OPR Item by OPTRNO No.: ", optrNo);
+    return this.http.get<any[]>(`${this.apiUrl}OPRITEM/OPTRNO/` + optrNo)
       .pipe(
         catchError(this.handleError)
       );

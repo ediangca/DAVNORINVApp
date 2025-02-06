@@ -31,7 +31,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
   @ViewChild('ViewModalForm') ViewModal!: ElementRef;
   @ViewChild('ItemModalForm') ItemModal!: ElementRef;
   @ViewChild('ViewItemModalForm') ViewItemModal!: ElementRef;
-  
+
   @ViewChild('TransferModalForm') TransferModalForm!: ElementRef;
   @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
 
@@ -39,7 +39,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   isModalOpen = false;
 
-  ptrs: any = [];
+  optrs: any = [];
   totalItems: number = 0;
   opr!: any | null;
   oprItems: any[] = [];
@@ -159,8 +159,12 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
     this.optrForm = this.fb.group({
       searchPARItemKey: [''],
+      type: ['', Validators.required],
+      others: ['', Validators.required],
+      reason: ['', Validators.required],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
+      userID3: ['', Validators.required],
     });
 
     this.itemForm = this.fb.group({
@@ -294,8 +298,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
       )
       .subscribe({
         next: (filtered) => {
-          this.ptrs = filtered;
-          this.logger.printLogs('i', 'List of OPTRs', this.ptrs);
+          this.optrs = filtered;
+          this.logger.printLogs('i', 'List of OPTRs', this.optrs);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching OPTRs', err);
@@ -330,8 +334,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
           )
           .subscribe({
             next: (filtered) => {
-              this.ptrs = filtered; // Assign the processed result to the component variable
-              this.logger.printLogs('i', 'SEARCH OPTRs', this.ptrs);
+              this.optrs = filtered; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH OPTRs', this.optrs);
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error Fetching OPTRs on Search', err);
@@ -603,8 +607,66 @@ export class OptrComponent implements OnInit, AfterViewInit {
       }
 
     }
-
   }
+  
+    onSubmitOPTR() {
+  
+      if (!this.optrForm.valid) {
+        this.vf.validateFormFields(this.optrForm);
+        Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
+        return;
+      }
+  
+      if (this.oprItems.length < 1) {
+        Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
+        return;
+      }
+
+      this.currentEditId = this.optr.optrNo;
+
+      const optr =  {
+        optrNo: this.currentEditId,
+        oprNo: this.optr.oprNo,
+        ttype: this.optrForm.value['type'],
+        otype: this.optrForm.value['others'],
+        reason: this.optrForm.value['reason'],
+        receivedBy: this.receivedID,
+        issuedBy: this.issuedID,
+        approvedBy: this.approvedID,
+        createdBy: this.userAccount.userID,
+      }
+      
+  
+      if (this.oprItems.length > 0) {
+  
+        this.logger.printLogs('i', 'OPTR Form', this.optrForm);
+        
+              this.logger.printLogs('i', 'Saving RE-OPTR', optr);
+              this.api.createREOPTR(this.optr, this.oprItems)
+                .subscribe({
+                  next: (res) => {
+                    this.logger.printLogs('i', 'RE-OPTR Saved Success', res.details);
+                    Swal.fire('Saved!!', res.message, 'success');
+        
+        
+                    this.closeModal(this.TransferModalForm);
+                    this.getAllOPTR();
+                    this.resetForm();
+        
+                  },
+                  error: (err: any) => {
+                    this.logger.printLogs('e', 'Error Saving OPTR', err);
+                    Swal.fire('Denied', err, 'warning');
+                  }
+                });
+  
+      }
+
+  
+    }
+
+    
+    
 
   Update(optr: any) {
     this.logger.printLogs('i', 'Updating OPTR', optr);
@@ -812,14 +874,47 @@ export class OptrComponent implements OnInit, AfterViewInit {
   }
 
 
-
-  onTransfer(opr: any) {
-    if (!opr.postFlag) {
+  onTransfer(optr: any) {
+    if (!optr.postFlag) {
       Swal.fire('Information!', 'Cannot Re-Transfer unposted OTPR.', 'warning');
       return;
     }
+    this.isEditMode = false;
+    this.isOPTR = true;
+    this.opr = optr;
+    this.optr = optr;
+    this.currentEditId = optr.optrNo;
+    this.logger.printLogs('i', 'Restoring OPTR', optr);
 
-    this.openModal(this.TransferModalForm); // Open the modal after patching
+    this.issuedID = optr.receivedBy;
+    this.approvedID = optr.approvedBy;
+    
+    this.optrForm.patchValue({
+      userID2: optr.received,
+      userID1: '', //Received BY
+      userID3: optr.approved, //Approved BY
+      type: '',
+      searchPARItemKey: [''],
+    });
+
+    this.api.retrieveOPRItemByOPTRNo(this.optr.optrNo)
+          .subscribe({
+            next: (res) => {
+              this.logger.printLogs('i', 'Retrieving OPR Item', res);
+              this.oprItems = res;
+              this.searchOPRItems = this.oprItems;
+    
+              this.noOfParItems = this.oprItems.filter((group: any) => group.optrFlag === false).length;
+              this.logger.printLogs('i', 'Number of OPR Item Retrieved', this.noOfParItems);
+    
+              this.openModal(this.TransferModalForm); // Open the modal after patching
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
+              Swal.fire('Error', 'Failure to Retrieve OPR Item.', 'error');
+            }
+          });
+    
 
   }
 
@@ -1151,17 +1246,30 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.displaySelectedItems();
   }
 
-
   onTypeChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.isCustomType = selectedValue == 'Others';
     if (!this.isCustomType) {
-      this.oprForm.get('type')?.setValue(selectedValue);
-      this.oprForm?.get('others')?.setValue('N/A');
+      if(this.oprForm){
+        this.oprForm.get('type')?.setValue(selectedValue);
+        this.oprForm?.get('others')?.setValue('N/A');
+      }
+      if(this.optrForm){
+        this.optrForm.get('type')?.setValue(selectedValue);
+        this.optrForm?.get('others')?.setValue('N/A');
+      }
     } else {
-      this.oprForm?.get('others')?.setValue(null);
-      this.oprForm.get('type')?.markAsUntouched();
-      this.oprForm.get('others')?.markAsTouched();
+      if(this.oprForm){
+        this.oprForm?.get('others')?.setValue(null);
+        this.oprForm.get('type')?.markAsUntouched();
+        this.oprForm.get('others')?.markAsTouched();
+      }
+      
+      if(this.optrForm){
+        this.oprForm?.get('others')?.setValue(null);
+        this.oprForm.get('type')?.markAsUntouched();
+        this.oprForm.get('others')?.markAsTouched();
+      }
     }
   }
 
