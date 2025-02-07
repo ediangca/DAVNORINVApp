@@ -200,10 +200,10 @@ export class RrspComponent {
     const modal = document.getElementById(modalId);
     modal?.addEventListener('hidden.bs.modal', () =>
       icsModal && !this.isEditMode ? this.resetForm() : this.resetItemForm()
-  );
-    
+    );
+
   }
-  
+
 
 
 

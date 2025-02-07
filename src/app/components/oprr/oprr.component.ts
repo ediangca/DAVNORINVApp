@@ -19,13 +19,13 @@ import { catchError, delay, finalize, forkJoin, map, Observable, of } from 'rxjs
 declare var bootstrap: any;
 
 @Component({
-  selector: 'app-prs',
+  selector: 'app-oprr',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxScannerQrcodeModule],
-  templateUrl: './prs.component.html',
-  styleUrl: './prs.component.css',
+  templateUrl: './oprr.component.html',
+  styleUrl: './oprr.component.css',
 })
-export class PrsComponent implements OnInit, AfterViewInit {
+export class OprrComponent implements OnInit, AfterViewInit {
 
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
   @ViewChild('ViewModalForm') ViewModal!: ElementRef;
@@ -40,19 +40,19 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   // pars: any = [];
   par!: any;
-  prs!: any;
-  prss: any = [];
+  oprr!: any;
+  oprrs: any = [];
   totalItems: number = 0;
-  parItems: Item[] = [];
-  prsItems: Item[] = [];
-  searchPRSItems: Item[] = [];
-  selectedParItems: Item[] = []; // Array to track selected items from repar
+  oprItems: any[] = [];
+  oprrItems: any[] = [];
+  searchOPRRItems: any[] = [];
+  selectedOPRItems: any[] = []; // Array to track selected items from repar
   userProfiles: any = [];
   items: any = [];
   searchKey: string = '';
   parItemKey: string = '';
 
-  activePARItemKey: string = ''
+  activeOPRItemKey: string = ''
 
   activeInput: 'received' | 'issued' | 'approved' | null = null;
   receivedByID: string | null = null;
@@ -68,11 +68,11 @@ export class PrsComponent implements OnInit, AfterViewInit {
   models: any[] = [];
   descriptions: any[] = [];
 
-  item: Item | null | undefined;
+  item: any | null | undefined;
   itemName: string | null | undefined
   userAccount: any;
   userProfile: any;
-  prsForm!: FormGroup;
+  oprrForm!: FormGroup;
   itemForm!: FormGroup;
   isEditMode: boolean = false;
   isEditItemMode: boolean = false;
@@ -139,14 +139,13 @@ export class PrsComponent implements OnInit, AfterViewInit {
     this.checkPrivileges();
     this.today = new Date().toISOString().split('T')[0];
 
-    this.prsForm = this.fb.group({
-      prsNo: ['', Validators.required],
+    this.oprrForm = this.fb.group({
       type: ['', Validators.required],
       others: ['', Validators.required],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
       userID3: ['', Validators.required],
-      searchPRSItemKey: ['']
+      searchOPRRItemKey: ['']
     });
 
 
@@ -172,12 +171,12 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   private checkPrivileges(): void {
     this.store.loadPrivileges();
-    this.canCreate = this.store.isAllowedAction('PRS', 'create');
-    this.canRetrieve = this.store.isAllowedAction('PRS', 'retrieve');
-    this.canUpdate = this.store.isAllowedAction('PRS', 'update');
-    this.canDelete = this.store.isAllowedAction('PRS', 'delete');
-    this.canPost = this.store.isAllowedAction('PRS', 'post');
-    this.canUnpost = this.store.isAllowedAction('PRS', 'unpost');
+    this.canCreate = this.store.isAllowedAction('OPRR', 'create');
+    this.canRetrieve = this.store.isAllowedAction('OPRR', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('OPRR', 'update');
+    this.canDelete = this.store.isAllowedAction('OPRR', 'delete');
+    this.canPost = this.store.isAllowedAction('OPRR', 'post');
+    this.canUnpost = this.store.isAllowedAction('OPRR', 'unpost');
   }
 
   setupModalClose() {
@@ -236,7 +235,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.userAccount = res;
-          this.getAllPRS();
+          this.getAllOPRR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Account from Store Service', err);
@@ -244,35 +243,34 @@ export class PrsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  getAllPRS() {
-    this.isLoading = true; // Start spinner
-    this.api.getAllPRS()
+  getAllOPRR() {
+    this.isLoading = true;
+    this.api.getAllOPRR()
       .pipe(
-        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        delay(3000),
         map((res) => {
-          // Filter results based on `createdBy` and slice for pagination
-          this.logger.printLogs('i', 'Show PRSs only for Administrator || User Account :', this.userAccount.userID);
-          this.logger.printLogs('i', 'List of Originated PRSs', res);
+          this.logger.printLogs('i', 'Show OPRRS only for Administrator || User Account :', this.userAccount.userID);
+          this.logger.printLogs('i', 'List of Originated OPRR', res);
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 10); // For administrators, show all records, limited to 10
+            return res.slice(0, 10);
           }
-          const filteredPRSs = res.filter((prs: any) =>
-            prs.createdBy === this.userAccount.userID ||
-            prs.issuedBy === this.userAccount.userID ||
-            prs.receivedBy === this.userAccount.userID
+          const filtered = res.filter((item: any) =>
+            item.createdBy === this.userAccount.userID ||
+            item.issuedBy === this.userAccount.userID ||
+            item.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filteredPRSs.length;
-          return filteredPRSs.slice(0, 10); // Limit to the first 10 items
+          this.totalItems = filtered.length;
+          return filtered.slice(0, 10);
         }),
-        finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+        finalize(() => this.isLoading = false)
       )
       .subscribe({
-        next: (filteredPRSs) => {
-          this.prss = filteredPRSs;
-          this.logger.printLogs('i', 'List of PRSs', this.prss);
+        next: (filtered) => {
+          this.oprrs = filtered;
+          this.logger.printLogs('i', 'List of OPRR', this.oprrs);
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Fetching PRSs', err);
+          this.logger.printLogs('e', 'Error Fetching OPRR', err);
         }
       });
   }
@@ -289,39 +287,39 @@ export class PrsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onSearchPRS() {
+  onSearchOPRR() {
     if (!this.searchKey) {
-      this.getAllPRS(); // Call existing function to populate all PARs when no search key is entered
+      this.getAllOPRR(); // Call existing function to populate all PARs when no search key is entered
     } else {
       if (this.searchKey.trim()) {
         this.isLoading = true; // Start spinner
-        this.api.searchPRS(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+        this.api.searchOPRR(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
           .pipe(
             map((res) => {
               // Filter results based on `createdBy` and slice for pagination
-              this.logger.printLogs('i', 'Show PRSs only for Administrator || User Account :', this.userAccount.userID);
-              this.logger.printLogs('i', 'List of Originated PRSs', res);
+              this.logger.printLogs('i', 'Show OPRR only for Administrator || User Account :', this.userAccount.userID);
+              this.logger.printLogs('i', 'List of Originated OPRR', res);
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 10); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
-              const filteredPRSs = res.filter((prs: any) =>
-                prs.createdBy === this.userAccount.userID ||
-                prs.issuedBy === this.userAccount.userID ||
-                prs.receivedBy === this.userAccount.userID
+              const filtered = res.filter((item: any) =>
+                item.createdBy === this.userAccount.userID ||
+                item.issuedBy === this.userAccount.userID ||
+                item.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filteredPRSs.length;
-              return filteredPRSs.slice(0, 10); // Limit to 10 results for display
+              this.totalItems = filtered.length;
+              return filtered.slice(0, 10); // Limit to 10 results for display
             }),
             finalize(() => this.isLoading = false) // Ensure spinner stops
           )
           .subscribe({
-            next: (filteredPRSs) => {
-              this.prss = filteredPRSs; // Assign the processed result to the component variable
-              this.logger.printLogs('i', 'SEARCH PRSs', this.prss);
+            next: (filtered) => {
+              this.oprrs = filtered; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH OPRR', this.oprrs);
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error Fetching PRSs on Search', err);
+              this.logger.printLogs('e', 'Error Fetching OPRR on Search', err);
             }
           });
       }
@@ -329,31 +327,27 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   onKeyUp(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      this.onSearchPRS();
-    } else {
-      this.onSearchPRS();
-    }
+    this.onSearchOPRR();
   }
 
-  onSearchActivePARItem() {
-    if (!this.activePARItemKey) {
-      this.getAllPostedPARItem(); // Call existing function to populate all PARs when no search key is entered
+  onSearchActiveOPRItem() {
+    if (!this.activeOPRItemKey) {
+      this.getAllPostedOPRItem(); // Call existing function to populate all PARs when no search key is entered
     } else {
-      if (this.activePARItemKey.trim()) {
-        this.api.searchAllPostedPARItem(this.activePARItemKey.trim()) // Trim search key to avoid leading/trailing spaces
+      if (this.activeOPRItemKey.trim()) {
+        this.api.searchAllPostedOPRItem(this.activeOPRItemKey.trim()) // Trim search key to avoid leading/trailing spaces
           .subscribe({
             next: (res) => {
 
-              this.logger.printLogs('i', `LIST OF ACTIVE PAR ITEM KEY ${this.activePARItemKey.trim()}`, res);
-              this.parItems = res
+              this.logger.printLogs('i', `LIST OF ACTIVE OPR ITEM KEY ${this.activeOPRItemKey.trim()}`, res);
+              this.oprItems = res
 
-              this.parItems = this.parItems.filter(
-                item => !this.prsItems.some(prsItem => prsItem.parino === item.parino) &&
-                  item.prsFlag === false).slice(0, 10);
+              this.oprItems = this.oprItems.filter(
+                item => !this.oprrItems.some(oprrItem => oprrItem.oprino === item.oprino) &&
+                  item.oprrFlag === false).slice(0, 10);
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error Fetching SEARCH ACTIVE PAR ITEM', err);
+              this.logger.printLogs('e', 'Error Fetching SEARCH ACTIVE OPR ITEM', err);
             }
           });
 
@@ -361,28 +355,28 @@ export class PrsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getAllPostedPARItem() {
-    this.api.getAllPostedPARItem()
+  getAllPostedOPRItem() {
+    this.api.getAllPostedOPRItem()
       .subscribe({
         next: (res) => {
-          this.parItems = res;
+          this.oprItems = res;
 
-          this.logger.printLogs('i', 'LIST OF ACTIVE PAR ITEM ', this.parItems);
+          this.logger.printLogs('i', 'LIST OF ACTIVE OPR ITEM ', this.oprItems);
 
-          this.parItems = this.parItems.filter(
-            item => !this.prsItems.some(prsItem => prsItem.parino === item.parino) &&
-              item.prsFlag === false
+          this.oprItems = this.oprItems.filter(
+            item => !this.oprrItems.some(oprrItems => oprrItems.oprino === item.oprino) &&
+              item.oprrFlag === false
           ).slice(0, 10);
 
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Fetching ACTIVE PAR ITEM ', err);
+          this.logger.printLogs('e', 'Error Fetching ACTIVE OPR ITEM ', err);
         }
       });
   }
 
   onKeyUpPARItem(event: KeyboardEvent): void {
-    this.onSearchActivePARItem();
+    this.onSearchActiveOPRItem();
   }
 
   // Function to display the QR Scanner modal
@@ -391,31 +385,30 @@ export class PrsComponent implements OnInit, AfterViewInit {
     QRmodal.show();
   }
 
-  onAddPRS() {
+  onAddOPRR() {
     this.resetForm()
     this.openPARModal(this.AddEditModal);
   }
 
   onSubmit() {
 
-    if (!this.prsForm.valid) {
-      this.vf.validateFormFields(this.prsForm);
+    if (!this.oprrForm.valid) {
+      this.vf.validateFormFields(this.oprrForm);
       return;
     }
 
-    if (this.prsItems.length < 1) {
+    if (this.oprrItems.length < 1) {
       Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
       return;
     }
 
-    if (this.prsForm.valid && this.prsItems.length > 0) {
+    if (this.oprrForm.valid && this.oprrItems.length > 0) {
 
-      this.logger.printLogs('i', 'PRS Form', this.prsForm.value);
+      this.logger.printLogs('i', 'OPRR Form', this.oprrForm.value);
 
-      this.prs = {
-        prsNo: this.prsForm.value['prsNo'],
-        rtype: this.prsForm.value['type'],
-        otype: this.prsForm.value['others'],
+      this.oprr = {
+        rtype: this.oprrForm.value['type'],
+        otype: this.oprrForm.value['others'],
         receivedBy: this.receivedID ? this.receivedID : null,
         issuedBy: this.issuedID ? this.issuedID : null,
         approvedBy: this.approvedID ? this.approvedID : null,
@@ -424,7 +417,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
         createdBy: this.userAccount.userID,
       }
 
-      this.logger.printLogs('i', this.isEditMode ? 'Updating...' : 'Saving...', this.prs);
+      this.logger.printLogs('i', this.isEditMode ? 'Updating...' : 'Saving...', this.oprr);
 
       if (this.isEditMode) {
         this.Update()
@@ -437,16 +430,16 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   Save() {
-    this.logger.printLogs('i', 'Saving PRS', this.prs);
-    this.logger.printLogs('i', 'Saving PRS Item', this.prsItems);
-    this.api.createPRS(this.prs, this.prsItems)
+    this.logger.printLogs('i', 'Saving OPRR', this.oprr);
+    this.logger.printLogs('i', 'Saving OPRR Item', this.oprrItems);
+    this.api.createOPRR(this.oprr, this.oprrItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', this.prs);
+          this.logger.printLogs('i', 'Saved Success', this.oprr);
           // Handle success, e.g., show a success message
           Swal.fire({
             title: 'Saved',
-            text: 'Do you want to add new PRS?',
+            text: 'Do you want to add new OPRR?',
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -457,20 +450,20 @@ export class PrsComponent implements OnInit, AfterViewInit {
             }
           });
           this.resetForm();
-          this.getAllPRS();
+          this.getAllOPRR();
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving PAR', err);
+          this.logger.printLogs('e', 'Error Saving OPRR', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
   }
 
   Update() {
-    this.logger.printLogs('i', 'Updating PRS', this.prs);
-    this.logger.printLogs('i', 'Updating PRS Items', this.prsItems);
+    this.logger.printLogs('i', 'Updating OPRR', this.oprr);
+    this.logger.printLogs('i', 'Updating OPRR Items', this.oprrItems);
 
-    this.api.updatePRS(this.prs, this.prsItems)
+    this.api.updateOPRR(this.oprr, this.oprrItems)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', res);
@@ -482,7 +475,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
             allowEscapeKey: false
           });
           this.logger.printLogs('i', 'Saved Success', res.details);
-          this.getAllPRS();
+          this.getAllOPRR();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
@@ -494,40 +487,40 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
 
-  updatePARItems() {
-    this.api.updatePARItem(this.currentEditId!, this.parItems)
+  updateOPRItems() {
+    this.api.updatePARItem(this.currentEditId!, this.oprItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Updated Success', this.parItems);
+          this.logger.printLogs('i', 'Updated Success', this.oprItems);
           Swal.fire('Updated!', res.message, 'warning');
-          this.getAllPRS();
+          this.getAllOPRR();
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Updating PAR Item', err);
+          this.logger.printLogs('e', 'Error Updating OPR Item', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
 
   }
 
-  onPostPRS(prs: any) {
+  onPostOPRR(oprr: any) {
 
-    if (!prs.postFlag && !this.canPost) {
+    if (!oprr.postFlag && !this.canPost) {
       Swal.fire('Unauthorized Access', 'User is not authorize to Post', 'warning');
       return;
     }
 
-    if (prs.postFlag && !this.canUnpost) {
+    if (oprr.postFlag && !this.canUnpost) {
       Swal.fire('Unauthorized Access', 'User is not authorize to Unpost', 'warning');
       return
     }
 
-    if ((this.roleNoFromToken != 'System Administrator' && !prs.postFlag) || this.roleNoFromToken == 'System Administrator' || (prs.postFlag && this.canUnpost) || (!prs.postFlag && this.canPost)) {
-      let prsNo = prs.prsNo;
+    if ((this.roleNoFromToken != 'System Administrator' && !oprr.postFlag) || this.roleNoFromToken == 'System Administrator' || (oprr.postFlag && this.canUnpost) || (!oprr.postFlag && this.canPost)) {
+      let oprrNo = oprr.oprrNo;
 
       Swal.fire({
         title: 'Are you sure?',
-        text: (prs.postFlag ? 'Unpost' : 'Post') + ` PRS #${prsNo}`,
+        text: (oprr.postFlag ? 'Unpost' : 'Post') + ` OPRR #${oprrNo}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -535,15 +528,15 @@ export class PrsComponent implements OnInit, AfterViewInit {
       }).then((result) => {
         if (result.isConfirmed) {
 
-          this.api.postPRS(prsNo, !prs.postFlag)
+          this.api.postOPRR(oprrNo, !oprr.postFlag)
             .subscribe({
               next: (res) => {
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
-                this.getAllPRS();
+                this.getAllOPRR();
               },
               error: (err: any) => {
-                this.logger.printLogs('e', 'Error', ['Posting PRS!']);
+                this.logger.printLogs('e', 'Error', ['Posting OPRR!']);
                 Swal.fire('Warning', err, 'warning');
               }
             });
@@ -554,9 +547,9 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   }
 
-  onEditPRS(prs: any) {
-    if (prs.postFlag) {
-      Swal.fire('Information!', 'Cannot edit posted PRS.', 'warning');
+  onEditOPRR(oprr: any) {
+    if (oprr.postFlag) {
+      Swal.fire('Information!', 'Cannot edit posted OPRR.', 'warning');
       return;
     }
 
@@ -567,124 +560,87 @@ export class PrsComponent implements OnInit, AfterViewInit {
       if (modalInstance && modalInstance._isShown) {
         modalElement.addEventListener('hidden.bs.modal', () => {
           // Perform actions after the modal is fully closed
-          this.handleEditPRSLogic(prs);
+          this.handleEditLogic(oprr);
         }, { once: true });  // { once: true } ensures the listener fires only once
 
         this.closeModal(this.ViewModal);
       } else {
         // If the modal is not open, proceed immediately
-        this.handleEditPRSLogic(prs);
+        this.handleEditLogic(oprr);
       }
     } else {
       // If ViewModal is undefined, proceed with the logic
-      this.handleEditPRSLogic(prs);
+      this.handleEditLogic(oprr);
     }
-
-    // this.isEditMode = true;
-    // this.prs = prs;
-    // this.currentEditId = prs.prsNo;
-
-    // this.logger.printLogs('i', 'Restoring PRS', prs);
-
-    // this.issuedID = prs.issuedBy;
-    // this.receivedID = prs.receivedBy;
-    // this.approvedID = prs.approvedBy;
-
-    // this.prsForm.patchValue({
-    //   prsNo: prs.prsNo,
-    //   type: prs.rtype,
-    //   others: prs.otype,
-    //   userID3: prs.approved,
-    //   userID1: prs.received,
-    //   userID2: prs.issued,
-    // });
-
-    // this.api.retrievePRS(this.currentEditId!)
-    //   .subscribe({
-    //     next: (res) => {
-    //       this.logger.printLogs('i', 'Retrieving PRS Item', res);
-    //       this.prs = res.details;
-    //       this.prsItems = res.prsItems;
-    //       this.openPARModal(this.AddEditModal); // Open the modal after patching
-    //     },
-    //     error: (err: any) => {
-    //       this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
-    //       Swal.fire('Error', 'Failure to Retrieve REPAR Item.', 'error');
-    //     }
-    //   });
-
-
   }
 
-  handleEditPRSLogic(prs: any) {
+  handleEditLogic(oprr: any) {
     this.isEditMode = true;
-    this.prs = prs;
-    this.currentEditId = prs.prsNo;
+    this.oprr = oprr;
+    this.currentEditId = oprr.oprrNo;
 
-    this.logger.printLogs('i', 'Restoring PRS', prs);
+    this.logger.printLogs('i', 'Restoring OPRR', oprr);
 
-    this.issuedID = prs.issuedBy;
-    this.receivedID = prs.receivedBy;
-    this.approvedID = prs.approvedBy;
+    this.issuedID = oprr.issuedBy;
+    this.receivedID = oprr.receivedBy;
+    this.approvedID = oprr.approvedBy;
 
-    this.prsForm.patchValue({
-      prsNo: prs.prsNo,
-      type: prs.rtype,
-      others: prs.otype,
-      userID3: prs.approved,
-      userID1: prs.received,
-      userID2: prs.issued,
+    this.oprrForm.patchValue({
+      type: oprr.rtype,
+      others: oprr.otype,
+      userID3: oprr.approved,
+      userID1: oprr.received,
+      userID2: oprr.issued,
     });
 
-    this.api.retrievePRS(this.currentEditId!)
+    this.api.retrieveOPRR(this.currentEditId!)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PRS Item.....', res);
-          this.prs = res.details;
-          this.prsItems = res.prsItems;
+          this.logger.printLogs('i', 'Retrieving OPRR Item.....', res);
+          this.oprr = res.details;
+          this.oprrItems = res.oprrItems;
           this.openPARModal(this.AddEditModal);  // Open modal after ensuring the other one closed
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retrieving PRS Item', err);
-          Swal.fire('Error', 'Failure to Retrieve REPAR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retrieving OPRR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPRR Item.', 'error');
         }
       });
   }
 
 
-  onViewPRS(prs: any) {
-    this.prs = prs;
-    this.currentEditId = prs.prsNo;
-    this.logger.printLogs('i', 'Viewing PRS', prs);
+  onViewOPRR(oprr: any) {
+    this.oprr = oprr;
+    this.currentEditId = oprr.oprrNo;
+    this.logger.printLogs('i', 'Viewing OPRR', oprr);
 
     if (!this.onItemFound) {
       this.item = null;
     }
 
-    this.issuedID = prs.issuedBy;
-    this.receivedID = prs.receivedBy;
-    this.approvedID = prs.approvedBy;
+    this.issuedID = oprr.issuedBy;
+    this.receivedID = oprr.receivedBy;
+    this.approvedID = oprr.approvedBy;
 
-    this.prsForm.patchValue({
-      prsNo: prs.prsNo,
-      type: prs.rtype,
-      others: prs.otype,
-      userID3: prs.approvedBy,
-      userID1: prs.receivedBy,
-      userID2: prs.issuedBy,
+    this.oprrForm.patchValue({
+      type: oprr.rtype,
+      others: oprr.otype,
+      userID3: oprr.approvedBy,
+      userID1: oprr.receivedBy,
+      userID2: oprr.issuedBy,
     });
 
-    this.api.retrievePRS(this.currentEditId!)
+    this.api.retrieveOPRR(this.currentEditId!)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PRS', res);
-          this.prs = res.details;
-          this.prsItems = res.prsItems;
-          this.searchPRSItems = this.prsItems;
+          this.logger.printLogs('i', 'Retrieving OPRR', res);
+          this.oprr = res.details;
+          this.oprrItems = res.oprrItems;
+          this.searchOPRRItems = this.oprrItems;
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PRS Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving OPRR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPRR Item.', 'error');
         }
       });
 
@@ -692,31 +648,31 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   }
 
-  onDelete(prs: any) {
+  onDelete(oprr: any) {
 
-    if (prs.postFlag) {
-      Swal.fire('Information!', 'Cannot delete posted PRS.', 'warning');
+    if (oprr.postFlag) {
+      Swal.fire('Information!', 'Cannot delete posted OPRR.', 'warning');
       return;
     }
 
-    let prsNo = prs.prsNo;
+    let oprrNo = oprr.oprrNo;
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Remove PRS #' + prsNo,
+      text: 'Remove OPRR #' + oprrNo,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.api.deletePRS(prsNo)
+        this.api.deleteOPRR(oprrNo)
           .subscribe({
             next: (res) => {
-              this.getAllPRS();
+              this.getAllOPRR();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error on Deleting PRS', err);
+              this.logger.printLogs('e', 'Error on Deleting OPRR', err);
               Swal.fire('Denied', err, 'warning');
             }
           });
@@ -726,60 +682,55 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   onAddPARItem() {
-    const PRSNo: string = this.prsForm.value['prsNo'];
-    if (!PRSNo) {
-      Swal.fire('INFORMATION!', 'Please input PRS No. first before adding item', 'warning');
-      return;
-    }
-    // this.api.getAllPARItem
-    this.api.getAllPostedPARItem()
+
+    this.api.getAllPostedOPRItem()
       .subscribe({
         next: (res) => {
-          this.parItems = res;
+          this.oprItems = res;
 
-          this.logger.printLogs('i', 'LIST OF ACTIVE PAR ITEM ', this.parItems);
+          this.logger.printLogs('i', 'LIST OF ACTIVE OPR ITEM ', this.oprItems);
 
-          this.parItems = this.parItems.filter(
-            item => !this.prsItems.some(prsItem => prsItem.parino === item.parino) &&
-              item.prsFlag === false
+          this.oprItems = this.oprItems.filter(
+            item => !this.oprrItems.some(oprrItems => oprrItems.oprino === item.oprino) &&
+              item.oprrFlag === false
           );
-          this.logger.printLogs('i', 'LIST OF ACTIVE PAR ITEM ', this.parItems);
-          this.logger.printLogs('i', 'LIST OF ACTIVE PRS ITEM ', this.prsItems);
+          this.logger.printLogs('i', 'LIST OF ACTIVE OPR ITEM ', this.oprItems);
+          this.logger.printLogs('i', 'LIST OF ACTIVE OPRR ITEM ', this.oprrItems);
 
-          this.parItems.length < 1 ? Swal.fire('Information', 'No Items can be return.', 'info') : this.openItemModal(this.ListItemModal);
+          this.oprItems.length < 1 ? Swal.fire('Information', 'No Items can be return.', 'info') : this.openItemModal(this.ListItemModal);
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Fetching User Groups', err);
+          this.logger.printLogs('e', 'Error Fetching Posted OPR', err);
         }
       });
 
   }
 
 
-  // PRS ITEM
-  onAddItem(item: Item) {
-    this.logger.printLogs('i', 'ADD ITEMS', this.parItems);
+  // OPRR ITEM
+  onAddItem(item: any) {
+    this.logger.printLogs('i', 'ADD ITEMS', this.oprItems);
 
     Swal.fire({
       title: 'Confirm',
-      text: 'Do you want to PRS the selected Item?',
+      text: 'Do you want to OPRR the selected Item?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
     }).then(result => {
       if (result.isConfirmed) {
-        item.prsFlag = true;
-        item.prsNo = this.prsForm.value['prsNo'];
-        this.prsItems.push(item);
 
-        this.logger.printLogs('i', 'TO UPDATE PRS ITEMS', this.prsItems);
+        item.oprrFlag = true;
+        this.oprrItems.push(item);
 
-        this.parItems = this.parItems.filter(item => item.prsFlag === false);
+        this.logger.printLogs('i', 'TO UPDATE OPRR ITEMS', this.oprrItems);
 
-        this.parItems.length < 1 ? this.closeModal(this.ListItemModal) : '';
+        this.oprItems = this.oprItems.filter(item => item.oprrFlag === false);
 
-        this.logger.printLogs('i', 'UPDATED PAR ITEMS', this.parItems);
+        this.oprItems.length < 1 ? this.closeModal(this.ListItemModal) : '';
+
+        this.logger.printLogs('i', 'UPDATED OPR ITEMS', this.oprItems);
 
 
       }
@@ -871,7 +822,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
     this.logger.printLogs('i', 'Selected to Issued', userProfile);
 
-    this.prsForm.patchValue({
+    this.oprrForm.patchValue({
       userID2: userProfile.fullName  // Patch the selected IID to the form
     });
 
@@ -912,7 +863,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
     this.logger.printLogs('i', 'Selected to Received', userProfile);
 
-    this.prsForm.patchValue({
+    this.oprrForm.patchValue({
       userID1: userProfile.fullName  // Patch the selected IID to the form
     });
 
@@ -954,7 +905,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
     this.logger.printLogs('i', 'Selected to Approved', userProfile);
 
-    this.prsForm.patchValue({
+    this.oprrForm.patchValue({
       userID3: userProfile.fullName  // Patch the selected IID to the form
     });
 
@@ -1006,7 +957,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
     this.logger.printLogs('i', `Selected to ${actionType.charAt(0).toUpperCase() + actionType.slice(1)}`, userProfile);
 
-    this.prsForm.patchValue({
+    this.oprrForm.patchValue({
       [formPatchMap[actionType]]: userProfile.fullName
     });
 
@@ -1015,17 +966,17 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
 
-  searchPRSItem() {
-    this.parItemKey = this.prsForm.value['searchPRSItemKey'];
+  searchOPRRItem() {
+    this.parItemKey = this.oprrForm.value['searchOPRRItemKey'];
 
     // Populate all items if the search key is empty
     if (!this.parItemKey || this.parItemKey.trim() === "") {
-      this.prsItems = [...this.searchPRSItems];  // Reset to full list
+      this.oprrItems = [...this.oprrItems];  // Reset to full list
     } else {
       console.log(this.parItemKey);
       const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
 
-      this.prsItems = this.searchPRSItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
+      this.oprrItems = this.searchOPRRItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
         item.brand!.toLowerCase().includes(searchKey) ||
         item.model!.toLowerCase().includes(searchKey) ||
         item.serialNo!.toLowerCase().includes(searchKey) ||
@@ -1122,10 +1073,9 @@ export class PrsComponent implements OnInit, AfterViewInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        // Execute delete Item where propertyNo matches to list
         if (this.propertyNo) {
-          this.prsItems = this.prsItems.filter(items => items.propertyNo !== this.propertyNo);
-          this.logger.printLogs('i', 'Execute delete Item where propertyNo matches to list', this.prsItems);
+          this.oprrItems = this.oprrItems.filter(oprrItems => oprrItems.propertyNo !== this.propertyNo);
+          this.logger.printLogs('i', 'Execute delete Item where propertyNo matches to list', this.oprrItems);
           Swal.fire('Remove!', 'Item has been removed.', 'success');
         } else {
           Swal.fire('Information!', 'Invalid property number.', 'warning');
@@ -1139,21 +1089,19 @@ export class PrsComponent implements OnInit, AfterViewInit {
     const input = event.target as HTMLInputElement;
     const isChecked: boolean = input.checked;
 
-    const index = this.selectedParItems.indexOf(item);
+    const index = this.selectedOPRItems.indexOf(item);
 
     if (isChecked && index === -1) {
-      // If checked and item is not in the list, add it
-      this.selectedParItems.push(item);
+      this.selectedOPRItems.push(item);
     } else if (!isChecked && index > -1) {
-      // If unchecked and item is in the list, remove it
-      this.selectedParItems.splice(index, 1);
+      this.selectedOPRItems.splice(index, 1);
     }
     this.displaySelectedItems();
   }
 
-  // Optional function to get the currently selected items
+
   displaySelectedItems() {
-    this.logger.printLogs('i', 'List of selected PAR Items', this.selectedParItems!);
+    this.logger.printLogs('i', 'List of selected OPR Items', this.selectedOPRItems!);
   }
 
   //Common Method - Advice to add in Helpers
@@ -1169,22 +1117,21 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   resetForm() {
-    // console.log('Resetting Form...');
     this.isEditMode = false;
     this.currentEditId = null;
-    this.prs = null;
+    this.oprr = null;
     this.isModalOpen = false;
     this.item = null;
     this.isOpen = false;
-    this.parItems = [];
-    this.prsItems = [];
-    this.selectedParItems = [];
+    this.oprItems = [];
+    this.oprrItems = [];
+    this.selectedOPRItems = [];
     this.parItemKey = '';
     this.searchKey = '';
     this.issuedID = null;
     this.receivedID = null;
     this.approvedID = null;
-    this.prsForm.reset({
+    this.oprrForm.reset({
       type: '',
       userID1: '',
       userID2: '',
@@ -1195,68 +1142,51 @@ export class PrsComponent implements OnInit, AfterViewInit {
   resetItemForm() {
     this.isEditItemMode = false;
     this.isModalOpen = false;
-    // this.itemForm.reset({
-    //   iid: '',
-    //   qrCode: '',
-    //   description: '',
-    //   brand: '',
-    //   model: '',
-    //   serialNo: '',
-    //   propertyNo: '',
-    //   unit: '',
-    //   amount: '',
-    //   date_Acquired: this.today,
-    // });
-    // Clear related data
     this.propertyNo = null;
     this.IIDKey = null;
     this.iid = null;
-    // this.item = null;
     this.items = [];
     this.brands = [];
     this.models = [];
     this.descriptions = [];
   }
 
-  // Reset and stop/start QR scanning
   resetQRScanForm(action: any, fn: string) {
     this.onCloseQRScanning(this.scannerAction)
   }
 
-  // Handle start/stop of QR scanning
   public handle(scannerAction: any, fn: string): void {
     this.scannerAction = scannerAction;
     this.fn = fn;
-    this.onScanQR(); // Show the scanner modal
+    this.onScanQR();
 
-    // Function to select a device, preferring the back camera
     const playDeviceFacingBack = (devices: any[]) => {
       const device = devices.find(f => /back|rear|environment/gi.test(f.label));
       scannerAction.playDevice(device ? device.deviceId : devices[0].deviceId);
     };
 
-    // Start or stop the scanning action
+
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
         (r: any) => console.log(fn, r),
         alert
       );
-      this.cdr.detectChanges();     // Trigger change detection to update button state
+      this.cdr.detectChanges();
     } else {
       scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
-      this.cdr.detectChanges();     // Trigger change detection to update button state
+      this.cdr.detectChanges();
     }
   }
 
-  // Event handler when QR code is scanned
+
   public onEvent(results: ScannerQRCodeResult[], action?: any): void {
     this.onItemFound = false;
     if (results && results.length) {
       if (results) {
-        action.pause(); // Pause scanning if needed
+        action.pause();
 
         console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results); // Handle scanned results here
+        console.log('Scanned Data:', results);
 
         this.qrCode = results[0].value
         this.validateQR(this.qrCode)
@@ -1269,9 +1199,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
   onEnter(): void {
     console.log('Enter key pressed. QR Value:', this.qrCode);
 
-    // Add your logic here
+
     if (this.qrCode.trim() !== '') {
-      // Example: Perform a search action
       console.log('Performing search for:', this.qrCode);
       this.validateQR(this.qrCode)
     }
@@ -1279,35 +1208,35 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
   validateQR(qr: string): void {
     this.qrCode = ''
-    this.api.retrievePARITEMByQRCode(qr)
+    this.api.retrieveOPRITEMByQRCode(qr)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PRS ITEMS', res);
+          console.log('Retrieve OPR ITEMS', res);
           this.item = res[0];
 
           console.log('Show Items', this.item);
 
-          this.onRetrievePRS(res[0].prsNo);
+          this.onRetrieveOPRR(res[0].oprrNo);
 
         },
         error: (err: any) => {
-          this.logger.printLogs('w', 'Problem with Retreiving PRS', err);
-          Swal.fire('Item not Found', `QR Code ${qr} not found in PRS`, 'info');
+          this.logger.printLogs('w', 'Problem with Retreiving OPRR', err);
+          Swal.fire('Item not Found', `QR Code ${qr} not found in OPRR`, 'info');
         }
       });
 
   }
 
-  onRetrievePRS(prsNo: string) {
-    this.api.retrievePRS(prsNo)
+  onRetrieveOPRR(oprrNo: string) {
+    this.api.retrieveOPRR(oprrNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PRS', res);
-          this.prs = res.details;
+          console.log('Retrieve OPRR', res);
+          this.oprr = res.details;
 
           Swal.fire({
-            title: 'Do you want to view the PRS Details?',
-            text: 'Item Found from  PRS #' + prsNo,
+            title: 'Do you want to view the OPRR Details?',
+            text: 'Item Found from  OPRR #' + oprrNo,
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -1316,14 +1245,14 @@ export class PrsComponent implements OnInit, AfterViewInit {
             if (result.isConfirmed) {
               this.onItemFound = true;
               this.onCloseQRScanning(this.scannerAction);
-              this.onViewPRS(this.prs);
+              this.onViewOPRR(this.oprr);
             } else {
               this.resumeScanning(this.scannerAction);
             }
           });
         },
         error: (err: any) => {
-          this.logger.printLogs('w', 'Problem Retreiving PRS', err);
+          this.logger.printLogs('w', 'Problem Retreiving OPRR', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
@@ -1352,30 +1281,30 @@ export class PrsComponent implements OnInit, AfterViewInit {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.isCustomType = selectedValue == 'Others';
     if (!this.isCustomType) {
-      this.prsForm.get('type')?.setValue(selectedValue);
-      this.prsForm?.get('others')?.setValue('N/A');
+      this.oprrForm.get('type')?.setValue(selectedValue);
+      this.oprrForm?.get('others')?.setValue('N/A');
     } else {
-      this.prsForm?.get('others')?.setValue(null);
-      this.prsForm.get('type')?.markAsUntouched();
-      this.prsForm.get('others')?.markAsTouched();
+      this.oprrForm?.get('others')?.setValue(null);
+      this.oprrForm.get('type')?.markAsUntouched();
+      this.oprrForm.get('others')?.markAsTouched();
     }
   }
 
-  onPrint(prsNo: string) {
+  onPrint(oprrNo: string) {
 
     const referenceModel: any | null = null;
 
-    this.api.retrievePRS(prsNo)
+    this.api.retrieveOPRR(oprrNo)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Retrieving PRS', res);
-          this.prs = res.details;
-          this.prsItems = res.prsItems;
+          this.logger.printLogs('i', 'Retrieving OPRR', res);
+          this.oprr = res.details;
+          this.oprrItems = res.oprrItems;
 
-          this.printService.setModel(this.prs);
+          this.printService.setModel(this.oprr);
 
           // Ensure par.parItems is an array or default to an empty array
-          const items = Array.isArray(this.prsItems) ? this.prsItems : [];
+          const items = Array.isArray(this.oprrItems) ? this.oprrItems : [];
           forkJoin([
             this.printService.setReceivedBy(res.details.receivedBy),
             this.printService.setIssuedBy(res.details.issuedBy),
@@ -1403,18 +1332,18 @@ export class PrsComponent implements OnInit, AfterViewInit {
 
             // Generate report content
             const reportContent = `
-              <div class="watermark">PRS</div>
+              <div class="watermark">OPRR</div>
               <div class="row">
                 <div class="col-12">
                   <p class="fs-6">Name of Local Government Unit: <span class="fw-bold border-bottom ms-1">PROVINCIAL GOVERNMENT OF DAVAO DEL NORTE</span></p>
                 </div>
                 <div class="col-6">
                   <p class="fs-6">Purpose: <span class="fw-bold border-bottom ms-1">
-                    ${(((this.prs.rtype + '').toLowerCase() === "others") ? this.prs.rtype + ' - ' + this.prs.otype : this.prs.rtype) || 'N/A'}
+                    ${(((this.oprr.rtype + '').toLowerCase() === "others") ? this.oprr.rtype + ' - ' + this.oprr.otype : this.oprr.rtype) || 'N/A'}
                   </span></p>
                 </div>
                 <div class="col-6">
-                  <p class="fs-6 text-end">PRS No.: <span class="fw-bold border-bottom ms-1">${this.prs.prsNo || 'Default PRS No.'}</span></p>
+                  <p class="fs-6 text-end">OPRR No.: <span class="fw-bold border-bottom ms-1">${this.oprr.oprrNo || 'Default OPRR No.'}</span></p>
                 </div>
               </div>
               <div class="row">
@@ -1440,13 +1369,13 @@ export class PrsComponent implements OnInit, AfterViewInit {
             `;
 
             // Print the report
-            this.printService.printReport('PRS', reportContent);
+            this.printService.printReport('OPRR', reportContent);
           });
 
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving PRS Item', err);
-          Swal.fire('Error', 'Failure to Retrieve PRS Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPR Item.', 'error');
           return;
         }
       });

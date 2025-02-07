@@ -16,7 +16,7 @@ import { LogsService } from '../../services/logs.service';
 
 import AOS from 'aos';
 declare var bootstrap: any;
-import { ProfileComponent } from '../profile/profile.component';
+import { ProfileComponent } from '../userprofile/profile.component';
 import { NgxScannerQrcodeComponent, NgxScannerQrcodeModule, ScannerQRCodeConfig, ScannerQRCodeResult } from 'ngx-scanner-qrcode';
 import Swal from 'sweetalert2';
 

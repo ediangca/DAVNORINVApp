@@ -1198,6 +1198,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+
 /*----------------------- OPR -----------------------*/
   //OPR List
   getAllOPR(): Observable<any> {
@@ -1347,6 +1348,80 @@ export class ApiService {
     console.log("Update OPTR No. >>> : ", optr);
     console.log("Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}OPTR/Post?id=${optr}`, postVal)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+/*----------------------- OPRR -----------------------*/
+  //OPRR List
+  getAllOPRR(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}OPRR/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  //Search
+  searchOPRR(key: string): Observable<any> {
+    // console.log("Search OPRR by key: ", key);
+    return this.http.get<any>(`${this.apiUrl}OPRR/Search?key=` + key)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Create
+  createOPRR(details: any, updatedItems: Item[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+
+    console.log("Create OPRR Payload: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}OPRR/Create/`, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve
+  retrieveOPRR(oprrNo: string): Observable<any> {
+    console.log("Retrieve OPRR No.: ", oprrNo);
+    return this.http.get<Item[]>(`${this.apiUrl}OPRR/` + oprrNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update
+  updateOPRR(details: any, updatedItems: Item[]): Observable<any> {
+
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+    console.log("Update OPRR: ", details);
+    console.log("Update request Payload: ", requestPayload);
+    return this.http.put<any>(`${this.apiUrl}OPRR/Update?id=` + details.oprrNo, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Delete
+  deleteOPRR(id: string): Observable<any> {
+    console.log("Delete OPRR: ", id);
+    return this.http.delete<any>(`${this.apiUrl}OPRR/Delete?id=` + id)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Update Post Flag
+  postOPRR(oprrNo: string, postVal: boolean): Observable<any> {
+    console.log("Update OPRR No. >>> : ", oprrNo);
+    console.log("Update Post flag >>> : ", postVal);
+    return this.http.put<any>(`${this.apiUrl}PRS/Post?id=${oprrNo}`, postVal)
       .pipe(
         catchError(this.handleError)
       );

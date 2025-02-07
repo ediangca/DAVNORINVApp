@@ -8,12 +8,14 @@
         <div class="row d-flex flex-row">
             <span class="text-primary fw-bold">REPORTS</span>
         </div>
+
     </div>
     <div class="row">
         <div class="col">
 
             <div class="table-responsive scrollable">
                 <div class="table-wrapper">
+
 
                     <table class="table table-striped table-hover" data-aos="zoom-in">
                         <thead>
@@ -37,6 +39,19 @@
 
                                     <label class="form-viewPrint-label" for="{{reportsMap[report]}}">{{
                                         reportsMap[report] + ' List' }}</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <i class="fa-solid fa-folder text-primary" data-toggle="tooltip"
+                                        title="View Print"></i>
+
+                                    <input type="button" class="bg-transparent border-0" id="propertyLogs" type="button" 
+                                    (click)="onViewReport('propertyLogs')" data-toggle="tooltip"
+                                        title="View Print">
+
+
+                                    <label class="form-viewPrint-label" for="propertyLogs">Property Logs - <em>List of all Transaction by Property</em></label>
                                 </td>
                             </tr>
                         </tbody>
@@ -64,7 +79,7 @@
                 <div class="modal-body item-body scrollable">
                     <div class="formGroup row">
                         <div class="col">
-                         
+
                             <div class="form-field d-flex align-items-center">
                                 <i class="fa-sharp-duotone fa-solid fa-caret-down"></i>
                                 <select class="form-select" formControlName="office" name="office" id="office">

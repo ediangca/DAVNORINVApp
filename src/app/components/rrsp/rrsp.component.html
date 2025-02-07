@@ -213,7 +213,7 @@
                     Purpose of Return is required</small>
                   }
 
-                  <!-- Other Transfer type -->
+                  <!-- Other Return type -->
 
                   <small class="text-danger"
                     *ngIf="isCustomType && rrsepForm.controls['others'].invalid && rrsepForm.get('others')?.touched">
@@ -236,7 +236,7 @@
                     <select formControlName="type" name="type" id="type"
                       [ngClass]="{'option-others-size': isCustomType}" class="form-select"
                       (change)="onTypeChange($event)">
-                      <option value>Transfer Type</option>
+                      <option value>Return Type</option>
                       <option *ngFor="let option of typeOptions" [value]="option">{{option}}</option>
                       <option value="Others">Others</option>
                     </select>
@@ -535,7 +535,7 @@
                           <div class="form-field d-flex align-items-center">
 
                             <input type="text" [value]="rrsep?.rtype" name="type" id="type" class="form-control"
-                              placeholder="Transfer type" readonly>
+                              placeholder="Return type" readonly>
 
                             <input type="text" *ngIf="rrsep?.rtype == 'Others'" [value]="rrsep?.otype" name="type"
                               id="type" class="form-control" placeholder="Others" readonly>

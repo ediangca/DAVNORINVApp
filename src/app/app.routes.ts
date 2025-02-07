@@ -4,14 +4,14 @@ import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard } from './guards/auth.guard';
 import { ParComponent } from './components/par/par.component';
-import { ReparComponent } from './components/repar/repar.component';
+import { ReparComponent } from './components/ptr/repar.component';
 import { ItrComponent } from './components/itr/itr.component';
 import { IcsComponent } from './components/ics/ics.component';
 import { UseraccountsComponent } from './components/useraccounts/useraccounts.component';
 import { ReportsComponent } from './components/reports/reports.component';
 import { ItemsComponent } from './components/items/items.component';
 import { UserResolver } from './components/resolver/user.resolver';
-import { ProfileComponent } from './components/profile/profile.component';
+import { ProfileComponent } from './components/userprofile/profile.component';
 import { GlobalComponent } from './components/settings/global/global.component';
 import { ItemgroupComponent } from './components/settings/itemgroup/itemgroup.component';
 import { CompanyComponent } from './components/settings/company/company.component';
@@ -23,6 +23,7 @@ import { RrspComponent } from './components/rrsp/rrsp.component';
 import { PrsComponent } from './components/prs/prs.component';
 import { OthersComponent } from './components/opr/others.component';
 import { OptrComponent } from './components/optr/optr.component';
+import { OprrComponent } from './components/oprr/oprr.component';
 
 //
   // { path: 'dashboard', component: DashboardComponent, resolve: { username: UserResolver }, canActivate: [authGuard], data: { title: 'Dashboard' } },
@@ -46,6 +47,7 @@ export const routes: Routes = [
       { path: 'optr', component: OptrComponent, data: { title: 'OPTR' } },
       { path: 'prs', component: PrsComponent, data: { title: 'PRS' } },
       { path: 'rrsp', component: RrspComponent, data: { title: 'RRSEP' } },
+      { path: 'oprr', component: OprrComponent, data: { title: 'OPRR' } },
       { path: 'global', component: GlobalComponent, data: { title: 'Global Settings' },
         children: [
           // { path: '', component: PlaceholderComponent, data: { title: 'Global Settings'} },

@@ -1534,17 +1534,17 @@ export class OptrComponent implements OnInit, AfterViewInit {
             // Generate the full report content
             const reportContent = `
 
-          <div class="watermark">PTR</div>
+          <div class="watermark">OPTR</div>
 
           <div class="row">
             <div class="col-12">
-              <p class="fs-6">LGU: <span class="fw-bold border-bottom ms-1">${optr.itemSource || 'Default LGU'}</span></p>
+              <p class="fs-6">ITEM SOURCE: <span class="fw-bold border-bottom ms-1">${optr.itemSource || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6">FUND: <span class="fw-bold border-bottom ms-1">${optr.ownership || 'Default LGU'}</span></p>
+              <p class="fs-6">OWNERSHIP: <span class="fw-bold border-bottom ms-1">${optr.ownership || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6 text-end">OPTR No.: <span class="fw-bold border-bottom ms-1">${optr.optrNo || 'Default OPTR No.'}</span></p>
+              <p class="fs-6 text-end">OPTR No.: <span class="fw-bold border-bottom ms-1">${(optr? '000'+optr.optrNo: null) || 'Default OPTR No.'}</span></p>
             </div>
             <div class="col-6">
               <p class="fs-6">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">

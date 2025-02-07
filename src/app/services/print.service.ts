@@ -315,6 +315,7 @@ export class PrintService {
             <img src="../../../assets/images/logo/logo-lg.png" alt="Logo Right" style="height: 80px;">
           </div>
          
+          <hr>
           ${titleContent}
           ${reportContent}
 
