@@ -34,6 +34,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
   @ViewChild('ViewItemModalForm') ViewItemModal!: ElementRef;
   @ViewChild('ListItemModalForm') ListItemModal!: ElementRef;
   @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
+  @ViewChild('TransferModalForm') TransferModalForm!: ElementRef;
 
   roleNoFromToken: string = "Role";
 
@@ -154,8 +155,12 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
     this.itrForm = this.fb.group({
       searchPARItemKey: [''],
+      type: ['', Validators.required],
+      others: ['', Validators.required],
+      reason: ['', Validators.required],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
+      userID3: ['', Validators.required],
     });
 
     this.itemForm = this.fb.group({
@@ -223,20 +228,26 @@ export class ItrComponent implements OnInit, AfterViewInit {
       parModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
 
-
-  openPARModal(modalElement: ElementRef) {
+  openModal(modalElement: ElementRef) {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement.nativeElement);
       modal.show();
     }
   }
 
-  openItemModal(modalElement: ElementRef) {
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement.nativeElement);
-      modal.show();
-    }
-  }
+  // openPARModal(modalElement: ElementRef) {
+  //   if (modalElement) {
+  //     const modal = new bootstrap.Modal(modalElement.nativeElement);
+  //     modal.show();
+  //   }
+  // }
+
+  // openItemModal(modalElement: ElementRef) {
+  //   if (modalElement) {
+  //     const modal = new bootstrap.Modal(modalElement.nativeElement);
+  //     modal.show();
+  //   }
+  // }
 
   closeModal(modalElement: ElementRef) {
     const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
@@ -557,7 +568,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
           );
           this.logger.printLogs('i', 'LIST OF ICS ITEM', this.icsItems);
 
-          this.icsItems.length < 1 ? Swal.fire('Information', 'No Items can be transfer.', 'info') : this.openItemModal(this.ListItemModal);
+          this.icsItems.length < 1 ? Swal.fire('Information', 'No Items can be transfer.', 'info') : this.openModal(this.ListItemModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Fetching User Groups', err);
@@ -636,6 +647,64 @@ export class ItrComponent implements OnInit, AfterViewInit {
       }
 
     }
+
+  }
+
+
+
+  onSubmitOPTR() {
+
+    if (!this.itrForm.valid) {
+      this.vf.validateFormFields(this.itrForm);
+      Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
+      return;
+    }
+
+    if (this.icsItems.length < 1) {
+      Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
+      return;
+    }
+
+    this.currentEditId = this.itr.itrNo;
+
+    const reitr = {
+      itrNo: this.currentEditId,
+      icsNo: this.itr.icsNo,
+      ttype: this.itrForm.value['type'],
+      otype: this.itrForm.value['others'],
+      reason: this.itrForm.value['reason'],
+      receivedBy: this.receivedID,
+      issuedBy: this.issuedID,  
+      approvedBy: this.approvedID,
+      createdBy: this.userAccount.userID,
+    }
+
+
+    if (this.icsItems.length > 0) {
+
+      this.logger.printLogs('i', 'ITR Form', this.itrForm);
+
+      this.logger.printLogs('i', 'Saving RE-ITR', reitr);
+      this.api.createREITR(reitr, this.icsItems)
+        .subscribe({
+          next: (res) => {
+            this.logger.printLogs('i', 'RE-ITR Saved Success', res.details);
+            Swal.fire('Saved!!', res.message, 'success');
+
+
+            this.closeModal(this.TransferModalForm);
+            this.getAllITR();
+            this.resetForm();
+
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Saving ITR', err);
+            Swal.fire('Denied', err, 'warning');
+          }
+        });
+
+    }
+
 
   }
 
@@ -822,7 +891,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
             next: (res) => {
               this.logger.printLogs('i', 'Retrieving ITR Item', res);
               this.itrItems = res;
-              this.openPARModal(this.AddEditModal);
+              this.openModal(this.AddEditModal);
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error Retreiving ITR Item', err);
@@ -855,7 +924,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
           this.itrItems = res.itrItems;
           this.searchITRItems = this.itrItems;
 
-          this.openPARModal(this.ViewModal);
+          this.openModal(this.ViewModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving ITR Item', err);
@@ -865,6 +934,53 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
 
   }
+
+
+
+  onTransfer(itr: any) {
+    if (!itr.postFlag) {
+      Swal.fire('Information!', 'Cannot Re-Transfer unposted ITR.', 'warning');
+      return;
+    }
+    this.isEditMode = false;
+    this.isITR = true;
+    this.itr = itr;
+    this.currentEditId = itr.itrNo;
+    this.logger.printLogs('i', 'Restoring ITR', itr);
+
+    this.issuedID = itr.receivedBy;
+    this.approvedID = itr.approvedBy;
+
+
+    this.itrForm.patchValue({
+      userID2: itr.received, //Issued By
+      userID1: '', //Received BY
+      userID3: itr.approved, //Approved BY
+      type: '',
+      searchPARItemKey: [''],
+    });
+
+    this.api.retrieveICSItemByITRNo(this.itr.itrNo)
+      .subscribe({
+        next: (res) => {
+          this.logger.printLogs('i', 'Retrieving ICS Item', res);
+          this.icsItems = res;
+          this.searchITRItems = this.icsItems;
+
+          this.noOfParItems = this.icsItems.filter((group: any) => group.itrFlag === false).length;
+          this.logger.printLogs('i', 'Number of ICS Item Retrieved', this.noOfParItems);
+
+          this.openModal(this.TransferModalForm); // Open the modal after patching
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPR Item.', 'error');
+        }
+      });
+
+
+  }
+
 
   onDelete(par: any) {
 
@@ -971,7 +1087,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
                 next: (res) => {
                   this.itr = res.details;
                   this.logger.printLogs('i', 'Retreived ITR No: ' + item.itrNo!, res.details);
-                  this.openItemModal(this.ViewItemModal)
+                  this.openModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
                   this.logger.printLogs('e', 'Error Retreiving ITR', err);
@@ -979,7 +1095,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
                 }
               });
           } else {
-            this.openItemModal(this.ViewItemModal)
+            this.openModal(this.ViewItemModal)
           }
 
         },

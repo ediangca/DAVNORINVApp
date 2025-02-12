@@ -30,8 +30,8 @@
       </div>
 
       <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
-        <img src="../../../assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
-        <span class="loading-text text-dark">Loading<span class="dot">.</span>
+        <img src="assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
+        <span class="loading-text text-primary">Loading<span class="dot">.</span>
           <span class="dot">.</span><span class="dot">.</span></span>
 
       </div>
@@ -131,7 +131,7 @@
         <div class="modal-body p-0 m-0">
 
           <div class="card m-0">
-            
+
             <!-- CARD HEADER -->
             <div class="card-header py-2">
 
@@ -149,14 +149,16 @@
                           <small class="text-info">Source of Property</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source" readonly>
+                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source"
+                              readonly>
                           </div>
                         </div>
                         <div class="col-12 col-lg-6">
                           <small class="text-info">Owner/Source From</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership" readonly>
+                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership"
+                              readonly>
                           </div>
                         </div>
                       </div>
@@ -517,14 +519,16 @@
                           <small class="text-info">Source of Property</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source" readonly>
+                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source"
+                              readonly>
                           </div>
                         </div>
                         <div class="col-12 col-lg-6">
                           <small class="text-info">Owner/Source From</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership" readonly>
+                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership"
+                              readonly>
                           </div>
                         </div>
                       </div>
@@ -534,14 +538,16 @@
                           <small class="text-info">Transfer</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="(opr?.ttype == 'Others')? opr?.otype : opr?.ttype" class="form-control" placeholder="Item Source" readonly>
+                            <input type="text" [value]="(opr?.ttype == 'Others')? opr?.otype : opr?.ttype"
+                              class="form-control" placeholder="Item Source" readonly>
                           </div>
                         </div>
                         <div class="col-12 col-lg-8">
                           <small class="text-info">Reason for Transfer</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.reason" class="form-control" placeholder="Ownership" readonly>
+                            <input type="text" [value]="opr?.reason" class="form-control" placeholder="Ownership"
+                              readonly>
                           </div>
                         </div>
                       </div>
@@ -993,118 +999,6 @@
   </div>
 </div>
 
-<!-- ITEM VIEW MODAL -->
-<div #ViewItemModalForm class="modal fade" id="ViewItemModalForm" tabindex="-1" aria-labelledby="ItemModalFormLabel"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="ItemModalFormLabel">Item
-          Details</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-          (click)="closeModal(ViewItemModal)"></button>
-      </div>
-      <div class="modal-body item-body scrollable">
-        <!-- ITEM DETAILS -->
-        <div class="row">
-          <div class="col-lg-12">
-            <table class="table table-bordered">
-              <tbody>
-                <tr>
-                  <td class="fw-bold">Item:</td>
-                  <td>{{ itemName || 'N/A' }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Brand:</td>
-                  <td>{{ item?.brand || 'N/A' }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Model:</td>
-                  <td>{{ item?.model || 'N/A' }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Description:</td>
-                  <td>{{ item?.description || 'N/A' }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Serial No.:</td>
-                  <td>{{ item?.serialNo || 'N/A' }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">QR Code:</td>
-                  <td>{{ item?.qrCode || 'N/A' }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Property No.:</td>
-                  <td>{{ item?.propertyNo || 'N/A' }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Unit:</td>
-                  <td>{{ item?.unit || 'N/A' }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Cost/Amount:</td>
-                  <td>{{ (item?.amount || 0).toLocaleString('en-US', {
-                    minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                    }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Date Acquired:</td>
-                  <td>{{ (item?.date_Acquired | date:'shortDate') || 'N/A'
-                    }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-      <div class="modal-footer">
-        <!-- <button type="button" class="btn btn-warning rounded-pill" *ngIf="!opr?.postFlag && isEditMode"
-          (click)="onEditItem(item!)">Edit</button> -->
-        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
-          (click)="closeModal(ViewItemModal)">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- QR CODE SCANNER -->
-<div #QRScannerForm class="modal fade" id="QRScannerForm">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Scan QR Item</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-          (click)="onCloseQRScanning(scannerAction)"></button>
-      </div>
-      <div class="modal-body item-body scrollable">
-        <!-- ngx-scanner-qrcode -->
-        <div class="qr-overlay">
-          <div class="qr-overlay-line"></div>
-        </div>
-
-        <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
-        </ngx-scanner-qrcode>
-
-        <div class="formGroup mt-2">
-          <label class="fst-italic text-primary" for="qrCodeField">If the QR code is unclear and cannot be detected by
-            the camera, please use the input field provided below to enter the information manually.</label>
-          <input class="form-control rounded-pill mt-3" id="qrCodeField" type="text" placeholder="Enter QR Here.."
-            aria-label="Search" [(ngModel)]="qrCode" (keydown.enter)="onEnter()" />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
-          (click)="onCloseQRScanning(scannerAction)">Close</button>
-        <button type="button" class="btn btn-primary rounded-pill" *ngIf="scannerAction?.isPause"
-          (click)="resumeScanning(scannerAction)">Scan Again</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 <!-- TRANSFER -->
 <div #TransferModalForm class="modal fade" id="TransferModalForm">
   <div class="modal-dialog modal-dialog-centered  modal-xl">
@@ -1123,7 +1017,7 @@
         <div class="modal-body p-0 m-0">
 
           <div class="card m-0">
-            
+
             <!-- CARD HEADER -->
             <div class="card-header py-2">
 
@@ -1141,14 +1035,16 @@
                           <small class="text-info">Source of Property</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="optr?.itemSource" class="form-control" placeholder="Item Source" readonly>
+                            <input type="text" [value]="optr?.itemSource" class="form-control" placeholder="Item Source"
+                              readonly>
                           </div>
                         </div>
                         <div class="col-12 col-lg-6">
                           <small class="text-info">Owner/Source From</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="optr?.ownership" class="form-control" placeholder="Ownership" readonly>
+                            <input type="text" [value]="optr?.ownership" class="form-control" placeholder="Ownership"
+                              readonly>
                           </div>
                         </div>
                       </div>
@@ -1166,14 +1062,16 @@
                           <small class="text-info">ISSUED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="optr?.issued" class="form-control" placeholder="Issued" readonly>
+                            <input type="text" [value]="optr?.issued" class="form-control" placeholder="Issued"
+                              readonly>
                           </div>
                         </div>
                         <div class="col-12 col-lg-4">
                           <small class="text-info">APPROVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="optr?.approved" class="form-control" placeholder="Approved" readonly>
+                            <input type="text" [value]="optr?.approved" class="form-control" placeholder="Approved"
+                              readonly>
                           </div>
                         </div>
                       </div>
@@ -1184,8 +1082,9 @@
               </div>
 
             </div>
+
+            <!-- CARD BODY -->
             <div class="card-body py-0">
-              <!-- ITEM TABLE -->
               <div class="row m-0">
                 <div class="col py-0">
                   <div class="row py-3 bg-primary">
@@ -1249,6 +1148,7 @@
               </div>
               <!-- END OF ITEM TABLE -->
             </div>
+            <!-- CARD FOOTER -->
             <div class="card-footer py-2">
               <!--
               <a
@@ -1459,12 +1359,123 @@
 
           <button id="closeBut" type="button" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal"
             (click)="closeModal(AddEditModal)">Close</button>
-          <button *ngIf="isOPTR && canCreate" type="button"
-            class="btn btn-primary rounded-pill" (click)="onSubmitOPTR()">{{ isEditMode ? 'Update' : 'Save'
+          <button *ngIf="isOPTR && canCreate" type="button" class="btn btn-primary rounded-pill"
+            (click)="onSubmitOPTR()">{{ isEditMode ? 'Update' : 'Save'
             }}</button>
-            
+
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- ITEM VIEW MODAL -->
+<div #ViewItemModalForm class="modal fade" id="ViewItemModalForm" tabindex="-1" aria-labelledby="ItemModalFormLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="ItemModalFormLabel">Item
+          Details</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          (click)="closeModal(ViewItemModal)"></button>
+      </div>
+      <div class="modal-body item-body scrollable">
+        <!-- ITEM DETAILS -->
+        <div class="row">
+          <div class="col-lg-12">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td class="fw-bold">Item:</td>
+                  <td>{{ itemName || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Brand:</td>
+                  <td>{{ item?.brand || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Model:</td>
+                  <td>{{ item?.model || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Description:</td>
+                  <td>{{ item?.description || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Serial No.:</td>
+                  <td>{{ item?.serialNo || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">QR Code:</td>
+                  <td>{{ item?.qrCode || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Property No.:</td>
+                  <td>{{ item?.propertyNo || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Unit:</td>
+                  <td>{{ item?.unit || 'N/A' }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Cost/Amount:</td>
+                  <td>{{ (item?.amount || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Date Acquired:</td>
+                  <td>{{ (item?.date_Acquired | date:'shortDate') || 'N/A'
+                    }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-warning rounded-pill" *ngIf="!opr?.postFlag && isEditMode"
+          (click)="onEditItem(item!)">Edit</button> -->
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+          (click)="closeModal(ViewItemModal)">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR CODE SCANNER -->
+<div #QRScannerForm class="modal fade" id="QRScannerForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Scan QR Item</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          (click)="onCloseQRScanning(scannerAction)"></button>
+      </div>
+      <div class="modal-body item-body scrollable">
+        <!-- ngx-scanner-qrcode -->
+        <div class="qr-overlay">
+          <div class="qr-overlay-line"></div>
+        </div>
+
+        <ngx-scanner-qrcode #scannerAction="scanner" [config]="config" (event)="onEvent($event, scannerAction)">
+        </ngx-scanner-qrcode>
+
+        <div class="formGroup mt-2">
+          <label class="fst-italic text-primary" for="qrCodeField">If the QR code is unclear and cannot be detected by
+            the camera, please use the input field provided below to enter the information manually.</label>
+          <input class="form-control rounded-pill mt-3" id="qrCodeField" type="text" placeholder="Enter QR Here.."
+            aria-label="Search" [(ngModel)]="qrCode" (keydown.enter)="onEnter()" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+          (click)="onCloseQRScanning(scannerAction)">Close</button>
+        <button type="button" class="btn btn-primary rounded-pill" *ngIf="scannerAction?.isPause"
+          (click)="resumeScanning(scannerAction)">Scan Again</button>
+      </div>
     </div>
   </div>
 </div>

@@ -304,7 +304,7 @@ export class PrintService {
       <body>
         <div class="container-fluid">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <img src="../../../assets/images/logo/ddn-logo.gif" alt="DDNLogo Left" style="height: 80px;">
+            <img src="../assets/images/logo/ddn-logo.gif" alt="DDNLogo Left" style="height: 80px;">
             <div>
               <h6 style="text-align: center; flex-grow: 1;">
                 Republic of the Philippines <br>
@@ -312,7 +312,7 @@ export class PrintService {
                 Government Center, Mankilam, Tagum City
               </h6>
             </div>
-            <img src="../../../assets/images/logo/logo-lg.png" alt="Logo Right" style="height: 80px;">
+            <img src="../assets/images/logo/logo-lg.png" alt="Logo Right" style="height: 80px;">
           </div>
          
           <hr>

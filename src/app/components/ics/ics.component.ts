@@ -657,7 +657,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
   }
 
 
-  onSubmitREPAR() {
+  onSubmitITR() {
 
     if (!this.itrForm.valid) {
       this.vf.validateFormFields(this.itrForm);

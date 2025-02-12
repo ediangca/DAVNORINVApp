@@ -637,22 +637,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
 
   Save(par: any) {
-    if (!this.isRepar) {
-      this.logger.printLogs('i', 'Saving PAR', par);
-      this.api.createPAR(par)
-        .subscribe({
-          next: (res) => {
-            this.logger.printLogs('i', 'Saved Success', par);
-            this.saveParItems();
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Saving PAR', err);
-            Swal.fire('Denied', err, 'warning');
-          }
-        });
-    } else {
-
-
+    if (this.isRepar) {
       this.repar = {
         reparNo: par.reparNo,
         parNo: par.parNo,

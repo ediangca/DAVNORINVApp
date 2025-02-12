@@ -624,7 +624,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
       this.currentEditId = this.optr.optrNo;
 
-      const optr =  {
+      const reoptr =  {
         optrNo: this.currentEditId,
         oprNo: this.optr.oprNo,
         ttype: this.optrForm.value['type'],
@@ -641,8 +641,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
   
         this.logger.printLogs('i', 'OPTR Form', this.optrForm);
         
-              this.logger.printLogs('i', 'Saving RE-OPTR', optr);
-              this.api.createREOPTR(this.optr, this.oprItems)
+              this.logger.printLogs('i', 'Saving RE-OPTR', reoptr);
+              this.api.createREOPTR(reoptr, this.oprItems)
                 .subscribe({
                   next: (res) => {
                     this.logger.printLogs('i', 'RE-OPTR Saved Success', res.details);
@@ -664,9 +664,6 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   
     }
-
-    
-    
 
   Update(optr: any) {
     this.logger.printLogs('i', 'Updating OPTR', optr);
@@ -889,7 +886,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.issuedID = optr.receivedBy;
     this.approvedID = optr.approvedBy;
     
-    this.optrForm.patchValue({
+    this.optrForm.patchValue({  
       userID2: optr.received,
       userID1: '', //Received BY
       userID3: optr.approved, //Approved BY

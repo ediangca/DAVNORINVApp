@@ -33,8 +33,8 @@
       </div>
 
       <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
-        <img src="../../../assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
-        <span class="loading-text text-dark">Loading<span class="dot">.</span>
+        <img src="assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
+        <span class="loading-text text-primary">Loading<span class="dot">.</span>
           <span class="dot">.</span><span class="dot">.</span></span>
 
         <!-- <div class="spinner-border text-primary" role="status">
@@ -754,7 +754,7 @@
           <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
           <button type="button" class="btn btn-primary rounded-pill" *ngIf="isITR && noOfParItems > 0"
-            (click)="onSubmitREPAR()">Save</button>
+            (click)="onSubmitITR()">Save</button>
         </div>
       </form>
     </div>

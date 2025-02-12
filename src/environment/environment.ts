@@ -2,6 +2,15 @@ export const environment = {
   production: true,
   appName: "DDNAEINV",
   apiUrl: "https://localhost:7289/api/", //For Development
-  // apiUrl: "http:///172.16.22.88:8022/api/", //Local
+  // apiUrl: "http:///localhost/ddnaeinv/api/", //Local Live
+  // apiUrl: "http:///172.16.22.88/ddnaeinv/api/", //Local Live
+
+
+  
+  // ------------------------------------------------------------------ //
+  // apiUrl: "https:///davnorsystems.gov.ph/ddnaeinv_API", //Live
+
+
+
   // Add other global settings here
 };

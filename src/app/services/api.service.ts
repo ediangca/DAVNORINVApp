@@ -569,9 +569,23 @@ export class ApiService {
   }
 
   //Create
-  createPAR(PAR: any): Observable<any> {
-    console.log("Create PAR: ", PAR);
-    return this.http.post<any>(`${this.apiUrl}PAR/Create/`, PAR)
+  // createPAR(PAR: any): Observable<any> {
+  //   console.log("Create PAR: ", PAR);
+  //   return this.http.post<any>(`${this.apiUrl}PAR/Create/`, PAR)
+  //     .pipe(
+  //       catchError(this.handleError)
+  //     );
+  // }
+  
+  //Create
+  createPAR(details: any, items: any[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      parItems: items
+    };
+
+    console.log("Create PAR Payload: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}PAR/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
       );
@@ -1048,6 +1062,20 @@ export class ApiService {
     console.log("Update ITR No. >>> : ", itrNo);
     console.log("Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}ITR/Post?id=${itrNo}`, postVal)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Create
+  createREITR(details: any, updatedItems: any[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+
+    console.log("Create ITR Payload: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}ITR/Transfer/`, requestPayload)
       .pipe(
         catchError(this.handleError)
       );

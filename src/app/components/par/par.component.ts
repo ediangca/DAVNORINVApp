@@ -720,15 +720,32 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   }
 
-
   Save(par: any) {
     if (!this.isRepar) {
-      this.logger.printLogs('i', 'Saving PAR', par);
-      this.api.createPAR(par)
+      this.logger.printLogs('i', 'Saving PARRRRRRRRRRRR', par);
+      this.api.createPAR(par, this.parItems)
         .subscribe({
           next: (res) => {
             this.logger.printLogs('i', 'Saved Success', par);
-            this.saveParItems();
+            this.logger.printLogs('i', 'Saved Success', this.parItems);
+
+            Swal.fire({
+              title: 'Saved',
+              text: 'Do you want to add new PAR?',
+              icon: 'success',
+              showCancelButton: true,
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No',
+            }).then((result) => {
+              if (!result.isConfirmed) {
+                this.closeModal(this.AddEditModal);
+              }
+  
+            });
+            this.resetForm();
+            this.getAllPAR();
+
+            // this.saveParItems();
           },
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving PAR', err);
