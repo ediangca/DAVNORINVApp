@@ -652,7 +652,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
 
 
-  onSubmitOPTR() {
+  onSubmitITR() {
 
     if (!this.itrForm.valid) {
       this.vf.validateFormFields(this.itrForm);

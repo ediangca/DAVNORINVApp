@@ -39,7 +39,7 @@ export class OprrComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   // pars: any = [];
-  par!: any;
+  opr!: any;
   oprr!: any;
   oprrs: any = [];
   totalItems: number = 0;
@@ -87,7 +87,7 @@ export class OprrComponent implements OnInit, AfterViewInit {
   typeOptions: string[] = ['Disposal', 'Repair', 'Return to Stock'];
   isCustomType = false;
 
-  repar: any | null | undefined;
+  optr: any | null | undefined;
   searchPARItems: Item[] = [];
 
   isNewItem: boolean = false;
@@ -407,6 +407,7 @@ export class OprrComponent implements OnInit, AfterViewInit {
       this.logger.printLogs('i', 'OPRR Form', this.oprrForm.value);
 
       this.oprr = {
+        oprrNo: this.oprr ? this.oprr.oprrNo : null,
         rtype: this.oprrForm.value['type'],
         otype: this.oprrForm.value['others'],
         receivedBy: this.receivedID ? this.receivedID : null,
@@ -986,7 +987,7 @@ export class OprrComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onViewItem(item: Item) {
+  onViewItem(item: any) {
     this.item = item;
     this.parINo = item.parino;
     this.propertyNo = item.propertyNo;
@@ -1002,12 +1003,12 @@ export class OprrComponent implements OnInit, AfterViewInit {
 
           this.itemName = res.description;
 
-          if (item.reparFlag) {
-            this.api.retrieveREPAR(item.reparNo!)
+          if (item.optrFlag) {
+            this.api.retrieveOPTR(item.optrNo!)
               .subscribe({
                 next: (res) => {
-                  this.repar = res.details;
-                  this.logger.printLogs('i', 'Retreived REPAR No: ' + item.reparNo!, this.repar);
+                  this.optr = res.details;
+                  this.logger.printLogs('i', 'Retreived REPAR No: ' + item.optrNo!, this.optr);
                   this.openItemModal(this.ViewItemModal)
                 },
                 error: (err: any) => {
@@ -1016,11 +1017,11 @@ export class OprrComponent implements OnInit, AfterViewInit {
                 }
               });
           } else {
-            this.api.retrievePAR(item.parNo!)
+            this.api.retrieveOPR(item.oprNo!)
               .subscribe({
                 next: (res) => {
-                  this.par = res[0];
-                  this.logger.printLogs('i', 'Retreived PAR No: ' + item.parNo!, this.par);
+                  this.opr = res[0];
+                  this.logger.printLogs('i', 'Retreived PAR No: ' + item.parNo!, this.opr);
                   this.openItemModal(this.ViewItemModal)
                 },
                 error: (err: any) => {

@@ -608,13 +608,25 @@ export class IcsComponent implements OnInit, AfterViewInit {
   }
 
 
-  onAddPARItem() {
-    const PARNo: string = this.icsForm.value['icsNo'];
-    if (!PARNo) {
+  onAddICSItem() {
+    const ICSNo: string = this.icsForm.value['icsNo'];
+    if (!ICSNo) {
       Swal.fire('INFORMATION!', 'Please input ICS No. first before adding item', 'warning');
       return;
     }
-    this.openModal(this.ItemModal);
+
+    this.api.isICSExist(ICSNo).subscribe((exists: boolean) => {
+
+      this.logger.printLogs('i', `ICS No ${ICSNo} Exist`, exists);
+      if (!this.isEditMode && exists) {
+        Swal.fire('INFORMATION!', 'ICS No. already exists!', 'warning');
+        return;
+      }
+
+      this.openModal(this.ItemModal);
+    });
+
+
   }
 
   onSubmit() {
@@ -682,37 +694,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   Save(ics: any) {
 
-    if (!this.isITR) {
-      this.logger.printLogs('i', 'Saving ICS', ics);
-      this.logger.printLogs('i', 'Saving ICS Item', this.icsItems);
-
-      this.api.createICS(ics, this.icsItems)
-        .subscribe({
-          next: (res) => {
-            this.logger.printLogs('i', 'Saved Success', ics);
-            Swal.fire({
-              title: 'Saved',
-              text: 'Do you want to add new ICS?',
-              icon: 'success',
-              showCancelButton: true,
-              confirmButtonText: 'Yes',
-              cancelButtonText: 'No',
-            }).then((result) => {
-              if (!result.isConfirmed) {
-                this.closeModal(this.AddEditModal);
-              }
-            });
-
-            this.resetForm();
-            this.getAllICS();
-          },
-          error: (err: any) => {
-            this.logger.printLogs('e', 'Error Saving ICS', err);
-            Swal.fire('Denied', err, 'warning');
-          }
-        });
-    } else {
-
+    if (this.isITR) {
       this.itr = {
         icsNo: ics.icsNo,
         ttype: this.itrForm.value['type'],
@@ -1080,7 +1062,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
       });
 
     } else {
-      if (await  this.isExistOnUpdate(this.ICSItemNo, SerialNo)) {
+      if (await this.isExistOnUpdate(this.ICSItemNo, SerialNo)) {
         Swal.fire('Information!', 'Serial No. already exist!', 'warning');
         return;
       }
@@ -1179,7 +1161,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   isExistOnUpdate(ICSItemNo: number | null, key: string | null): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if(!ICSItemNo){
+      if (!ICSItemNo) {
         resolve(false); // Consider an item as existing in case of error.
         this.logger.printLogs('e', 'NO ICSItemNo', 'FOR UPDATE ITEM IN CREATING NEW ICS ITEM.');
         return

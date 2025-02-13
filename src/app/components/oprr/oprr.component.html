@@ -552,7 +552,7 @@
                         </thead>
                         <tbody>
 
-                          <ng-container *ngFor="let p of oprItems; let i = index">
+                          <ng-container *ngFor="let p of oprrItems; let i = index">
 
                             <!-- *ngIf="(!isRepar || !p.reparFlag) && parItems.length > 0" -->
                             <tr [class.border-warning]="item?.qrCode == p.qrCode">
@@ -663,13 +663,13 @@
                 </tr>
                 <tr>
                   <td class="fw-bold">{{item?.optrFlag?
-                    "PTR No.:":"PAR No.:"}}</td>
-                  <td>{{ (item?.reparFlag? item?.reparNo:item?.parNo ) || 'N/A'
+                    "OPTR No.:":"OPR No.:"}}</td>
+                  <td>{{ 'OPR-000'+ (item?.optrFlag? item?.optrNo : item?.oprNo ) || 'N/A'
                     }}</td>
                 </tr>
                 <tr>
                   <td class="fw-bold">Issued to:</td>
-                  <td>{{ (item?.reparFlag? repar?.received! : par?.received! )
+                  <td>{{ (item?.optrFlag? optr?.received! : opr?.received! )
                     || 'N/A'}} </td>
                 </tr>
               </tbody>
@@ -753,7 +753,7 @@
               <tbody>
                 <ng-container *ngFor="let ii of oprItems; let i = index">
                   <tr *ngIf="ii.oprrFlag==false">
-                    <td>{{ii.optrNo? ii.optrNo: ii.oprNo }}</td>
+                    <td>{{(ii.optrNo? ii.optrNo: ii.oprNo)? 'OPR-000'+(ii.optrNo? ii.optrNo: ii.oprNo):''}}</td>
                     <td>{{ii.description}}</td>
                     <td>
                       <button class="btn btn-sm btn-primary rounded-pill" type="button" (click)="onAddItem(ii)">

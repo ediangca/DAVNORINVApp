@@ -655,7 +655,19 @@ export class ParComponent implements OnInit, AfterViewInit {
       Swal.fire('INFORMATION!', 'Please input PAR No. first before adding item', 'warning');
       return;
     }
-    this.openModal(this.ItemModal);
+
+
+    this.api.isPARExist(PARNo).subscribe((exists: boolean) => {
+
+      this.logger.printLogs('i', `PAR No ${PARNo} Exist`, exists);
+      if (!this.isEditMode && exists) {
+        Swal.fire('INFORMATION!', 'PAR No. already exists!', 'warning');
+        return;
+      }
+
+      this.openModal(this.ItemModal);
+    });
+
   }
 
   onSubmit() {
@@ -740,7 +752,7 @@ export class ParComponent implements OnInit, AfterViewInit {
               if (!result.isConfirmed) {
                 this.closeModal(this.AddEditModal);
               }
-  
+
             });
             this.resetForm();
             this.getAllPAR();
@@ -750,6 +762,7 @@ export class ParComponent implements OnInit, AfterViewInit {
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving PAR', err);
             Swal.fire('Denied', err, 'warning');
+            this.parItems = [];
           }
         });
     } else {
@@ -995,7 +1008,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   onRepar(par: any) {
     if (!par.postFlag) {
-      Swal.fire('Information!', 'Cannot REPAR unposted PAR.', 'warning');
+      Swal.fire('Information!', 'Cannot PTR unposted PAR.', 'warning');
       return;
     }
 
@@ -1291,7 +1304,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   }
 
-  
+
   onRetrieveItem(item: Item) {
 
     this.api.retrieveItem(item.iid!)

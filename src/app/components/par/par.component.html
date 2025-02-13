@@ -611,6 +611,35 @@
                     </select>
                   </div>
 
+                  
+                  <small class="text-info">*
+                    Received By</small>
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1')  && reparForm.get('userID1')?.touched ||
+                    (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null)">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&
+                      reparForm.get('userID1')?.touched || (reparForm.controls['userID1'].dirty &&
+                      reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&  reparForm.get('userID1')?.touched ||
+                      (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null)"></i>
+
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
+                      [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggestReceived()"
+                      role="textbox">
+                  </div>
+
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0 && activeInput === 'received'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectReceived(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+                  
                   <small class="text-info">*
                     Approve By</small>
 
@@ -640,33 +669,6 @@
                     </ul>
                   </div>
 
-                  <small class="text-info">*
-                    Received By</small>
-
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1')  && reparForm.get('userID1')?.touched ||
-                    (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null)">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&
-                      reparForm.get('userID1')?.touched || (reparForm.controls['userID1'].dirty &&
-                      reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null))"></i>
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&  reparForm.get('userID1')?.touched ||
-                      (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null)"></i>
-
-                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
-                      [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggestReceived()"
-                      role="textbox">
-                  </div>
-
-                  <div class="recent-searches" *ngIf="userProfiles.length > 0 && activeInput === 'received'"
-                    (blur)="activeInput = null">
-                    <ul class="list-group list-group-flush py-3">
-                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
-                        *ngFor="let up of userProfiles" (click)="selectReceived(up)">
-                        {{ up.fullName }}</li>
-                    </ul>
-                  </div>
 
                 </div>
 

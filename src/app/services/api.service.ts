@@ -566,8 +566,12 @@ export class ApiService {
       .pipe(
         catchError(this.handleError)
       );
+    }
+    isPARExist(parNo: string): Observable<boolean> {
+      return this.http.get<boolean>(`${this.apiUrl}PAR/PARNo?key=` + parNo).pipe(
+        catchError(this.handleError)
+      );
   }
-
   //Create
   // createPAR(PAR: any): Observable<any> {
   //   console.log("Create PAR: ", PAR);
@@ -848,6 +852,12 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+  
+  isICSExist(icsNo: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}ICS/ICSNo?key=` + icsNo).pipe(
+      catchError(this.handleError)
+    );
+}
 
   //Update
   // updateICS(id: string, ICS: any): Observable<any> {
