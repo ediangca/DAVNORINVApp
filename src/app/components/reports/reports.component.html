@@ -46,12 +46,12 @@
                                     <i class="fa-solid fa-folder text-primary" data-toggle="tooltip"
                                         title="View Print"></i>
 
-                                    <input type="button" class="bg-transparent border-0" id="propertyLogs" type="button" 
-                                    (click)="onViewReport('propertyLogs')" data-toggle="tooltip"
-                                        title="View Print">
+                                    <input type="button" class="bg-transparent border-0" id="propertyLogs" type="button"
+                                        (click)="onViewReport('propertyLogs')" data-toggle="tooltip" title="View Print">
 
 
-                                    <label class="form-viewPrint-label" for="propertyLogs">Property Logs - <em>List of all Transaction by Property</em></label>
+                                    <label class="form-viewPrint-label" for="propertyLogs">Property Logs - <em>List of
+                                            all Transaction by Property</em></label>
                                 </td>
                             </tr>
                         </tbody>
@@ -97,6 +97,184 @@
                         (click)="closeModal(filterModal)">Close</button>
                     <button type="button" class="btn btn-primary rounded-pill" (click)="onPrint()">Print
                         Preview</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Show Property Card -->
+<div #PropertyCard class="modal fade" id="PropertyCard">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content formGroup">
+            <form class [formGroup]="propertyCardForm" ng-reflect-form="[object Object]"
+                class="ng-untouched ng-pristine ng-invalid">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Property Card</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="closeModal(PropertyCardModal)"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Fillter -->
+                    <div class="row d-flex flex-row mb-3">
+                        <div class="col-12 col-lg-3">
+                            @if(!(propertyCardForm.controls['category'].invalid &&
+                            propertyCardForm.hasError('required', 'category') &&
+                            propertyCardForm.get('category')?.touched ||
+                            (propertyCardForm.controls['category'].dirty &&
+                            propertyCardForm.hasError('required', 'category')))){
+                            <small class="text-info">* Property Category</small>
+                            }@else{
+                            <small class="text-danger" *ngIf="propertyCardForm.controls['category'].invalid &&
+                                  propertyCardForm.hasError('required', 'category') &&
+                                  propertyCardForm.get('category')?.touched ||
+                                  (propertyCardForm.controls['category'].dirty &&
+                                  propertyCardForm.hasError('required', 'category')) ||
+                                  (((propertyCardForm.controls['category'].invalid &&
+                                  propertyCardForm.hasError('required', 'category') &&
+                                  propertyCardForm.get('category')?.touched)))">*
+                                Property Category is required</small>
+                            }
+
+                            <!-- Module -->
+
+                            <div class="form-field d-flex align-items-center" [class.error]="propertyCardForm.controls['category'].invalid &&
+                                propertyCardForm.hasError('required', 'category') &&
+                                propertyCardForm.get('category')?.touched ||
+                                (propertyCardForm.controls['category'].dirty &&
+                                propertyCardForm.hasError('required', 'category')) ||
+                                (((propertyCardForm.controls['category'].invalid &&
+                                propertyCardForm.hasError('required', 'category') &&
+                                propertyCardForm.get('category')?.touched)))">
+
+                                <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="propertyCardForm.controls['category'].invalid &&
+                                    propertyCardForm.hasError('required', 'category') &&
+                                    propertyCardForm.get('category')?.touched ||
+                                    (propertyCardForm.controls['category'].dirty &&
+                                    propertyCardForm.hasError('required', 'type')) ||
+                                    (((propertyCardForm.controls['category'].invalid &&
+                                    propertyCardForm.hasError('required', 'type') &&
+                                    propertyCardForm.get('category')?.touched)))">
+                                </i>
+
+                                <select formControlName="category" name="category" id="category" class="form-select"
+                                    (change)="onCategoryChange($event)">
+                                    <option value>Property Category</option>
+                                    <option value="ALL">All</option>
+                                    <option *ngFor=" let option of typeOptions" [value]="option">{{option}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-7">
+
+                            @if(!(propertyCardForm.controls['item'].invalid &&
+                            propertyCardForm.hasError('required', 'item') &&
+                            propertyCardForm.get('item')?.touched ||
+                            (propertyCardForm.controls['item'].dirty &&
+                            propertyCardForm.hasError('required', 'item')))){
+                            <small class="text-info">*
+                                Property No. | Desciption | QRCode ...</small>
+                            }@else {
+                            <small class="text-danger" *ngIf="propertyCardForm.controls['item'].invalid &&
+                            propertyCardForm.hasError('required', 'item') &&
+                            propertyCardForm.get('item')?.touched ||
+                            (propertyCardForm.controls['item'].dirty &&
+                            propertyCardForm.hasError('required', 'item'))">* Property No. | Desciption | QRCode ...
+                                is
+                                required</small>
+                            }
+
+
+                            <div class="form-field d-flex align-items-center" style="width: 100%;" [class.error]="propertyCardForm.controls['item'].invalid &&
+                            propertyCardForm.hasError('required', 'item') &&
+                            propertyCardForm.get('item')?.touched ||
+                            (propertyCardForm.controls['item'].dirty &&
+                            propertyCardForm.hasError('required', 'item'))">
+
+                                <i class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
+
+                                <input type="text" class="form-control rounded-pill" type="search"
+                                    formControlName="item" name="item" [(ngModel)]="propertyDescription"
+                                    (keyup)="onAutoSuggestProperty()" role="textbox"
+                                    placeholder="Enter Property No. | Desciption | QRCode ..." aria-label="Search">
+
+
+                                <i class="me-3 fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="propertyCardForm.controls['item'].invalid &&
+                                    propertyCardForm.hasError('required', 'item') &&
+                                    propertyCardForm.get('item')?.touched ||
+                                    (propertyCardForm.controls['item'].dirty &&
+                                    propertyCardForm.hasError('required', 'item'))">
+                                </i>
+                            </div>
+                            <div class="recent-searches scrollable" style="max-height: 250px;" *ngIf="items.length > 0"
+                                (blur)="activeInput = null">
+                                <ul class="list-group list-group-flush py-3">
+                                    <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                                        *ngFor="let i of items" (click)="selectedItem(i)">
+                                        {{ (i.itemNo||i.propertyNo||i.qrCode)+" - "+i.description }}</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-2 d-flex just justify-content-center align-items-center">
+
+                            <button type="button"
+                                class="btn btn-primary rounded-pill d-flex justify-content-center align-items-center"
+                                (click)="onViewPropertyCard()">View</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Table -->
+                    <div class="row">
+                        <div class="col">
+
+
+                            <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
+                                <img src="assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
+                                <span class="loading-text text-primary">Loading<span class="dot">.</span>
+                                    <span class="dot">.</span><span class="dot">.</span></span>
+
+                            </div>
+
+                            <div class="row table-responsive scrollable p-0 m-0">
+                                <table class="table table-striped table-hover"
+                                    *ngIf="!isLoading && propertyCards?.length > 0">
+                                    <thead>
+                                        <tr>
+                                            <th>Date Created</th>
+                                            <th>Transaction</th>
+                                            <th>REF. No. From</th>
+                                            <th>REF. No. To</th>
+                                            <th>Issued By</th>
+                                            <th>Recieved By</th>
+                                            <th>Approved By</th>
+                                            <th>Created By</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let p of propertyCards">
+                                            <td>{{formatDate(p.date_Created)}}</td>
+                                            <td>{{p.ref}}</td>
+                                            <td>{{p.refNoFrom}}</td>
+                                            <td>{{p.refNoTo || "-"}}</td>
+                                            <td>{{p.issued}}</td>
+                                            <td>{{p.received}}</td>
+                                            <td>{{p.approved || "-"}}</td>
+                                            <td>{{p.created}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+                        (click)="closeModal(filterModal)">Close</button>
+                    <!-- <button type="button" class="btn btn-primary rounded-pill" (click)="onPrint()">Print
+                        Preview</button> -->
                 </div>
             </form>
         </div>

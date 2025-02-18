@@ -1644,6 +1644,26 @@ export class ApiService {
       );
   }
 
+  /*----------------------- PROPERTY CARD -----------------------*/
+  
+  //Search
+  searchProperty(category: string, key: string): Observable<any> {
+    console.log("Search: ", `Category -> ${category} itemID -> ${key}`);
+    return this.http.get<any>(`${this.apiUrl}PropertyCard/PropertyList?category=${category}&key=${key}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  //Search
+  retreivePropertyCard(category: string, key: string): Observable<any> {
+    console.log("Search: ", `Category -> ${category} itemID -> ${key}`);
+    return this.http.get<any>(`${this.apiUrl}PropertyCard/SearchByCategoryAndID?category=${category}&key=${key}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
 
   /*----------------------- ERROR HANDLING -----------------------*/
 

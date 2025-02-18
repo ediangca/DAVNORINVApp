@@ -185,7 +185,7 @@
                 </div>
               </div>
               <div class="row d-flex flex-row">
-                <div class="col">
+                <div class="col-12 col-lg-6">
                   @if(!(parForm.controls['fund'].invalid &&
                   parForm.hasError('required', 'fund') &&
                   parForm.get('fund')?.touched ||
@@ -208,7 +208,7 @@
                     <input type="text" formControlName="fund" name="fund" id="fund" placeholder="FUND">
                   </div>
                 </div>
-                <div class="col" *ngIf="!isEditMode">
+                <div class="col-12 col-lg-6" *ngIf="!isEditMode">
 
                   @if(!(parForm.controls['parNo'].invalid &&
                   parForm.hasError('required', 'parNo') &&

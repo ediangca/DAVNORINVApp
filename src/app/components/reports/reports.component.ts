@@ -8,6 +8,7 @@ import { LogsService } from '../../services/logs.service';
 
 import Swal from 'sweetalert2';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import ValidateForm from '../../helpers/validateForm';
 declare var bootstrap: any;
 
 @Component({
@@ -20,6 +21,7 @@ declare var bootstrap: any;
 export class ReportsComponent implements OnInit, AfterViewInit {
 
   @ViewChild('FilterBranch') filterModal!: ElementRef;
+  @ViewChild('PropertyCard') PropertyCardModal!: ElementRef;
 
   reportsMap: { [key: string]: string } = {
     PAR: 'Property Acknowledgement Receipt',
@@ -36,12 +38,20 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   filterForm!: FormGroup;
   offices: any = [];
+  propertyCardForm!: FormGroup;
+  propertyCards: any = []
+  typeOptions: string[] = ['Above50k', 'Below50k', 'Others'];
+  activeInput: 'card' | 'issued' | 'approved' | null = null;
   office: string | null = null;
+  category: string | null = null;
+  itemID: string | null = null;
+  item: any | null = null;
   items: any = []
   userProfile: any;
 
-  isLoading: boolean = true;
+  isLoading: boolean = false;
   file: string | null = null;
+  propertyDescription: string | null = null;
 
   // Privilege Action Access
   canCreate: boolean = false;
@@ -53,7 +63,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private printService: PrintService,
-    private logger: LogsService) {
+    private vf: ValidateForm, private logger: LogsService) {
     this.ngOnInit();
   }
 
@@ -65,6 +75,10 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       office: ['', Validators.required]
     });
 
+    this.propertyCardForm = this.fb.group({
+      category: ['', Validators.required],
+      item: ['', Validators.required]
+    });
     this.loadUser()
   }
 
@@ -128,32 +142,42 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
   onViewReport(reportName: string) {
+    switch (reportName) {
+      case "propertyLogs":
+
+        this.openModal(this.PropertyCardModal);
+
+        break;
+
+      default:
 
 
-    this.logger.printLogs('i', 'Allow Report Retrieve all Office', this.canRetrieve);
-    this.logger.printLogs('i', 'Run Report', reportName);
-    this.file = reportName;
+        this.logger.printLogs('i', 'Allow Report Retrieve all Office', this.canRetrieve);
+        this.logger.printLogs('i', 'Run Report', reportName);
+        this.file = reportName;
 
-    if (this.canRetrieve) {
-      // this.getAllOffice(reportName);
+        if (this.canRetrieve) {
+          // this.getAllOffice(reportName);
 
-      this.api.getAllOffices(reportName).subscribe({
-        next: (res) => {
-          this.offices = res; // Update the offices property
-          this.logger.printLogs('i', `List of Offices under module ${reportName}`, res);
+          this.api.getAllOffices(reportName).subscribe({
+            next: (res) => {
+              this.offices = res; // Update the offices property
+              this.logger.printLogs('i', `List of Offices under module ${reportName}`, res);
 
-          // Open the modal after successfully fetching offices
-          this.openModal(this.filterModal);
-        },
-        error: (err: any) => {
-          this.logger.printLogs('e', 'Error Fetching Offices', err);
-          // Optionally, show an error message to the user
+              // Open the modal after successfully fetching offices
+              this.openModal(this.filterModal);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Offices', err);
+              // Optionally, show an error message to the user
+            }
+          });
+        } else {
+          this.office = `${this.userProfile.branch}-${this.userProfile.department}-${this.userProfile.section}`;
+          this.logger.printLogs('i', `User Offices : `, this.office);
+          this.onPrint()
         }
-      });
-    } else {
-      this.office = `${this.userProfile.branch}-${this.userProfile.department}-${this.userProfile.section}`;
-      this.logger.printLogs('i', `User Offices : `, this.office);
-      this.onPrint()
+
     }
 
   }
@@ -165,23 +189,21 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   onPrint() {
     if (this.file) {
-  
-      
       // if (this.canRetrieve && !this.filterForm.valid) {
       //   this.validateFormFields(this.filterForm);
       //   Swal.fire('INFORMATION!', 'Choose an Office First.', 'info');
       //   return
       // }
       this.office = this.filterForm.value['office'];;
-      
+
       this.api.getAllItemByOffice(this.file, this.office!).subscribe({
         next: (res) => {
           this.items = res; // Update the offices property
           this.logger.printLogs('i', `List of All ${this.file} Items under Offices under ${this.office}`, res);
 
-          if(this.items.length < 1){
-                Swal.fire('INFORMATION!', 'Sorry! No item can Generate.', 'info');
-                return;
+          if (this.items.length < 1) {
+            Swal.fire('INFORMATION!', 'Sorry! No item can Generate.', 'info');
+            return;
           }
 
 
@@ -223,7 +245,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
           if (list.some((item: any) => item.parNo) && this.file == 'PAR') {
             refHeader = "PAR NO.";
-          } else if (list.some((item: any) => item.reparNo) && this.file == 'PTR') { 
+          } else if (list.some((item: any) => item.reparNo) && this.file == 'PTR') {
             refHeader = "PTR NO.";
           } else if (list.some((item: any) => item.prsNo) && this.file == 'PRS') {
             refHeader = "PRS NO.";
@@ -232,11 +254,11 @@ export class ReportsComponent implements OnInit, AfterViewInit {
           } else if (list.some((item: any) => item.itrNo) && this.file == 'ITR') {
             refHeader = "ITR NO.";
           } else if (list.some((item: any) => item.rrsepNo) && this.file == 'RRSEP') {
-            refHeader = "RRSEP NO.";  
+            refHeader = "RRSEP NO.";
           }
           const rows = list.map((item: any, index: number) => {
             // Determine the first non-null/no empty value among the possible identifiers
-            identifier = 
+            identifier =
               item.prsNo ||
               item.reparNo ||
               item.parNo ||
@@ -345,6 +367,93 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       return null;
     }
   }
+
+
+
+  onAutoSuggestProperty() {
+    this.itemID = null;
+    if (!this.propertyCardForm.value['category']) {
+      Swal.fire('INFORMATION!', 'Select Category first.', 'info');
+      this.propertyDescription = null
+    } else {
+      if (this.propertyCardForm.value['item'] == "") {
+        this.items = [];
+      } else {
+        this.activeInput = 'card';
+        if (this.propertyDescription !== null) {
+          this.api.searchProperty(this.propertyCardForm.value['category'], this.propertyDescription)
+            .subscribe({
+              next: (res) => {
+                this.items = res;
+                // this.items = res.slice(0, 20);
+              },
+              error: (err: any) => {
+                this.logger.printLogs('e', 'Error Fetching Property Items', err);
+                this.items = [];
+              }
+            });
+        }
+      }
+    }
+  }
+
+  onCategoryChange(event: Event) {
+    this.category = (event.target as HTMLSelectElement).value;
+    this.logger.printLogs('i', 'Selected Category', this.category);
+    this.logger.printLogs('i', 'Selected Category', this.propertyCardForm.value['category']);
+  }
+
+  selectedItem(item: any): void {
+
+    this.itemID = item.itemID;
+    this.item = item;
+    this.logger.printLogs('i', 'Selected to Property', item);
+
+    this.propertyCardForm.patchValue({
+      item: item.description  // Patch the selected property description to the form
+    });
+
+    this.activeInput = null;
+    this.items = [];  // Clear the suggestion list after selection
+  }
+
+  onViewPropertyCard() {
+    if (!this.propertyCardForm.valid) {
+      this.vf.validateFormFields(this.propertyCardForm);
+      Swal.fire('Warning!', 'Required filter must be fill!', 'warning');
+      return;
+    }
+
+    if (this.propertyDescription !== null) {
+
+      const key = (this.item.propertyNo !== null && this.item.propertyNo.toString().toLowerCase() !== "n/a")
+        ? this.item.propertyNo
+        : this.item.qrCode;
+
+        this.api.retreivePropertyCard(this.propertyCardForm.value['category'], key)
+        .subscribe({
+          next: (res) => {
+            this.isLoading = true;
+      
+            // Add a delay before setting isLoading to false
+            setTimeout(() => {
+              this.isLoading = false;
+              this.propertyCards = res;
+              this.logger.printLogs('i', 'Fetching Property Items', this.propertyCards);
+            }, 2000); // 2-second delay (adjust as needed)
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Fetching Property Items', err);
+            this.items = [];
+          }
+        });
+
+    }
+
+
+
+  }
+
 
   //Common Method - Advice to add in Helpers
   private validateFormFields(fg: FormGroup) {

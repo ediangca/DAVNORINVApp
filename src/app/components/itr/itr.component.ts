@@ -514,6 +514,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
     this.activeInput = null;
     this.userProfiles = [];  // Clear the suggestion list after selection
   }
+  
   onAutoSuggestApproved() {
     if (!this.approvedByID) {
       // this.getAllUserProfile();//Populate all userProfiles
