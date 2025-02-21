@@ -280,7 +280,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             this.totalItems = res.length;
             this.userAccounts = res;
             this.logger.printLogs('i', 'LIST OF USERT ACCOUTNS', this.userAccounts);
-            this.userAccounts = res.slice(0, 10);
+            this.userAccounts = res.slice(0, 20);
             this.isLoading = false; // Stop showing the loading spinner
           },
           error: (err: any) => {
@@ -393,7 +393,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: (res) => {
               // console.log("Fetching User Groups:", res);
-              this.userAccounts = res.slice(0, 10);
+              this.userAccounts = res.slice(0, 20);
             },
             error: (err: any) => {
               console.log("Error Fetching User Accounts:", err);

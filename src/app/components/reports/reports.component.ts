@@ -333,7 +333,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
                       </table>`;
 
           // Print the report
-          this.printService.printReport('', reportContent);
+          this.printService.printReport(this.file ? `S${this.file}` : '', reportContent);
           //PRINT
         },
         error: (err: any) => {
@@ -367,6 +367,36 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       return null;
     }
   }
+  // Helper function to format the date
+  public formatDateTime(date: Date | string | null): string | null {
+    if (!date) return null;
+
+    // If the date is a string, convert it to a Date object
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
+
+    // Ensure it's a valid Date object
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+
+      let hours = date.getHours();
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+
+      // Convert 24-hour format to 12-hour format
+      hours = hours % 12 || 12;
+
+      return `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`;
+    } else {
+      // Handle invalid date
+      this.logger.printLogs('w', 'Invalid Date Format', [date]);
+      return null;
+    }
+  }
+
 
 
 
@@ -430,11 +460,11 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         ? this.item.propertyNo
         : this.item.qrCode;
 
-        this.api.retreivePropertyCard(this.propertyCardForm.value['category'], key)
+      this.api.retreivePropertyCard(this.propertyCardForm.value['category'], key)
         .subscribe({
           next: (res) => {
             this.isLoading = true;
-      
+
             // Add a delay before setting isLoading to false
             setTimeout(() => {
               this.isLoading = false;

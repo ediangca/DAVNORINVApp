@@ -754,7 +754,10 @@
                 <ng-container *ngFor="let ii of oprItems; let i = index">
                   <tr *ngIf="ii.oprrFlag==false">
                     <td>{{(ii.optrNo? ii.optrNo: ii.oprNo)? 'OPR-000'+(ii.optrNo? ii.optrNo: ii.oprNo):''}}</td>
-                    <td>{{ii.description}}</td>
+                    <td>
+                      <span class="fw-bold">PropertyNo: </span> {{ii.propertyNo}}<br>
+                      {{ii.description}}</td>
+                    <td>
                     <td>
                       <button class="btn btn-sm btn-primary rounded-pill" type="button" (click)="onAddItem(ii)">
                         <i class="fa-thin fa-plus"></i> Add

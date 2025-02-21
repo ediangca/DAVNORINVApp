@@ -251,16 +251,16 @@ export class OprrComponent implements OnInit, AfterViewInit {
         map((res) => {
           this.logger.printLogs('i', 'Show OPRRS only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated OPRR', res);
+          this.totalItems = res.length;
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 10);
+            return res.slice(0, 20);
           }
           const filtered = res.filter((item: any) =>
             item.createdBy === this.userAccount.userID ||
             item.issuedBy === this.userAccount.userID ||
             item.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filtered.length;
-          return filtered.slice(0, 10);
+          return filtered.slice(0, 20);
         }),
         finalize(() => this.isLoading = false)
       )
@@ -299,8 +299,9 @@ export class OprrComponent implements OnInit, AfterViewInit {
               // Filter results based on `createdBy` and slice for pagination
               this.logger.printLogs('i', 'Show OPRR only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated OPRR', res);
+              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
-                return res.slice(0, 10); // For administrators, show all records, limited to 10
+                return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
               const filtered = res.filter((item: any) =>
@@ -308,8 +309,7 @@ export class OprrComponent implements OnInit, AfterViewInit {
                 item.issuedBy === this.userAccount.userID ||
                 item.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filtered.length;
-              return filtered.slice(0, 10); // Limit to 10 results for display
+              return filtered.slice(0, 20); // Limit to 10 results for display
             }),
             finalize(() => this.isLoading = false) // Ensure spinner stops
           )

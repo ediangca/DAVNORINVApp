@@ -36,7 +36,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //TotalAbove50ItemsByOffice List
   getTotalAbove50ItemsByOffice(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}Cencus/TotalAbove50ItemsByOffice`)
@@ -566,11 +566,11 @@ export class ApiService {
       .pipe(
         catchError(this.handleError)
       );
-    }
-    isPARExist(parNo: string): Observable<boolean> {
-      return this.http.get<boolean>(`${this.apiUrl}PAR/PARNo?key=` + parNo).pipe(
-        catchError(this.handleError)
-      );
+  }
+  isPARExist(parNo: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}PAR/PARNo?key=` + parNo).pipe(
+      catchError(this.handleError)
+    );
   }
   //Create
   // createPAR(PAR: any): Observable<any> {
@@ -580,7 +580,7 @@ export class ApiService {
   //       catchError(this.handleError)
   //     );
   // }
-  
+
   //Create
   createPAR(details: any, items: any[]): Observable<any> {
     const requestPayload = {
@@ -605,9 +605,23 @@ export class ApiService {
   }
 
   //Update
-  updatePAR(id: string, PAR: any): Observable<any> {
-    console.log("Update PAR: ", PAR);
-    return this.http.put<any>(`${this.apiUrl}PAR/Update?id=` + id, PAR)
+  // updatePAR(id: string, PAR: any): Observable<any> {
+  //   console.log("Update PAR: ", PAR);
+  //   return this.http.put<any>(`${this.apiUrl}PAR/Update?id=` + id, PAR)
+  //     .pipe(
+  //       catchError(this.handleError)
+  //     );
+  // }
+  
+  updatePAR(parNo: string, par: any, items: Item[]): Observable<any> {
+    console.log("Update PAR Details: ", par);
+    const requestPayload = {
+      details: par,
+      parItems: items
+    };
+    console.log("Update request Payload: ", requestPayload);
+    // https://localhost:7289/api/PAR/Update?id=123
+    return this.http.put<any>(`${this.apiUrl}PAR/Update?id=` + parNo, requestPayload)
       .pipe(
         catchError(this.handleError)
       );
@@ -659,6 +673,20 @@ export class ApiService {
 
     console.log("Create REPAR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}REPAR/Create/`, requestPayload)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Create
+  createREPTR(details: any, updatedItems: any[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      updatedItems: updatedItems
+    };
+
+    console.log("Create PTR Payload: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}REPAR/Transfer/`, requestPayload)
       .pipe(
         catchError(this.handleError)
       );
@@ -718,7 +746,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //PARITEM Active List 
   getAllPostedPARItem(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}PARITEM/posted/`)
@@ -726,7 +754,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //PARITEM Active List By Key
   searchAllPostedPARItem(key: string): Observable<any> {
     // 'https://localhost:7289/api/PARITEM/Active/Search?key=123123
@@ -735,7 +763,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //PARITEM List By PAR No.
   getAllPARItemByPARNo(parNo: String): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}PARITEM/Search?key=` + parNo)
@@ -766,6 +794,16 @@ export class ApiService {
   retrievePARItemByParNo(parNo: string): Observable<Item[]> {
     console.log("Retrieve PAR Item by PAR No.: ", parNo);
     return this.http.get<Item[]>(`${this.apiUrl}PARITEM/PARNO/` + parNo)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Retrieve By PAR No.
+  retrievePARItemByPTRNo(ptrNo: string): Observable<Item[]> {
+    console.log("Retrieve PAR Item by PTR No.: ", ptrNo);
+
+    return this.http.get<Item[]>(`${this.apiUrl}PARITEM/PTRNO/` + ptrNo)
       .pipe(
         catchError(this.handleError)
       );
@@ -852,12 +890,12 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   isICSExist(icsNo: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}ICS/ICSNo?key=` + icsNo).pipe(
       catchError(this.handleError)
     );
-}
+  }
 
   //Update
   // updateICS(id: string, ICS: any): Observable<any> {
@@ -875,8 +913,8 @@ export class ApiService {
       icsItems: items
     };
     console.log("Update request Payload: ", requestPayload);
-    // https://localhost:7289/api/ICS/Update?icsNo=123
-    return this.http.put<any>(`${this.apiUrl}ICS/Update?icsNo=` + icsNo, requestPayload)
+    // https://localhost:7289/api/ICS/Update?id=123
+    return this.http.put<any>(`${this.apiUrl}ICS/Update?id=` + icsNo, requestPayload)
       .pipe(
         catchError(this.handleError)
       );
@@ -919,7 +957,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //PARITEM Active List By Key
   searchAllPostedICSItem(key: string): Observable<any> {
     // 'https://localhost:7289/api/ICSItem/posted/Search?key=123123
@@ -1237,7 +1275,7 @@ export class ApiService {
       );
   }
 
-/*----------------------- OPR -----------------------*/
+  /*----------------------- OPR -----------------------*/
   //OPR List
   getAllOPR(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}OPR/`)
@@ -1273,9 +1311,23 @@ export class ApiService {
   }
 
   //Update
-  updateOPR(id: number, OPR: any): Observable<any> {
-    console.log("Update OPR: ", OPR);
-    return this.http.put<any>(`${this.apiUrl}OPR/Update?id=` + id, OPR)
+  // updateOPR(id: number, OPR: any): Observable<any> {
+  //   console.log("Update OPR: ", OPR);
+  //   return this.http.put<any>(`${this.apiUrl}OPR/Update?id=` + id, OPR)
+  //     .pipe(
+  //       catchError(this.handleError)
+  //     );
+  // }
+
+  updateOPR(oprNo: number, par: any, items: OPRItem[]): Observable<any> {
+    console.log("Update OPR Details: ", par);
+    const requestPayload = {
+      details: par,
+      oprItems: items
+    };
+    console.log("Update request Payload: ", requestPayload);
+    // https://localhost:7289/api/OPR/Update?id=123
+    return this.http.put<any>(`${this.apiUrl}OPR/Update?id=` + oprNo, requestPayload)
       .pipe(
         catchError(this.handleError)
       );
@@ -1302,7 +1354,7 @@ export class ApiService {
   }
 
   /*----------------------- OPTR -----------------------*/
-  //REPAR List
+  //OPTR List
   getAllOPTR(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}OPTR/`)
       .pipe(
@@ -1331,7 +1383,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //Create
   createREOPTR(details: any, updatedItems: any[]): Observable<any> {
     const requestPayload = {
@@ -1391,7 +1443,7 @@ export class ApiService {
       );
   }
 
-/*----------------------- OPRR -----------------------*/
+  /*----------------------- OPRR -----------------------*/
   //OPRR List
   getAllOPRR(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}OPRR/`)
@@ -1474,7 +1526,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //OPRITEM Active List 
   getAllPostedOPRItem(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}OPRITEM/posted/`)
@@ -1482,7 +1534,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //OPRITEM Active List By Key
   searchAllPostedOPRItem(key: string): Observable<any> {
     // 'https://localhost:7289/api/OPRITEM/Active/Search?key=123123
@@ -1491,7 +1543,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //OPRITEM List By OPR No.
   getAllOPRItemByOPRNo(oprNo: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}OPRITEM/Search?key=` + oprNo)
@@ -1645,7 +1697,7 @@ export class ApiService {
   }
 
   /*----------------------- PROPERTY CARD -----------------------*/
-  
+
   //Search
   searchProperty(category: string, key: string): Observable<any> {
     console.log("Search: ", `Category -> ${category} itemID -> ${key}`);
@@ -1654,7 +1706,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //Search
   retreivePropertyCard(category: string, key: string): Observable<any> {
     console.log("Search: ", `Category -> ${category} itemID -> ${key}`);

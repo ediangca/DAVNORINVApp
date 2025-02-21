@@ -39,7 +39,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
   totalItems: number = 0;
   opr!: any;
   oprItems: any[] = [];
-  selectedOPRItems: Item[] = []; // Array to track selected items from repar
+  selectedOPRItems: Item[] = []; 
   userProfiles: any = [];
   items: any = [];
   searchKey: string = '';
@@ -305,8 +305,9 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
           this.logger.printLogs('i', 'Show OPRS only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated OPRS', res);
+          this.totalItems = res.length;
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 10);
+            return res.slice(0, 20);
           }
 
 
@@ -314,8 +315,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
             par.createdBy === this.userAccount.userID ||
             par.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filtered.length;
-          return filtered.slice(0, 10);
+          return filtered.slice(0, 20);
 
         }),
         finalize(() => this.isLoading = false)
@@ -343,16 +343,16 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
               this.logger.printLogs('i', 'Show OPRS only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated OPRS', res);
+              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
-                return res.slice(0, 10);
+                return res.slice(0, 20);
               }
 
               const filtered = res.filter((par: any) =>
                 par.createdBy === this.userAccount.userID ||
                 par.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filtered.length;
-              return filtered.slice(0, 10);
+              return filtered.slice(0, 20);
             }),
             finalize(() => this.isLoading = false)
           )
@@ -440,24 +440,23 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
     if (this.oprForm!) {
       this.oprForm.patchValue({
-        userID1: userProfile.fullName  // Patch the selected IID to the form
+        userID1: userProfile.fullName 
       });
     }
 
     if (this.optrForm!) {
       this.optrForm.patchValue({
-        userID1: userProfile.fullName  // Patch the selected IID to the form
+        userID1: userProfile.fullName 
       });
     }
 
     this.activeInput = null;
-    this.userProfiles = [];  // Clear the suggestion list after selection
+    this.userProfiles = []; 
   }
 
   onAutoSuggestIssued() {
     this.issuedID = null;
     if (!this.issuedByID) {
-      // this.getAllUserProfile();//Populate all userProfiles
       this.userProfiles = [];
     } else {
       this.activeInput = 'issued';
@@ -488,17 +487,16 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.logger.printLogs('i', 'Selected to Issued', userProfile);
 
     this.oprForm.patchValue({
-      userID2: userProfile.fullName  // Patch the selected IID to the form
+      userID2: userProfile.fullName 
     });
 
     this.activeInput = null;
-    this.userProfiles = [];  // Clear the suggestion list after selection
+    this.userProfiles = [];
   }
 
 
   onAutoSuggestApproved() {
     if (!this.approvedByID) {
-      // this.getAllUserProfile();//Populate all userProfiles
       this.userProfiles = [];
     } else {
       this.activeInput = 'approved';
@@ -529,22 +527,22 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.logger.printLogs('i', 'Selected to Approved', userProfile);
 
     this.optrForm.patchValue({
-      userID3: userProfile.fullName  // Patch the selected IID to the form
+      userID3: userProfile.fullName
     });
 
     this.activeInput = null;
-    this.userProfiles = [];  // Clear the suggestion list after selection
+    this.userProfiles = [];
   }
 
   searchPARItem() {
     this.parItemKey = this.optrForm.value['searchPARItemKey'];
     console.log(this.parItemKey);
 
-    // Populate all items if the search key is empty
+
     if (!this.parItemKey || this.parItemKey.trim() === "") {
-      this.oprItems = [...this.searchPARItems];  // Reset to full list
+      this.oprItems = [...this.searchPARItems];
     } else {
-      const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
+      const searchKey = this.parItemKey.toLowerCase();
 
       this.oprItems = this.searchPARItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
         item.propertyNo!.toLowerCase().includes(searchKey) ||
@@ -583,43 +581,25 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
   selectItem(item: Item): void {
-    this.IIDKey = item.description ? item.description : null;  // Display the selected item's description in the input field
+    this.IIDKey = item.description ? item.description : null; 
     this.iid = item.iid ? item.iid : null;
 
     this.itemForm.patchValue({
-      iid: item.description  // Patch the selected IID to the form
+      iid: item.description  
     });
 
-    this.items = [];  // Clear the suggestion list after selection
+    this.items = [];  
     this.updateDescription();
 
   }
 
   updateDescription() {
-
-    // this.IIDKey = this.itemForm.value['iid'];
-
     this.logger.printLogs('i', 'PAR ITEMS DESCRIPTION', [(!(this.IIDKey == '') ? this.IIDKey : '') + " " + (!(this.brand == '') ? this.brand : '') + " " + (!(this.model == '') ? this.model : '')]);
 
     this.itemForm.patchValue({
       description: (!(this.IIDKey == '') ? this.IIDKey : '') + " " + (!(this.brand == '') ? this.brand : '') + " " + (!(this.model == '') ? this.model : '')
     });
   }
-
-  // onAutoSuggestProfileBy(event: KeyboardEvent) {
-  //   const key = (event.target as HTMLInputElement).value;
-  //   this.api.searchProfile(key)
-  //     .subscribe({
-  //       next: (res) => {
-  //         this.userProfiles = res;
-  //       },
-  //       error: (err: any) => {
-  //         this.logger.printLogs('e', 'Error Fetching Profiles:', err);
-  //       }
-  //     });
-  // }
-
-
 
   onKeyUp(event: KeyboardEvent): void {
     this.onSearchOPR();
@@ -773,7 +753,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
           // Handle success, e.g., show a success message
           Swal.fire({
             title: 'Saved',
-            text: 'Do you want to add new PAR?',
+            text: 'Do you want to add new OPR?',
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -788,22 +768,25 @@ export class OthersComponent implements OnInit, AfterViewInit {
           this.getAllOPR();
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving PAR Items', err);
+          this.logger.printLogs('e', 'Error Saving OPR Items', err);
           Swal.fire('Denied', err, 'warning');
         }
       });
   }
 
 
-  Update(par: any) {
-    this.logger.printLogs('i', 'Updating PAR', par);
+  Update(opr: any) {
+    this.logger.printLogs('i', 'Updating OPR', opr);
 
-    this.api.updateOPR(this.currentEditId!, par)
+    // this.api.updateOPR(this.currentEditId!, opr)
+    
+    this.api.updateOPR(this.currentEditId!, opr, this.oprItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'OPR Saved Success', par);
-          this.updateOPRItem();
-
+          this.logger.printLogs('i', 'OPR Saved Success', opr);
+          Swal.fire('Updated!', res.message, 'success');
+          this.getAllOPR();
+          // this.updateOPRItem()
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating OPR', err);
@@ -1005,16 +988,16 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   }
 
-  onDelete(par: any) {
+  onDelete(opr: any) {
 
-    if (par.postFlag) {
-      Swal.fire('Information!', 'Cannot delete posted PAR.', 'warning');
+    if (opr.postFlag) {
+      Swal.fire('Information!', 'Cannot delete posted OPR.', 'warning');
       return;
     }
 
-    let parNo = par.parNo;
+    let oprNo = opr.oprrNo;
     Swal.fire({
-      title: 'Remove PAR #' + parNo + "",
+      title: 'Remove OPR #' + oprNo + "",
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,
@@ -1022,14 +1005,14 @@ export class OthersComponent implements OnInit, AfterViewInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.api.deletePAR(parNo)
+        this.api.deleteOPR(oprNo)
           .subscribe({
             next: (res) => {
               this.getAllOPR();
               Swal.fire('Success', res.message, 'success');
             },
             error: (err: any) => {
-              this.logger.printLogs('e', 'Error on Deleting PAR', err);
+              this.logger.printLogs('e', 'Error on Deleting OPR', err);
               Swal.fire('Denied', err, 'warning');
             }
           });
@@ -1039,7 +1022,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
 
-  // PAR ITEM
+  // OPR ITEM
 
   async onAddItem() {
     if (!this.itemForm.valid || !this.opr) {
@@ -1481,7 +1464,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   // Optional function to get the currently selected items
   displaySelectedItems() {
-    this.logger.printLogs('i', 'List of selected PAR Items', this.selectedOPRItems!);
+    this.logger.printLogs('i', 'List of selected OPR Items', this.selectedOPRItems!);
   }
 
   //Common Method - Advice to add in Helpers
@@ -1556,54 +1539,48 @@ export class OthersComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-  // Function to display the QR Scanner modal
   onScanQR() {
-
     const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
     QRmodal.show();
   }
-  // Reset and stop/start QR scanning
+
   resetQRScanForm(action: any, fn: string) {
     this.onCloseQRScanning(this.scannerAction)
   }
 
-  // Handle start/stop of QR scanning
   public handle(scannerAction: any, fn: string, purpose: string): void {
     this.scannerAction = scannerAction;
     this.fn = fn;
     this.purpose = purpose;
 
-    this.onScanQR(); // Show the scanner modal
+    this.onScanQR(); 
 
-    // Function to select a device, preferring the back camera
     const playDeviceFacingBack = (devices: any[]) => {
       const device = devices.find(f => /back|rear|environment/gi.test(f.label));
       scannerAction.playDevice(device ? device.deviceId : devices[0].deviceId);
     };
 
-    // Start or stop the scanning action
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
         (r: any) => console.log(fn, r),
         alert
       );
-      this.cdr.detectChanges();     // Trigger change detection to update button state
+      this.cdr.detectChanges();
     } else {
       scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
-      this.cdr.detectChanges();     // Trigger change detection to update button state
+      this.cdr.detectChanges();
     }
   }
 
-  // Event handler when QR code is scanned
+
   public onEvent(results: ScannerQRCodeResult[], action?: any): void {
     this.onItemFound = false;
     if (results && results.length) {
       if (results) {
-        action.pause(); // Pause scanning if needed
+        action.pause();
 
         console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results); // Handle scanned results here
+        console.log('Scanned Data:', results); 
 
         this.qrCode = results[0].value
         this.validateQR(this.qrCode)
@@ -1615,9 +1592,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
   onEnter(): void {
     console.log('Enter key pressed. QR Value:', this.qrCode);
 
-    // Add your logic here
     if (this.qrCode.trim() !== '') {
-      // Example: Perform a search action
       console.log('Performing search for:', this.qrCode);
       this.validateQR(this.qrCode)
     }
@@ -1682,7 +1657,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
   resumeScanning(scannerAction: any): void {
-    // Add any conditions or user prompts if needed before resuming
 
     scannerAction.play().subscribe(
       (r: any) => console.log('Resuming Scan:', r),
@@ -1691,7 +1665,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
   onCloseQRScanning(scannerAction: any) {
-    // Close the modal
     this.closeModal(this.QRScannerModal!);
     this.fn = 'stop';
     scannerAction.stop();
@@ -1706,7 +1679,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
       this.oprForm.get('itemsource')?.setValue(selectedValue);
       this.oprForm.get('others')?.setValue('N/A');
     } else {
-      // Wait for Angular to render the input field before focusing
       this.oprForm.get('itemsource')?.markAsUntouched();
       this.oprForm.get('others')?.markAsTouched();
       this.oprForm.get('others')?.setValue(null);
@@ -1720,7 +1692,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
       this.optrForm.get('type')?.setValue(selectedValue);
       this.optrForm.get('others')?.setValue('N/A');
     } else {
-      // Wait for Angular to render the input field before focusing
       this.optrForm.get('type')?.markAsUntouched();
       this.optrForm.get('others')?.markAsTouched();
       this.optrForm.get('others')?.setValue(null);
@@ -1736,7 +1707,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
           const opr = res[0];
 
 
-          // Use forkJoin to wait for both observables to complete
           forkJoin([
             this.printService.setReceivedBy(res[0].receivedBy),
             this.printService.setIssuedBy(res[0].issuedBy)
@@ -1747,12 +1717,10 @@ export class OthersComponent implements OnInit, AfterViewInit {
                 next: (res) => {
 
                   this.logger.printLogs('i', 'Retrieving OPR Item', res);
-                  const parItems = res;
+                  const oprItems = res;
 
-                  // Ensure par.parItems is an array or default to an empty array
-                  const items = Array.isArray(parItems) ? parItems : [];
+                  const items = Array.isArray(oprItems) ? oprItems : [];
 
-                  // Create the table rows dynamically
                   const rows = items.map((item: any, index: number) => `
                 <tr ${item.qrCode ? `class="${item.qrCode} item-row"` : ''}>
                   <td>${index + 1}</td>
@@ -1767,9 +1735,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
                   </td>
                 </tr>`).join('');
 
-
-
-                  // Generate the full report content
                   const reportContent = `
 
                   <div class="watermark">OPR</div>

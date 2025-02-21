@@ -288,15 +288,15 @@ export class IcsComponent implements OnInit, AfterViewInit {
           // Filter results based on `createdBy` and slice for pagination
           this.logger.printLogs('i', 'Show ICSs only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated ICSs', res);
+          this.totalItems = res.length;
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 10); // For administrators, show all records, limited to 10
+            return res.slice(0, 20); // For administrators, show all records, limited to 10
           }
           const filteredICSs = res.filter((ics: any) =>
             ics.createdBy === this.userAccount.userID ||
             ics.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filteredICSs.length;
-          return filteredICSs.slice(0, 10); // Limit to the first 10 items
+          return filteredICSs.slice(0, 20); // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
       )
@@ -323,16 +323,16 @@ export class IcsComponent implements OnInit, AfterViewInit {
               // Filter results based on `createdBy` and slice for pagination
               this.logger.printLogs('i', 'Show ICSs only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated ICSs', res);
+              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
-                return res.slice(0, 10); // For administrators, show all records, limited to 10
+                return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
               const filteredICSs = res.filter((ics: any) =>
                 ics.createdBy === this.userAccount.userID ||
                 ics.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filteredICSs.length;
-              return filteredICSs.slice(0, 10); // Limit to 10 results for display
+              return filteredICSs.slice(0, 20); // Limit to 10 results for display
             }),
             finalize(() => this.isLoading = false) // Ensure spinner stops
           )
@@ -748,7 +748,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
     this.api.updateICS(this.currentEditId!, ics, this.icsItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', ics);
+          this.logger.printLogs('i', 'Updated Success', ics);
           Swal.fire('Updated!', res.message, 'warning');
           this.getAllICS();
 

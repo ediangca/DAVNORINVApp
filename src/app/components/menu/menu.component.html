@@ -634,7 +634,8 @@
   </li>
   -->
 
-  <li *ngIf="isModuleActive('GLOBAL') || isModuleActive('USER ACCOUNTS') || isModuleActive('REPORTS')">
+  <li *ngIf="isModuleActive('ITEM CATEGORY') || isModuleActive('POSITION') || isModuleActive('COMPANY') || isModuleActive('USER GROUPS') ||
+  isModuleActive('USER ACCOUNTS') || isModuleActive('REPORTS')">
     <hr class="hr-horizontal">
   </li>
   <li class="nav-item static-item">
@@ -645,7 +646,7 @@
   </li>
 
   <li class="nav-item"
-    *ngIf="isModuleActive('GLOBAL') || isModuleActive('ITEM CATEGORY') || isModuleActive('COMPANY') || isModuleActive('USER GROUP')">
+    *ngIf="isModuleActive('ITEM CATEGORY') || isModuleActive('POSITION') || isModuleActive('COMPANY') || isModuleActive('USER GROUPS')">
     <a class="nav-link" [ngClass]="{'active': title === 'Item Group'}" [routerLink]="['global']"
       (click)="toggleSidebar(true)" routerLinkActive="router-link-active" 
       data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"

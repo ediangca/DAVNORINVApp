@@ -285,15 +285,15 @@ export class ItrComponent implements OnInit, AfterViewInit {
           // Filter results based on `createdBy` and slice for pagination
           this.logger.printLogs('i', 'Show ITRs only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated ITRs', res);
+          this.totalItems = res.length;
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 10); // For administrators, show all records, limited to 10
+            return res.slice(0, 20); // For administrators, show all records, limited to 10
           }
           const filteredITRs = res.filter((itr: any) =>
             itr.createdBy === this.userAccount.userID ||
             itr.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filteredITRs.length;
-          return filteredITRs.slice(0, 10); // Limit to the first 10 items
+          return filteredITRs.slice(0, 20); // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
       )
@@ -318,15 +318,15 @@ export class ItrComponent implements OnInit, AfterViewInit {
           .pipe(
             map((res) => {
               // Filter or process the response if needed
+              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
-                return res.slice(0, 10); // For administrators, show all records, limited to 10
+                return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               const filteredITRs = res.filter((itr: any) =>
                 itr.createdBy === this.userAccount.userID ||
                 itr.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filteredITRs.length;
-              return filteredITRs.slice(0, 10); // Limit to 10 results for display
+              return filteredITRs.slice(0, 20); // Limit to 10 results for display
             }),
             finalize(() => this.isLoading = false) // Ensure spinner stops
           )
@@ -514,7 +514,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
     this.activeInput = null;
     this.userProfiles = [];  // Clear the suggestion list after selection
   }
-  
+
   onAutoSuggestApproved() {
     if (!this.approvedByID) {
       // this.getAllUserProfile();//Populate all userProfiles
@@ -675,7 +675,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
       otype: this.itrForm.value['others'],
       reason: this.itrForm.value['reason'],
       receivedBy: this.receivedID,
-      issuedBy: this.issuedID,  
+      issuedBy: this.issuedID,
       approvedBy: this.approvedID,
       createdBy: this.userAccount.userID,
     }
@@ -936,8 +936,6 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   }
 
-
-
   onTransfer(itr: any) {
     if (!itr.postFlag) {
       Swal.fire('Information!', 'Cannot Re-Transfer unposted ITR.', 'warning');
@@ -974,8 +972,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
           this.openModal(this.TransferModalForm); // Open the modal after patching
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
-          Swal.fire('Error', 'Failure to Retrieve OPR Item.', 'error');
+          this.logger.printLogs('e', 'Error Retreiving ICS Item', err);
+          Swal.fire('Error', 'Failure to Retrieve ICS Item.', 'error');
         }
       });
 

@@ -47,6 +47,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.checkPrivileges();
     this.positionForm = this.fb.group({
       positionName: ['', Validators.required],
     });

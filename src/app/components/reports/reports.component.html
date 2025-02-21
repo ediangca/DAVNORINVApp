@@ -107,8 +107,8 @@
 
 <!-- Show Property Card -->
 <div #PropertyCard class="modal fade" id="PropertyCard">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content formGroup">
+    <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+        <div class="modal-content formGroup h-100 d-flex flex-column">
             <form class [formGroup]="propertyCardForm" ng-reflect-form="[object Object]"
                 class="ng-untouched ng-pristine ng-invalid">
                 <div class="modal-header">
@@ -116,7 +116,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         (click)="closeModal(PropertyCardModal)"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body flex-grow-1 overflow-auto">
                     <!-- Fillter -->
                     <div class="row d-flex flex-row mb-3">
                         <div class="col-12 col-lg-3">
@@ -219,7 +219,7 @@
                         </div>
 
                         <div class="col-12 col-lg-2 d-flex just justify-content-center align-items-center">
-
+ 
                             <button type="button"
                                 class="btn btn-primary rounded-pill d-flex justify-content-center align-items-center"
                                 (click)="onViewPropertyCard()">View</button>
@@ -227,11 +227,11 @@
                     </div>
                     
                     <!-- Table -->
-                    <div class="row">
+                    <div class="row"  style="height: 75vh;">
                         <div class="col">
 
 
-                            <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
+                            <div *ngIf="isLoading" class="text-center my-3 align-content-center">
                                 <img src="assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
                                 <span class="loading-text text-primary">Loading<span class="dot">.</span>
                                     <span class="dot">.</span><span class="dot">.</span></span>
@@ -255,7 +255,7 @@
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let p of propertyCards">
-                                            <td>{{formatDate(p.date_Created)}}</td>
+                                            <td>{{formatDateTime(p.date_Created)}}</td>
                                             <td>{{p.ref}}</td>
                                             <td>{{p.refNoFrom}}</td>
                                             <td>{{p.refNoTo || "-"}}</td>

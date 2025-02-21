@@ -250,6 +250,7 @@ export class RrspComponent {
           // Filter results based on `createdBy` and slice for pagination
           this.logger.printLogs('i', 'Show RRSEPs only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated RRSEPs', res);
+          this.totalItems = res.length;
           if (this.userAccount.userGroupName === 'System Administrator') {
             return res.slice(0, 10); // For administrators, show all records, limited to 10
           }
@@ -258,7 +259,6 @@ export class RrspComponent {
             rrsp.issuedBy === this.userAccount.userID ||
             rrsp.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filteredRRSEPs.length;
           return filteredRRSEPs.slice(0, 10); // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
@@ -284,16 +284,16 @@ export class RrspComponent {
           .pipe(
             map((res) => {
               // Filter or process the response if needed
+              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
-                return res.slice(0, 10); // For administrators, show all records, limited to 10
+                return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               const filteredRRSEPs = res.filter((rrsp: any) =>
                 rrsp.createdBy === this.userAccount.userID ||
                 rrsp.issuedBy === this.userAccount.userID ||
                 rrsp.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filteredRRSEPs.length;
-              return filteredRRSEPs.slice(0, 10); // Limit to 10 results for display
+              return filteredRRSEPs.slice(0, 20); // Limit to 10 results for display
             }),
             finalize(() => this.isLoading = false) // Ensure spinner stops
           )

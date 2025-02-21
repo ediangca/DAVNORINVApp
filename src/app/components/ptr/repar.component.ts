@@ -32,6 +32,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
   @ViewChild('ItemModalForm') ItemModal!: ElementRef;
   @ViewChild('ViewItemModalForm') ViewItemModal!: ElementRef;
   @ViewChild('QRScannerForm') QRScannerModal!: ElementRef;
+  @ViewChild('TransferModalForm') TransferModalForm!: ElementRef;
 
   roleNoFromToken: string = "Role";
 
@@ -41,6 +42,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
   totalItems: number = 0;
   par!: any | null;
   parItems: Item[] = [];
+  ptrItems: Item[] = [];
   selectedParItems: Item[] = []; // Array to track selected items from repar
   userProfiles: any = [];
   items: any = [];
@@ -158,8 +160,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
     this.reparForm = this.fb.group({
       searchPARItemKey: [''],
+      type: ['', Validators.required],
+      others: ['', Validators.required],
+      reason: ['', Validators.required],
       userID1: ['', Validators.required],
       userID2: ['', Validators.required],
+      userID3: ['', Validators.required],
     });
 
     this.itemForm = this.fb.group({
@@ -221,6 +227,13 @@ export class ReparComponent implements OnInit, AfterViewInit {
       parModal && !this.isEditMode ? this.resetForm() : this.resetItemForm());
   }
 
+  openModal(modalElement: ElementRef) {
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement.nativeElement);
+      modal.show();
+    }
+  }
+
   openPARModal(modalElement: ElementRef) {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement.nativeElement);
@@ -271,15 +284,15 @@ export class ReparComponent implements OnInit, AfterViewInit {
           // Filter results based on `createdBy` and slice for pagination
           this.logger.printLogs('i', 'Show PTRs only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated PTRs', res);
+          this.totalItems = res.length;
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 10); // For administrators, show all records, limited to 10
+            return res.slice(0, 20); // For administrators, show all records, limited to 10
           }
           const filteredPTRs = res.filter((ptr: any) =>
             ptr.createdBy === this.userAccount.userID ||
             ptr.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filteredPTRs.length;
-          return filteredPTRs.slice(0, 10); // Limit to the first 10 items
+          return filteredPTRs.slice(0, 20); // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
       )
@@ -306,16 +319,16 @@ export class ReparComponent implements OnInit, AfterViewInit {
               // Filter results based on `createdBy` and slice for pagination
               this.logger.printLogs('i', 'Show PTRs only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated PTRs', res);
+              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
-                return res.slice(0, 10); // For administrators, show all records, limited to 10
+                return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
               const filteredPTRs = res.filter((ptr: any) =>
                 ptr.issuedBy === this.userAccount.userID ||
                 ptr.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filteredPTRs.length;
-              return filteredPTRs.slice(0, 10); // Limit to 10 results for display
+              return filteredPTRs.slice(0, 20); // Limit to 10 results for display
             }),
             finalize(() => this.isLoading = false) // Ensure spinner stops
           )
@@ -618,21 +631,54 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
     if (!this.reparForm.valid) {
       this.vf.validateFormFields(this.reparForm);
+      Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
       return;
     }
 
-    if (this.selectedParItems.length < 1) {
+    if (this.parItems.length < 1) {
       Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
       return;
     }
 
-    if (this.reparForm.valid && this.parItems.length > 0) {
+    this.currentEditId = this.repar.reparNo;
 
-      this.logger.printLogs('i', 'REPAR Form', this.par);
-      this.Save(this.par);
-
+    const reptr = {
+      reparNo: this.currentEditId,
+      parNo: this.repar.parNo,
+      ttype: this.reparForm.value['type'],
+      otype: this.reparForm.value['others'],
+      reason: this.reparForm.value['reason'],
+      receivedBy: this.receivedID,
+      issuedBy: this.issuedID,
+      approvedBy: this.approvedID,
+      createdBy: this.userAccount.userID,
     }
 
+
+    if (this.parItems.length > 0) {
+
+      this.logger.printLogs('i', 'PTR Form', this.reparForm);
+
+      this.logger.printLogs('i', 'Saving RE-PTR', reptr);
+      this.api.createREPTR(reptr, this.parItems)
+        .subscribe({
+          next: (res) => {
+            this.logger.printLogs('i', 'RE-PTR Saved Success', res.details);
+            Swal.fire('Saved!!', res.message, 'success');
+
+
+            this.closeModal(this.TransferModalForm);
+            this.getAllPTR();
+            this.resetForm();
+
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Saving ITR', err);
+            Swal.fire('Denied', err, 'warning');
+          }
+        });
+
+    }
   }
 
 
@@ -845,7 +891,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
   }
 
-
   onViewREPAR(par: any) {
     this.par = par;
     this.currentEditId = par.reparNo;
@@ -881,23 +926,66 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.openPARModal(this.ViewModal); // Open the modal after patching
 
   }
+  /*
+    onRepar(par: any) {
+      if (!par.postFlag) {
+        Swal.fire('Information!', 'Cannot REPAR unposted PAR.', 'warning');
+        return;
+      }
+  
+      this.isRepar = true;
+      this.par = par;
+      this.logger.printLogs('i', 'Restoring PAR', par);
+  
+      this.reparForm.patchValue({
+        userID2: par.receivedBy,
+        searchPARItemKey: [''],
+      });
+  
+      this.api.retrievePARItemByParNo(this.par.parNo)
+        .subscribe({
+          next: (res) => {
+            this.logger.printLogs('i', 'Retrieving PAR Item', res);
+            this.parItems = res;
+            this.searchPARItems = this.parItems;
+  
+            this.noOfParItems = this.parItems.filter((group: any) => group.reparFlag === false).length;
+            this.logger.printLogs('i', 'Number of PAR Item Retrieved', this.noOfParItems);
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
+            Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
+          }
+        });
+  
+      this.openPARModal(this.ViewModal); // Open the modal after patching
+    }
+  */
 
-  onRepar(par: any) {
-    if (!par.postFlag) {
-      Swal.fire('Information!', 'Cannot REPAR unposted PAR.', 'warning');
+  onTransfer(repar: any) {
+    if (!repar.postFlag) {
+      Swal.fire('Information!', 'Cannot Re-Transfer unposted PTR.', 'warning');
       return;
     }
-
+    this.isEditMode = false;
     this.isRepar = true;
-    this.par = par;
-    this.logger.printLogs('i', 'Restoring PAR', par);
+    this.repar = repar;
+    this.currentEditId = repar.reparNo;
+    this.logger.printLogs('i', 'Restoring PTR', repar);
+
+    this.issuedID = repar.receivedBy;
+    this.approvedID = repar.approvedBy;
+
 
     this.reparForm.patchValue({
-      userID2: par.receivedBy,
+      userID2: repar.received, //Issued By
+      userID1: '', //Received BY
+      userID3: repar.approved, //Approved BY
+      type: '',
       searchPARItemKey: [''],
     });
 
-    this.api.retrievePARItemByParNo(this.par.parNo)
+    this.api.retrievePARItemByPTRNo(this.repar.reparNo)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Retrieving PAR Item', res);
@@ -906,15 +994,14 @@ export class ReparComponent implements OnInit, AfterViewInit {
 
           this.noOfParItems = this.parItems.filter((group: any) => group.reparFlag === false).length;
           this.logger.printLogs('i', 'Number of PAR Item Retrieved', this.noOfParItems);
+
+          this.openModal(this.TransferModalForm); // Open the modal after patching
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving PAR Item', err);
           Swal.fire('Error', 'Failure to Retrieve PAR Item.', 'error');
         }
       });
-
-    this.openPARModal(this.ViewModal); // Open the modal after patching
-
   }
 
   onDelete(par: any) {
@@ -1250,12 +1337,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.isCustomType = selectedValue == 'Others';
     if (!this.isCustomType) {
-      this.parForm.get('type')?.setValue(selectedValue);
-      this.parForm?.get('others')?.setValue('N/A');
+      this.reparForm.get('type')?.setValue(selectedValue);
+      this.reparForm?.get('others')?.setValue('N/A');
     } else {
-      this.parForm?.get('others')?.setValue(null);
-      this.parForm.get('type')?.markAsUntouched();
-      this.parForm.get('others')?.markAsTouched();
+      this.reparForm?.get('others')?.setValue(null);
+      this.reparForm.get('type')?.markAsUntouched();
+      this.reparForm.get('others')?.markAsTouched();
     }
   }
 

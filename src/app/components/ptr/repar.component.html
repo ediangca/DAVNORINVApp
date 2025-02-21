@@ -69,7 +69,7 @@
                 <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
                     title="System Default"></i></span>
                 }@else{
-                <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditREPAR(p)"><i
+                <a *ngIf="canUpdate" class="edit" type="button" (click)="onEditREPAR(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
                 <a *ngIf="canDelete" class="delete" type="button" (click)="onDelete(p)"><i
                     class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
@@ -79,6 +79,10 @@
                 <a class="seconadry" type="button" (click)="onPrintREPAR(p.reparNo)">
                   <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
                 </a>
+                <a *ngIf="canCreate  && (p.receivedBy=== userAccount.userID || p.createdBy== userAccount.userID ||
+                  userAccount.userGroupName === 'System Administrator'
+                )" class="primary" type="button" (click)="onTransfer(p)"><i class="fa-solid fa-share-from-square"
+                    data-toggle="tooltip" title="Transfer"></i></a>
                 }
               </form>
             </td>
@@ -753,12 +757,10 @@
         </div><!-- END OF MODAL BODY -->
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-warning rounded-pill" *ngIf="!par?.postFlag || false"
+          <button type="button" class="btn btn-warning rounded-pill" *ngIf="canUpdate && !par?.postFlag || false"
             (click)="onEditREPAR(par)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
-          <button type="button" class="btn btn-primary rounded-pill" *ngIf="isRepar && noOfParItems > 0"
-            (click)="onSubmitREPAR()">Save</button>
         </div>
       </form>
     </div>
@@ -1033,6 +1035,376 @@
           <button type="button" class="btn btn-primary rounded-pill" (click)="onAddItem()">{{ isEditItemMode ? 'Update'
             :
             'Add' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- TRANSFER -->
+<div #TransferModalForm class="modal fade" id="TransferModalForm">
+  <div class="modal-dialog modal-dialog-centered  modal-xl">
+    <div class="modal-content formGroup">
+      <form class [formGroup]="reparForm" class="ng-untouched ng-pristine ng-invalid">
+        <div class="modal-header">
+          <div class="d-flex flex-column">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">{{currentEditId}} </h1>
+            <span><em> Other Property Transfer
+                Report</em></span>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="closeModal(AddEditModal)"></button>
+        </div>
+
+        <div class="modal-body p-0 m-0">
+
+          <div class="card m-0">
+
+            <!-- CARD HEADER -->
+            <div class="card-header py-2">
+
+              <div class="row">
+                <div class="col">
+                  <div class="simple-accordion">
+                    <button class="accordion-header" (click)="toggleAccordion()" [attr.aria-expanded]="isOpen">
+                      INFORMATION
+                      <i class="fa-sharp-duotone fa-solid {{ isOpen? 'fa-caret-up' : 'fa-caret-down' }} "></i>
+                    </button>
+                    <div class="accordion-content" [class.show]="isOpen">
+
+                      <div class="row d-flex flex-row">
+                        <div class="col-12 col-lg-6">
+                          <small class="text-info">LGU</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="repar?.lgu" class="form-control" placeholder="Item Source"
+                              readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <small class="text-info">FUND</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="repar?.fund" class="form-control" placeholder="Ownership"
+                              readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row d-flex flex-row">
+                        <div class="col-12 col-lg-4">
+                          <small class="text-info">ISSUED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="repar?.issued" class="form-control" placeholder="Issued" readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                          <small class="text-info">RECEIVED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="repar?.received" class="form-control" placeholder="RECEIVED"
+                              readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                          <small class="text-info">APPROVED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="repar?.approved" class="form-control" placeholder="Approved"
+                              readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- CARD BODY -->
+            <div class="card-body py-0">
+              <!-- ITEM TABLE -->
+              <div class="row m-0">
+                <div class="col py-0">
+                  <div class="row py-3 bg-primary">
+                    <div class="col">
+                      <h5 class="ms-3 text-light">
+                        List of Item
+                      </h5>
+                    </div>
+                  </div>
+                  <div class="row table-responsive p-0 m-0">
+                    <div class="col p-0 m-0 table-body scrollable ">
+                      <table class="table table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th class="sticky-header"></th>
+                            <th class="sticky-header">#</th>
+                            <th class="sticky-header">QTY</th>
+                            <th class="sticky-header">UNIT</th>
+                            <th class="sticky-header">DESCRIPTION</th>
+                            <th class="sticky-header">DATE ACQUIRED</th>
+                            <th class="sticky-header">PROPERTY NUMBER</th>
+                            <th class="sticky-header">AMOUNT</th>
+                            <th class="sticky-header" *ngIf="parItems.length>1">ACTION</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngIf="parItems.length<1">
+                            <td colspan="8" class="text-danger text-center">*
+                              Item
+                              list required! Add at least one!</td>
+                          </tr>
+                          <tr *ngFor="let p of parItems; let i = index">
+                            <td>
+                              <a class="success" type="button" (click)="onViewItem(p)">
+                                <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
+                              </a>
+                            </td>
+                            <td>{{i+1}}</td>
+                            <td>1</td>
+                            <td>{{p.unit}}</td>
+                            <td>{{p.description}}</td>
+                            <td>{{formatDate(p.date_Acquired)}}</td>
+                            <td>{{p.propertyNo}}</td>
+                            <td>{{ (p.amount || 0).toLocaleString('en-US', {
+                              minimumFractionDigits: 2, maximumFractionDigits: 2
+                              }) }}</td>
+                            <td>
+                              <form class="d-flex justify-content-end">
+                                <a *ngIf="parItems.length>1" class="delete" type="button" (click)="onDeleteItem(p)"><i
+                                    class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip"
+                                    title="Delete"></i></a>
+                              </form>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- END OF ITEM TABLE -->
+            </div>
+            <!-- CARD FOOTER -->
+            <div class="card-footer py-2">
+              <!--
+              <a
+                class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+                type="button"
+                (click)="onAddPARItem()">
+                <i class="fa-sharp-duotone fa-solid fa-plus"></i><span
+                  class="fs-6">NEW</span></a>
+                  -->
+
+              <div class="row d-flex flex-row">
+                <div class="col-12 col-lg-4">
+                  <!-- Transfer type -->
+
+                  @if(!(reparForm.controls['type'].invalid &&
+                  reparForm.hasError('required', 'type') &&
+                  reparForm.get('type')?.touched ||
+                  (reparForm.controls['type'].dirty &&
+                  reparForm.hasError('required', 'type')))){
+                  <small class="text-info">* Transfer Type</small>
+                  }@else{
+                  <small class="text-danger"
+                    *ngIf="reparForm.controls['type'].invalid &&
+                        reparForm.hasError('required', 'type') &&
+                        reparForm.get('type')?.touched ||
+                        (reparForm.controls['type'].dirty &&
+                        reparForm.hasError('required', 'type')) ||
+                        (isCustomType && ((reparForm.controls['type'].invalid &&
+                        reparForm.hasError('required', 'type') &&
+                        reparForm.get('type')?.touched) || (reparForm.controls['others'].dirty && reparForm.hasError('required', 'others'))))">*
+                    Transfer Type is required</small>
+                  }
+
+                  <!-- Other Transfer type -->
+
+                  <small class="text-danger"
+                    *ngIf="isCustomType && reparForm.controls['others'].invalid && reparForm.get('others')?.touched">
+                    Specify 'Others' is required.
+                  </small>
+
+                  <div class="form-field d-flex align-items-center" [class.error]="reparForm.controls['type'].invalid && reparForm.hasError('required', 'type')  && reparForm.get('type')?.touched ||
+                        (reparForm.controls['type'].dirty && reparForm.hasError('required', 'type')) ||
+                        (isCustomType && reparForm.controls['others'].invalid && reparForm.hasError('required', 'others')  && reparForm.get('others')?.touched ||
+                      (reparForm.controls['others'].dirty && reparForm.hasError('required', 'others'))) ||
+                        (isCustomType && reparForm.get('others')?.invalid && reparForm.get('others')?.touched)">
+
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="reparForm.controls['type'].invalid && reparForm.hasError('required', 'type')  && reparForm.get('type')?.touched ||
+                          (reparForm.controls['type'].dirty && reparForm.hasError('required', 'type')) ||
+                          (isCustomType && reparForm.controls['others'].invalid && reparForm.hasError('required', 'others')  && reparForm.get('others')?.touched ||
+                        (reparForm.controls['others'].dirty && reparForm.hasError('required', 'others'))) ||
+                          (isCustomType && reparForm.get('others')?.invalid && reparForm.get('others')?.touched)">
+                    </i>
+
+                    <select formControlName="type" name="type" id="type" class="form-select"
+                      (change)="onTypeChange($event)">
+                      <option value>Transfer Type</option>
+                      <option *ngFor="let option of typeOptions" [value]="option">{{option}}</option>
+                      <option value="Others">Others</option>
+                    </select>
+
+                    <input *ngIf="isCustomType" type="text" id="others" #othersInput value="N/A"
+                      formControlName="others" placeholder="Specify" class="form-control">
+                  </div>
+                </div>
+                <div class="col-12 col-lg-8">
+                  <!-- Reason -->
+
+                  @if(!(reparForm.controls['reason'].invalid &&
+                  reparForm.hasError('required', 'reason') &&
+                  reparForm.get('reason')?.touched ||
+                  (reparForm.controls['reason'].dirty &&
+                  reparForm.hasError('required', 'reason')))){
+                  <small class="text-info">* Reason for Transfer</small>
+                  }@else{
+                  <small class="text-danger" *ngIf="reparForm.controls['reason'].invalid &&
+                    reparForm.hasError('required', 'reason') &&
+                    reparForm.get('reason')?.touched ||
+                    (reparForm.controls['reason'].dirty &&
+                    reparForm.hasError('required', 'reason'))">*
+                    Reason for Transfer is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center" [class.error]="reparForm.controls['reason'].invalid &&
+                      reparForm.hasError('required', 'reason') && reparForm.get('reason')?.touched ||
+                      (reparForm.controls['reason'].dirty && reparForm.hasError('required', 'reason'))">
+
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="reparForm.controls['reason'].invalid &&
+                        reparForm.hasError('required', 'reason') && reparForm.get('reason')?.touched ||
+                        (reparForm.controls['reason'].dirty && reparForm.hasError('required', 'reason'))"></i>
+
+                    <textarea formControlName="reason" name="reason" id="reason" placeholder="Reason/s for Transfer"
+                      rows="1" cols="50"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row d-flex flex-row">
+
+                <!-- Issued By -->
+                <div class="col-12 col-lg-4">
+
+                  <small class="text-info">*
+                    Issued By</small>
+
+                  <div class="form-field d-flex align-items-center">
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID2" name="userID2"
+                      placeholder="Issued By" role="textbox" readonly>
+                  </div>
+
+                </div>
+
+                <!-- Received By -->
+                <div class="col-12 col-lg-4">
+
+                  @if(!(reparForm.controls['userID1'].invalid &&
+                  reparForm.hasError('required', 'userID1') &&
+                  reparForm.get('userID1')?.touched ||
+                  (reparForm.controls['userID1'].dirty &&
+                  reparForm.hasError('required', 'userID1')))){
+                  <small class="text-info">*
+                    Received By</small>
+                  }@else {
+                  <small class="text-danger" *ngIf="reparForm.controls['userID1'].invalid &&
+                    reparForm.hasError('required', 'userID1') &&
+                    reparForm.get('userID1')?.touched ||
+                    (reparForm.controls['userID1'].dirty &&
+                    reparForm.hasError('required', 'userID1'))">* Received By is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1')  && reparForm.get('userID1')?.touched ||
+                  (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null)">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&
+                    reparForm.get('userID1')?.touched || (reparForm.controls['userID1'].dirty &&
+                    reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="reparForm.controls['userID1'].invalid && reparForm.hasError('required', 'userID1') &&  reparForm.get('userID1')?.touched ||
+                    (reparForm.controls['userID1'].dirty && reparForm.hasError('required', 'userID1')) || (reparForm.get('userID1')?.touched && receivedID === null)"></i>
+
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
+                      [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggestReceived()"
+                      role="textbox">
+                  </div>
+
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0 && activeInput === 'received'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectReceived(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Approved By -->
+                <div class="col-12 col-lg-4">
+                  @if(!(reparForm.controls['userID3'].invalid &&
+                  reparForm.hasError('required', 'userID3') &&
+                  reparForm.get('userID3')?.touched ||
+                  (reparForm.controls['userID3'].dirty &&
+                  reparForm.hasError('required', 'userID3')))){
+                  <small class="text-info">*
+                    Approved By</small>
+                  }@else {
+                  <small class="text-danger" *ngIf="reparForm.controls['userID3'].invalid &&
+                        reparForm.hasError('required', 'userID3') &&
+                        reparForm.get('userID3')?.touched ||
+                        (reparForm.controls['userID3'].dirty &&
+                        reparForm.hasError('required', 'userID3'))">* Approved By
+                    is required *</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="reparForm.controls['userID3'].invalid && reparForm.hasError('required', 'userID3')  && reparForm.get('userID3')?.touched ||
+                    (reparForm.controls['userID3'].dirty && reparForm.hasError('required', 'userID3')) || (reparForm.get('userID3')?.touched && approvedID === null)">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(reparForm.controls['userID3'].invalid && reparForm.hasError('required', 'userID3') &&
+                      reparForm.get('userID3')?.touched || (reparForm.controls['userID3'].dirty &&
+                      reparForm.hasError('required', 'userID3')) || (reparForm.get('userID3')?.touched && approvedID === null))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="reparForm.controls['userID3'].invalid && reparForm.hasError('required', 'userID3') &&  reparForm.get('userID3')?.touched ||
+                      (reparForm.controls['userID3'].dirty && reparForm.hasError('required', 'userID3')) || (reparForm.get('userID3')?.touched && approvedID === null)"></i>
+
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID3" name="userID3"
+                      [(ngModel)]="approvedByID" placeholder="Approve By" (keyup)="onAutoSuggestApproved()"
+                      role="textbox">
+
+                  </div>
+
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0 && activeInput === 'approved'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectApproved(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal"
+            (click)="closeModal(AddEditModal)">Close</button>
+          <button *ngIf="isRepar && canCreate" type="button" class="btn btn-primary rounded-pill"
+            (click)="onSubmitREPAR()">{{ isEditMode ? 'Update' : 'Save'
+            }}</button>
+
         </div>
       </form>
     </div>

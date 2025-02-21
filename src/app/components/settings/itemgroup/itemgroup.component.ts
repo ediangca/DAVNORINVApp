@@ -45,6 +45,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit(): void {
+    this.checkPrivileges();
     this.itemGroupForm = this.fb.group({
       itemGroupName: ['', Validators.required],
       notes: ['', Validators.required]

@@ -1035,7 +1035,6 @@
   </div>
 </div>
 
-
 <!-- TRANSFER -->
 <div #TransferModalForm class="modal fade" id="TransferModalForm">
   <div class="modal-dialog modal-dialog-centered  modal-xl">
@@ -1088,18 +1087,18 @@
 
                       <div class="row d-flex flex-row">
                         <div class="col-12 col-lg-4">
+                          <small class="text-info">ISSUED BY</small>
+                          <div class="form-field d-flex align-items-center">
+                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
+                            <input type="text" [value]="itr?.issued" class="form-control" placeholder="Issued" readonly>
+                          </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
                           <small class="text-info">RECEIVED BY</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
                             <input type="text" [value]="itr?.received" class="form-control" placeholder="RECEIVED"
                               readonly>
-                          </div>
-                        </div>
-                        <div class="col-12 col-lg-4">
-                          <small class="text-info">ISSUED BY</small>
-                          <div class="form-field d-flex align-items-center">
-                            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="itr?.issued" class="form-control" placeholder="Issued" readonly>
                           </div>
                         </div>
                         <div class="col-12 col-lg-4">
@@ -1404,7 +1403,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- ITEM VIEW MODAL -->
 <div #ViewItemModalForm class="modal fade" id="ViewItemModalForm" tabindex="-1" aria-labelledby="ItemModalFormLabel"

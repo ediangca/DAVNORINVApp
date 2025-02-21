@@ -118,7 +118,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.totalItems = res.length;
-          this.items = res.slice(0,10);
+          this.items = res.slice(0,20);
         },
         error: (err: any) => {
           console.log("Error Fetching Items: ", err);
@@ -159,7 +159,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: (res) => {
               console.log("Fetching Items: ", res);
-              this.items = res;
+              this.items = res.slice(0,20);
             },
             error: (err: any) => {
               console.log("Error Fetching Items: ", err);

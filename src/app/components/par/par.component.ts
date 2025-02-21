@@ -304,8 +304,10 @@ export class ParComponent implements OnInit, AfterViewInit {
           // Filter results based on `createdBy` and slice for pagination
           this.logger.printLogs('i', 'Show PARS only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated PARs', res);
+          
+          this.totalItems = res.length;
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 10); // For administrators, show all records, limited to 10
+            return res.slice(0, 20); // For administrators, show all records, limited to 10
           }
 
           // For regular users, filter data based on `receivedBy` or relevant fields
@@ -313,8 +315,7 @@ export class ParComponent implements OnInit, AfterViewInit {
             par.createdBy === this.userAccount.userID ||
             par.receivedBy === this.userAccount.userID
           );
-          this.totalItems = filteredPARs.length;
-          return filteredPARs.slice(0, 10); // Limit to 10 results
+          return filteredPARs.slice(0, 20); // Limit to 10 results
 
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
@@ -363,16 +364,16 @@ export class ParComponent implements OnInit, AfterViewInit {
               // Filter results based on `createdBy` and slice for pagination
               this.logger.printLogs('i', 'Show PARS only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated PARs', res);
+              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
-                return res.slice(0, 10); // For administrators, show all records, limited to 10
+                return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
               const filteredPARs = res.filter((par: any) =>
                 par.createdBy === this.userAccount.userID ||
                 par.receivedBy === this.userAccount.userID
               );
-              this.totalItems = filteredPARs.length;
-              return filteredPARs.slice(0, 10); // Limit to 10 results for display
+              return filteredPARs.slice(0, 20); // Limit to 10 results for display
             }),
             finalize(() => this.isLoading = false) // Ensure spinner stops
           )
@@ -845,11 +846,13 @@ export class ParComponent implements OnInit, AfterViewInit {
   Update(par: any) {
     this.logger.printLogs('i', 'Updating PAR', par);
 
-    this.api.updatePAR(this.currentEditId!, par)
+    this.api.updatePAR(this.currentEditId!, par, this.parItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', par);
-          this.updatePARItems();
+          this.logger.printLogs('i', 'Updated Success', par);
+          Swal.fire('Updated!', res.message, 'warning');
+          this.getAllPAR();
+          // this.updatePARItems();
 
         },
         error: (err: any) => {
@@ -857,8 +860,6 @@ export class ParComponent implements OnInit, AfterViewInit {
           Swal.fire('Denied', err, 'warning');
         }
       });
-
-
   }
   updatePARItems() {
     this.api.updatePARItem(this.currentEditId!, this.parItems)
@@ -1015,7 +1016,7 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.isRepar = true;
     this.par = par;
     this.logger.printLogs('i', 'Restoring PAR', par);
-
+    this.receivedByID = null;
     this.issuedByID = par.receivedBy;
 
     this.reparForm.patchValue({
@@ -1161,7 +1162,7 @@ export class ParComponent implements OnInit, AfterViewInit {
       this.resetItemForm();
 
       Swal.fire({
-        title: 'Save',
+        title: 'Successfully Added',
         text: 'Do you want to add new Item?',
         icon: 'success',
         showCancelButton: true,

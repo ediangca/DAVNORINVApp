@@ -193,7 +193,7 @@
 
                     <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="(oprForm.controls['others'].invalid && oprForm.hasError('required', 'others')  && 
                     oprForm.get('others')?.touched || (oprForm.controls['others'].dirty && oprForm.hasError('required', 'others'))) ||
-                    (isCustomType && oprForm.get('others')?.invalid && oprForm.get('others')?.touched)">
+                    (isCustomType && oprForm.get('others')?.invalid && oprForm.get('.others')?.touched)">
                     </i>
 
                     <select formControlName="itemsource" name="itemsource" id="itemsource" class="form-select"

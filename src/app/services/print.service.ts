@@ -129,9 +129,11 @@ export class PrintService {
             <div class="col-6 border py-2">
               <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
               <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
-              <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
+              <p class="mb-0">Date: </p>
             </div>
           </div>`;
+          
+          // <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
     } else if (title === "ptr" || title === "itr" || title === "optr")  {
       this.footer = `
         <div class="row mt-3">
@@ -162,14 +164,14 @@ export class PrintService {
             <p class="mb-0">Date:</p>
           </div>
           <div class="col-4 border py-2">
-            <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
-            <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p>
+            <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
             <p class="mb-0">Date:</p>
           </div>
           <div class="col-4 border py-2">
-            <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
-            <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
-            <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
+            <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
+            <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p> 
+            <p class="mb-0">Date: </p>
           </div>
         </div>`;
     } else if (title === "prs") {
@@ -196,7 +198,7 @@ export class PrintService {
           <div class="col-6 border py-2">
             <p class="mb-0">Position: <strong>${this.issuedByProfile?.position || ''}</strong></p>
             <p class="mb-0 py-2">Office: <strong>${this.issuedByProfile?.branch || ''} - ${this.issuedByProfile?.department || ''}</strong></p>
-            <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
+            <p class="mb-0">Date: </p>
           </div>
           -->
         </div>`;
@@ -222,7 +224,7 @@ export class PrintService {
           <div class="col-6 border py-2">
             <p class="mb-0">Position: <strong>${this.receivedByProfile?.position || ''}</strong></p>
             <p class="mb-0 py-2">Office: <strong>${this.receivedByProfile?.branch || ''} - ${this.receivedByProfile?.department || ''}</strong></p>
-            <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
+            <p class="mb-0">Date: </p>
           </div>
 
         </div>`;
@@ -456,6 +458,29 @@ export class PrintService {
         return 'RECEIPT RETURN SEMI-EXPANDABLE PROPERTY'
       case 'oprr':
         return 'OTHER PROPERTY RETURN REPORT'
+
+        // Reports
+      case 'spar':
+        return 'SUMMARY OF PROPERTY ACKNOWLEDGEMENT RECEIPT'
+      case 'sics':
+        return 'SUMMARY OF INVENTORY CUSTODIAN SLIP'
+      case 'sopr':
+        return 'SUMMARY OF OTHER PROPERTY RECEIPT'
+      case 'sptr':
+        return 'SUMMARY OF PROPERTY TRANSFER RECEIPT'
+      case 'sitr':
+        return 'SUMMARY OF INVENTORY TRANFER REPORT'
+      case 'soptr':
+        return 'SUMMARY OF OTHER PROPERTY TRANSFER REPORT'
+      case 'sprs':
+        return 'SUMMARY OF PROPERTY RETURN SLIP'
+      case 'srrsep':
+        return 'SUMMARY OF RECEIPT RETURN SEMI-EXPANDABLE PROPERTY'
+      case 'soprr':
+        return 'SUMMARY OF OTHER PROPERTY RETURN REPORT'
+
+
+        
       default:
         return null
     }
