@@ -995,7 +995,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    let oprNo = opr.oprrNo;
+    let oprNo = opr.oprNo;
     Swal.fire({
       title: 'Remove OPR #' + oprNo + "",
       text: 'Are you sure?',

@@ -7,7 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { NgToastModule, NgToastService, ToasterPosition } from 'ng-angular-popup' // to be added
-import { NgxScannerQrcodeModule, LOAD_WASM } from 'ngx-scanner-qrcode';
+import { NgxScannerQrcodeModule } from 'ngx-scanner-qrcode';
 
 
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -55,6 +55,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     AOS.init({ disable: 'mobile' });//AOS - 2
     AOS.refresh();//refresh method is called on window resize and so on, as it doesn't require to build new store with AOS elements and should be as light as possible.
+  
   }
 
 

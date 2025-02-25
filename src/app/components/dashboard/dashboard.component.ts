@@ -17,8 +17,11 @@ import { LogsService } from '../../services/logs.service';
 import AOS from 'aos';
 declare var bootstrap: any;
 import { ProfileComponent } from '../userprofile/profile.component';
-import { NgxScannerQrcodeComponent, NgxScannerQrcodeModule, ScannerQRCodeConfig, ScannerQRCodeResult } from 'ngx-scanner-qrcode';
+import { LOAD_WASM, NgxScannerQrcodeComponent, NgxScannerQrcodeModule, NgxScannerQrcodeService, ScannerQRCodeConfig, ScannerQRCodeResult } from 'ngx-scanner-qrcode';
 import Swal from 'sweetalert2';
+
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +32,7 @@ import Swal from 'sweetalert2';
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('QRScannerForm', { static: true }) QRScannerModal!: ElementRef;
+  @ViewChild('QRScannerForm', { static: false }) QRScannerModal!: ElementRef;
   @ViewChild('scannerAction') scannerAction!: NgxScannerQrcodeComponent;
   @ViewChild('itemDetailsModalForm') itemDetailsModal!: ElementRef;
 
@@ -42,6 +45,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         facingMode: 'environment',  // Prefer the back camera for scanning
       },
     },
+    fps: 10, // Adjust frame rate if needed
+    isBeep: true, // Disable beep for testing
     canvasStyles: [
       { /* layer */
         lineWidth: 3,               // Increase line width to improve visibility on canvas
@@ -94,19 +99,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   currentIndex = 0;
 
   qrCode = ''
-
+  currentDevice = 'environment'; // Back camera
 
   constructor(
     public ac: AppComponent, private titleService: Title,
     private route: ActivatedRoute, private router: Router,
     private api: ApiService, private auth: AuthService,
     public store: StoreService, private logger: LogsService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef, private scannerService: NgxScannerQrcodeService
   ) {
     this.ngOnInit();
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    LOAD_WASM('assets/wasm/ngx-scanner-qrcode.wasm').subscribe();
     // this.setupSidebarToggle();
     this.getUserProfile();
 
@@ -125,11 +131,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
     this.setupModalClose();
     this.logger.printLogs('i', 'Hide Header and Widget:', [this.header]);
+
+
+    // LOAD_WASM('assets/ngx-scanner-qrcode/wasm/ngx-scanner-qrcode.wasm').subscribe();
   }
 
   ngAfterViewInit(): void {
     AOS.init();
   }
+
   openModal(modalElement: ElementRef) {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement.nativeElement, { backdrop: 'static' });
@@ -355,7 +365,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   // Handle start/stop of QR scanning
   public handle(scannerAction: any, fn: string, purpose: string): void {
     this.scannerAction = scannerAction;
+
     this.fn = fn;
+
+    console.log(`fn : ${fn}`)
 
     this.onScanQR(); // Show the scanner modal
 
@@ -368,7 +381,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // Start or stop the scanning action
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
-        (r: any) => console.log(fn, r),
+        (r: any) => console.log(`SCANNING START ${fn}`, r),
         alert
       );
       this.cdr.detectChanges();     // Trigger change detection to update button state
@@ -377,27 +390,57 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.cdr.detectChanges();     // Trigger change detection to update button state
     }
   }
+
+
   onScanQR() {
 
     const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
     QRmodal.show();
+
+
+    this.qrCode = ''; // Clear previous scans
+    this.onItemFound = false;
+
+    // Wait for modal to open before starting scanner
+    setTimeout(() => {
+      const modal = document.getElementById('QRScannerForm');
+      if (modal) {
+        modal.setAttribute('aria-hidden', 'false'); // Make sure modal is visible
+      }
+    }, 300);
+
+
   }
   // Event handler when QR code is scanned
-  public onEvent(results: ScannerQRCodeResult[], action?: any): void {
+  public onEvent(event: ScannerQRCodeResult[], action?: any): void {
+
+    // console.log('QR Event:', results, action);
+
+    console.log('helllo motherfuckaaaaaa');
+
     this.onItemFound = false;
-    if (results && results.length) {
-      if (results) {
+    if (event && event.length) {
+      if (event) {
         action.pause(); // Pause scanning if needed
 
-        console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results); // Handle scanned results here
+        console.log('QR value', event[0].value);
+        console.log('Scanned Data:', event); // Handle scanned results here
 
-        this.qrCode = results[0].value
+        this.qrCode = event[0].value
         this.validateQR(this.qrCode);
 
       }
 
     }
+  }
+
+  // public onScanSuccess(event: ScannerQRCodeResult[]): void {
+  //   if (event.length > 0) {
+  //     console.log('Scanned QR Code:', event[0].value); // Access the scanned result
+  //   }
+  // }
+  public onScanSuccess(event: any): void {
+    console.log('Scan Event Data:', event);
   }
   // get itemKeys(): string[] {
   //   return this.item ? Object.keys(this.item) : [];
