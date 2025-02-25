@@ -381,6 +381,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     const QRmodal = new bootstrap.Modal(this.QRScannerModal.nativeElement);
     QRmodal.show();
+
+    
+    this.qrCode = ''; // Clear previous scans
+    this.onItemFound = false;
+
+    // Wait for modal to open before starting scanner
+    setTimeout(() => {
+      const modal = document.getElementById('QRScannerForm');
+      if (modal) {
+        modal.setAttribute('aria-hidden', 'false'); // Make sure modal is visible
+      }
+    }, 300);
+
+
   }
   // Event handler when QR code is scanned
   public onEvent(results: ScannerQRCodeResult[], action?: any): void {

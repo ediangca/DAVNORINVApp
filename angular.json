@@ -16,7 +16,8 @@
             "allowedCommonJsDependencies": [
               "jquery",
               "sweetalert2",
-              "aos"
+              "aos",
+              "ngx-scanner-qrcode"
             ],
             "outputPath": "dist/ddnaeinvapp",
             "index": "src/index.html",
