@@ -20,8 +20,10 @@ import { StoreService } from '../../services/store.service';
 })
 export class UseraccountsComponent implements OnInit, AfterViewInit {
 
+
   @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
   @ViewChild('ProfileModalForm') ProfileModal!: ElementRef;
+  @ViewChild('ForgetPassModalForm') ForgetPassModal!: ElementRef;
 
   public roleNoFromToken: string = '*';
 
@@ -43,6 +45,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   public userProfile: any;
   userAccountForm!: FormGroup;
   userProfileForm!: FormGroup;
+  userPasswordForm!: FormGroup;
   isEditMode: boolean = false;
   currentEditId: number | null = null;
 
@@ -77,6 +80,11 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     }, { validators: validatePasswordMatch('password', 'confirmPassword') });
 
 
+    this.userPasswordForm = this.fb.group({
+      newpassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+    }, { validators: validatePasswordMatch('newpassword', 'confirmPassword') });
+
     this.userProfileForm = this.fb.group({
       lastname: ['', Validators.required],
       firstname: ['', Validators.required],
@@ -98,7 +106,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.closeModal(this.AddEditModal);
     this.closeModal(this.ProfileModal);
   }
-  
+
   ngAfterViewInit(): void {
     window.addEventListener('load', () => {
       this.checkPrivileges();
@@ -126,6 +134,12 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     modal.show();
   }
 
+  openChangePassModal() {
+    console.log('Open Change Pass >>> ');
+    const modal = new bootstrap.Modal(this.ForgetPassModal.nativeElement);
+    modal.show();
+  }
+
   closeModal(modalElement: ElementRef) {
     if (modalElement) {
       const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
@@ -135,7 +149,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onCloseProfile(){
+  onCloseProfile() {
     this.closeModal(this.ProfileModal)
     this.resetForm();
   }
@@ -470,8 +484,10 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
           this.userAccountForm.patchValue({
             username: userAccount.userName,
-            password: userAccount.password,
-            confirmPassword: userAccount.password,
+            password: '',
+            confirmPassword: '',
+            // password: userAccount.password,
+            // confirmPassword: userAccount.password,
             ug: res[0].ugid
           });
         },
@@ -706,6 +722,55 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  openForgotPassword(userAccount: any) {
+    this.userAccount = userAccount;
+
+    this.openChangePassModal()
+  }
+
+  onChangePass() {
+
+    if (this.userPasswordForm.valid) {
+
+      const ChangePassDto = {
+        "OldPassword": this.userPasswordForm.value['oldpassword'],
+        "NewPassword": this.userPasswordForm.value['newpassword'],
+      }
+
+      Swal.fire({
+        title: 'Change Password?',
+        text: 'Are you sure?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.api.UpdatePassword(this.userAccount.userID!, ChangePassDto)
+            .subscribe({
+              next: (res) => {
+                console.info("Success: ", res.message)
+
+                Swal.fire('Success', res.message, 'success');
+                this.getAllUserAccounts();
+              },
+              error: (err: any) => {
+                console.log('Error response:', err);
+                Swal.fire({
+                  title: 'Updating Denied!',
+                  text: err,
+                  icon: 'warning'
+                });
+              }
+            });
+        }
+      });
+
+
+    } else {
+      this.validateFormFields(this.userPasswordForm);
+    }
+  }
 
   resetForm() {
     this.isEditMode = false;

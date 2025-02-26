@@ -132,9 +132,9 @@ export class PrintService {
               <p class="mb-0">Date: </p>
             </div>
           </div>`;
-          
-          // <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
-    } else if (title === "ptr" || title === "itr" || title === "optr")  {
+
+      // <p class="mb-0">Date: <strong>${new Date().toDateString()}</strong></p>
+    } else if (title === "ptr" || title === "itr" || title === "optr") {
       this.footer = `
         <div class="row mt-3">
           <div class="col-2 border">
@@ -266,7 +266,8 @@ export class PrintService {
     <html>
       <head>
         <title>${title} Report</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://davnorsystems.gov.ph/DDNAEINV/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="./assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <style>
           @media print {
             .footer {
@@ -306,7 +307,7 @@ export class PrintService {
       <body>
         <div class="container-fluid">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <img src="../assets/images/logo/ddn-logo.gif" alt="DDNLogo Left" style="height: 80px;">
+            <img src="https://davnorsystems.gov.ph/DDNAEINV/assets/images/logo/ddn-logo.gif" alt="DDNLogo Left" style="height: 80px;">
             <div>
               <h6 style="text-align: center; flex-grow: 1;">
                 Republic of the Philippines <br>
@@ -314,7 +315,7 @@ export class PrintService {
                 Government Center, Mankilam, Tagum City
               </h6>
             </div>
-            <img src="../assets/images/logo/logo-lg.png" alt="Logo Right" style="height: 80px;">
+            <img src="https://davnorsystems.gov.ph/DDNAEINV/assets/images/logo/logo-lg.png" alt="Logo Right" style="height: 80px;">
           </div>
          
           <hr>
@@ -459,7 +460,7 @@ export class PrintService {
       case 'oprr':
         return 'OTHER PROPERTY RETURN REPORT'
 
-        // Reports
+      // Reports
       case 'spar':
         return 'SUMMARY OF PROPERTY ACKNOWLEDGEMENT RECEIPT'
       case 'sics':
@@ -480,7 +481,7 @@ export class PrintService {
         return 'SUMMARY OF OTHER PROPERTY RETURN REPORT'
 
 
-        
+
       default:
         return null
     }

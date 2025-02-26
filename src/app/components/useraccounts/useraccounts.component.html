@@ -29,7 +29,7 @@
       </div>
 
       <div *ngIf="isLoading" class="text-center my-3 align-content-center" style="height: 50vh;">
-        <img src="../../../assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
+        <img src="assets/images/loading.gif" alt="Loading..." width="100" style="height: 80px;">
         <span class="loading-text text-dark">Loading<span class="dot">.</span>
           <span class="dot">.</span><span class="dot">.</span></span>
 
@@ -86,6 +86,7 @@
                 <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
                     title="System Default"></i></span>
                 }@else{
+
                 <a *ngIf="canRetrieve" class="edit" type="button" (click)="restoreData(ua)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
                 <a *ngIf="canDelete" class="delete" (click)="onDelete(ua.userID, ua.userName)"><i
@@ -93,6 +94,10 @@
                 }
                 <a *ngIf="canRetrieve" class="info" type="button" (click)="getProfileByUserID(ua)"><i
                     class="fa-sharp-duotone fa-solid fa-id-card" data-toggle="tooltip" title="Profile"></i></a>
+
+                <a *ngIf="roleNoFromToken == 'System Administrator' && canUpdate" class="text-info" type="button"
+                  (click)="openForgotPassword(ua)"><i class="fa-solid fa-user-secret"
+                    data-toggle="tooltip" title="Change Password"></i></a>
               </form>
             </td>
           </tr>
@@ -152,7 +157,6 @@
                 <span class="far fa-user"></span>
                 <input type="text" formControlName="username" name="username" id="username" placeholder="Username">
               </div>
-
               <div class="row" *ngIf="!isEditMode">
                 <div class="col">
 
@@ -367,6 +371,88 @@
             class="btn btn-primary rounded-pill" (click)="onSubmitProfile()">{{ isEditMode ?
             'Update' :
             'Save' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- FORGET PASSWORD -->
+<div #ForgetPassModalForm class="modal fade" id="ForgetPassModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form class [formGroup]="userPasswordForm" ng-reflect-form="[object Object]"
+        class="ng-untouched ng-pristine ng-invalid">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Change
+            Password</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="formGroup row">
+
+            <div class="col-lg col-security">
+
+              <div class="row">
+                <div class="col">
+
+                  @if (userPasswordForm.controls['newpassword'].invalid &&
+                  userPasswordForm.hasError('required', 'newpassword') &&
+                  userPasswordForm.get('newpassword')?.touched ||
+                  (userPasswordForm.controls['newpassword'].dirty &&
+                  userPasswordForm.hasError('required', 'newpassword'))) {
+                  <small class="text-danger">* Password is required</small>
+                  }@else if(userPasswordForm.hasError('minlength', 'newpassword') &&
+                  userPasswordForm.get('newpassword')?.touched){
+                  <small class="text-danger">* Password must be at least 6
+                    characters long.</small>
+                  }@else if (passwordMismatch &&
+                  userPasswordForm.get('confirmPassword')?.touched) {
+                  <small class="text-danger">* New Password not
+                    match</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="userPasswordForm.controls['newpassword'].invalid &&
+                    userPasswordForm.hasError('required', 'newpassword') &&  userPasswordForm.get('newpassword')?.touched || (userPasswordForm.controls['newpassword'].dirty &&
+                    userPasswordForm.hasError('required', 'newpassword')) || userPasswordForm.hasError('minlength', 'newpassword') || passwordMismatch">
+                    <span class="fas fa-key"></span>
+                    <input type="password" formControlName="newpassword" name="newpassword" id="newpassword"
+                      placeholder="New Password" class="ng-untouched ng-pristine ng-invalid password">
+                  </div>
+
+                  @if (userPasswordForm.controls['confirmPassword'].invalid &&
+                  userPasswordForm.hasError('required', 'confirmPassword') &&
+                  userPasswordForm.get('confirmPassword')?.touched ||
+                  (userPasswordForm.controls['confirmPassword'].dirty &&
+                  userPasswordForm.hasError('required', 'confirmPassword'))) {
+                  <small class="text-danger">* Confirmation Password is
+                    required</small>
+                  }@else if (passwordMismatch &&
+                  userPasswordForm.get('confirmPassword')?.touched) {
+                  <small class="text-danger">* Confirm Password not
+                    match</small>
+                  }
+                  <div class="form-field d-flex align-items-center" [class.error]="userPasswordForm.controls['confirmPassword'].invalid &&
+                    userPasswordForm.hasError('required', 'confirmPassword') &&  userPasswordForm.get('confirmPassword')?.touched || (userPasswordForm.controls['confirmPassword'].dirty &&
+                    userPasswordForm.hasError('required', 'confirmPassword') || passwordMismatch)">
+                    <span class="fas fa-key"></span>
+                    <input type="password" formControlName="confirmPassword" name="confirmPassword" id="confirmPassword"
+                      placeholder="Confirm New Password" class="ng-untouched ng-pristine ng-invalid confirmPassword">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+            (click)="resetForm()">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill" (click)="onChangePass()">Update</button>
         </div>
       </form>
     </div>

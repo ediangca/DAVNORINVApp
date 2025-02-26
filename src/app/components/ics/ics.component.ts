@@ -694,7 +694,41 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   Save(ics: any) {
 
-    if (this.isITR) {
+    if (!this.isITR) {
+
+      this.logger.printLogs('i', 'Saving ICSSSSSSSS', ics);
+      this.api.createICS(ics, this.icsItems)
+        .subscribe({
+          next: (res) => {
+            this.logger.printLogs('i', 'Saved Success', ics);
+            this.logger.printLogs('i', 'Saved Success', this.icsItems);
+
+            Swal.fire({
+              title: 'Saved',
+              text: 'Do you want to add new ICS?',
+              icon: 'success',
+              showCancelButton: true,
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No',
+            }).then((result) => {
+              if (!result.isConfirmed) {
+                this.closeModal(this.AddEditModal);
+              }
+
+            });
+            this.resetForm();
+            this.getAllICS();
+
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Saving ICS', err);
+            Swal.fire('Denied', err, 'warning');
+            this.icsItems = [];
+          }
+        });
+
+    } else {
+
       this.itr = {
         icsNo: ics.icsNo,
         ttype: this.itrForm.value['type'],
@@ -735,7 +769,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
             });
         }
       });
-
     }
   }
 

@@ -87,7 +87,7 @@
                 <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
                     title="System Default"></i></span>
                 }@else{
-                <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditPAR(p)"><i
+                <a *ngIf="canUpdate" class="edit" type="button" (click)="onEditPAR(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
                 <a *ngIf="canDelete  && p.createdBy === userAccount.userID" class="delete" type="button"
                   (click)="onDelete(p)"><i class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip"
@@ -767,7 +767,7 @@
         </div><!-- END OF MODAL BODY -->
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-warning rounded-pill" *ngIf="!par?.postFlag || false"
+          <button type="button" class="btn btn-warning rounded-pill" *ngIf="canUpdate && !par?.postFlag || false"
             (click)="onEditPAR(par)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>

@@ -30,6 +30,11 @@
               "src/assets",
               {
                 "glob": "**/*",
+                "input": "node_modules/bootstrap",
+                "output": "assets/bootstrap"
+              },
+              {
+                "glob": "**/*",
                 "input": "public",
                 "output": "src/assets"
               },

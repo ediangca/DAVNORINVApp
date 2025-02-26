@@ -326,6 +326,14 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+  
+  ForgetPassword(id: string, Details: any): Observable<any> {
+    console.log("ForgetPassword Password: ", id);
+    return this.http.put<any>(`${this.apiUrl}UserAccount/Update/ForgetPassword?id=` + id, Details)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
   UpdatePassword(id: string, Details: any): Observable<any> {
     console.log("Update Password: ", id);
@@ -334,6 +342,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+
 
 
   deleteUserAccount(id: number): Observable<any> {
@@ -397,10 +406,6 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-
-
-
-
 
   /*----------------------- PROFILE -----------------------*/
   //Profile List
