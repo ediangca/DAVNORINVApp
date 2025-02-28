@@ -47,6 +47,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   userProfileForm!: FormGroup;
   userPasswordForm!: FormGroup;
   isEditMode: boolean = false;
+  isChangePass: boolean = false;
   currentEditId: number | null = null;
 
   isLoading: boolean = true;
@@ -366,7 +367,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   // Validate Match Password and Confirm Password
   get passwordMismatch(): boolean {
-    const form = this.userAccountForm;
+    const form = this.isChangePass ? this.userPasswordForm : this.userAccountForm;
     return form.hasError('passwordMismatch') && form.get('confirmPassword')?.touched === true;
   }
 
@@ -724,7 +725,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   openForgotPassword(userAccount: any) {
     this.userAccount = userAccount;
-
+    this.isChangePass = true;
     this.openChangePassModal()
   }
 
@@ -774,6 +775,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   resetForm() {
     this.isEditMode = false;
+    this.isChangePass = false;
     this.currentEditId = null;
     this.isModalOpen = false;
     this.userProfile = null;
@@ -805,8 +807,16 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.loadBranches();
     this.loadPositions();
 
-    this.closeModal(this.AddEditModal);
+    if(this.AddEditModal){
+      this.closeModal(this.AddEditModal);
+    }
+    if(this.ProfileModal){
     this.closeModal(this.ProfileModal);
+    }
+    if(this.ForgetPassModal){
+      this.closeModal(this.ForgetPassModal);
+    }
+
   }
 
 
