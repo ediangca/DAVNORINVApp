@@ -262,12 +262,20 @@ export class PrintService {
     // Access the iframe's document
     const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
     iframeDoc!.open();
+
+    // const bootstrapLink = iframeDoc!.createElement("link");
+    // bootstrapLink.rel = "stylesheet";
+    // bootstrapLink.href = "https://davnorsystems.gov.ph/DDNAEINV/assets/bootstrap/dist/css/bootstrap.min.css";
+    // bootstrapLink.type = "text/css";
+    // bootstrapLink.onload = () => console.log("Bootstrap loaded!");
+    // iframeDoc!.head.appendChild(bootstrapLink);
+
+
     iframeDoc!.write(`
     <html>
       <head>
         <title>${title} Report</title>
-        <link href="https://davnorsystems.gov.ph/DDNAEINV/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="./assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://davnorsystems.gov.ph/DDNAEINV/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
           @media print {
             .footer {
@@ -339,10 +347,11 @@ export class PrintService {
 
     // Close the document stream
     iframeDoc!.close();
-
     // Trigger the print
     iframe.contentWindow?.focus();
-    iframe.contentWindow?.print();
+    setTimeout(() => {
+      iframe.contentWindow?.print();
+    }, 500);
 
     // Clean up the iframe after printing
     iframe.contentWindow!.onafterprint = () => document.body.removeChild(iframe);

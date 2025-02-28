@@ -85,7 +85,7 @@
                 </a>
                 <a *ngIf="canITR && (i.receivedBy=== userAccount.userID || i.createdBy== userAccount.userID ||
                   userAccount.userGroupName === 'System Administrator'
-                )" class="primary" type="button" (click)="onRepar(i)"><i class="fa-solid fa-share-from-square"
+                )" class="primary" type="button" (click)="onITR(i)"><i class="fa-solid fa-share-from-square"
                     data-toggle="tooltip" title="ITR"></i></a>
                 }
               </form>
@@ -238,12 +238,11 @@
                         <thead>
                           <tr>
                             <th class="sticky-header">#</th>
-                            <th class="sticky-header">QTY</th>
                             <th class="sticky-header">UNIT</th>
                             <th class="sticky-header">DESCRIPTION</th>
                             <th class="sticky-header">DATE ACQUIRED</th>
+                            <th class="sticky-header">PROPERTY NUMBER</th>
                             <th class="sticky-header">AMOUNT</th>
-                            <th class="sticky-header">TOTAL</th>
                             <th class="sticky-header text-center">ACTION</th>
                           </tr>
                         </thead>
@@ -254,12 +253,14 @@
                           </tr>
                           <tr *ngFor="let p of icsItems; let i = index">
                             <td>{{i+1}}</td>
-                            <td>{{p.qty}}</td>
                             <td>{{p.unit}}</td>
                             <td>{{p.description}}</td>
-                            <td>{{p.amount}}</td>
                             <td>{{formatDate(p.date_Acquired)}}</td>
-                            <td>{{( p.qty || 0) * (p.amount || 0)}}</td>
+                            <td>{{p.propertyNo}}</td>
+                            <td>{{ (p.amount || 0).toLocaleString('en-US', {
+                              minimumFractionDigits: 2, maximumFractionDigits: 2
+                              }) }}
+                              </td>
                             <td>
                               <form class="d-flex justify-content-end">
                                 <a class="edit" type="button"><i class="fa-sharp-duotone fa-solid fa-pen-to-square"
@@ -598,6 +599,34 @@
                   </div>
 
                   <small class="text-info">*
+                    Received By</small>
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1')  && itrForm.get('userID1')?.touched ||
+                    (itrForm.controls['userID1'].dirty && itrForm.hasError('required', 'userID1')) || (itrForm.get('userID1')?.touched && receivedID === null)">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1') &&
+                      itrForm.get('userID1')?.touched || (itrForm.controls['userID1'].dirty &&
+                      itrForm.hasError('required', 'userID1')) || (itrForm.get('userID1')?.touched && receivedID === null))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1') &&  itrForm.get('userID1')?.touched ||
+                      (itrForm.controls['userID1'].dirty && itrForm.hasError('required', 'userID1')) || (itrForm.get('userID1')?.touched && receivedID === null)"></i>
+
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
+                      [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggestReceived()"
+                      role="textbox">
+                  </div>
+
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0 && activeInput === 'received'"
+                    (blur)="activeInput = null">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectReceived(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+
+                  <small class="text-info">*
                     Approve By</small>
 
                   <div class="form-field d-flex align-items-center"
@@ -622,34 +651,6 @@
                     <ul class="list-group list-group-flush py-3">
                       <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
                         *ngFor="let up of userProfiles" (click)="selectApproved(up)">
-                        {{ up.fullName }}</li>
-                    </ul>
-                  </div>
-
-                  <small class="text-info">*
-                    Received By</small>
-
-                  <div class="form-field d-flex align-items-center"
-                    [class.error]="itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1')  && itrForm.get('userID1')?.touched ||
-                    (itrForm.controls['userID1'].dirty && itrForm.hasError('required', 'userID1')) || (itrForm.get('userID1')?.touched && receivedID === null)">
-                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
-                      *ngIf="!(itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1') &&
-                      itrForm.get('userID1')?.touched || (itrForm.controls['userID1'].dirty &&
-                      itrForm.hasError('required', 'userID1')) || (itrForm.get('userID1')?.touched && receivedID === null))"></i>
-                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
-                      *ngIf="itrForm.controls['userID1'].invalid && itrForm.hasError('required', 'userID1') &&  itrForm.get('userID1')?.touched ||
-                      (itrForm.controls['userID1'].dirty && itrForm.hasError('required', 'userID1')) || (itrForm.get('userID1')?.touched && receivedID === null)"></i>
-
-                    <input type="text" class="form-control" id="navbarDropdown" formControlName="userID1" name="userID1"
-                      [(ngModel)]="receivedByID" placeholder="Received By" (keyup)="onAutoSuggestReceived()"
-                      role="textbox">
-                  </div>
-
-                  <div class="recent-searches" *ngIf="userProfiles.length > 0 && activeInput === 'received'"
-                    (blur)="activeInput = null">
-                    <ul class="list-group list-group-flush py-3">
-                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
-                        *ngFor="let up of userProfiles" (click)="selectReceived(up)">
                         {{ up.fullName }}</li>
                     </ul>
                   </div>

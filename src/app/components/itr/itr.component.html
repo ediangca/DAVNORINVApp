@@ -244,11 +244,11 @@
                           <tr>
                             <th class="sticky-header"></th>
                             <th class="sticky-header">#</th>
-                            <th class="sticky-header">QTY</th>
                             <th class="sticky-header">UNIT</th>
                             <th class="sticky-header">COST</th>
-                            <th class="sticky-header">TOTAL</th>
                             <th class="sticky-header">DESCRIPTION</th>
+                            <th class="sticky-header">DATE ACQUIRED</th>
+                            <th class="sticky-header">PROPERTY NUMBER</th>
                             <th class="sticky-header">EUL</th>
                             <th class="sticky-header">ACTION</th>
                           </tr>
@@ -266,11 +266,11 @@
                               </a>
                             </td>
                             <td>{{i+1}}</td>
-                            <td>{{p.qty}}</td>
                             <td>{{p.unit}}</td>
                             <td>{{p.amount}}</td>
-                            <td>{{(p.qty || 0) * (p.amount || 0)}}</td>
                             <td>{{p.description}}</td>
+                            <td>{{ formatDate(p.date_Acquired) }}</td>
+                            <td>{{ p.propertyNo }}</td>
                             <td>{{p.eul}}</td>
                             <td>
                               <form class="d-flex justify-content-end">
@@ -665,8 +665,9 @@
                             <th class="sticky-header">QTY</th>
                             <th class="sticky-header">UNIT</th>
                             <th class="sticky-header">COST</th>
-                            <th class="sticky-header">AMOUNT</th>
                             <th class="sticky-header">DESCRIPTION</th>
+                            <th class="sticky-header">DATE ACQUIRED</th>
+                            <th class="sticky-header">PROPERTY NUMBER</th>
                             <th class="sticky-header">EUL</th>
                             <!-- <th class="sticky-header">REPAR</th> -->
                           </tr>
@@ -683,8 +684,9 @@
                               <td>{{p.qty}}</td>
                               <td>{{p.unit}}</td>
                               <td>{{p.amount}}</td>
-                              <td>{{(p.qty || 0) * (p.amount || 0)}}</td>
                               <td>{{p.description}}</td>
+                              <td>{{ formatDate(p.date_Acquired) }}</td>
+                              <td>{{ p.propertyNo }}</td>
                               <td>{{p.eul}} year(s)</td>
                             </tr>
                           </ng-container>

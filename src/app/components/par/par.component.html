@@ -100,8 +100,7 @@
                 </a>
                 <a *ngIf="canPTR  && (p.receivedBy=== userAccount.userID || p.createdBy== userAccount.userID ||
                   userAccount.userGroupName === 'System Administrator'
-                )"
-                  class="primary" type="button" (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
+                )" class="primary" type="button" (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
                     data-toggle="tooltip" title="PTR"></i></a>
                 }
               </form>
@@ -276,7 +275,8 @@
                             <td>{{p.propertyNo}}</td>
                             <td>{{ (p.amount || 0).toLocaleString('en-US', {
                               minimumFractionDigits: 2, maximumFractionDigits: 2
-                              }) }}</td>
+                              }) }}
+                            </td>
                             <td>
                               <form class="d-flex justify-content-end">
                                 <a class="edit" type="button"><i class="fa-sharp-duotone fa-solid fa-pen-to-square"
@@ -551,7 +551,6 @@
                               }
                             </th>
                             <th class="sticky-header">#</th>
-                            <th class="sticky-header">QTY</th>
                             <th class="sticky-header">UNIT</th>
                             <th class="sticky-header">DESCRIPTION</th>
                             <th class="sticky-header">DATE ACQUIRED</th>
@@ -570,7 +569,6 @@
                                 </div>
                               </td>
                               <td>{{ i + 1 }}</td>
-                              <td>1</td>
                               <td>{{ p.unit }}</td>
                               <td>{{ p.description }}</td>
                               <td>{{ formatDate(p.date_Acquired) }}</td>
@@ -611,7 +609,7 @@
                     </select>
                   </div>
 
-                  
+
                   <small class="text-info">*
                     Received By</small>
 
@@ -639,7 +637,7 @@
                         {{ up.fullName }}</li>
                     </ul>
                   </div>
-                  
+
                   <small class="text-info">*
                     Approve By</small>
 

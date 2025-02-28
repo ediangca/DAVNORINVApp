@@ -923,7 +923,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   }
 
-  onRepar(ics: any) {
+  onITR(ics: any) {
     if (!ics.postFlag) {
       Swal.fire('Information!', 'Cannot ITR unposted ICS.', 'warning');
       return;
