@@ -30,6 +30,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     ICS: 'Inventory Custodian Slip',
     ITR: 'Inventory Transfer Record',
     RRSEP: 'Receipt Return Semi-Expandable Property',
+    OPR: 'Other Property Receipt',
+    OPTR: 'Other Property Transfer Receipt',
+    OPRR: 'Other Property Return Report',
     SOPA5: 'Summary of Property Above 50k',
     SOPB5: 'Summary of Property Below 50k',
   };

@@ -1298,13 +1298,25 @@ export class ApiService {
   }
 
   //Create
-  createOPR(OPR: any): Observable<any> {
-    console.log("Create OPR: ", OPR);
-    return this.http.post<any>(`${this.apiUrl}OPR/Create/`, OPR)
+  createOPR(details: any, updatedItems: any[]): Observable<any> {
+    const requestPayload = {
+      details: details,
+      oprItems: updatedItems
+    };
+    console.log("Create OPR: ", requestPayload);
+    return this.http.post<any>(`${this.apiUrl}OPR/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
       );
   }
+  //Create
+  // createOPR(OPR: any): Observable<any> {
+  //   console.log("Create OPR: ", OPR);
+  //   return this.http.post<any>(`${this.apiUrl}OPR/Create/`, OPR)
+  //     .pipe(
+  //       catchError(this.handleError)
+  //     );
+  // }
 
   //Retrieve
   retrieveOPR(oprNo: number): Observable<any> {

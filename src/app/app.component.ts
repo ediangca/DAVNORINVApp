@@ -43,6 +43,7 @@ export class AppComponent implements OnInit {
   faCoffee = faCoffee;
 
   public assetPath: string = 'assets/images/dashboard/top-header.png';
+  public peedoLogo: string = 'assets/images/logo/logo-lg.png';
   public logoPath: string = 'assets/images/logo/logo-sm.png';
   public loadingPath: string = 'assets/images/logo/loading.gif';
 

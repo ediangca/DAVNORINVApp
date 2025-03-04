@@ -609,7 +609,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
     const OPRNo: string = this.opr ? this.opr.oprNo : null;
 
     if (!OPRNo) {
-      Swal.fire('INFORMATION!', 'Please input PAR No. first before adding item', 'warning');
+      Swal.fire('INFORMATION!', 'Please input OPR No. first before adding item', 'warning');
       return;
     }
     this.openModal(this.ItemModal);
@@ -679,7 +679,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
   Save(opr: any) {
     if (!this.isOPTR) {
       this.logger.printLogs('i', 'Saving OPR', opr);
-      this.api.createOPR(opr)
+      this.api.createOPR(opr, this.oprItems)
         .subscribe({
           next: (res) => {
             this.logger.printLogs('i', 'Saved Success', opr);

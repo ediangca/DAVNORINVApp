@@ -219,15 +219,15 @@
                         </div>
 
                         <div class="col-12 col-lg-2 d-flex just justify-content-center align-items-center">
- 
+
                             <button type="button"
                                 class="btn btn-primary rounded-pill d-flex justify-content-center align-items-center"
                                 (click)="onViewPropertyCard()">View</button>
                         </div>
                     </div>
-                    
+
                     <!-- Table -->
-                    <div class="row"  style="height: 75vh;">
+                    <div class="row" style="height: 75vh;">
                         <div class="col">
 
 
@@ -257,8 +257,10 @@
                                         <tr *ngFor="let p of propertyCards">
                                             <td>{{formatDateTime(p.date_Created)}}</td>
                                             <td>{{p.ref}}</td>
-                                            <td>{{p.refNoFrom}}</td>
-                                            <td>{{p.refNoTo || "-"}}</td>
+                                            <td>{{p.ref == 'OPR' || p.ref == 'OPTR' || p.ref == 'OPRR'?
+                                                'OPR-000'+p.refNoFrom: p.refNoFrom}}</td>
+                                            <td>{{((p.ref == 'OPR' || p.ref == 'OPTR' || p.ref == 'OPRR') && p.refNoTo?
+                                                'OPR-000'+p.refNoTo: p.refNoTo) || "-"}}</td>
                                             <td>{{p.issued}}</td>
                                             <td>{{p.received}}</td>
                                             <td>{{p.approved || "-"}}</td>
