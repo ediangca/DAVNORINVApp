@@ -313,8 +313,10 @@ export class ParComponent implements OnInit, AfterViewInit {
           // For regular users, filter data based on `receivedBy` or relevant fields
           const filteredPARs = res.filter((par: any) =>
             par.createdBy === this.userAccount.userID ||
+            par.issuedBy === this.userAccount.userID ||
             par.receivedBy === this.userAccount.userID
           );
+          this.totalItems = filteredPARs.length;
           return filteredPARs.slice(0, 20); // Limit to 10 results
 
         }),
@@ -364,13 +366,13 @@ export class ParComponent implements OnInit, AfterViewInit {
               // Filter results based on `createdBy` and slice for pagination
               this.logger.printLogs('i', 'Show PARS only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated PARs', res);
-              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
               const filteredPARs = res.filter((par: any) =>
                 par.createdBy === this.userAccount.userID ||
+                par.issuedBy === this.userAccount.userID ||
                 par.receivedBy === this.userAccount.userID
               );
               return filteredPARs.slice(0, 20); // Limit to 10 results for display

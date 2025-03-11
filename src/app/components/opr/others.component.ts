@@ -311,10 +311,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
           }
 
 
-          const filtered = res.filter((par: any) =>
-            par.createdBy === this.userAccount.userID ||
-            par.receivedBy === this.userAccount.userID
+          const filtered = res.filter((opr: any) =>
+            opr.createdBy === this.userAccount.userID ||
+            opr.issuedBy === this.userAccount.userID ||
+            opr.receivedBy === this.userAccount.userID
           );
+          this.totalItems = filtered.length;
           return filtered.slice(0, 20);
 
         }),
@@ -343,14 +345,14 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
               this.logger.printLogs('i', 'Show OPRS only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated OPRS', res);
-              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 20);
               }
 
-              const filtered = res.filter((par: any) =>
-                par.createdBy === this.userAccount.userID ||
-                par.receivedBy === this.userAccount.userID
+              const filtered = res.filter((opr: any) =>
+                opr.createdBy === this.userAccount.userID ||
+                opr.issuedBy === this.userAccount.userID ||
+                opr.receivedBy === this.userAccount.userID
               );
               return filtered.slice(0, 20);
             }),

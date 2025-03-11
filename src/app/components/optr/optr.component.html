@@ -58,7 +58,7 @@
               </a>
             </td>
             <td>{{formatDate(p.date_Created)}}</td>
-            <td>{{'OPTR-000'+p.optrNo}}</td>
+            <td>{{'OPR-000'+p.optrNo}}</td>
             <td>{{p.issued}}</td>
             <td>{{p.received}}</td>
             <td>{{p.approved}}</td>
@@ -69,7 +69,7 @@
                 <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
                     title="System Default"></i></span>
                 }@else{
-                <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditOPTR(p)"><i
+                <a *ngIf="canUpdate" class="edit" type="button" (click)="onEditOPTR(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
                 <a *ngIf="canDelete" class="delete" type="button" (click)="onDelete(p)"><i
                     class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
@@ -120,7 +120,7 @@
             <h1 class="modal-title fs-5" id="staticBackdropLabel">{{
               isEditMode
               ?
-              'Edit OPTR #000' + currentEditId: 'Add New OPTR'}} </h1>
+              'Edit OPTR #OPR-000' + currentEditId: 'Add New OPTR'}} </h1>
             <span><em> Property Transfer
                 Receipt</em></span>
           </div>
@@ -490,7 +490,7 @@
 
           <div class="d-flex flex-column">
             <h1 class="modal-title fs-5" id="staticBackdropLabel">
-              OPTR <em> {{ '#' + currentEditId
+              OPTR <em> {{ '#OPR-000' + currentEditId
                 }}</em>
             </h1>
             <span><em>Property Transfer Receipt</em></span>
@@ -715,7 +715,7 @@
         </div><!-- END OF MODAL BODY -->
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-warning rounded-pill" *ngIf="!opr?.postFlag || false"
+          <button type="button" class="btn btn-warning rounded-pill" *ngIf="canUpdate && !opr?.postFlag || false"
             (click)="onEditOPTR(opr)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>

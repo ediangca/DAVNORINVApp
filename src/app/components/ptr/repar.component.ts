@@ -290,8 +290,11 @@ export class ReparComponent implements OnInit, AfterViewInit {
           }
           const filteredPTRs = res.filter((ptr: any) =>
             ptr.createdBy === this.userAccount.userID ||
-            ptr.receivedBy === this.userAccount.userID
+            ptr.issuedBy === this.userAccount.userID ||
+            ptr.receivedBy === this.userAccount.userID ||
+            ptr.approvedBy === this.userAccount.userID
           );
+          this.totalItems = filteredPTRs.length;
           return filteredPTRs.slice(0, 20); // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
@@ -319,14 +322,15 @@ export class ReparComponent implements OnInit, AfterViewInit {
               // Filter results based on `createdBy` and slice for pagination
               this.logger.printLogs('i', 'Show PTRs only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated PTRs', res);
-              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
               const filteredPTRs = res.filter((ptr: any) =>
+                ptr.createdBy === this.userAccount.userID ||
                 ptr.issuedBy === this.userAccount.userID ||
-                ptr.receivedBy === this.userAccount.userID
+                ptr.receivedBy === this.userAccount.userID ||
+                ptr.approvedBy === this.userAccount.userID
               );
               return filteredPTRs.slice(0, 20); // Limit to 10 results for display
             }),

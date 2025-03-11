@@ -322,9 +322,12 @@ export class ReportsComponent implements OnInit, AfterViewInit {
                                   ${showrReturnTypeColumn ? '<th>RETURN TYPE</th>' : ''}
                                   <!-- 
                                   ${showTransferTypeColumn ? '<th>TRANSFER NO.</th>' : ''}
-                                  ${showrReturnTypeColumn ? '<th>RETURN NO.</th>' : ''}
+                                  ${showApprovedColumn ? '<th>APPROVED BY</th>' : ''}
                                    -->
-                                  <th>ISSUED BY</th>
+                                  <!--
+                                   <th>ISSUED BY</th>
+                                  -->
+                                  <th>${showrReturnTypeColumn ? 'RETURNED BY' : 'ISSUED BY'}</th>
                                   <th>RECEIVED BY</th>
                                   ${showApprovedColumn ? '<th>APPROVED BY</th>' : ''}
                                   <th>CREATED BY</th>

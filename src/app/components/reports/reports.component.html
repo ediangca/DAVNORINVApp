@@ -259,7 +259,7 @@
                                             <td>{{p.ref}}</td>
                                             <td>{{p.ref == 'OPR' || p.ref == 'OPTR' || p.ref == 'OPRR'?
                                                 'OPR-000'+p.refNoFrom: p.refNoFrom}}</td>
-                                            <td>{{((p.ref == 'OPR' || p.ref == 'OPTR' || p.ref == 'OPRR') && p.refNoTo?
+                                            <td>{{((p.ref == 'OPR' || p.ref == 'OPTR') && p.refNoTo?
                                                 'OPR-000'+p.refNoTo: p.refNoTo) || "-"}}</td>
                                             <td>{{p.issued}}</td>
                                             <td>{{p.received}}</td>

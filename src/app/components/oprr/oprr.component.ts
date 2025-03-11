@@ -258,8 +258,10 @@ export class OprrComponent implements OnInit, AfterViewInit {
           const filtered = res.filter((item: any) =>
             item.createdBy === this.userAccount.userID ||
             item.issuedBy === this.userAccount.userID ||
-            item.receivedBy === this.userAccount.userID
+            item.receivedBy === this.userAccount.userID ||
+            item.approvedBy === this.userAccount.userID
           );
+          this.totalItems = filtered.length;
           return filtered.slice(0, 20);
         }),
         finalize(() => this.isLoading = false)
@@ -299,7 +301,6 @@ export class OprrComponent implements OnInit, AfterViewInit {
               // Filter results based on `createdBy` and slice for pagination
               this.logger.printLogs('i', 'Show OPRR only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated OPRR', res);
-              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
@@ -307,7 +308,8 @@ export class OprrComponent implements OnInit, AfterViewInit {
               const filtered = res.filter((item: any) =>
                 item.createdBy === this.userAccount.userID ||
                 item.issuedBy === this.userAccount.userID ||
-                item.receivedBy === this.userAccount.userID
+                item.receivedBy === this.userAccount.userID ||
+                item.approvedBy === this.userAccount.userID
               );
               return filtered.slice(0, 20); // Limit to 10 results for display
             }),
@@ -528,7 +530,6 @@ export class OprrComponent implements OnInit, AfterViewInit {
         cancelButtonText: 'No',
       }).then((result) => {
         if (result.isConfirmed) {
-
           this.api.postOPRR(oprrNo, !oprr.postFlag)
             .subscribe({
               next: (res) => {

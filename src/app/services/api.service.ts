@@ -1528,7 +1528,7 @@ export class ApiService {
   postOPRR(oprrNo: string, postVal: boolean): Observable<any> {
     console.log("Update OPRR No. >>> : ", oprrNo);
     console.log("Update Post flag >>> : ", postVal);
-    return this.http.put<any>(`${this.apiUrl}PRS/Post?id=${oprrNo}`, postVal)
+    return this.http.put<any>(`${this.apiUrl}OPRR/Post?id=${oprrNo}`, postVal)
       .pipe(
         catchError(this.handleError)
       );

@@ -291,8 +291,11 @@ export class ItrComponent implements OnInit, AfterViewInit {
           }
           const filteredITRs = res.filter((itr: any) =>
             itr.createdBy === this.userAccount.userID ||
-            itr.receivedBy === this.userAccount.userID
+            itr.issuedBy === this.userAccount.userID ||
+            itr.receivedBy === this.userAccount.userID ||
+            itr.approvedBy === this.userAccount.userID
           );
+          this.totalItems = filteredITRs.length;
           return filteredITRs.slice(0, 20); // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
@@ -318,13 +321,16 @@ export class ItrComponent implements OnInit, AfterViewInit {
           .pipe(
             map((res) => {
               // Filter or process the response if needed
-              this.totalItems = res.length;
+              this.logger.printLogs('i', 'Show ITRs only for Administrator || User Account :', this.userAccount.userID);
+              this.logger.printLogs('i', 'List of Originated ITRs', res);
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               const filteredITRs = res.filter((itr: any) =>
                 itr.createdBy === this.userAccount.userID ||
-                itr.receivedBy === this.userAccount.userID
+                itr.issuedBy === this.userAccount.userID ||
+                itr.receivedBy === this.userAccount.userID ||
+                itr.approvedBy === this.userAccount.userID
               );
               return filteredITRs.slice(0, 20); // Limit to 10 results for display
             }),

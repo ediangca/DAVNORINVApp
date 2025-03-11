@@ -288,10 +288,13 @@ export class OptrComponent implements OnInit, AfterViewInit {
           if (this.userAccount.userGroupName === 'System Administrator') {
             return res.slice(0, 20); // For administrators, show all records, limited to 10
           }
-          const filtered = res.filter((ptr: any) =>
-            ptr.createdBy === this.userAccount.userID ||
-            ptr.receivedBy === this.userAccount.userID
+          const filtered = res.filter((optr: any) =>
+            optr.createdBy === this.userAccount.userID ||
+            optr.issuedBy === this.userAccount.userID ||
+            optr.receivedBy === this.userAccount.userID ||
+            optr.approvedBy === this.userAccount.userID
           );
+          this.totalItems = filtered.length;
           return filtered.slice(0, 20); // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
@@ -319,14 +322,15 @@ export class OptrComponent implements OnInit, AfterViewInit {
               // Filter results based on `createdBy` and slice for pagination
               this.logger.printLogs('i', 'Show OPTRs only for Administrator || User Account :', this.userAccount.userID);
               this.logger.printLogs('i', 'List of Originated OPTRs', res);
-              this.totalItems = res.length;
               if (this.userAccount.userGroupName === 'System Administrator') {
                 return res.slice(0, 20); // For administrators, show all records, limited to 10
               }
               // Filter or process the response if needed
               const filtered = res.filter((optr: any) =>
+                optr.createdBy === this.userAccount.userID ||
                 optr.issuedBy === this.userAccount.userID ||
-                optr.receivedBy === this.userAccount.userID
+                optr.receivedBy === this.userAccount.userID ||
+                optr.approvedBy === this.userAccount.userID
               );
               return filtered.slice(0, 20); // Limit to 10 results for display
             }),
@@ -718,7 +722,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
       Swal.fire({
         title: 'Are you sure?',
-        text: (optr.postFlag ? 'Unpost' : 'Post') + ` OPTR #000${optrNo}`,
+        text: (optr.postFlag ? 'Unpost' : 'Post') + ` OPTR #OPR-000${optrNo}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -1541,7 +1545,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
               <p class="fs-6">OWNERSHIP: <span class="fw-bold border-bottom ms-1">${optr.ownership || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6 text-end">OPTR No.: <span class="fw-bold border-bottom ms-1">${(optr? '000'+optr.optrNo: null) || 'Default OPTR No.'}</span></p>
+              <p class="fs-6 text-end">OPTR No.: <span class="fw-bold border-bottom ms-1">${'OPR-'+ (optr? '000'+optr.optrNo: null) || 'Default OPTR No.'}</span></p>
             </div>
             <div class="col-6">
               <p class="fs-6">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">

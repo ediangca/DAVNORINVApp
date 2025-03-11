@@ -73,7 +73,7 @@
                 <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
                     title="System Default"></i></span>
                 }@else{
-                <a *ngIf="canRetrieve" class="edit" type="button" (click)="onEditOPRR(p)"><i
+                <a *ngIf="canUpdate" class="edit" type="button" (click)="onEditOPRR(p)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
                 <a *ngIf="canDelete" class="delete" type="button" (click)="onDelete(p)"><i
                     class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
@@ -591,7 +591,8 @@
         </div><!-- END OF MODAL BODY -->
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-warning rounded-pill" *ngIf="!oprr?.postFlag || false"
+
+          <button type="button" class="btn btn-warning rounded-pill" *ngIf="canUpdate && !oprr?.postFlag || false"
             (click)="onEditOPRR(oprr)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
