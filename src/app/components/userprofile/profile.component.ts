@@ -310,12 +310,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             .subscribe({
               next: (res) => {
                 console.info("Success: ", res.message);
-
-                Swal.fire({
-                  title: 'Updated!',
-                  text: res.message,
-                  icon: 'success'
-                });
+                Swal.fire('Updated!', res.message, 'success');
               },
               error: (err: any) => {
                 console.log('Error response:', err);
@@ -462,7 +457,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   UpdateProfile(userProfile: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,
@@ -475,7 +470,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             next: (res) => {
               console.info("Success: ", res.message);
 
-              Swal.fire('Success', res.message, 'success');
+              Swal.fire('Updated!', res.message, 'success');
               this.getProfile(userProfile.userID);
               this.resetForm();
             },

@@ -9,6 +9,7 @@ import ValidateForm from '../../helpers/validateForm';
 import { catchError, defaultIfEmpty, firstValueFrom, of } from 'rxjs';
 import { StoreService } from '../../services/store.service';
 import { LogsService } from '../../services/logs.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-items',
@@ -48,8 +49,9 @@ export class ItemsComponent implements OnInit, AfterViewInit {
   canPost: boolean = false;
   canUnpost: boolean = false;
 
-  constructor(private fb: FormBuilder, private api: ApiService, 
-    public vf: ValidateForm, private store: StoreService, private logger: LogsService) {
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private toastr: ToastrService, public vf: ValidateForm,
+    private store: StoreService, private logger: LogsService) {
 
     this.ngOnInit();
   }
@@ -118,7 +120,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.totalItems = res.length;
-          this.items = res.slice(0,20);
+          this.items = res.slice(0, 20);
         },
         error: (err: any) => {
           console.log("Error Fetching Items: ", err);
@@ -159,7 +161,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: (res) => {
               console.log("Fetching Items: ", res);
-              this.items = res.slice(0,20);
+              this.items = res.slice(0, 20);
             },
             error: (err: any) => {
               console.log("Error Fetching Items: ", err);
@@ -200,19 +202,13 @@ export class ItemsComponent implements OnInit, AfterViewInit {
 
               this.getItems();
 
-              Swal.fire({
-                title: 'Success!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Success', res.message, 'success');
+              this.toast('Success!', res.message, 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Deleting Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Denied', err, 'warning');
+              this.toast('Denied!', err, 'success');
             }
           });
       }
@@ -234,6 +230,16 @@ export class ItemsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+
+    this.toastr[type](msg, title, options);
+  }
 
   onSubmit() {
     if (this.itemForm.valid) {
@@ -264,19 +270,12 @@ export class ItemsComponent implements OnInit, AfterViewInit {
           this.getItems();
           this.resetForm()
 
-          Swal.fire({
-            title: 'Saved!',
-            text: res.message,
-            icon: 'success'
-          });
+          Swal.fire('Saved!', res.message, 'success');
+          this.toast('Saved!', res.message, 'success');
         },
         error: (err: any) => {
-          console.log('Error response:', err);
-          Swal.fire({
-            title: 'Saving Denied!',
-            text: err,
-            icon: 'warning'
-          });
+          Swal.fire('Saving Denied!', err, 'warning');
+          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -284,7 +283,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
   Update(item: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,
@@ -301,20 +300,14 @@ export class ItemsComponent implements OnInit, AfterViewInit {
               this.getItems();
               this.resetForm();
 
-              Swal.fire({
-                title: 'Saved!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Updated!', res.message, 'success');
+              this.toast('Updated!', res.message, 'success');
 
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Updating Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Updating Denied!', err, 'warning');
+              this.toast('Updating Denied!', err, 'error');
             }
           });
       }
@@ -336,7 +329,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
     this.loadItemGroups();
   }
 
-  
+
   isAllowedAction(moduleName: string, action: string): boolean {
     return this.store.isAllowedAction(moduleName, action);
   }

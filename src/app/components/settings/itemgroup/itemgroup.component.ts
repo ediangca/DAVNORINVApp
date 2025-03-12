@@ -168,7 +168,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
   Update(itemGroup: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,

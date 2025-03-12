@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
 
 import { PrintService } from '../../services/print.service';
 import { catchError, delay, finalize, forkJoin, map, Observable, of } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -126,7 +127,8 @@ export class RrspComponent {
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService, private logger: LogsService
+    private printService: PrintService, private logger: LogsService,
+    private toastr: ToastrService
   ) {
     this.ngOnInit();
   }
@@ -440,6 +442,17 @@ export class RrspComponent {
 
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    
+    this.toastr[type](msg, title, options);
+  }
+
   Save() {
     this.logger.printLogs('i', 'Saving RRSEP', this.rrsep);
     this.logger.printLogs('i', 'Saving RRSEP Item', this.rrsepItems);
@@ -447,6 +460,8 @@ export class RrspComponent {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', this.rrsep);
+          
+          this.toast('Saved!', res.message, 'success');
           Swal.fire({
             title: 'Saved',
             text: 'Do you want to add new RRSEP?',
@@ -464,7 +479,8 @@ export class RrspComponent {
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving RRSEP', err);
-          Swal.fire('Denied', err, 'warning');
+          Swal.fire('Saving Denied', err, 'warning');
+          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -477,20 +493,16 @@ export class RrspComponent {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', res);
-          Swal.fire({
-            title: 'Updated',
-            text: res.message,
-            icon: 'success',
-            allowOutsideClick: false,
-            allowEscapeKey: false
-          });
+          Swal.fire('Updated!', res.message, 'success');
+          this.toast('Updated!', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
           this.getAllRRSEP();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving RRSEP', err);
-          Swal.fire('Denied', err, 'warning');
+          Swal.fire('Updating Denied', err, 'warning');
+          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -545,11 +557,13 @@ export class RrspComponent {
               next: (res) => {
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
+                this.toast('Success!', res.message, 'success');
                 this.getAllRRSEP();
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Posting RRSEP!']);
                 Swal.fire('Warning', err, 'warning');
+                this.toast('Denied!', err, 'warning');
               }
             });
 
@@ -687,10 +701,12 @@ export class RrspComponent {
             next: (res) => {
               this.getAllRRSEP();
               Swal.fire('Success', res.message, 'success');
+              this.toast('Success!', res.message, 'success');
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting RRSEP', err);
               Swal.fire('Denied', err, 'warning');
+              this.toast('Denied!', err, 'warning');
             }
           });
       }

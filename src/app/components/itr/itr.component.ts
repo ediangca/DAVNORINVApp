@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
 import { PrintService } from '../../services/print.service';
 import { delay, finalize, forkJoin, map, Observable } from 'rxjs';
 import { ICSItem } from '../../models/ICSItem';
+import { ToastrService } from 'ngx-toastr';
 
 
 // import * as bootstrap from 'bootstrap';
@@ -129,7 +130,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService, private logger: LogsService
+    private printService: PrintService, private logger: LogsService,
+    private toastr: ToastrService
   ) {
     this.ngOnInit();
   }
@@ -715,6 +717,16 @@ export class ItrComponent implements OnInit, AfterViewInit {
 
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
+  }
+
   Save(itr: any) {
     if (!this.isITR) {
       this.logger.printLogs('i', 'Saving ITR', itr);
@@ -723,10 +735,12 @@ export class ItrComponent implements OnInit, AfterViewInit {
           next: (res) => {
             this.logger.printLogs('i', 'Saved Success', itr);
             Swal.fire('Saved', res.message, 'success');
+            this.toast('Saved!', res.message, 'success');
           },
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving itr', err);
-            Swal.fire('Denied', err, 'warning');
+            Swal.fire('Saving Denied', err, 'warning');
+            this.toast('Saving Denied!', err, 'warning');
           }
         });
     } else {
@@ -757,14 +771,16 @@ export class ItrComponent implements OnInit, AfterViewInit {
             .subscribe({
               next: (res) => {
                 this.logger.printLogs('i', 'Saved Success', res);
-                Swal.fire('Saved', res.message, 'success');
                 this.logger.printLogs('i', 'Saved Success', res.details);
+                Swal.fire('Saved', res.message, 'success');
+                this.toast('Saved!', res.message, 'success');
 
                 this.closeModal(this.ViewModal);
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error Saving ITR', err);
                 Swal.fire('Denied', err, 'warning');
+                this.toast('Denied!', err, 'warning');
               }
             });
         }
@@ -780,14 +796,16 @@ export class ItrComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', res);
-          Swal.fire('Saved', res.message, 'success');
-          this.logger.printLogs('i', 'Saved Success', res.details);
+          Swal.fire('Updated!', res.message, 'success');
+          this.toast('Updated!', res.message, 'success');
+          this.logger.printLogs('i', 'Update Success', res.details);
           this.getAllITR();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving ITR', err);
-          Swal.fire('Denied', err, 'warning');
+          this.logger.printLogs('e', 'Error Updating ITR', err);
+          Swal.fire('Updating Denied', err, 'warning');
+          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -824,10 +842,12 @@ export class ItrComponent implements OnInit, AfterViewInit {
                 this.getAllITR();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
+                this.toast('Success!', res.message, 'success');
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Retrieving ITR Item!']);
-                Swal.fire('Warning', err, 'warning');
+                Swal.fire('Denied!', err, 'warning');
+                this.toast('Denied!', err, 'warning');
               }
             });
 
@@ -1009,10 +1029,12 @@ export class ItrComponent implements OnInit, AfterViewInit {
             next: (res) => {
               this.getAllITR();
               Swal.fire('Success', res.message, 'success');
+              this.toast('Success!', res.message, 'success');
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting ITR', err);
               Swal.fire('Denied', err, 'warning');
+              this.toast('Denied!', err, 'warning');
             }
           });
       }

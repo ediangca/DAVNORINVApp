@@ -318,7 +318,7 @@ export class CompanyComponent implements OnInit {
   Update(company: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,
@@ -421,7 +421,7 @@ export class CompanyComponent implements OnInit {
   UpdateDept(deparment: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,
@@ -513,7 +513,7 @@ export class CompanyComponent implements OnInit {
   UpdateSect(section: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,

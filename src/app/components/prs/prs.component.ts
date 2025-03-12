@@ -475,14 +475,15 @@ export class PrsComponent implements OnInit, AfterViewInit {
     this.api.updatePRS(this.prs, this.prsItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', res);
-          Swal.fire({
-            title: 'Updated',
-            text: res.message,
-            icon: 'success',
-            allowOutsideClick: false,
-            allowEscapeKey: false
-          });
+          this.logger.printLogs('i', 'Update Success', res);
+          // Swal.fire({
+          //   title: 'Updated',
+          //   text: res.message,
+          //   icon: 'success',
+          //   allowOutsideClick: false,
+          //   allowEscapeKey: false
+          // });
+          Swal.fire('Updated!', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
           this.getAllPRS();
           this.closeModal(this.ViewModal);

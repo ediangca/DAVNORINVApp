@@ -87,7 +87,7 @@
                     title="System Default"></i></span>
                 }@else{
 
-                <a *ngIf="canRetrieve" class="edit" type="button" (click)="restoreData(ua)"><i
+                <a *ngIf="canUpdate" class="edit" type="button" (click)="restoreData(ua)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
                 <a *ngIf="canDelete" class="delete" (click)="onDelete(ua.userID, ua.userName)"><i
                     class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>

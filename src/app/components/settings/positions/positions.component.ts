@@ -165,7 +165,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
   Update(position: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,

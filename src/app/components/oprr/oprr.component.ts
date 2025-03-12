@@ -470,13 +470,15 @@ export class OprrComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', res);
-          Swal.fire({
-            title: 'Updated',
-            text: res.message,
-            icon: 'success',
-            allowOutsideClick: false,
-            allowEscapeKey: false
-          });
+          // Swal.fire({
+          //   title: 'Updated',
+          //   text: res.message,
+          //   icon: 'success',
+          //   allowOutsideClick: false,
+          //   allowEscapeKey: false
+          // });
+
+          Swal.fire('Updated!', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
           this.getAllOPRR();
           this.closeModal(this.ViewModal);

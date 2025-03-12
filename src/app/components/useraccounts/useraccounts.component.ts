@@ -441,6 +441,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       }
 
     } else {
+      console.warn("Invalidate Form");
       this.validateFormFields(this.userAccountForm);
     }
 
@@ -485,8 +486,8 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
           this.userAccountForm.patchValue({
             username: userAccount.userName,
-            password: '',
-            confirmPassword: '',
+            password: 'password',
+            confirmPassword: 'password',
             // password: userAccount.password,
             // confirmPassword: userAccount.password,
             ug: res[0].ugid
@@ -505,7 +506,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   Update(userAccount: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,
@@ -654,7 +655,8 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             next: (res) => {
               console.info("Success: ", res.message);
 
-              Swal.fire('Success', res.message, 'success');
+              // Swal.fire('Success', res.message, 'success');
+              Swal.fire('Updated!', res.message, 'success');
               this.getAllUserAccounts();
               this.resetForm();
             },
@@ -807,13 +809,13 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.loadBranches();
     this.loadPositions();
 
-    if(this.AddEditModal){
+    if (this.AddEditModal) {
       this.closeModal(this.AddEditModal);
     }
-    if(this.ProfileModal){
-    this.closeModal(this.ProfileModal);
+    if (this.ProfileModal) {
+      this.closeModal(this.ProfileModal);
     }
-    if(this.ForgetPassModal){
+    if (this.ForgetPassModal) {
       this.closeModal(this.ForgetPassModal);
     }
 

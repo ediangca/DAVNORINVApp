@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { NgToastModule, NgToastService } from 'ng-angular-popup' // to be added
 import { AppComponent } from '../../app.component';
 import ValidateForm from '../../helpers/validateForm';
+import { ToastrService } from 'ngx-toastr';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -14,9 +15,9 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, ReactiveFormsModule, HttpClientModule, NgToastModule],
+  imports: [RouterLink, ReactiveFormsModule, HttpClientModule, NgToastModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
 })
 
 export class LoginComponent implements OnInit {
@@ -34,6 +35,7 @@ export class LoginComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private toast: NgToastService,
+    private toastr: ToastrService,
     public ac: AppComponent,
     private vf: ValidateForm) {
 
@@ -49,6 +51,9 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    // this.ngZone.run(() => {
+    //   this.toastr.success('Toastr is working inside Zone.js!', 'Success');
+    // });
   }
 
   openModal(modalElement: ElementRef) {
@@ -103,7 +108,22 @@ export class LoginComponent implements OnInit {
                   this.auth.storeLocal(res);
                   this.loginForm.reset();
                   this.router.navigate(['dashboard']);
-                  this.toast.success(res.message, "ACCESS GRANTED", 5000);
+                  // this.toast.success(res.message, "ACCESS GRANTED", 5000);
+                  // this.toastr.success('Hello world!', 'Toastr fun!');
+
+                  this.toastr.success(
+                    // <img src="${this.ac.logoPath}" style="width:20px; height:20px;"> 
+                    res.message,
+                    'ACCESS GRANTED',
+                    {
+                      enableHtml: true, // Required for rendering HTML content
+                      progressBar: true,
+                      timeOut: 3000, // Auto-close after 5 seconds
+                      closeButton: true,
+                    }
+                  );
+
+                  // this.toastr.success(res.message, "ACCESS GRANTED",);
                 }
               });
 

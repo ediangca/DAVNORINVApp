@@ -41,13 +41,14 @@
               },
               {
                 "glob": "**/*",
-                "input": "node_modules/ngx-scanner-qrcode/wasm/", 
+                "input": "node_modules/ngx-scanner-qrcode/wasm/",
                 "output": "./assets/wasm/"
               }
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.css",
+              "node_modules/ngx-toastr/toastr.css",
               "src/assets/css/core/libs.min.css",
               "node_modules/aos/dist/aos.css",
               "src/assets/css/hope-ui.min.css",
@@ -130,7 +131,8 @@
             "styles": [
               "src/styles.css",
               "node_modules/aos/dist/aos.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": []
           }

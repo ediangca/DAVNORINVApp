@@ -186,7 +186,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
   Update(userGroup: any) {
 
     Swal.fire({
-      title: 'Edit?',
+      title: 'Update',
       text: 'Are you sure?',
       icon: 'question',
       showCancelButton: true,

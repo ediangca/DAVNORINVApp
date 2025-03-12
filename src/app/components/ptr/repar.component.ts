@@ -766,8 +766,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.api.updateREPAR(this.repar, this.parItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', res);
-          Swal.fire('Saved', res.message, 'success');
+          this.logger.printLogs('i', 'Update Success', res);
+          Swal.fire('Updated!', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
           this.getAllPTR();
           this.closeModal(this.ViewModal);

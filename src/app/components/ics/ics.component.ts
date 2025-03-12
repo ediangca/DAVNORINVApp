@@ -14,6 +14,7 @@ import { PrintService } from '../../services/print.service';
 import { delay, finalize, forkJoin, map, Observable } from 'rxjs';
 import { ICSItem } from '../../models/ICSItem';
 import { when } from 'jquery';
+import { ToastrService } from 'ngx-toastr';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -144,7 +145,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
   constructor(private fb: FormBuilder, private api: ApiService,
     private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService, private logger: LogsService) {
+    private printService: PrintService, private logger: LogsService,
+    private toastr: ToastrService) {
 
     this.ngOnInit();
 
@@ -693,6 +695,15 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
+  }
 
   Save(ics: any) {
 
@@ -705,6 +716,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
             this.logger.printLogs('i', 'Saved Success', ics);
             this.logger.printLogs('i', 'Saved Success', this.icsItems);
 
+            this.toast('Saved!', res.message, 'success');
             Swal.fire({
               title: 'Saved',
               text: 'Do you want to add new ICS?',
@@ -724,7 +736,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
           },
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving ICS', err);
-            Swal.fire('Denied', err, 'warning');
+            Swal.fire('Saving Denied', err, 'warning');
+            this.toast('Saving Denied!', err, 'warning');
             this.icsItems = [];
           }
         });
@@ -760,13 +773,15 @@ export class IcsComponent implements OnInit, AfterViewInit {
               next: (res) => {
                 this.logger.printLogs('i', 'Saved Success', res);
                 Swal.fire('Saved', res.message, 'success');
+                this.toast('Saved!', res.message, 'success');
                 this.logger.printLogs('i', 'Saved Success', res.details);
 
                 this.closeModal(this.ViewModal);
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error Saving ITR', err);
-                Swal.fire('Denied', err, 'warning');
+                Swal.fire('Saving Denied', err, 'warning');
+                this.toast('Saving Denied!', err, 'warning');
               }
             });
         }
@@ -784,13 +799,15 @@ export class IcsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', ics);
-          Swal.fire('Updated!', res.message, 'warning');
+          Swal.fire('Updated!', res.message, 'success');
+          this.toast('Updated!', res.message, 'success');
           this.getAllICS();
 
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating PAR', err);
-          Swal.fire('Denied', err, 'warning');
+          Swal.fire('Updating Denied', err, 'warning');
+          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -828,10 +845,12 @@ export class IcsComponent implements OnInit, AfterViewInit {
                 this.getAllICS();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
+                this.toast('Success!', res.message, 'success');
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Retrieving ICS Item!']);
-                Swal.fire('Warning', err, 'warning');
+                Swal.fire('Denied!', err, 'warning');
+                this.toast('Denied!', err, 'warning');
               }
             });
 
@@ -987,10 +1006,12 @@ export class IcsComponent implements OnInit, AfterViewInit {
             next: (res) => {
               this.getAllICS();
               Swal.fire('Success', res.message, 'success');
+              this.toast('Success!', res.message, 'success');
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting ICS', err);
               Swal.fire('Denied', err, 'warning');
+              this.toast('Denied!', err, 'success');
             }
           });
       }
@@ -1002,7 +1023,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
   // ICS ITEM
   async onAddItem() {
     if (!this.itemForm.valid) {
-      this.validateFormFields(this.itemForm);
+      this.vf.validateFormFields(this.itemForm);
       Swal.fire('Information!', 'Please check all fields.', 'warning');
       return;
     }
@@ -1446,16 +1467,16 @@ export class IcsComponent implements OnInit, AfterViewInit {
   }
 
   //Common Method - Advice to add in Helpers
-  private validateFormFields(fg: FormGroup) {
-    Object.keys(fg.controls).forEach(field => {
-      const control = fg.get(field)
-      if (control instanceof FormControl) {
-        control.markAsDirty({ onlySelf: true });
-      } else if (control instanceof FormGroup) {
-        this.validateFormFields(control);
-      }
-    })
-  }
+  // private validateFormFields(fg: FormGroup) {
+  //   Object.keys(fg.controls).forEach(field => {
+  //     const control = fg.get(field)
+  //     if (control instanceof FormControl) {
+  //       control.markAsDirty({ onlySelf: true });
+  //     } else if (control instanceof FormGroup) {
+  //       this.validateFormFields(control);
+  //     }
+  //   })
+  // }
 
   onTypeChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;

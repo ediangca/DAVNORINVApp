@@ -10,8 +10,8 @@
   <li class="nav-item">
 
     <!-- [routerLink]="['dashboard']" -->
-     <!--  [ngClass]="{'active': title === 'Dashboard'}" [routerLink]="['dashboard']"  href="/dashboard"-->
-    <a class="nav-link" [ngClass]="{'active': title === 'Dashboard'}"  [routerLink]="['dashboard']"
+    <!--  [ngClass]="{'active': title === 'Dashboard'}" [routerLink]="['dashboard']"  href="/dashboard"-->
+    <a class="nav-link" [ngClass]="{'active': title === 'Dashboard'}" [routerLink]="['dashboard']"
       routerLinkActive="router-link-active">
       <i class="icon">
         <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
@@ -638,7 +638,8 @@
   isModuleActive('USER ACCOUNTS') || isModuleActive('REPORTS')">
     <hr class="hr-horizontal">
   </li>
-  <li class="nav-item static-item">
+  <li class="nav-item static-item" *ngIf="isModuleActive('ITEM CATEGORY') || isModuleActive('POSITION') || isModuleActive('COMPANY') || isModuleActive('USER GROUPS') ||
+  isModuleActive('USER ACCOUNTS') || isModuleActive('REPORTS')">
     <a class="nav-link static-item disabled" href="#" tabindex="-1">
       <span class="default-icon">General</span>
       <span class="mini-icon">GS</span>
@@ -648,9 +649,8 @@
   <li class="nav-item"
     *ngIf="isModuleActive('ITEM CATEGORY') || isModuleActive('POSITION') || isModuleActive('COMPANY') || isModuleActive('USER GROUPS')">
     <a class="nav-link" [ngClass]="{'active': title === 'Item Group'}" [routerLink]="['global']"
-      (click)="toggleSidebar(true)" routerLinkActive="router-link-active" 
-      data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
-      data-bs-title="SETTINGS">
+      (click)="toggleSidebar(true)" routerLinkActive="router-link-active" data-bs-toggle="tooltip"
+      data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-title="SETTINGS">
       <i class="icon">
         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"
@@ -669,9 +669,8 @@
 
   <li class="nav-item" *ngIf="isModuleActive('USER ACCOUNTS')">
     <a class="nav-link" [ngClass]="{'active': title === 'User Account'}" [routerLink]="['useraccounts']"
-      (click)="toggleSidebar(true)" routerLinkActive="router-link-active"
-      data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
-      data-bs-title="USER ACCOUNTS">
+      (click)="toggleSidebar(true)" routerLinkActive="router-link-active" data-bs-toggle="tooltip"
+      data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-title="USER ACCOUNTS">
       <i class="icon">
         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -701,9 +700,8 @@
   </li>
   <li class="nav-item" *ngIf="isModuleActive('REPORTS')">
     <a class="nav-link" [ngClass]="{'active': title === 'Reports'}" [routerLink]="['reports']"
-      (click)="toggleSidebar(true)" routerLinkActive="router-link-active"
-      data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
-      data-bs-title="REPORTS">
+      (click)="toggleSidebar(true)" routerLinkActive="router-link-active" data-bs-toggle="tooltip"
+      data-bs-placement="right" data-bs-custom-class="custom-tooltip" data-bs-title="REPORTS">
       <i class="icon">
         <svg class="icon-20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.4"

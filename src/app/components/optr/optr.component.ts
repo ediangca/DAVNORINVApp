@@ -612,62 +612,62 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
     }
   }
-  
-    onSubmitOPTR() {
-  
-      if (!this.optrForm.valid) {
-        this.vf.validateFormFields(this.optrForm);
-        Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
-        return;
-      }
-  
-      if (this.oprItems.length < 1) {
-        Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
-        return;
-      }
 
-      this.currentEditId = this.optr.optrNo;
+  onSubmitOPTR() {
 
-      const reoptr =  {
-        optrNo: this.currentEditId,
-        oprNo: this.optr.oprNo,
-        ttype: this.optrForm.value['type'],
-        otype: this.optrForm.value['others'],
-        reason: this.optrForm.value['reason'],
-        receivedBy: this.receivedID,
-        issuedBy: this.issuedID,
-        approvedBy: this.approvedID,
-        createdBy: this.userAccount.userID,
-      }
-      
-  
-      if (this.oprItems.length > 0) {
-  
-        this.logger.printLogs('i', 'OPTR Form', this.optrForm);
-        
-              this.logger.printLogs('i', 'Saving RE-OPTR', reoptr);
-              this.api.createREOPTR(reoptr, this.oprItems)
-                .subscribe({
-                  next: (res) => {
-                    this.logger.printLogs('i', 'RE-OPTR Saved Success', res.details);
-                    Swal.fire('Saved!!', res.message, 'success');
-        
-        
-                    this.closeModal(this.TransferModalForm);
-                    this.getAllOPTR();
-                    this.resetForm();
-        
-                  },
-                  error: (err: any) => {
-                    this.logger.printLogs('e', 'Error Saving OPTR', err);
-                    Swal.fire('Denied', err, 'warning');
-                  }
-                });
-  
-      }
-
-  
+    if (!this.optrForm.valid) {
+      this.vf.validateFormFields(this.optrForm);
+      Swal.fire('Warning!', 'Please complete all required fields before proceeding!', 'warning');
+      return;
     }
+
+    if (this.oprItems.length < 1) {
+      Swal.fire('Warning!', 'Require at least 1 item to proceed!', 'warning');
+      return;
+    }
+
+    this.currentEditId = this.optr.optrNo;
+
+    const reoptr = {
+      optrNo: this.currentEditId,
+      oprNo: this.optr.oprNo,
+      ttype: this.optrForm.value['type'],
+      otype: this.optrForm.value['others'],
+      reason: this.optrForm.value['reason'],
+      receivedBy: this.receivedID,
+      issuedBy: this.issuedID,
+      approvedBy: this.approvedID,
+      createdBy: this.userAccount.userID,
+    }
+
+
+    if (this.oprItems.length > 0) {
+
+      this.logger.printLogs('i', 'OPTR Form', this.optrForm);
+
+      this.logger.printLogs('i', 'Saving RE-OPTR', reoptr);
+      this.api.createREOPTR(reoptr, this.oprItems)
+        .subscribe({
+          next: (res) => {
+            this.logger.printLogs('i', 'RE-OPTR Saved Success', res.details);
+            Swal.fire('Saved!!', res.message, 'success');
+
+
+            this.closeModal(this.TransferModalForm);
+            this.getAllOPTR();
+            this.resetForm();
+
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Saving OPTR', err);
+            Swal.fire('Denied', err, 'warning');
+          }
+        });
+
+    }
+
+
+  }
 
   Update(optr: any) {
     this.logger.printLogs('i', 'Updating OPTR', optr);
@@ -675,8 +675,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
     this.api.updateOPTR(this.optr, this.oprItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', res);
-          Swal.fire('Saved', res.message, 'success');
+          this.logger.printLogs('i', 'Update Success', res);
+          Swal.fire('Updated!', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
           this.getAllOPTR();
           this.closeModal(this.ViewModal);
@@ -889,8 +889,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
     this.issuedID = optr.receivedBy;
     this.approvedID = optr.approvedBy;
-    
-    this.optrForm.patchValue({  
+
+    this.optrForm.patchValue({
       userID2: optr.received,
       userID1: '', //Received BY
       userID3: optr.approved, //Approved BY
@@ -899,23 +899,23 @@ export class OptrComponent implements OnInit, AfterViewInit {
     });
 
     this.api.retrieveOPRItemByOPTRNo(this.optr.optrNo)
-          .subscribe({
-            next: (res) => {
-              this.logger.printLogs('i', 'Retrieving OPR Item', res);
-              this.oprItems = res;
-              this.searchOPRItems = this.oprItems;
-    
-              this.noOfParItems = this.oprItems.filter((group: any) => group.optrFlag === false).length;
-              this.logger.printLogs('i', 'Number of OPR Item Retrieved', this.noOfParItems);
-    
-              this.openModal(this.TransferModalForm); // Open the modal after patching
-            },
-            error: (err: any) => {
-              this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
-              Swal.fire('Error', 'Failure to Retrieve OPR Item.', 'error');
-            }
-          });
-    
+      .subscribe({
+        next: (res) => {
+          this.logger.printLogs('i', 'Retrieving OPR Item', res);
+          this.oprItems = res;
+          this.searchOPRItems = this.oprItems;
+
+          this.noOfParItems = this.oprItems.filter((group: any) => group.optrFlag === false).length;
+          this.logger.printLogs('i', 'Number of OPR Item Retrieved', this.noOfParItems);
+
+          this.openModal(this.TransferModalForm); // Open the modal after patching
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Retreiving OPR Item', err);
+          Swal.fire('Error', 'Failure to Retrieve OPR Item.', 'error');
+        }
+      });
+
 
   }
 
@@ -1251,22 +1251,22 @@ export class OptrComponent implements OnInit, AfterViewInit {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.isCustomType = selectedValue == 'Others';
     if (!this.isCustomType) {
-      if(this.oprForm){
+      if (this.oprForm) {
         this.oprForm.get('type')?.setValue(selectedValue);
         this.oprForm?.get('others')?.setValue('N/A');
       }
-      if(this.optrForm){
+      if (this.optrForm) {
         this.optrForm.get('type')?.setValue(selectedValue);
         this.optrForm?.get('others')?.setValue('N/A');
       }
     } else {
-      if(this.oprForm){
+      if (this.oprForm) {
         this.oprForm?.get('others')?.setValue(null);
         this.oprForm.get('type')?.markAsUntouched();
         this.oprForm.get('others')?.markAsTouched();
       }
-      
-      if(this.optrForm){
+
+      if (this.optrForm) {
         this.oprForm?.get('others')?.setValue(null);
         this.oprForm.get('type')?.markAsUntouched();
         this.oprForm.get('others')?.markAsTouched();
@@ -1545,7 +1545,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
               <p class="fs-6">OWNERSHIP: <span class="fw-bold border-bottom ms-1">${optr.ownership || 'Default LGU'}</span></p>
             </div>
             <div class="col-6">
-              <p class="fs-6 text-end">OPTR No.: <span class="fw-bold border-bottom ms-1">${'OPR-'+ (optr? '000'+optr.optrNo: null) || 'Default OPTR No.'}</span></p>
+              <p class="fs-6 text-end">OPTR No.: <span class="fw-bold border-bottom ms-1">${'OPR-' + (optr ? '000' + optr.optrNo : null) || 'Default OPTR No.'}</span></p>
             </div>
             <div class="col-6">
               <p class="fs-6">TRANSFER TYPE: <span class="fw-bold border-bottom ms-1">
