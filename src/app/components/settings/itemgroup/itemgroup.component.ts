@@ -8,6 +8,7 @@ import { ApiService } from '../../../services/api.service';
 import { GlobalComponent } from '../global/global.component';
 import { LogsService } from '../../../services/logs.service';
 import { StoreService } from '../../../services/store.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-itemgroup',
@@ -38,8 +39,9 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
   canUnpost: boolean = false;
 
 
-  constructor(private global: GlobalComponent, private fb: FormBuilder, 
-    private api: ApiService, private store: StoreService, private logger: LogsService) {
+  constructor(private global: GlobalComponent, private fb: FormBuilder,
+    private api: ApiService, private store: StoreService,
+    private logger: LogsService, private toastr: ToastrService) {
     this.ngOnInit();
   }
 
@@ -143,6 +145,16 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
       });
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
+  }
+
   onSubmit() {
     // const now = new Date();
 
@@ -184,19 +196,13 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
               // this.closeModal()
               this.getAllItemGroups();
 
-              Swal.fire({
-                title: 'Saved!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Updated!', res.message, 'success');
+              this.toast('Updated!', res.message, 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Updating Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Updating Denied', err, 'warning');
+              this.toast('Updating Denied!', err, 'warning');
             }
           });
       }
@@ -212,20 +218,14 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
           // this.closeModal()
           this.getAllItemGroups();
 
-          Swal.fire({
-            title: 'Saved!',
-            text: res.message,
-            icon: 'success'
-          });
+          Swal.fire('Saved', res.message, 'success');
+          this.toast('Saved!', res.message, 'success');
           this.itemGroupForm.reset();
         },
         error: (err: any) => {
           console.log('Error response:', err);
-          Swal.fire({
-            title: 'Saving Denied!',
-            text: err,
-            icon: 'warning'
-          });
+          Swal.fire('Saving Denied', err, 'warning');
+          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -270,19 +270,13 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
 
               this.getAllItemGroups();
 
-              Swal.fire({
-                title: 'Success!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Deleted', res.message, 'success');
+              this.toast('Deleted!', res.message, 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Deleting Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Deleting Denied', err, 'warning');
+              this.toast('Deleting Denied!', err, 'warning');
             }
           });
       }

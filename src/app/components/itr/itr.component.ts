@@ -698,8 +698,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
         .subscribe({
           next: (res) => {
             this.logger.printLogs('i', 'RE-ITR Saved Success', res.details);
-            Swal.fire('Saved!!', res.message, 'success');
-
+            Swal.fire('Saved', res.message, 'success');
+            this.toast('Saved!', res.message, 'success');
 
             this.closeModal(this.TransferModalForm);
             this.getAllITR();
@@ -708,7 +708,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
           },
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving ITR', err);
-            Swal.fire('Denied', err, 'warning');
+            Swal.fire('Saving Denied', err, 'warning');
+            this.toast('Saving Denied!', err, 'warning');
           }
         });
 
@@ -845,7 +846,7 @@ export class ItrComponent implements OnInit, AfterViewInit {
                 this.toast('Success!', res.message, 'success');
               },
               error: (err: any) => {
-                this.logger.printLogs('e', 'Error', ['Retrieving ITR Item!']);
+                this.logger.printLogs('e', 'Error', ['Posting ITR!']);
                 Swal.fire('Denied!', err, 'warning');
                 this.toast('Denied!', err, 'warning');
               }

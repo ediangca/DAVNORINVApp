@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import { ApiService } from '../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import { LogsService } from '../../services/logs.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-profile',
@@ -53,7 +54,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   constructor(private fb: FormBuilder, private vf: ValidateForm,
     private auth: AuthService, private api: ApiService,
     private store: StoreService, private route: ActivatedRoute,
-    private logger: LogsService) {
+    private logger: LogsService, private toastr: ToastrService) {
 
     this.ngOnInit();
   }
@@ -310,15 +311,14 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             .subscribe({
               next: (res) => {
                 console.info("Success: ", res.message);
-                Swal.fire('Updated!', res.message, 'success');
+                Swal.fire('Updated', res.message, 'success');
+                this.toast('Updated!', res.message, 'success');
               },
               error: (err: any) => {
                 console.log('Error response:', err);
-                Swal.fire({
-                  title: 'Updating Denied!',
-                  text: err,
-                  icon: 'warning'
-                });
+                Swal.fire('Updating Denied', err, 'warning');
+                this.toast('Updating Denied!', err, 'warning');
+
               }
             });
         }
@@ -380,6 +380,15 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       });
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
+  }
 
   onSubmitProfile() {
 
@@ -438,18 +447,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         next: (res) => {
           console.info("Success: ", res.message);
 
-          Swal.fire('Saved!', res.message, 'success');
+          Swal.fire('Saved', res.message, 'success');
+          this.toast('Saved!', res.message, 'success');
 
           this.getProfile(userProfile.userID);
           this.resetForm();
         },
         error: (err: any) => {
           console.log('Error response:', err);
-          Swal.fire({
-            title: 'Saving Denied!',
-            text: err,
-            icon: 'warning'
-          });
+          Swal.fire('Saving Denied', err, 'warning');
+          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -471,16 +478,14 @@ export class ProfileComponent implements OnInit, AfterViewInit {
               console.info("Success: ", res.message);
 
               Swal.fire('Updated!', res.message, 'success');
+              this.toast('Updated!', res.message, 'success');
               this.getProfile(userProfile.userID);
               this.resetForm();
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Updating Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Updating Denied', err, 'warning');
+              this.toast('Updating Denied!', err, 'warning');
             }
           });
       }

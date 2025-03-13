@@ -633,6 +633,16 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
+  }
+
   onSubmit() {
 
     if (!this.icsForm.valid) {
@@ -693,16 +703,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
     }
 
-  }
-
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
   }
 
   Save(ics: any) {
@@ -805,7 +805,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Updating PAR', err);
+          this.logger.printLogs('e', 'Error Updating ICS', err);
           Swal.fire('Updating Denied', err, 'warning');
           this.toast('Updating Denied!', err, 'warning');
         }
@@ -1011,7 +1011,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting ICS', err);
               Swal.fire('Denied', err, 'warning');
-              this.toast('Denied!', err, 'success');
+              this.toast('Denied!', err, 'warning');
             }
           });
       }

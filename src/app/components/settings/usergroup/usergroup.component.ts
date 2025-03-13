@@ -12,6 +12,7 @@ import { LogsService } from '../../../services/logs.service';
 import { Privilege } from '../../../models/Privilege';
 import { when } from 'jquery';
 import { StoreService } from '../../../services/store.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-usergroup',
@@ -53,9 +54,9 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
   canPost: boolean = false;
   canUnpost: boolean = false;
 
-  constructor(private fb: FormBuilder, private api: ApiService, 
+  constructor(private fb: FormBuilder, private api: ApiService,
     private auth: AuthService, private store: StoreService,
-    private logger: LogsService) {
+    private logger: LogsService, private toastr: ToastrService) {
 
     this.ngOnInit();
   }
@@ -150,7 +151,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
     this.api.getAllUserGroups('*')
       .subscribe({
         next: (res) => {
-          
+
           this.totalItems = res.length;
           this.userGroups = res.slice(0, 10);
           this.logger.printLogs('i', 'LIST OF USER GROUPS', this.userGroups);
@@ -160,7 +161,17 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
         }
       });
   }
-  
+
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
+  }
+
   onSubmit() {
     // const now = new Date();
 
@@ -179,10 +190,8 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
 
     }
     this.validateFormFields(this.userGroupForm);
-
-
-
   }
+
   Update(userGroup: any) {
 
     Swal.fire({
@@ -201,19 +210,13 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
 
               this.getAllUserGroups();
 
-              Swal.fire({
-                title: 'Saved!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Updated!', res.message, 'success');
+              this.toast('Updated!', res.message, 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Updating Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Updating Denied', err, 'warning');
+              this.toast('Updating Denied!', err, 'warning');
             }
           });
       }
@@ -229,16 +232,14 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
           // this.closeModal()
           this.getAllUserGroups();
 
-          Swal.fire({
-            title: 'Saved!',
-            text: res.message,
-            icon: 'success'
-          });
+          Swal.fire('Saved', res.message, 'success');
+          this.toast('Saved!', res.message, 'success');
           this.userGroupForm.reset();
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving User', err);
-          Swal.fire('Denied', err, 'warning');
+          this.logger.printLogs('e', 'Error Saving UserGroup', err);
+          Swal.fire('Saving Denied', err, 'warning');
+          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -282,19 +283,13 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
 
               this.getAllUserGroups();
 
-              Swal.fire({
-                title: 'Success!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Deleted', res.message, 'success');
+              this.toast('Deleted!', res.message, 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Deleting Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Deleting Denied', err, 'warning');
+              this.toast('Deleting Denied!', err, 'warning');
             }
           });
       }

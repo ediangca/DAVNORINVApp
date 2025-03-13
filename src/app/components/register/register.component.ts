@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { AppComponent } from '../../app.component';
 import { ApiService } from '../../services/api.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
@@ -24,11 +25,9 @@ export class RegisterComponent implements OnInit {
   userGroups: any[] = [];
 
 
-  constructor(private fb: FormBuilder,
-    private router: Router,
-    private auth: AuthService,
-    private api: ApiService,
-    public ac: AppComponent) { }
+  constructor(private fb: FormBuilder, private router: Router,
+    private auth: AuthService, private api: ApiService,
+    public ac: AppComponent, private toastr: ToastrService) { }
 
   ngOnInit() {
     this.registerForm = this.fb.group({
@@ -39,7 +38,7 @@ export class RegisterComponent implements OnInit {
     }, { validators: validatePasswordMatch('password', 'confirmPassword') });
 
 
-    if(this.auth.isAuthenticated()){
+    if (this.auth.isAuthenticated()) {
       this.router.navigate(['dashboard']);
     }
     this.loadUserGroups();
@@ -78,6 +77,16 @@ export class RegisterComponent implements OnInit {
     return passwordControl ? passwordControl.hasError('passwordStrength') && passwordControl.touched : false;
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
+  }
+
 
   onSubmit() {
     const now = new Date();
@@ -112,6 +121,7 @@ export class RegisterComponent implements OnInit {
           next: (res) => {
             console.info("Success: ", res.message);
 
+            this.toast('Access Granted', res.message, 'success');
             Swal.fire({
               title: 'Access Granted!',
               text: res.message,
@@ -126,11 +136,8 @@ export class RegisterComponent implements OnInit {
           },
           error: (err: any) => {
             console.log('Error response:', err);
-            Swal.fire({
-              title: 'Access Denied!',
-              text: err,
-              icon: 'warning'
-            });
+            Swal.fire('Registration Denied', err, 'warning');
+            this.toast('Registration Denied!', err, 'warning');
           }
         })
 

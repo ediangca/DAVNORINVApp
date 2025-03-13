@@ -12,6 +12,7 @@ import ValidateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 import { PrintService } from '../../services/print.service';
 import { delay, finalize, forkJoin, map, Observable } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -39,7 +40,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
   totalItems: number = 0;
   opr!: any;
   oprItems: any[] = [];
-  selectedOPRItems: Item[] = []; 
+  selectedOPRItems: Item[] = [];
   userProfiles: any = [];
   items: any = [];
   searchKey: string = '';
@@ -145,7 +146,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService,
     private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService, private logger: LogsService
+    private printService: PrintService, private logger: LogsService, private toastr: ToastrService
   ) {
     this.ngOnInit();
   }
@@ -442,18 +443,18 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
     if (this.oprForm!) {
       this.oprForm.patchValue({
-        userID1: userProfile.fullName 
+        userID1: userProfile.fullName
       });
     }
 
     if (this.optrForm!) {
       this.optrForm.patchValue({
-        userID1: userProfile.fullName 
+        userID1: userProfile.fullName
       });
     }
 
     this.activeInput = null;
-    this.userProfiles = []; 
+    this.userProfiles = [];
   }
 
   onAutoSuggestIssued() {
@@ -489,7 +490,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.logger.printLogs('i', 'Selected to Issued', userProfile);
 
     this.oprForm.patchValue({
-      userID2: userProfile.fullName 
+      userID2: userProfile.fullName
     });
 
     this.activeInput = null;
@@ -583,14 +584,14 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
   selectItem(item: Item): void {
-    this.IIDKey = item.description ? item.description : null; 
+    this.IIDKey = item.description ? item.description : null;
     this.iid = item.iid ? item.iid : null;
 
     this.itemForm.patchValue({
-      iid: item.description  
+      iid: item.description
     });
 
-    this.items = [];  
+    this.items = [];
     this.updateDescription();
 
   }
@@ -615,6 +616,16 @@ export class OthersComponent implements OnInit, AfterViewInit {
       return;
     }
     this.openModal(this.ItemModal);
+  }
+
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
   }
 
   onSubmit() {
@@ -685,8 +696,11 @@ export class OthersComponent implements OnInit, AfterViewInit {
         .subscribe({
           next: (res) => {
             this.logger.printLogs('i', 'Saved Success', opr);
+
             Swal.fire('Saved!!', res.message, 'success');
-            this.saveParItems();
+            this.toast('Saved!', res.message, 'success');
+
+            // this.saveParItems();
 
 
             this.closeModal(this.AddEditModal);
@@ -696,7 +710,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
           },
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving OPR', err);
-            Swal.fire('Denied', err, 'warning');
+            Swal.fire('Saving Denied', err, 'warning');
+            this.toast('Saving Denied!', err, 'warning');
           }
         });
     } else {
@@ -731,13 +746,15 @@ export class OthersComponent implements OnInit, AfterViewInit {
               next: (res) => {
                 this.logger.printLogs('i', 'OPTR Saved Success', res);
                 Swal.fire('Saved', res.message, 'success');
+                this.toast('Saved!', res.message, 'success');
                 // this.logger.printLogs('i', 'Saved Success', res.details);
 
                 this.closeModal(this.ViewModal);
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error Saving OPTR', err);
-                Swal.fire('Denied', err, 'warning');
+                Swal.fire('Saving Denied', err, 'warning');
+                this.toast('Saving Denied!', err, 'warning');
               }
             });
         }
@@ -753,6 +770,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'Saved Success', this.oprItems);
 
           // Handle success, e.g., show a success message
+          this.toast('Saved!', res.message, 'success');
           Swal.fire({
             title: 'Saved',
             text: 'Do you want to add new OPR?',
@@ -771,7 +789,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving OPR Items', err);
-          Swal.fire('Denied', err, 'warning');
+          Swal.fire('Saving Denied', err, 'warning');
+          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -781,18 +800,20 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.logger.printLogs('i', 'Updating OPR', opr);
 
     // this.api.updateOPR(this.currentEditId!, opr)
-    
+
     this.api.updateOPR(this.currentEditId!, opr, this.oprItems)
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'OPR Saved Success', opr);
           Swal.fire('Updated!', res.message, 'success');
+          this.toast('Updated!', res.message, 'success');
           this.getAllOPR();
           // this.updateOPRItem()
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating OPR', err);
-          Swal.fire('Denied', err, 'warning');
+          Swal.fire('Updating Denied', err, 'warning');
+          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -804,11 +825,13 @@ export class OthersComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', this.oprItems);
           Swal.fire('Updated!', res.message, 'success');
+          this.toast('Updated!', res.message, 'success');
           this.getAllOPR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating OPR Item', err);
-          Swal.fire('Denied', err, 'warning');
+          Swal.fire('Updating Denied', err, 'warning');
+          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -845,10 +868,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
                 this.getAllOPR();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
+                this.toast('Success!', res.message, 'success');
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Posting OPR!']);
                 Swal.fire('Warning', err, 'warning');
+                this.toast('Denied!', err, 'warning');
               }
             });
 
@@ -1012,10 +1037,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
             next: (res) => {
               this.getAllOPR();
               Swal.fire('Success', res.message, 'success');
+              this.toast('Success!', res.message, 'success');
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting OPR', err);
               Swal.fire('Denied', err, 'warning');
+              this.toast('Denied!', err, 'success');
             }
           });
       }
@@ -1271,9 +1298,9 @@ export class OthersComponent implements OnInit, AfterViewInit {
       if (modalInstance && modalInstance._isShown) {
         this.closeModal(this.ViewItemModal)
       }
-    } 
-      this.logger.printLogs('i', 'Restore Item', [item]);
-      this.onRetrieveItem(item)
+    }
+    this.logger.printLogs('i', 'Restore Item', [item]);
+    this.onRetrieveItem(item)
 
   }
 
@@ -1555,7 +1582,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.fn = fn;
     this.purpose = purpose;
 
-    this.onScanQR(); 
+    this.onScanQR();
 
     const playDeviceFacingBack = (devices: any[]) => {
       const device = devices.find(f => /back|rear|environment/gi.test(f.label));
@@ -1582,7 +1609,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
         action.pause();
 
         console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results); 
+        console.log('Scanned Data:', results);
 
         this.qrCode = results[0].value
         this.validateQR(this.qrCode)

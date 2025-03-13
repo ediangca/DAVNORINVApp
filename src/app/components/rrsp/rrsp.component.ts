@@ -493,9 +493,9 @@ export class RrspComponent {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', res);
+          this.logger.printLogs('i', 'Saved Success', res.details);
           Swal.fire('Updated!', res.message, 'success');
           this.toast('Updated!', res.message, 'success');
-          this.logger.printLogs('i', 'Saved Success', res.details);
           this.getAllRRSEP();
           this.closeModal(this.ViewModal);
         },
@@ -515,11 +515,14 @@ export class RrspComponent {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', this.icsItems);
           Swal.fire('Updated!', res.message, 'warning');
+          this.toast('Updated!', res.message, 'success');
           this.getAllRRSEP();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating PAR Item', err);
           Swal.fire('Denied', err, 'warning');
+          Swal.fire('Updating Denied', err, 'warning');
+          this.toast('Updating Denied!', err, 'warning');
         }
       });
 

@@ -7,6 +7,7 @@ import * as bootstrap from 'bootstrap';
 import { ApiService } from '../../../services/api.service';
 import { StoreService } from '../../../services/store.service';
 import { LogsService } from '../../../services/logs.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -53,7 +54,8 @@ export class CompanyComponent implements OnInit {
 
 
   constructor(private fb: FormBuilder, private api: ApiService,
-    private store: StoreService, private logger: LogsService) {
+    private store: StoreService, private logger: LogsService,
+    private toastr: ToastrService) {
 
     this.ngOnInit();
   }
@@ -108,7 +110,7 @@ export class CompanyComponent implements OnInit {
       });
     }
 
-    
+
     window.addEventListener('load', () => {
       this.checkPrivileges();
     });
@@ -267,6 +269,16 @@ export class CompanyComponent implements OnInit {
     this.openSectAddEditModal();
   }
 
+  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+    this.toastr[type](msg, title, options);
+  }
+
   onSubmit() {
     // const now = new Date();
 
@@ -298,19 +310,13 @@ export class CompanyComponent implements OnInit {
           this.getCompanies();
           this.resetForm()
 
-          Swal.fire({
-            title: 'Saved!',
-            text: res.message,
-            icon: 'success'
-          });
+          Swal.fire('Saved', res.message, 'success');
+          this.toast('Saved!', res.message, 'success');
         },
         error: (err: any) => {
           console.log('Error response:', err);
-          Swal.fire({
-            title: 'Saving Denied!',
-            text: err,
-            icon: 'warning'
-          });
+          Swal.fire('Saving Denied', err, 'warning');
+          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -335,20 +341,14 @@ export class CompanyComponent implements OnInit {
               this.getCompanies();
               this.resetForm();
 
-              Swal.fire({
-                title: 'Saved!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Updated!', res.message, 'success');
+              this.toast('Updated!', res.message, 'success');
 
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Updating Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Updating Denied', err, 'warning');
+              this.toast('Updating Denied!', err, 'warning');
             }
           });
       }
@@ -635,19 +635,14 @@ export class CompanyComponent implements OnInit {
 
               this.getCompanies();
 
-              Swal.fire({
-                title: 'Success!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Success', res.message, 'success');
+              this.toast('Success!', res.message, 'success');
+
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Deleting Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Deleting Denied', err, 'warning');
+              this.toast('Deleting Denied!', err, 'warning');
             }
           });
       }
@@ -673,20 +668,13 @@ export class CompanyComponent implements OnInit {
               console.info("Dept Delete Success: ", res.message);
               this.getDepartmentsByCompanyID(this.company.branchID);
 
-
-              Swal.fire({
-                title: 'Success!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Success', res.message, 'success');
+              this.toast('Success!', res.message, 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Deleting Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Deleting Denied', err, 'warning');
+              this.toast('Deleting Denied!', err, 'warning');
             }
           });
       }
@@ -712,20 +700,13 @@ export class CompanyComponent implements OnInit {
               console.info("Sect Delete Success: ", res.message);
               this.getDepartmentsByCompanyID(this.deparment.depID);
 
-
-              Swal.fire({
-                title: 'Success!',
-                text: res.message,
-                icon: 'success'
-              });
+              Swal.fire('Success', res.message, 'success');
+              this.toast('Success!', res.message, 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
-              Swal.fire({
-                title: 'Deleting Denied!',
-                text: err,
-                icon: 'warning'
-              });
+              Swal.fire('Deleting Denied', err, 'warning');
+              this.toast('Deleting Denied!', err, 'warning');
             }
           });
       }
