@@ -50,8 +50,8 @@ export class ItemsComponent implements OnInit, AfterViewInit {
   canUnpost: boolean = false;
 
   constructor(private fb: FormBuilder, private api: ApiService,
-    private toastr: ToastrService, public vf: ValidateForm,
-    private store: StoreService, private logger: LogsService) {
+    public vf: ValidateForm, private store: StoreService, 
+    private logger: LogsService) {
 
     this.ngOnInit();
   }
@@ -183,37 +183,6 @@ export class ItemsComponent implements OnInit, AfterViewInit {
     this.openAddEditModal();
   }
 
-  onDelete(id: string, name: string) {
-    //Confirm to Delete
-    Swal.fire({
-      title: 'Remove ' + name + "",
-      text: 'Are you sure?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'No',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Execute Delete
-        this.api.deleteItem(id)
-          .subscribe({
-            next: (res) => {
-              console.info("Success: ", res.message);
-
-              this.getItems();
-
-              Swal.fire('Success', res.message, 'success');
-              this.toast('Success!', res.message, 'success');
-            },
-            error: (err: any) => {
-              console.log('Error response:', err);
-              Swal.fire('Denied', err, 'warning');
-              this.toast('Denied!', err, 'success');
-            }
-          });
-      }
-    });
-  }
 
   generateID(itemGroupName: string) {
     console.log("Selected itemGroupName : ", itemGroupName);
@@ -228,17 +197,6 @@ export class ItemsComponent implements OnInit, AfterViewInit {
           console.log("Error Fetching Generating ID: ", err);
         }
       });
-  }
-
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-
-    this.toastr[type](msg, title, options);
   }
 
   onSubmit() {
@@ -271,11 +229,10 @@ export class ItemsComponent implements OnInit, AfterViewInit {
           this.resetForm()
 
           Swal.fire('Saved!', res.message, 'success');
-          this.toast('Saved!', res.message, 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
         },
         error: (err: any) => {
           Swal.fire('Saving Denied!', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -301,13 +258,43 @@ export class ItemsComponent implements OnInit, AfterViewInit {
               this.resetForm();
 
               Swal.fire('Updated!', res.message, 'success');
-              this.toast('Updated!', res.message, 'success');
+              this.api.showToast(res.message, 'Updated!', 'success');
 
             },
             error: (err: any) => {
               console.log('Error response:', err);
               Swal.fire('Updating Denied!', err, 'warning');
-              this.toast('Updating Denied!', err, 'error');
+            }
+          });
+      }
+    });
+  }
+
+  onDelete(id: string, name: string) {
+    //Confirm to Delete
+    Swal.fire({
+      title: 'Remove ' + name + "",
+      text: 'Are you sure?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Execute Delete
+        this.api.deleteItem(id)
+          .subscribe({
+            next: (res) => {
+              console.info("Success: ", res.message);
+
+              this.getItems();
+
+              Swal.fire('Deleted', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
+            },
+            error: (err: any) => {
+              console.log('Error response:', err);
+              Swal.fire('Denied', err, 'warning');
             }
           });
       }

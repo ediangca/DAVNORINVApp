@@ -130,7 +130,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
     private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService, private logger: LogsService,
-    private toastr: ToastrService) {
+  ) {
 
     this.ngOnInit();
   }
@@ -400,16 +400,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
     this.openPARModal(this.AddEditModal);
   }
 
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
-  }
-
   onSubmit() {
 
     if (!this.prsForm.valid) {
@@ -458,7 +448,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Saved Success', this.prs);
           // Handle success, e.g., show a success message
-          this.toast('Saved!', res.message, 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
           Swal.fire({
             title: 'Saved',
             text: 'Do you want to add new PRS?',
@@ -477,7 +467,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving PRS', err);
           Swal.fire('Saving Denied', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -490,23 +479,16 @@ export class PrsComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Update Success', res);
-          // Swal.fire({
-          //   title: 'Updated',
-          //   text: res.message,
-          //   icon: 'success',
-          //   allowOutsideClick: false,
-          //   allowEscapeKey: false
-          // });
-          Swal.fire('Updated!', res.message, 'success');
-          this.toast('Updated!', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
+          Swal.fire('Updated!', res.message, 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
+
           this.getAllPRS();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving REPAR', err);
           Swal.fire('Updating Denied', err, 'warning');
-          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -519,13 +501,12 @@ export class PrsComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', this.parItems);
           Swal.fire('Updated!', res.message, 'warning');
-          this.toast('Updated!', res.message, 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
           this.getAllPRS();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating PAR Item', err);
           Swal.fire('Updating Denied', err, 'warning');
-          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -560,14 +541,13 @@ export class PrsComponent implements OnInit, AfterViewInit {
             .subscribe({
               next: (res) => {
                 this.logger.printLogs('i', 'Posted Success', res);
-                Swal.fire('Success', res.message, 'success');
-                this.toast('Success!', res.message, 'success');
+                Swal.fire((prs.postFlag ? 'Unposted' : 'Posted'), res.message, 'success');
+                this.api.showToast(res.message, (prs.postFlag ? 'Unposted' : 'Posted'), 'success');
                 this.getAllPRS();
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Posting PRS!']);
                 Swal.fire('Denied!', err, 'warning');
-                this.toast('Denied!', err, 'warning');
               }
             });
 

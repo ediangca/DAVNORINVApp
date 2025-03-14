@@ -124,20 +124,33 @@ export class RegisterComponent implements OnInit {
             this.toast('Access Granted', res.message, 'success');
             Swal.fire({
               title: 'Access Granted!',
-              text: res.message,
+              text: res.message ,
               icon: 'success',
+              html: `${res.message} <br> Please wait for the verification from Admin.`,
               confirmButtonText: 'OK'
             }).then((result) => {
               if (result.isConfirmed) {
                 this.router.navigate(['login']);
                 this.onReset();
+
+                
+                this.toastr.success(
+                  // <img src="${this.ac.logoPath}" style="width:20px; height:20px;"> 
+                   res.message,
+                  'REGISTERED',
+                  {
+                    enableHtml: true, // Required for rendering HTML content
+                    progressBar: true,
+                    timeOut: 3000, // Auto-close after 5 seconds
+                    closeButton: true,
+                  }
+                );
               }
             });
           },
           error: (err: any) => {
             console.log('Error response:', err);
             Swal.fire('Registration Denied', err, 'warning');
-            this.toast('Registration Denied!', err, 'warning');
           }
         })
 

@@ -63,7 +63,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   constructor(private fb: FormBuilder, private auth: AuthService,
     private api: ApiService, private store: StoreService,
-    private logger: LogsService, private toastr: ToastrService) {
+    private logger: LogsService) {
 
 
     this.ngOnInit();
@@ -419,16 +419,6 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       }
   }
 
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
-  }
-
   onSubmit() {
     // const now = new Date();
 
@@ -467,14 +457,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           console.info("Success: ", res.message);
 
           Swal.fire('Saved', res.message, 'success');
-          this.toast('Saved!', res.message, 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
+
           this.getAllUserAccounts();
           this.resetForm();
         },
         error: (err: any) => {
           console.log('Error response:', err);
           Swal.fire('Saving Denied', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -528,7 +518,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             next: (res) => {
               console.info("Success: ", res.message);
               Swal.fire('Updated!', res.message, 'success');
-              this.toast('Updated!', res.message, 'success');
+              this.api.showToast(res.message, 'Updated!', 'success');
 
               // this.closeModal()
               this.getAllUserAccounts();
@@ -537,7 +527,6 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             error: (err: any) => {
               console.log('Error response:', err);
               Swal.fire('Updating Denied', err, 'warning');
-              this.toast('Updating Denied!', err, 'warning');
             }
           });
       }
@@ -564,13 +553,13 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
 
               Swal.fire('Deleted', res.message, 'success');
-              this.toast('Deleted!', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
+
               this.getAllUserAccounts();
             },
             error: (err: any) => {
               console.log('Error response:', err);
               Swal.fire('Deleting Denied', err, 'warning');
-              this.toast('Deleting Denied!', err, 'warning');
             }
           });
       }
@@ -628,7 +617,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
 
           Swal.fire('Saved', res.message, 'success');
-          this.toast('Saved!', res.message, 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
 
           this.getAllUserAccounts();
           this.resetForm();
@@ -636,7 +625,6 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         error: (err: any) => {
           console.log('Error response:', err);
           Swal.fire('Saving Denied', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -659,14 +647,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
               // Swal.fire('Success', res.message, 'success');
               Swal.fire('Updated!', res.message, 'success');
-              this.toast('Updated!', res.message, 'success');
+              this.api.showToast(res.message, 'Updated!', 'success');
+
               this.getAllUserAccounts();
               this.resetForm();
             },
             error: (err: any) => {
               console.log('Error response:', err);
               Swal.fire('Updating Denied', err, 'warning');
-              this.toast('Updating Denied!', err, 'warning');
             }
           });
       }
@@ -708,14 +696,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
               next: (res) => {
 
                 Swal.fire('Verified', res.message, 'success');
-                this.toast('Verified!', res.message, 'success');
+                this.api.showToast(res.message, 'Verified!', 'success');
+
                 this.getAllUserAccounts();
 
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error Verifying User', err);
                 Swal.fire('Verifying Denied', err, 'warning');
-                this.toast('Verifying Denied!', err, 'warning');
               }
             });
         } else {
@@ -756,14 +744,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
               next: (res) => {
                 console.info("Success: ", res.message)
 
-                Swal.fire('Success', res.message, 'success');
-                this.toast('Success!', res.message, 'success');
+                Swal.fire('Password Changed', res.message, 'success');
+                this.api.showToast(res.message, 'Password Changed!', 'success');
+
                 this.getAllUserAccounts();
               },
               error: (err: any) => {
                 console.log('Error response:', err);
                 Swal.fire('Updating Denied', err, 'warning');
-                this.toast('Updating Denied!', err, 'warning');
               }
             });
         }

@@ -42,8 +42,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
   canUnpost: boolean = false;
 
   constructor(private fb: FormBuilder, private api: ApiService,
-    private store: StoreService, private logger: LogsService,
-    private toastr: ToastrService) {
+    private store: StoreService, private logger: LogsService,) {
 
     this.ngOnInit();
   }
@@ -139,16 +138,6 @@ export class PositionsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
-  }
-
   onSubmit() {
     // const now = new Date();
 
@@ -192,12 +181,11 @@ export class PositionsComponent implements OnInit, AfterViewInit {
               this.getAllPositions();
 
               Swal.fire('Updated!', res.message, 'success');
-              this.toast('Updated!', res.message, 'success');
+              this.api.showToast(res.message, 'Updated!', 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
               Swal.fire('Updating Denied', err, 'warning');
-              this.toast('Updating Denied!', err, 'warning');
             }
           });
       }
@@ -214,13 +202,12 @@ export class PositionsComponent implements OnInit, AfterViewInit {
           this.getAllPositions();
 
           Swal.fire('Saved', res.message, 'success');
-          this.toast('Saved!', res.message, 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
           this.positionForm.reset();
         },
         error: (err: any) => {
           console.log('Error response:', err);
           Swal.fire('Saving Denied', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -264,12 +251,11 @@ export class PositionsComponent implements OnInit, AfterViewInit {
               this.getAllPositions();
 
               Swal.fire('Deleted', res.message, 'success');
-              this.toast('Deleted!', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
               Swal.fire('Deleting Denied', err, 'warning');
-              this.toast('Deleting Denied!', err, 'warning');
             }
           });
       }

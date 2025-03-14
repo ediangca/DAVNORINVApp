@@ -265,7 +265,7 @@
               <div class="row">
                 <div class="col">
                   <a class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
-                    type="button" (click)="onAddPARItem()">
+                    type="button" (click)="onAddOPRItem()">
                     <i class="fa-sharp-duotone fa-solid fa-plus"></i>&nbsp;
                     <span class="fs-6">ADD</span>
                   </a>
@@ -757,8 +757,8 @@
                     <td>{{(ii.optrNo? ii.optrNo: ii.oprNo)? 'OPR-000'+(ii.optrNo? ii.optrNo: ii.oprNo):''}}</td>
                     <td>
                       <span class="fw-bold">PropertyNo: </span> {{ii.propertyNo}}<br>
-                      {{ii.description}}</td>
-                    <td>
+                      {{ii.description}}
+                    </td>
                     <td>
                       <button class="btn btn-sm btn-primary rounded-pill" type="button" (click)="onAddItem(ii)">
                         <i class="fa-thin fa-plus"></i> Add

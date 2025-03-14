@@ -2,7 +2,7 @@ import { ApplicationConfig, inject, provideZoneChangeDetection } from '@angular/
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { tokenInterceptor } from './components/intercceptors/token.interceptor';
+import { tokenInterceptor } from './helpers/intercceptors/token.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 import { ToastrService } from 'ngx-toastr';

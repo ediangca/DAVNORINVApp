@@ -6,6 +6,8 @@ import { environment } from '../../environment/environment';
 import { Item } from '../models/Item';
 import { ICSItem } from '../models/ICSItem';
 import { OPRItem } from '../models/OPRItem';
+import { ToastrService } from 'ngx-toastr';
+import { NgToastService } from 'ng-angular-popup';
 
 
 @Injectable({
@@ -16,8 +18,27 @@ export class ApiService {
 
   private apiUrl: string = environment.apiUrl;
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router,
+    private toast: NgToastService, private toastr: ToastrService) { }
 
+
+  showToast(msg: string, title: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
+    const options = {
+      enableHtml: true,
+      progressBar: true,
+      timeOut: 2000,
+      closeButton: true,
+    };
+
+    // this.toastr[type](msg, title, options);
+    // this.toast[type](msg, title, { timeOut: 3000 }); // Correct way to pass options
+    if (type === 'error') {
+      this.toast.danger(msg, title, 3000); // Use `danger()` for error to match the service
+    } else {
+      this.toast[type](msg, title, 3000); // Dynamic method call for success, info, and warning
+    }
+
+  }
 
   /*----------------------- Cencus -----------------------*/
 
@@ -326,7 +347,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   ForgetPassword(id: string, Details: any): Observable<any> {
     console.log("ForgetPassword Password: ", id);
     return this.http.put<any>(`${this.apiUrl}UserAccount/Update/ForgetPassword?id=` + id, Details)
@@ -617,7 +638,7 @@ export class ApiService {
   //       catchError(this.handleError)
   //     );
   // }
-  
+
   updatePAR(parNo: string, par: any, items: Item[]): Observable<any> {
     console.log("Update PAR Details: ", par);
     const requestPayload = {

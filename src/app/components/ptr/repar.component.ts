@@ -130,7 +130,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
     private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService, private logger: LogsService,
-    private toastr: ToastrService
   ) {
     this.ngOnInit();
   }
@@ -579,16 +578,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
     this.openItemModal(this.ItemModal);
   }
 
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
-  }
-
   onSubmit() {
 
     if (!this.parForm.valid) {
@@ -680,7 +669,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
           next: (res) => {
             this.logger.printLogs('i', 'RE-PTR Saved Success', res.details);
             Swal.fire('Saved', res.message, 'success');
-            this.toast('Saved!', res.message, 'success');
+            this.api.showToast(res.message, 'Saved!', 'success');
 
 
             this.closeModal(this.TransferModalForm);
@@ -691,7 +680,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving ITR', err);
             Swal.fire('Saving Denied', err, 'warning');
-            this.toast('Saving Denied!', err, 'warning');
           }
         });
 
@@ -734,7 +722,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error Saving PTR', err);
                 Swal.fire('Saving Denied', err, 'warning');
-                this.toast('Saving Denied!', err, 'warning');
               }
             });
         }
@@ -750,7 +737,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'Saved Success', this.parItems);
 
           // Handle success, e.g., show a success message
-          this.toast('Saved!', res.message, 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
           Swal.fire({
             title: 'Saved',
             text: 'Do you want to add new PAR?',
@@ -771,7 +758,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving PAR Items', err);
           Swal.fire('Saving Denied', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -783,16 +769,16 @@ export class ReparComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.logger.printLogs('i', 'Update Success', res);
-          Swal.fire('Updated!', res.message, 'success');
-          this.toast('Updated!', res.message, 'success');
           this.logger.printLogs('i', 'Saved Success', res.details);
+          Swal.fire('Updated!', res.message, 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
+
           this.getAllPTR();
           this.closeModal(this.ViewModal);
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving PTR', err);
           Swal.fire('Updating Denied', err, 'warning');
-          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -845,13 +831,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
               next: (res) => {
                 this.getAllPTR();
                 this.logger.printLogs('i', 'Posted Success', res);
-                Swal.fire('Success', res.message, 'success');
-                this.toast('Success!', res.message, 'success');
+                Swal.fire((ptr.postFlag ? 'Unposted' : 'Posted'), res.message, 'success');
+                this.api.showToast(res.message, (ptr.postFlag ? 'Unposted' : 'Posted'), 'success');
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Posting PTR!']);
                 Swal.fire('Denied!', err, 'warning');
-                this.toast('Denied!', err, 'warning');
               }
             });
 
@@ -1049,13 +1034,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: (res) => {
               this.getAllPTR();
-              Swal.fire('Success', res.message, 'success');
-              this.toast('Success!', res.message, 'success');
+              Swal.fire('Deleted', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting PTR', err);
               Swal.fire('Denied', err, 'warning');
-              this.toast('Denied!', err, 'success');
             }
           });
       }

@@ -56,7 +56,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
 
   constructor(private fb: FormBuilder, private api: ApiService,
     private auth: AuthService, private store: StoreService,
-    private logger: LogsService, private toastr: ToastrService) {
+    private logger: LogsService) {
 
     this.ngOnInit();
   }
@@ -162,16 +162,6 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
       });
   }
 
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
-  }
-
   onSubmit() {
     // const now = new Date();
 
@@ -211,12 +201,11 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
               this.getAllUserGroups();
 
               Swal.fire('Updated!', res.message, 'success');
-              this.toast('Updated!', res.message, 'success');
+              this.api.showToast(res.message, 'Updated!', 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
               Swal.fire('Updating Denied', err, 'warning');
-              this.toast('Updating Denied!', err, 'warning');
             }
           });
       }
@@ -233,13 +222,13 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
           this.getAllUserGroups();
 
           Swal.fire('Saved', res.message, 'success');
-          this.toast('Saved!', res.message, 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
+
           this.userGroupForm.reset();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving UserGroup', err);
           Swal.fire('Saving Denied', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -284,12 +273,11 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
               this.getAllUserGroups();
 
               Swal.fire('Deleted', res.message, 'success');
-              this.toast('Deleted!', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
               console.log('Error response:', err);
               Swal.fire('Deleting Denied', err, 'warning');
-              this.toast('Deleting Denied!', err, 'warning');
             }
           });
       }
@@ -569,6 +557,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Saved Successfully', res);
           Swal.fire('Saved', res.message || 'Privileges saved successfully!', 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
         },
         error: (err) => {
           this.logger.printLogs('e', 'Error Saving Privileges', err);
@@ -582,6 +571,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Successfully', res);
           Swal.fire('Updated', res.message || 'Privileges updated successfully!', 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
         },
         error: (err) => {
           this.logger.printLogs('e', 'Error Updating Privileges', err);

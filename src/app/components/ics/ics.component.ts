@@ -737,7 +737,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving ICS', err);
             Swal.fire('Saving Denied', err, 'warning');
-            this.toast('Saving Denied!', err, 'warning');
             this.icsItems = [];
           }
         });
@@ -781,7 +780,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error Saving ITR', err);
                 Swal.fire('Saving Denied', err, 'warning');
-                this.toast('Saving Denied!', err, 'warning');
               }
             });
         }
@@ -807,7 +805,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating ICS', err);
           Swal.fire('Updating Denied', err, 'warning');
-          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -850,7 +847,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Retrieving ICS Item!']);
                 Swal.fire('Denied!', err, 'warning');
-                this.toast('Denied!', err, 'warning');
               }
             });
 
@@ -901,7 +897,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Retreiving ICS Item', err);
-          Swal.fire('Error', 'Failure to Retrieve ICS Item.', 'error');
         }
       });
 
@@ -1011,7 +1006,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting ICS', err);
               Swal.fire('Denied', err, 'warning');
-              this.toast('Denied!', err, 'warning');
             }
           });
       }

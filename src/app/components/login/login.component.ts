@@ -8,6 +8,7 @@ import { NgToastModule, NgToastService } from 'ng-angular-popup' // to be added
 import { AppComponent } from '../../app.component';
 import ValidateForm from '../../helpers/validateForm';
 import { ToastrService } from 'ngx-toastr';
+import { ApiService } from '../../services/api.service';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -34,8 +35,7 @@ export class LoginComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private toast: NgToastService,
-    private toastr: ToastrService,
+    private api: ApiService,
     public ac: AppComponent,
     private vf: ValidateForm) {
 
@@ -100,6 +100,7 @@ export class LoginComponent implements OnInit {
               Swal.fire({
                 title: 'Access Granted!',
                 text: res.message,
+                //  <br> Please wait for the verification from Admin.
                 icon: 'success',
                 confirmButtonText: 'OK',
                 allowOutsideClick: false
@@ -111,17 +112,7 @@ export class LoginComponent implements OnInit {
                   // this.toast.success(res.message, "ACCESS GRANTED", 5000);
                   // this.toastr.success('Hello world!', 'Toastr fun!');
 
-                  this.toastr.success(
-                    // <img src="${this.ac.logoPath}" style="width:20px; height:20px;"> 
-                    res.message,
-                    'ACCESS GRANTED',
-                    {
-                      enableHtml: true, // Required for rendering HTML content
-                      progressBar: true,
-                      timeOut: 3000, // Auto-close after 5 seconds
-                      closeButton: true,
-                    }
-                  );
+                  this.api.showToast(res.message, 'ACCESS GRANTED', 'success');
 
                   // this.toastr.success(res.message, "ACCESS GRANTED",);
                 }
@@ -130,14 +121,10 @@ export class LoginComponent implements OnInit {
             },
             error: (err: any) => {
               console.log('Error response:', err);
+              Swal.fire('Access Denied!', err, 'warning');
               this.closeModal(this.loadingModal);
               this.loginForm.reset();
               this.usernameInput.nativeElement.focus();
-              Swal.fire({
-                title: 'Access Denied!',
-                text: err,
-                icon: 'warning'
-              });
               this.loginForm.reset();
             }
           });

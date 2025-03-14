@@ -143,9 +143,10 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   qrCode = ''
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService,
-    private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService, private logger: LogsService, private toastr: ToastrService
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private vf: ValidateForm,
+    private auth: AuthService, private cdr: ChangeDetectorRef,
+    private printService: PrintService, private logger: LogsService
   ) {
     this.ngOnInit();
   }
@@ -674,16 +675,6 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   }
 
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
-  }
-  
   onSubmit() {
 
     if (!this.parForm.valid) {
@@ -756,7 +747,7 @@ export class ParComponent implements OnInit, AfterViewInit {
             this.logger.printLogs('i', 'Saved Success', par);
             this.logger.printLogs('i', 'Saved Success', this.parItems);
 
-            this.toast('Saved!', res.message, 'success');
+            this.api.showToast(res.message, 'Saved!', 'success');
             Swal.fire({
               title: 'Saved',
               text: 'Do you want to add new PAR?',
@@ -778,7 +769,6 @@ export class ParComponent implements OnInit, AfterViewInit {
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving PAR', err);
             Swal.fire('Saving Denied', err, 'warning');
-            this.toast('Saving Denied!', err, 'warning');
             this.parItems = [];
           }
         });
@@ -812,16 +802,15 @@ export class ParComponent implements OnInit, AfterViewInit {
             .subscribe({
               next: (res) => {
                 this.logger.printLogs('i', 'Saved Success', res);
-                Swal.fire('Saved', res.message, 'success');
-                this.toast('Saved!', res.message, 'success');
                 this.logger.printLogs('i', 'Saved Success', res.details);
+                Swal.fire('Saved', res.message, 'success');
+                this.api.showToast(res.message, 'Saved!', 'success');
 
                 this.closeModal(this.ViewModal);
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error Saving PTR', err);
                 Swal.fire('Saving Denied', err, 'warning');
-                this.toast('Saving Denied!', err, 'warning');
               }
             });
         }
@@ -837,7 +826,7 @@ export class ParComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'Saved Success', this.parItems);
 
           // Handle success, e.g., show a success message
-          this.toast('Saved!', res.message, 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
           Swal.fire({
             title: 'Saved',
             text: 'Do you want to add new PAR?',
@@ -857,7 +846,6 @@ export class ParComponent implements OnInit, AfterViewInit {
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving PAR Items', err);
           Swal.fire('Saving Denied', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
 
         }
       });
@@ -872,7 +860,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Update Success', par);
           Swal.fire('Updated!', res.message, 'success');
-          this.toast('Updated!', res.message, 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
           this.getAllPAR();
           // this.updatePARItems();
 
@@ -880,7 +868,6 @@ export class ParComponent implements OnInit, AfterViewInit {
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating PAR', err);
           Swal.fire('Updating Denied', err, 'warning');
-          this.toast('Updating Denied!', err, 'warning');
         }
       });
   }
@@ -890,13 +877,12 @@ export class ParComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', this.parItems);
           Swal.fire('Updated!', res.message, 'warning');
-          this.toast('Updated!', res.message, 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
           this.getAllPAR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating PAR Item', err);
           Swal.fire('Updating Denied', err, 'warning');
-          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -933,13 +919,12 @@ export class ParComponent implements OnInit, AfterViewInit {
               next: (res) => {
                 this.getAllPAR();
                 this.logger.printLogs('i', 'Posted Success', res);
-                Swal.fire('Success', res.message, 'success');
-                this.toast('Success!', res.message, 'success');
+                Swal.fire((par.postFlag ? 'Unposted' : 'Posted'), res.message, 'success');
+                this.api.showToast(res.message, (par.postFlag ? 'Unposted' : 'Posted'), 'success');
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Retrieving PAR Item!']);
                 Swal.fire('Denied!', err, 'warning');
-                this.toast('Denied!', err, 'warning');
               }
             });
 
@@ -1095,13 +1080,12 @@ export class ParComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: (res) => {
               this.getAllPAR();
-              Swal.fire('Success', res.message, 'success');
-              this.toast('Success!', res.message, 'success');
+              Swal.fire('Deleted', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting PAR', err);
               Swal.fire('Denied', err, 'warning');
-              this.toast('Denied!', err, 'warning');
             }
           });
       }

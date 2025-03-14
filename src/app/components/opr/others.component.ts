@@ -144,9 +144,10 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   qrCode = ''
 
-  constructor(private fb: FormBuilder, private api: ApiService, private store: StoreService,
-    private vf: ValidateForm, private auth: AuthService, private cdr: ChangeDetectorRef,
-    private printService: PrintService, private logger: LogsService, private toastr: ToastrService
+  constructor(private fb: FormBuilder, private api: ApiService, 
+    private store: StoreService, private vf: ValidateForm, 
+    private auth: AuthService, private cdr: ChangeDetectorRef,
+    private printService: PrintService, private logger: LogsService
   ) {
     this.ngOnInit();
   }
@@ -618,16 +619,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.openModal(this.ItemModal);
   }
 
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
-  }
-
   onSubmit() {
 
     if (!this.oprForm.valid) {
@@ -697,9 +688,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
           next: (res) => {
             this.logger.printLogs('i', 'Saved Success', opr);
 
-            Swal.fire('Saved!!', res.message, 'success');
-            this.toast('Saved!', res.message, 'success');
-
+            Swal.fire('Saved!', res.message, 'success');
+            this.api.showToast(res.message, 'Saved!', 'success');
             // this.saveParItems();
 
 
@@ -711,7 +701,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
           error: (err: any) => {
             this.logger.printLogs('e', 'Error Saving OPR', err);
             Swal.fire('Saving Denied', err, 'warning');
-            this.toast('Saving Denied!', err, 'warning');
           }
         });
     } else {
@@ -746,7 +735,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
               next: (res) => {
                 this.logger.printLogs('i', 'OPTR Saved Success', res);
                 Swal.fire('Saved', res.message, 'success');
-                this.toast('Saved!', res.message, 'success');
+                this.api.showToast(res.message, 'Saved!', 'success');
                 // this.logger.printLogs('i', 'Saved Success', res.details);
 
                 this.closeModal(this.ViewModal);
@@ -754,7 +743,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error Saving OPTR', err);
                 Swal.fire('Saving Denied', err, 'warning');
-                this.toast('Saving Denied!', err, 'warning');
               }
             });
         }
@@ -770,7 +758,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'Saved Success', this.oprItems);
 
           // Handle success, e.g., show a success message
-          this.toast('Saved!', res.message, 'success');
+            this.api.showToast(res.message, 'Saved!', 'success');
           Swal.fire({
             title: 'Saved',
             text: 'Do you want to add new OPR?',
@@ -790,7 +778,6 @@ export class OthersComponent implements OnInit, AfterViewInit {
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Saving OPR Items', err);
           Swal.fire('Saving Denied', err, 'warning');
-          this.toast('Saving Denied!', err, 'warning');
         }
       });
   }
@@ -806,14 +793,13 @@ export class OthersComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'OPR Saved Success', opr);
           Swal.fire('Updated!', res.message, 'success');
-          this.toast('Updated!', res.message, 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
           this.getAllOPR();
           // this.updateOPRItem()
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating OPR', err);
           Swal.fire('Updating Denied', err, 'warning');
-          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -825,13 +811,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', this.oprItems);
           Swal.fire('Updated!', res.message, 'success');
-          this.toast('Updated!', res.message, 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
           this.getAllOPR();
         },
         error: (err: any) => {
           this.logger.printLogs('e', 'Error Updating OPR Item', err);
           Swal.fire('Updating Denied', err, 'warning');
-          this.toast('Updating Denied!', err, 'warning');
         }
       });
 
@@ -867,13 +852,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
               next: (res) => {
                 this.getAllOPR();
                 this.logger.printLogs('i', 'Posted Success', res);
-                Swal.fire('Success', res.message, 'success');
-                this.toast('Success!', res.message, 'success');
+                Swal.fire((opr.postFlag ? 'Unposted' : 'Posted'), res.message, 'success');
+                this.api.showToast(res.message, (opr.postFlag ? 'Unposted' : 'Posted'), 'success');
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Posting OPR!']);
                 Swal.fire('Warning', err, 'warning');
-                this.toast('Denied!', err, 'warning');
               }
             });
 
@@ -1036,13 +1020,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: (res) => {
               this.getAllOPR();
-              Swal.fire('Success', res.message, 'success');
-              this.toast('Success!', res.message, 'success');
+              Swal.fire('Deleted', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting OPR', err);
               Swal.fire('Denied', err, 'warning');
-              this.toast('Denied!', err, 'success');
             }
           });
       }
