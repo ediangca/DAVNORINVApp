@@ -9,6 +9,7 @@ import { AppComponent } from '../../app.component';
 import ValidateForm from '../../helpers/validateForm';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '../../services/api.service';
+import { LogsService } from '../../services/logs.service';
 
 // import * as bootstrap from 'bootstrap';
 declare var bootstrap: any;
@@ -32,12 +33,9 @@ export class LoginComponent implements OnInit {
   errorMessage: string = '';
 
 
-  constructor(private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router,
-    private api: ApiService,
-    public ac: AppComponent,
-    private vf: ValidateForm) {
+  constructor(private fb: FormBuilder, private auth: AuthService,
+    private router: Router, private api: ApiService,
+    public ac: AppComponent, private vf: ValidateForm, private logger: LogsService) {
 
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
@@ -84,9 +82,7 @@ export class LoginComponent implements OnInit {
   onSubmit() {
 
     if (this.loginForm.valid) {
-      // console.log(this.loginForm.value);
-      // Add your login logic here
-      // console.log("https://localhost:7289/api/Auth?username=" + this.loginForm.value['username'] + "&&password=" + this.loginForm.value['password']);
+      this.logger.printLogs('i', 'Fetching Login Form', this.loginForm.value);
 
       this.openModal(this.loadingModal);
       setTimeout(() => {
@@ -109,9 +105,11 @@ export class LoginComponent implements OnInit {
                   this.auth.storeLocal(res);
                   this.loginForm.reset();
                   this.router.navigate(['dashboard']);
+                  
                   // this.toast.success(res.message, "ACCESS GRANTED", 5000);
                   // this.toastr.success('Hello world!', 'Toastr fun!');
 
+                  this.logger.printLogs('i', 'ACCESS GRANTED', res.message);
                   this.api.showToast(res.message, 'ACCESS GRANTED', 'success');
 
                   // this.toastr.success(res.message, "ACCESS GRANTED",);
@@ -120,7 +118,7 @@ export class LoginComponent implements OnInit {
 
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('e', 'Error response', err);
               Swal.fire('Access Denied!', err, 'warning');
               this.closeModal(this.loadingModal);
               this.loginForm.reset();

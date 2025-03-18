@@ -197,10 +197,10 @@ export class ParComponent implements OnInit, AfterViewInit {
       this.scannerAction.isReady.subscribe((res: any) => {
         // Perform your actions when isReady emits a value
         // this.handle(this.action, 'start');
-        console.log('Scanner is ready:', res);
+        this.logger.printLogs('i', 'Scanner is ready:', res);
       });
     } else {
-      console.info('Action or isReady is not defined when ngOnInit is called.');
+      this.logger.printLogs('i', 'Action or isReady','Scanner is not defined when ngOnInit is called.');
     }
   }
 
@@ -349,7 +349,7 @@ export class ParComponent implements OnInit, AfterViewInit {
   //             this.pars = this.pars.slice(0, 10);
   //           },
   //           error: (err: any) => {
-  //             console.log("Error Fetching PARS:", err);
+  //             this.logger.printLogs('e', "Error Fetching PARS:", err);
   //           }
   //         });
   //     }
@@ -563,7 +563,7 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   searchPARItem() {
     this.parItemKey = this.reparForm.value['searchPARItemKey'];
-    console.log(this.parItemKey);
+    this.logger.printLogs('i', 'PAR Item key', this.parItemKey);
 
     // Populate all items if the search key is empty
     if (!this.parItemKey || this.parItemKey.trim() === "") {
@@ -1610,12 +1610,12 @@ export class ParComponent implements OnInit, AfterViewInit {
     // Start or stop the scanning action
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
-        (r: any) => console.log(fn, r),
+        (r: any) => this.logger.printLogs('i', fn, r),
         alert
       );
       this.cdr.detectChanges();     // Trigger change detection to update button state
     } else {
-      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      scannerAction[fn]().subscribe((r: any) => this.logger.printLogs('i', fn, r), alert);
       this.cdr.detectChanges();     // Trigger change detection to update button state
     }
   }
@@ -1627,8 +1627,8 @@ export class ParComponent implements OnInit, AfterViewInit {
       if (results) {
         action.pause(); // Pause scanning if needed
 
-        console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results); // Handle scanned results here
+        this.logger.printLogs('i', 'QR value', results[0].value);
+        this.logger.printLogs('i', 'Scanned Data:', results); // Handle scanned results here
 
         this.qrCode = results[0].value
         this.validateQR(this.qrCode)
@@ -1638,12 +1638,12 @@ export class ParComponent implements OnInit, AfterViewInit {
   }
 
   onEnter(): void {
-    console.log('Enter key pressed. QR Value:', this.qrCode);
+    this.logger.printLogs('i', 'Enter key pressed. QR Value:', this.qrCode);
 
     // Add your logic here
     if (this.qrCode.trim() !== '') {
       // Example: Perform a search action
-      console.log('Performing search for:', this.qrCode);
+      this.logger.printLogs('i', 'Performing search for:', this.qrCode);
       this.validateQR(this.qrCode)
     }
   }
@@ -1659,10 +1659,10 @@ export class ParComponent implements OnInit, AfterViewInit {
       this.api.retrievePARITEMByQRCode(qr)
         .subscribe({
           next: (res) => {
-            console.log('Retrieve PAR ITEMS', res);
+            this.logger.printLogs('i', 'Retrieve PAR ITEMS', res);
             this.item = res[0];
 
-            console.log('Show Items', this.item);
+            this.logger.printLogs('i', 'Show Items', this.item);
 
             this.onRetrievePAR(res[0].parNo);
 
@@ -1679,7 +1679,7 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.api.retrievePAR(parNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PAR', res);
+          this.logger.printLogs('i', 'Retrieve PAR', res);
           this.par = res[0];
 
           Swal.fire({
@@ -1710,8 +1710,8 @@ export class ParComponent implements OnInit, AfterViewInit {
     // Add any conditions or user prompts if needed before resuming
 
     scannerAction.play().subscribe(
-      (r: any) => console.log('Resuming Scan:', r),
-      (error: any) => console.error('Error while resuming scan:', error)
+      (r: any) => this.logger.printLogs('i', 'Resuming Scan:', r),
+      (error: any) => this.logger.printLogs('e', 'Error while resuming scan:', error)
     );
   }
 

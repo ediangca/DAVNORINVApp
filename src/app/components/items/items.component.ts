@@ -50,7 +50,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
   canUnpost: boolean = false;
 
   constructor(private fb: FormBuilder, private api: ApiService,
-    public vf: ValidateForm, private store: StoreService, 
+    public vf: ValidateForm, private store: StoreService,
     private logger: LogsService) {
 
     this.ngOnInit();
@@ -70,12 +70,13 @@ export class ItemsComponent implements OnInit, AfterViewInit {
         this.api.retrieveItemGroup(selectedItem)
           .subscribe({
             next: (res) => {
-              console.log("Selected itemGroupName : ", res);
+              this.logger.printLogs('i', 'Selected itemGroupName :', res);
+
               this.itemGroup = res;
               this.generateID(this.itemGroup.itemGroupName);
             },
             error: (err: any) => {
-              console.log("Error Fetching Items: ", err);
+              this.logger.printLogs('w', 'Error Fetching Items :', err);
             }
           });
       }
@@ -123,7 +124,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
           this.items = res.slice(0, 20);
         },
         error: (err: any) => {
-          console.log("Error Fetching Items: ", err);
+          this.logger.printLogs('w', 'Problem Fetching Items', err);
         }
       });
   }
@@ -145,7 +146,7 @@ export class ItemsComponent implements OnInit, AfterViewInit {
         this.itemGroups = [...otherGroups, ...othersGroup];
       },
       err => {
-        console.error('Error: loading items groups => ', err);
+        this.logger.printLogs('w', 'Problem Loading Item Group', err);
       }
     );
   }
@@ -160,11 +161,11 @@ export class ItemsComponent implements OnInit, AfterViewInit {
         this.api.searchItem(this.searchKey)
           .subscribe({
             next: (res) => {
-              console.log("Fetching Items: ", res);
+              this.logger.printLogs('i', 'Fetching Items', res);
               this.items = res.slice(0, 20);
             },
             error: (err: any) => {
-              console.log("Error Fetching Items: ", err);
+              this.logger.printLogs('w', 'Problem Fetching Items', err);
             }
           });
       }
@@ -185,16 +186,16 @@ export class ItemsComponent implements OnInit, AfterViewInit {
 
 
   generateID(itemGroupName: string) {
-    console.log("Selected itemGroupName : ", itemGroupName);
 
+    this.logger.printLogs('i', 'Selected itemGroupName ', itemGroupName);
     this.api.getGenID(itemGroupName)
       .subscribe({
         next: (res) => {
-          console.log("Generated ID : ", res);
+          this.logger.printLogs('i', 'Problem Generated ID', res);
           this.generatedId = res.id;
         },
         error: (err: any) => {
-          console.log("Error Fetching Generating ID: ", err);
+          this.logger.printLogs('w', 'Problem Fetching Generated ID', err);
         }
       });
   }
@@ -223,15 +224,16 @@ export class ItemsComponent implements OnInit, AfterViewInit {
     this.api.createItem(item)
       .subscribe({
         next: (res) => {
-          console.info("Success: ", res.message);
 
           this.getItems();
           this.resetForm()
 
+          this.logger.printLogs('w', 'Success Creating Item',  res.message);
           Swal.fire('Saved!', res.message, 'success');
           this.api.showToast(res.message, 'Saved!', 'success');
         },
         error: (err: any) => {
+          this.logger.printLogs('w', 'Problem Creating Item', err);
           Swal.fire('Saving Denied!', err, 'warning');
         }
       });
@@ -251,18 +253,18 @@ export class ItemsComponent implements OnInit, AfterViewInit {
         this.api.updateItem(this.currentEditId!, item)
           .subscribe({
             next: (res) => {
-              // console.info("Success: ", res.message);
 
               // this.closeModal()
               this.getItems();
               this.resetForm();
 
+              this.logger.printLogs('w', 'Success Updating Item',  res.message);
               Swal.fire('Updated!', res.message, 'success');
               this.api.showToast(res.message, 'Updated!', 'success');
 
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Problem Upating ICS', err);
               Swal.fire('Updating Denied!', err, 'warning');
             }
           });
@@ -285,15 +287,15 @@ export class ItemsComponent implements OnInit, AfterViewInit {
         this.api.deleteItem(id)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
 
               this.getItems();
 
+              this.logger.printLogs('w', 'Success Deleting Item',  res.message);
               Swal.fire('Deleted', res.message, 'success');
               this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Problem Deleting Item', err);
               Swal.fire('Denied', err, 'warning');
             }
           });

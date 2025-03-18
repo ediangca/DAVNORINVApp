@@ -157,10 +157,10 @@ export class OprrComponent implements OnInit, AfterViewInit {
       this.scannerAction.isReady.subscribe((res: any) => {
         // Perform your actions when isReady emits a value
         // this.handle(this.action, 'start');
-        console.log('Scanner is ready:', res);
+        this.logger.printLogs('i', 'Scanner is ready:', res);
       });
     } else {
-      console.info('Action or isReady is not defined when ngOnInit is called.');
+      this.logger.printLogs('i', 'Scanner Action or isReady', 'Scanner is not defined when ngOnInit is called.');
     }
   }
 
@@ -984,7 +984,7 @@ export class OprrComponent implements OnInit, AfterViewInit {
     if (!this.parItemKey || this.parItemKey.trim() === "") {
       this.oprrItems = [...this.oprrItems];  // Reset to full list
     } else {
-      console.log(this.parItemKey);
+      this.logger.printLogs('i', 'OPRR Item key', this.parItemKey);
       const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
 
       this.oprrItems = this.searchOPRRItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
@@ -1179,12 +1179,12 @@ export class OprrComponent implements OnInit, AfterViewInit {
 
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
-        (r: any) => console.log(fn, r),
+        (r: any) => this.logger.printLogs('i', fn, r),
         alert
       );
       this.cdr.detectChanges();
     } else {
-      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      scannerAction[fn]().subscribe((r: any) => this.logger.printLogs('i', fn, r), alert);
       this.cdr.detectChanges();
     }
   }
@@ -1196,8 +1196,8 @@ export class OprrComponent implements OnInit, AfterViewInit {
       if (results) {
         action.pause();
 
-        console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results);
+        this.logger.printLogs('i', 'QR value', results[0].value);
+        this.logger.printLogs('i', 'Scanned Data:', results);
 
         this.qrCode = results[0].value
         this.validateQR(this.qrCode)
@@ -1208,11 +1208,11 @@ export class OprrComponent implements OnInit, AfterViewInit {
   }
 
   onEnter(): void {
-    console.log('Enter key pressed. QR Value:', this.qrCode);
+    this.logger.printLogs('i', 'Enter key pressed. QR Value:', this.qrCode);
 
 
     if (this.qrCode.trim() !== '') {
-      console.log('Performing search for:', this.qrCode);
+      this.logger.printLogs('i', 'Performing search for:', this.qrCode);
       this.validateQR(this.qrCode)
     }
   }
@@ -1222,10 +1222,10 @@ export class OprrComponent implements OnInit, AfterViewInit {
     this.api.retrieveOPRITEMByQRCode(qr)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve OPR ITEMS', res);
+          this.logger.printLogs('i', 'Retrieve OPR ITEMS', res);
           this.item = res[0];
 
-          console.log('Show Items', this.item);
+          this.logger.printLogs('i', 'Show Items', this.item);
 
           this.onRetrieveOPRR(res[0].oprrNo);
 
@@ -1242,7 +1242,7 @@ export class OprrComponent implements OnInit, AfterViewInit {
     this.api.retrieveOPRR(oprrNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve OPRR', res);
+          this.logger.printLogs('i', 'Retrieve OPRR', res);
           this.oprr = res.details;
 
           Swal.fire({
@@ -1273,8 +1273,8 @@ export class OprrComponent implements OnInit, AfterViewInit {
     // Add any conditions or user prompts if needed before resuming
 
     scannerAction.play().subscribe(
-      (r: any) => console.log('Resuming Scan:', r),
-      (error: any) => console.error('Error while resuming scan:', error)
+      (r: any) => this.logger.printLogs('i', 'Resuming Scan:', r),
+      (error: any) => this.logger.printLogs('e', 'Error while resuming scan:', error)
     );
   }
 

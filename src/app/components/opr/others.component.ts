@@ -144,8 +144,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   qrCode = ''
 
-  constructor(private fb: FormBuilder, private api: ApiService, 
-    private store: StoreService, private vf: ValidateForm, 
+  constructor(private fb: FormBuilder, private api: ApiService,
+    private store: StoreService, private vf: ValidateForm,
     private auth: AuthService, private cdr: ChangeDetectorRef,
     private printService: PrintService, private logger: LogsService
   ) {
@@ -198,10 +198,10 @@ export class OthersComponent implements OnInit, AfterViewInit {
       this.scannerAction.isReady.subscribe((res: any) => {
         // Perform your actions when isReady emits a value
         // this.handle(this.action, 'start');
-        console.log('Scanner is ready:', res);
+        this.logger.printLogs('i', 'Scanner is ready:', res);
       });
     } else {
-      console.info('Action or isReady is not defined when ngOnInit is called.');
+      this.logger.printLogs('i', 'Scanner is not ready:', 'Action or isReady is not defined when ngOnInit is called.');
     }
   }
 
@@ -540,7 +540,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
   searchPARItem() {
     this.parItemKey = this.optrForm.value['searchPARItemKey'];
-    console.log(this.parItemKey);
+    this.logger.printLogs('i', 'OPR Item key', this.parItemKey);
 
 
     if (!this.parItemKey || this.parItemKey.trim() === "") {
@@ -758,7 +758,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'Saved Success', this.oprItems);
 
           // Handle success, e.g., show a success message
-            this.api.showToast(res.message, 'Saved!', 'success');
+          this.api.showToast(res.message, 'Saved!', 'success');
           Swal.fire({
             title: 'Saved',
             text: 'Do you want to add new OPR?',
@@ -892,9 +892,9 @@ export class OthersComponent implements OnInit, AfterViewInit {
       }
     }
 
-    console.log('ITEMSOURCE >>>', opr.itemSource)
+    this.logger.printLogs('i', 'ITEMSOURCE >>>', opr.itemSource)
     const isInTypeOptions = this.typeOptions.some(x => x = opr.itemSource);
-    console.log('isInTypeOptions >>> ', isInTypeOptions)
+    this.logger.printLogs('i', 'isInTypeOptions >>> ', isInTypeOptions)
 
     this.oprForm.patchValue({
       itemsource: isInTypeOptions ? opr.itemSource : 'Others',
@@ -1574,12 +1574,12 @@ export class OthersComponent implements OnInit, AfterViewInit {
 
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
-        (r: any) => console.log(fn, r),
+        (r: any) => this.logger.printLogs('i', fn, r),
         alert
       );
       this.cdr.detectChanges();
     } else {
-      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      scannerAction[fn]().subscribe((r: any) => this.logger.printLogs('i', fn, r), alert);
       this.cdr.detectChanges();
     }
   }
@@ -1591,8 +1591,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
       if (results) {
         action.pause();
 
-        console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results);
+        this.logger.printLogs('i', 'QR value', results[0].value);
+        this.logger.printLogs('i', 'Scanned Data:', results);
 
         this.qrCode = results[0].value
         this.validateQR(this.qrCode)
@@ -1602,10 +1602,10 @@ export class OthersComponent implements OnInit, AfterViewInit {
   }
 
   onEnter(): void {
-    console.log('Enter key pressed. QR Value:', this.qrCode);
+    this.logger.printLogs('i', 'Enter key pressed. QR Value:', this.qrCode);
 
     if (this.qrCode.trim() !== '') {
-      console.log('Performing search for:', this.qrCode);
+      this.logger.printLogs('i', 'Performing search for:', this.qrCode);
       this.validateQR(this.qrCode)
     }
   }
@@ -1621,10 +1621,10 @@ export class OthersComponent implements OnInit, AfterViewInit {
       this.api.retrieveOPRITEMByQRCode(qr)
         .subscribe({
           next: (res) => {
-            console.log('Retrieve OPR ITEMS', res);
+            this.logger.printLogs('i', 'Retrieve OPR ITEMS', res);
             this.item = res[0];
 
-            console.log('Show Items', this.item);
+            this.logger.printLogs('i', 'Show Items', this.item);
 
             this.onRetrieveOPR(res[0].oprNo);
 
@@ -1641,7 +1641,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
     this.api.retrieveOPR(oprNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve OPR', res);
+          this.logger.printLogs('i', 'Retrieve OPR', res);
           this.opr = res[0];
 
           Swal.fire({
@@ -1671,8 +1671,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
   resumeScanning(scannerAction: any): void {
 
     scannerAction.play().subscribe(
-      (r: any) => console.log('Resuming Scan:', r),
-      (error: any) => console.error('Error while resuming scan:', error)
+      (r: any) => this.logger.printLogs('i', 'Resuming Scan:', r),
+      (error: any) => this.logger.printLogs('e', 'Error while resuming scan:', error)
     );
   }
 

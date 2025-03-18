@@ -159,10 +159,10 @@ export class PrsComponent implements OnInit, AfterViewInit {
       this.scannerAction.isReady.subscribe((res: any) => {
         // Perform your actions when isReady emits a value
         // this.handle(this.action, 'start');
-        console.log('Scanner is ready:', res);
+        this.logger.printLogs('i', 'Scanner is ready:', res);
       });
     } else {
-      console.info('Action or isReady is not defined when ngOnInit is called.');
+      this.logger.printLogs('i', 'Action or isReady','Scanner is not defined when ngOnInit is called.');
     }
   }
 
@@ -1025,7 +1025,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
     if (!this.parItemKey || this.parItemKey.trim() === "") {
       this.prsItems = [...this.searchPRSItems];  // Reset to full list
     } else {
-      console.log(this.parItemKey);
+      this.logger.printLogs('i', 'PRS Item key',this.parItemKey);
       const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
 
       this.prsItems = this.searchPRSItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
@@ -1172,7 +1172,6 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   resetForm() {
-    // console.log('Resetting Form...');
     this.isEditMode = false;
     this.currentEditId = null;
     this.prs = null;
@@ -1241,12 +1240,12 @@ export class PrsComponent implements OnInit, AfterViewInit {
     // Start or stop the scanning action
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
-        (r: any) => console.log(fn, r),
+        (r: any) => this.logger.printLogs('i', fn, r),
         alert
       );
       this.cdr.detectChanges();     // Trigger change detection to update button state
     } else {
-      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      scannerAction[fn]().subscribe((r: any) => this.logger.printLogs('i', fn, r), alert);
       this.cdr.detectChanges();     // Trigger change detection to update button state
     }
   }
@@ -1258,8 +1257,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
       if (results) {
         action.pause(); // Pause scanning if needed
 
-        console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results); // Handle scanned results here
+        this.logger.printLogs('i', 'QR value', results[0].value);
+        this.logger.printLogs('i', 'Scanned Data:', results); // Handle scanned results here
 
         this.qrCode = results[0].value
         this.validateQR(this.qrCode)
@@ -1270,12 +1269,12 @@ export class PrsComponent implements OnInit, AfterViewInit {
   }
 
   onEnter(): void {
-    console.log('Enter key pressed. QR Value:', this.qrCode);
+    this.logger.printLogs('i', 'Enter key pressed. QR Value:', this.qrCode);
 
     // Add your logic here
     if (this.qrCode.trim() !== '') {
       // Example: Perform a search action
-      console.log('Performing search for:', this.qrCode);
+      this.logger.printLogs('i', 'Performing search for:', this.qrCode);
       this.validateQR(this.qrCode)
     }
   }
@@ -1285,10 +1284,10 @@ export class PrsComponent implements OnInit, AfterViewInit {
     this.api.retrievePARITEMByQRCode(qr)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PRS ITEMS', res);
+          this.logger.printLogs('i', 'Retrieve PRS ITEMS', res);
           this.item = res[0];
 
-          console.log('Show Items', this.item);
+          this.logger.printLogs('i', 'Show Items', this.item);
 
           this.onRetrievePRS(res[0].prsNo);
 
@@ -1305,7 +1304,7 @@ export class PrsComponent implements OnInit, AfterViewInit {
     this.api.retrievePRS(prsNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve PRS', res);
+          this.logger.printLogs('i', 'Retrieve PRS', res);
           this.prs = res.details;
 
           Swal.fire({
@@ -1336,8 +1335,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
     // Add any conditions or user prompts if needed before resuming
 
     scannerAction.play().subscribe(
-      (r: any) => console.log('Resuming Scan:', r),
-      (error: any) => console.error('Error while resuming scan:', error)
+      (r: any) => this.logger.printLogs('i', 'Resuming Scan:', r),
+      (error: any) => this.logger.printLogs('e', 'Error while resuming scan:', error)
     );
   }
 

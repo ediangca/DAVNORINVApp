@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { AppComponent } from '../../app.component';
 import { ApiService } from '../../services/api.service';
 import { ToastrService } from 'ngx-toastr';
+import { LogsService } from '../../services/logs.service';
 
 @Component({
   selector: 'app-register',
@@ -27,7 +28,7 @@ export class RegisterComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private router: Router,
     private auth: AuthService, private api: ApiService,
-    public ac: AppComponent, private toastr: ToastrService) { }
+    public ac: AppComponent, private toastr: ToastrService, private logger: LogsService) { }
 
   ngOnInit() {
     this.registerForm = this.fb.group({
@@ -52,7 +53,7 @@ export class RegisterComponent implements OnInit {
       },
       err => {
         this.errorMessage = err;
-        console.error('Error: loading user groups => ', err);
+        this.logger.printLogs('e', 'Error: loading user groups => ', err);
       }
     );
   }
@@ -92,24 +93,8 @@ export class RegisterComponent implements OnInit {
     const now = new Date();
 
     if (this.registerForm.valid) {
-      console.log(this.registerForm.value);
-      // Add your login logic here
-      // alert("Great! Account has been successfully Registered!");
-      /*
-      console.log("localhost:8000/create\n" +
-        "AccID: " + this.registerForm.value['accid'] + "\n" +
-        "lastname: " + this.registerForm.value['lastname'] + "\n" +
-        "firstname: " + this.registerForm.value['firstname'] + "\n" +
-        "middlename: " + this.registerForm.value['middlename'] + "\n" +
-        "branch: " + this.registerForm.value['bran'] + "\n" +
-        "department: " + this.registerForm.value['dept'] + "\n" +
-        "section: " + this.registerForm.value['sect'] + "\n" +
-        "username: " + this.registerForm.value['username'] + "\n" +
-        "password: " + this.registerForm.value['password'] + "\n" +
-        "usergrroup: " + this.registerForm.value['ug'] + "\n" +
-        "date_Created: " + now.toISOString() + "\n" +
-        "date_Updated: " + now.toISOString());
-        */
+      this.logger.printLogs('i', 'Register Form', this.registerForm.value);
+
       const userAccount = {
         "userName": this.registerForm.value['username'],
         "password": this.registerForm.value['password'],
@@ -119,12 +104,12 @@ export class RegisterComponent implements OnInit {
       this.auth.register(userAccount)
         .subscribe({
           next: (res) => {
-            console.info("Success: ", res.message);
+            this.logger.printLogs('i', 'Success: ', res.message);
 
             this.toast('Access Granted', res.message, 'success');
             Swal.fire({
               title: 'Access Granted!',
-              text: res.message ,
+              text: res.message,
               icon: 'success',
               html: `${res.message} <br> Please wait for the verification from Admin.`,
               confirmButtonText: 'OK'
@@ -133,10 +118,10 @@ export class RegisterComponent implements OnInit {
                 this.router.navigate(['login']);
                 this.onReset();
 
-                
+
                 this.toastr.success(
                   // <img src="${this.ac.logoPath}" style="width:20px; height:20px;"> 
-                   res.message,
+                  res.message,
                   'REGISTERED',
                   {
                     enableHtml: true, // Required for rendering HTML content
@@ -149,7 +134,7 @@ export class RegisterComponent implements OnInit {
             });
           },
           error: (err: any) => {
-            console.log('Error response:', err);
+            this.logger.printLogs('e', 'Error Registering User', err);
             Swal.fire('Registration Denied', err, 'warning');
           }
         })
@@ -158,14 +143,6 @@ export class RegisterComponent implements OnInit {
 
     this.validateFormFields(this.registerForm);
 
-    // else {
-    //   console.warn('Warning: Required field must be comply!');
-    //   Swal.fire({
-    //     title: 'Access Denied!',
-    //     text: 'Required field must be comply!',
-    //     icon: 'warning'
-    //   });
-    // }
   }
 
   //Common Method - Advice to add in Helpers
