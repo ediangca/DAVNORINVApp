@@ -157,10 +157,10 @@ export class RrspComponent {
       this.scannerAction.isReady.subscribe((res: any) => {
         // Perform your actions when isReady emits a value
         // this.handle(this.action, 'start');
-        console.log('Scanner is ready:', res);
+        this.logger.printLogs('i', 'Scanner is ready:', res);
       });
     } else {
-      console.info('Action or isReady is not defined when ngOnInit is called.');
+      this.logger.printLogs('i', 'Action or isReady','Scanner is not defined when ngOnInit is called.');
     }
   }
 
@@ -447,7 +447,7 @@ export class RrspComponent {
     this.api.createRRSEP(this.rrsep, this.rrsepItems)
       .subscribe({
         next: (res) => {
-          this.logger.printLogs('i', 'Saved Success', this.rrsep);
+          this.logger.printLogs('i', 'Saving Success', this.rrsep);
 
           this.api.showToast(res.message, 'Saved!', 'success');
           Swal.fire({
@@ -466,7 +466,7 @@ export class RrspComponent {
           this.getAllRRSEP();
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving RRSEP', err);
+          this.logger.printLogs('w', 'Saving Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -998,7 +998,7 @@ export class RrspComponent {
     if (!this.parItemKey || this.parItemKey.trim() === "") {
       this.rrsepItems = [...this.searchRRSEPItems];  // Reset to full list
     } else {
-      console.log(this.parItemKey);
+      this.logger.printLogs('i', 'RRSEP Item key',this.parItemKey);
       const searchKey = this.parItemKey.toLowerCase();  // Convert search key to lowercase
 
       this.rrsepItems = this.searchRRSEPItems.filter(item => item.description!.toLowerCase().includes(searchKey) ||
@@ -1145,7 +1145,6 @@ export class RrspComponent {
   }
 
   resetForm() {
-    // console.log('Resetting Form...');
     this.isEditMode = false;
     this.currentEditId = null;
     this.rrsep = null;
@@ -1216,12 +1215,12 @@ export class RrspComponent {
     // Start or stop the scanning action
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
-        (r: any) => console.log(fn, r),
+        (r: any) => this.logger.printLogs('i', fn, r),
         alert
       );
       this.cdr.detectChanges();     // Trigger change detection to update button state
     } else {
-      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      scannerAction[fn]().subscribe((r: any) => this.logger.printLogs('i', fn, r), alert);
       this.cdr.detectChanges();     // Trigger change detection to update button state
     }
   }
@@ -1233,8 +1232,8 @@ export class RrspComponent {
       if (results) {
         action.pause(); // Pause scanning if needed
 
-        console.log('QR value', results[0].value);
-        console.log('Scanned Data:', results); // Handle scanned results here
+        this.logger.printLogs('i', 'QR value', results[0].value);
+        this.logger.printLogs('i', 'Scanned Data:', results); // Handle scanned results here
 
         this.qrCode = results[0].value
         this.validateQR(this.qrCode)
@@ -1244,12 +1243,12 @@ export class RrspComponent {
     }
   }
   onEnter(): void {
-    console.log('Enter key pressed. QR Value:', this.qrCode);
+    this.logger.printLogs('i', 'Enter key pressed. QR Value:', this.qrCode);
 
     // Add your logic here
     if (this.qrCode.trim() !== '') {
       // Example: Perform a search action
-      console.log('Performing search for:', this.qrCode);
+      this.logger.printLogs('i', 'Performing search for:', this.qrCode);
       this.validateQR(this.qrCode)
     }
   }
@@ -1259,10 +1258,10 @@ export class RrspComponent {
     this.api.retrieveicsITEMByQRCode(qr)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve RRSEP ITEMS', res);
+          this.logger.printLogs('i', 'Retrieve RRSEP ITEMS', res);
           this.item = res[0];
 
-          console.log('Show Items', this.item);
+          this.logger.printLogs('i', 'Show Items', this.item);
 
           this.onRetrieveRRSEP(res[0].rrsepNo);
 
@@ -1279,7 +1278,7 @@ export class RrspComponent {
     this.api.retrieveRRSEP(rrsepNo)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve RRSEP', res);
+          this.logger.printLogs('i', 'Retrieve RRSEP', res);
           this.rrsep = res.details;
 
           Swal.fire({
@@ -1310,8 +1309,8 @@ export class RrspComponent {
     // Add any conditions or user prompts if needed before resuming
 
     scannerAction.play().subscribe(
-      (r: any) => console.log('Resuming Scan:', r),
-      (error: any) => console.error('Error while resuming scan:', error)
+      (r: any) => this.logger.printLogs('i', 'Resuming Scan:', r),
+      (error: any) => this.logger.printLogs('e', 'Error while resuming scan:', error)
     );
   }
 

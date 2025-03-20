@@ -82,7 +82,6 @@ export class PositionsComponent implements OnInit, AfterViewInit {
     const modal = document.getElementById('AddEditModalForm')!;
     if (modal) {
       modal.addEventListener('hidden.bs.modal', () => {
-        // console.log('Modal is closed');
         this.resetForm();
       });
     }
@@ -113,11 +112,11 @@ export class PositionsComponent implements OnInit, AfterViewInit {
         this.api.searchPositions(this.searchKey)
           .subscribe({
             next: (res) => {
-              console.log("Fetching Positions:", res);
+              this.logger.printLogs('i', "Fetching Positions", res);
               this.positions = res;
             },
             error: (err: any) => {
-              console.log("Error Fetching Positions:", err);
+              this.logger.printLogs('w', "Fetching Positions Denied", err);
             }
           });
       }
@@ -133,7 +132,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('i', 'LIST OF POSITIONS', this.positions);
         },
         error: (err: any) => {
-          console.log("Error Fetching Positions:", err);
+          this.logger.printLogs('w', "Fetching Positions Denied", err);
         }
       });
   }
@@ -142,10 +141,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
     // const now = new Date();
 
     if (this.positionForm.valid) {
-      console.log(this.positionForm.value);
-
-
-
+      this.logger.printLogs('i', 'Position Form', this.positionForm.value);
 
       const position = {
         "positionName": this.positionForm.value['positionName'],
@@ -175,7 +171,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
         this.api.updatePosition(this.currentEditId!, position)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Updating Success", res.message);
 
               // this.closeModal()
               this.getAllPositions();
@@ -184,7 +180,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
               this.api.showToast(res.message, 'Updated!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Updating Denied', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -196,7 +192,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
     this.api.createPosition(position)
       .subscribe({
         next: (res) => {
-          console.info("Success: ", res.message);
+          this.logger.printLogs('i', "Saving Success", res.message);
 
           // this.closeModal()
           this.getAllPositions();
@@ -206,7 +202,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
           this.positionForm.reset();
         },
         error: (err: any) => {
-          console.log('Error response:', err);
+          this.logger.printLogs('w', 'Saving Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -216,7 +212,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
     this.isEditMode = true;
     this.currentEditId = position.positionID;
 
-    console.log("Retreive Position: ", position);
+    this.logger.printLogs('i', "Retreive Position", position);
     this.positionForm.patchValue({
       positionName: position.positionName
     });
@@ -246,7 +242,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
         this.api.deletePosition(id)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Deleting Success", res.message);
 
               this.getAllPositions();
 
@@ -254,7 +250,7 @@ export class PositionsComponent implements OnInit, AfterViewInit {
               this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Deleting Denied', err);
               Swal.fire('Deleting Denied', err, 'warning');
             }
           });

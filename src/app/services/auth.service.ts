@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { JwtHelperService } from '@auth0/angular-jwt'
 import { environment } from '../../environment/environment';
+import { LogsService } from './logs.service';
 
 
 @Injectable({
@@ -18,7 +19,7 @@ export class AuthService {
 
   private jwtHelper = new JwtHelperService();
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient, private router: Router, private logger: LogsService) {
     // this.userPayload = this.decodedToken();
   }
 
@@ -80,7 +81,7 @@ export class AuthService {
   }
 
   storeLocal(result: any) {
-    console.log("reult: ", result);
+    this.logger.printLogs('i', 'Token', `result:  ${result}`);
     localStorage.setItem('token', result.token)
     // localStorage.setItem('userID', result.userID)
     // localStorage.setItem('UGID', result.ugid)
@@ -127,7 +128,7 @@ export class AuthService {
     if (token && !this.jwtHelper.isTokenExpired(token)) {
       const decodedToken = this.jwtHelper.decodeToken(token);
       this.userPayload = decodedToken;
-      // console.log("Decoded Token: ", decodedToken);
+      // this.logger.printLogs('i', "Decoded Token: ", decodedToken);
       return of(decodedToken?.unique_name || null); // Adjust according to your token's structure
     } else {
       return of(null);

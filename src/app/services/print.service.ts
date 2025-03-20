@@ -267,7 +267,7 @@ export class PrintService {
     // bootstrapLink.rel = "stylesheet";
     // bootstrapLink.href = "https://davnorsystems.gov.ph/DDNAEINV/assets/bootstrap/dist/css/bootstrap.min.css";
     // bootstrapLink.type = "text/css";
-    // bootstrapLink.onload = () => console.log("Bootstrap loaded!");
+    // bootstrapLink.onload = () => this.logger.printLogs('i', "Bootstrap loaded!");
     // iframeDoc!.head.appendChild(bootstrapLink);
 
 

@@ -81,7 +81,6 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
     const modal = document.getElementById('AddEditModalForm')!;
     if (modal) {
       modal.addEventListener('hidden.bs.modal', () => {
-        // console.log('Modal is closed');
         this.resetForm();
       });
     }
@@ -113,11 +112,11 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
         this.api.searchItemGroups(this.searchKey)
           .subscribe({
             next: (res) => {
-              console.log("Fetching Item Groups:", res);
+              this.logger.printLogs('i', "Fetching Item Groups", res);
               this.itemGroups = res;
             },
             error: (err: any) => {
-              console.log("Error Fetching Item Groups:", err);
+              this.logger.printLogs('i', "Fetching Item Groups Denied", err);
             }
           });
       }
@@ -140,7 +139,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
           this.itemGroups = [...otherGroups, ...othersGroup];
         },
         error: (err: any) => {
-          console.log("Error Fetching Item Groups:", err);
+          this.logger.printLogs('i', "Fetching Item Groups Denied", err);
         }
       });
   }
@@ -149,7 +148,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
     // const now = new Date();
 
     if (this.itemGroupForm.valid) {
-      console.log(this.itemGroupForm.value);
+      this.logger.printLogs('i', 'Itemgroup Form', this.itemGroupForm.value);
 
       const itemGroup = {
         "ItemGroupName": this.itemGroupForm.value['itemGroupName'],
@@ -181,7 +180,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
         this.api.updateItemGroup(this.currentEditId!, itemGroup)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Updating Success", res.message);
 
               // this.closeModal()
               this.getAllItemGroups();
@@ -190,7 +189,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
               this.api.showToast(res.message, 'Updated!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Updating Denied', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -202,7 +201,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
     this.api.createItemGroup(itemGroup)
       .subscribe({
         next: (res) => {
-          console.info("Success: ", res.message);
+          this.logger.printLogs('i', "Saving Success", res.message);
 
           // this.closeModal()
           this.getAllItemGroups();
@@ -212,7 +211,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
           this.itemGroupForm.reset();
         },
         error: (err: any) => {
-          console.log('Error response:', err);
+          this.logger.printLogs('i', 'Saving Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -222,7 +221,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
     this.isEditMode = true;
     this.currentEditId = itemGroup.igid;
 
-    console.log("Retreive Item Group: ", itemGroup);
+    this.logger.printLogs('i', "Retreive Item Group", itemGroup);
     this.itemGroupForm.patchValue({
       itemGroupName: itemGroup.itemGroupName,
       notes: itemGroup.notes
@@ -254,7 +253,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
         this.api.deleteItemGroup(id)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Deleting Success", res.message);
 
               this.getAllItemGroups();
 
@@ -262,7 +261,7 @@ export class ItemgroupComponent implements OnInit, AfterViewInit {
               this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('i', 'Deleting Denied', err);
               Swal.fire('Deleting Denied', err, 'warning');
             }
           });

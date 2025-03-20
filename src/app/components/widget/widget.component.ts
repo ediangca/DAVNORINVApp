@@ -54,12 +54,10 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.prev.nativeElement.addEventListener('click', () => this.moveToPrev());
     this.next.nativeElement.addEventListener('click', () => this.moveToNext());
     // this.prev.nativeElement.addEventListener('click', () => {
-    //   console.log('Previous button clicked');
     //   this.moveToPrev(); // Call your custom method here
     // });
     // this.nextBtn.addEventListener('click', () => this.moveToNext());
     // this.next.nativeElement.addEventListener('click', () => {
-    //   console.log('Next button clicked');
     //   this.moveToNext(); // Call your custom method here
     // });
 
@@ -75,14 +73,14 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
 
 
     this.prev.nativeElement.addEventListener('click', () => {
-      console.log('Previous button clicked');
+      this.logger.printLogs('i', 'Carousel', 'Previous button clicked');
       this.moveToPrev(); // Call your custom method here
     });
 
 
     // this.nextBtn.removeEventListener('click', () => this.moveToNext());
     this.next.nativeElement.addEventListener('click', () => {
-      console.log('Next button clicked');
+      this.logger.printLogs('i', 'Carousel', 'Next button clicked');
       this.moveToNext(); // Call your custom method here
     });
     window.removeEventListener('resize', () => this.updateCarousel());
@@ -91,11 +89,11 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   getTotalParCencus() {
     this.api.getCencus().subscribe({
       next: (res) => {
-        console.log('Cencus : ', res);
+        this.logger.printLogs('i', 'Cencus : ', res);
         this.census = res[0];
       },
       error: (err: any) => {
-        console.log('Error Fetching User Groups:', err);
+        this.logger.printLogs('w', 'Fetching Cencus Denied', err);
       },
     });
   }
@@ -104,10 +102,10 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.api.getActivityLogs().subscribe({
       next: (res) => {
         this.activities = res.slice(0, 4);
-        console.log('ActivityLog : ', this.activities);
+        this.logger.printLogs('i', 'ActivityLog : ', this.activities);
       },
       error: (err: any) => {
-        console.log('Error Fetching Activity Log:', err);
+        this.logger.printLogs('w', 'Error Fetching Activity Log:', err);
       },
     });
   }
@@ -124,13 +122,13 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
           ...item,
           percentage: grandTotal > 0 ? ((item.totalEntries / grandTotal) * 100).toFixed(2) : 0, // Calculate percentage
         }));
-        
+
         this.totalItemsByOffice = this.totalItemsByOffice.slice(0, 10);
 
-        console.log('TotalAbove50ItemsByOffice : ', this.totalItemsByOffice);
+        this.logger.printLogs('i', 'TotalAbove50ItemsByOffice : ', this.totalItemsByOffice);
       },
       error: (err: any) => {
-        console.error('Error Fetching Activity Log:', err);
+        this.logger.printLogs('w', 'Fetching TotalAbove50ItemsByOffice Denied', err);
       },
     });
   }

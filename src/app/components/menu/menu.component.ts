@@ -93,7 +93,7 @@ export class MenuComponent implements AfterViewInit {
   }
 
   toggleDropdown(dropdownMenu: string) {
-    // console.log("click master-list!");
+
     let dropdownId: string;
     const dropdown = document.getElementById(dropdownMenu);
     switch (dropdownMenu) {
@@ -117,7 +117,6 @@ export class MenuComponent implements AfterViewInit {
       // Check if the 'sidebar-mini' class exists
       if (dropdown.classList.contains('show')) {
 
-        // console.log("Remove show class.");
         dropdown.classList.remove('show');
         // dropdown.classList.add('collapse');
 
@@ -126,7 +125,6 @@ export class MenuComponent implements AfterViewInit {
 
         // this.minimizeSidebar();
       } else {
-        // console.log("Add show class.");
         dropdown.classList.add('show');
 
         // navDropdown.classList.remove('collapsed');
@@ -141,7 +139,7 @@ export class MenuComponent implements AfterViewInit {
       .subscribe(res => {
         this.userAccount = res;
 
-        console.log('User Account >>>', this.userAccount);
+        this.logger.printLogs('i', 'User Account >>>', this.userAccount);
 
         if (this.userAccount) {
           this.api.retrievePrivilegByUG(this.userAccount.ugid).subscribe({

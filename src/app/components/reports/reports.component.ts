@@ -35,6 +35,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     OPRR: 'Other Property Return Report',
     SOPA5: 'Summary of Property Above 50k',
     SOPB5: 'Summary of Property Below 50k',
+    SOOP: 'Summary of Other Property',
   };
 
 
@@ -165,10 +166,15 @@ export class ReportsComponent implements OnInit, AfterViewInit {
           this.api.getAllOffices(reportName).subscribe({
             next: (res) => {
               this.offices = res; // Update the offices property
-              this.logger.printLogs('i', `List of Offices under module ${reportName}`, res);
+              this.logger.printLogs('i', `List of Offices under report ${reportName}`, res);
 
-              // Open the modal after successfully fetching offices
-              this.openModal(this.filterModal);
+
+              if (this.offices.length > 0) {
+                // Open the modal after successfully fetching offices
+                this.openModal(this.filterModal);
+              } else {
+                Swal.fire('INFORMATION!', `No ${reportName} list Found!`, 'info');
+              }
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error Fetching Offices', err);

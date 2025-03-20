@@ -93,7 +93,6 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
     const modal = document.getElementById('AddEditModalForm')!;
     if (modal) {
       modal.addEventListener('hidden.bs.modal', () => {
-        // console.log('Modal is closed');
         this.resetForm();
       });
     }
@@ -136,11 +135,11 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
         this.api.searchUserGroups(this.searchKey)
           .subscribe({
             next: (res) => {
-              console.log("Fetching User Groups:", res);
+              this.logger.printLogs('i', "Fetching User Groups:", res);
               this.userGroups = res.slice(0, 10);
             },
             error: (err: any) => {
-              console.log("Error Fetching User Groups:", err);
+              this.logger.printLogs('w', "Fetching User Groups Denied", err);
             }
           });
       }
@@ -154,10 +153,10 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
 
           this.totalItems = res.length;
           this.userGroups = res.slice(0, 10);
-          this.logger.printLogs('i', 'LIST OF USER GROUPS', this.userGroups);
+          this.logger.printLogs('i', 'LIST OF USER GROUP', this.userGroups);
         },
         error: (err: any) => {
-          console.log("Error Fetching User Groups:", err);
+          this.logger.printLogs('2', "Fetching User Group Denied", err);
         }
       });
   }
@@ -166,7 +165,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
     // const now = new Date();
 
     if (this.userGroupForm.valid) {
-      console.log(this.userGroupForm.value);
+      this.logger.printLogs('i', 'User Group Form', this.userGroupForm.value);
 
       const userGroup = {
         "UserGroupName": this.userGroupForm.value['userGroupName'],
@@ -196,7 +195,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
         this.api.updateUserGroup(this.currentEditId!, userGroup)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Updating Success", res.message);
 
               this.getAllUserGroups();
 
@@ -204,7 +203,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
               this.api.showToast(res.message, 'Updated!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('2', 'Updating Denied', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -216,7 +215,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
     this.api.createUserGroup(userGroup)
       .subscribe({
         next: (res) => {
-          console.info("Success: ", res.message);
+          this.logger.printLogs('i', "Saving Success", res.message);
 
           // this.closeModal()
           this.getAllUserGroups();
@@ -227,7 +226,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
           this.userGroupForm.reset();
         },
         error: (err: any) => {
-          this.logger.printLogs('e', 'Error Saving UserGroup', err);
+          this.logger.printLogs('w', 'Saving UserGroup Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -237,7 +236,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
     this.isEditMode = true;
     this.currentEditId = userGroup.ugid;
 
-    console.log("Retreive User Group: ", userGroup);
+    this.logger.printLogs('i', "Retreive User Group", userGroup);
     this.userGroupForm.patchValue({
       userGroupName: userGroup.userGroupName,
       notes: userGroup.notes
@@ -268,7 +267,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
         this.api.deleteUserGroup(id)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Deleting Success", res.message);
 
               this.getAllUserGroups();
 
@@ -276,7 +275,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
               this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Deleting Denied', err);
               Swal.fire('Deleting Denied', err, 'warning');
             }
           });
@@ -560,7 +559,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
           this.api.showToast(res.message, 'Saved!', 'success');
         },
         error: (err) => {
-          this.logger.printLogs('e', 'Error Saving Privileges', err);
+          this.logger.printLogs('w', 'Saving Privileges Denied', err);
           Swal.fire('Error', err || 'An error occurred while saving privileges.', 'error');
         },
       });
@@ -574,7 +573,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
           this.api.showToast(res.message, 'Updated!', 'success');
         },
         error: (err) => {
-          this.logger.printLogs('e', 'Error Updating Privileges', err);
+          this.logger.printLogs('w', 'Updating Privileges Denied', err);
           Swal.fire('Error', err || 'An error occurred while saving privileges.', 'error');
         },
       });

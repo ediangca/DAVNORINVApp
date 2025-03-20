@@ -132,13 +132,13 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   }
 
   openAProfileModal() {
-    console.log('Open Modal Profile >>> ');
+    this.logger.printLogs('i', 'Modal', 'Open Modal Profile >>> ');
     const modal = new bootstrap.Modal(this.ProfileModal.nativeElement);
     modal.show();
   }
 
   openChangePassModal() {
-    console.log('Open Change Pass >>> ');
+    this.logger.printLogs('i', 'Modal', 'Open Change Pass >>> ');
     const modal = new bootstrap.Modal(this.ForgetPassModal.nativeElement);
     modal.show();
   }
@@ -161,14 +161,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   loadUserGroups(): void {
     this.api.getAllUserGroups(this.roleNoFromToken).subscribe(
       data => {
-        console.log('USE ROLE : ', this.roleNoFromToken);
-        console.log('USE GROUPS : ', data);
+        this.logger.printLogs('i', 'USE ROLE : ', this.roleNoFromToken);
+        this.logger.printLogs('i', 'USE GROUPS : ', data);
         this.userGroups = data;
         this.userGroups = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*' ? this.userGroups
           : this.userGroups.filter(ug => ug.userGroupName != 'System Administrator' && ug.userGroupName != 'System Generated');
       },
       err => {
-        console.error('Error: loading user groups => ', err);
+        this.logger.printLogs('w', 'Loading user groups Denied', err);
       }
     );
   }
@@ -177,13 +177,13 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   loadPositions(): void {
     this.api.getAllPositions().subscribe(
       data => {
-        console.log('POSITION : ', data);
+        this.logger.printLogs('i', 'POSITION : ', data);
         this.positions = data;
         this.positions = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*' ? this.positions
           : this.positions.filter(ug => ug.positionName != 'System Administrator' && ug.positionName != 'Test');
       },
       err => {
-        console.error('Error: loading Positions => ', err);
+        this.logger.printLogs('w', 'Loading Positions Denied', err);
       }
     );
   }
@@ -195,7 +195,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         this.branches = data;
       },
       err => {
-        console.error('Error: loading Companies => ', err);
+        this.logger.printLogs('w', 'Loading Companies Denied', err);
       }
     );
   }
@@ -210,7 +210,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     });
     const target = event.target as HTMLSelectElement;
     const branchID = target.value;
-    console.log("Selected Branch: " + branchID);
+    this.logger.printLogs('i', 'Branch', "Selected Branch: " + branchID);
     if (branchID) {
       this.loadDepartments(branchID);
     } else {
@@ -224,14 +224,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.api.getDepartmentsByCompanyID(branchID!).subscribe(
       data => {
         this.departments = data;
-        console.log("Load Department", this.departments);
+        this.logger.printLogs('i', "Load Department", this.departments);
         if (this.userProfile.depID) {
-          console.log("Load User Prifle Department", this.departments);
+          this.logger.printLogs('i', "Load User Prifle Department", this.departments);
           this.loadSections(this.userProfile.depID);
         }
       },
       err => {
-        console.error('Error: loading Departments => ', err);
+        this.logger.printLogs('w', 'Loading Departments Denied', err);
       }
     );
   }
@@ -243,7 +243,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     });
     const target = event.target as HTMLSelectElement;
     const depID = target.value;
-    console.log("Selected Department: " + depID);
+    this.logger.printLogs('i', 'Department', "Selected Department: " + depID);
     if (depID) {
       this.loadSections(depID);
     } else {
@@ -258,7 +258,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       this.api.getSectionsByDepID(depID).subscribe(
         data => {
           this.sections = data;
-          console.log("Load Section", this.sections);
+          this.logger.printLogs('i', "Load Section", this.sections);
 
 
           if (!this.isModalOpen && this.userProfile) {
@@ -273,14 +273,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
               positionID: this.userProfile.positionID
             });
 
-            console.log("Submit Profile", this.userProfileForm.value);
+            this.logger.printLogs('i', "Submit Profile", this.userProfileForm.value);
 
             this.openAProfileModal();
             this.isModalOpen = true;
           }
         },
         err => {
-          console.error('Error: loading Sections => ', err);
+          this.logger.printLogs('w', 'Loading Sections Denied', err);
         }
       );
     }
@@ -301,7 +301,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             this.isLoading = false; // Stop showing the loading spinner
           },
           error: (err: any) => {
-            console.log("Error Fetching User Groups:", err);
+            this.logger.printLogs('w', "Fetching User Group Denied", err);
           }
         });
 
@@ -319,7 +319,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
             this.isEditMode = true;
             this.userProfile = res[0];
             this.currentEditId = this.userProfile.profileID;
-            console.log("Show Profile", this.userProfile);
+            this.logger.printLogs('i', "Show Profile", this.userProfile);
             if (this.userProfile.branchID!) { this.loadDepartments(this.userProfile.branchID); } else {
               if (!this.isModalOpen && this.userProfile) {
                 this.userProfileForm.patchValue({
@@ -333,7 +333,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
                   positionID: this.userProfile.positionID || ''
                 });
 
-                console.log("Submit Profile  >>>>>>", this.userProfileForm.value);
+                this.logger.printLogs('i', "Submit Profile  >>>>>>", this.userProfileForm.value);
 
                 this.openAProfileModal();
 
@@ -343,14 +343,14 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
           } else {
             this.isEditMode = false;
-            console.log("No Profile found!");
+            this.logger.printLogs('i', 'Profile', "No Profile found!");
             if (!this.isModalOpen) {
               this.openAProfileModal();
             }
           }
         },
         error: (err: any) => {
-          console.log('Error Fetching Profile:', err);
+          this.logger.printLogs('w', 'Fetching Profile Denied', err);
         }
       });
   }
@@ -409,11 +409,10 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         this.api.searchUserAccounts(this.searchKey)
           .subscribe({
             next: (res) => {
-              // console.log("Fetching User Groups:", res);
               this.userAccounts = res.slice(0, 20);
             },
             error: (err: any) => {
-              console.log("Error Fetching User Accounts:", err);
+              this.logger.printLogs('w', "Fetching User Accounts Denied", err);
             }
           });
       }
@@ -424,7 +423,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
     if (this.userAccountForm.valid) {
 
-      console.log(this.userAccountForm.value);
+      this.logger.printLogs('i', 'User Account Form', this.userAccountForm.value);
 
       const userAccount = {
         "userName": this.userAccountForm.value['username'],
@@ -433,8 +432,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       }
 
 
-      console.log("currentEditId: " + this.currentEditId);
-      console.log("EditMode: " + this.isEditMode);
+      this.logger.printLogs('i', 'User Account', "currentEditId: " + this.currentEditId);
 
       if (this.isEditMode && this.currentEditId) {
         this.Update(userAccount)
@@ -443,7 +441,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       }
 
     } else {
-      console.warn("Invalidate Form");
+      this.logger.printLogs('i', 'User Account Form', "Invalidate Form");
       this.validateFormFields(this.userAccountForm);
     }
 
@@ -454,7 +452,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.auth.register(userAccount)
       .subscribe({
         next: (res) => {
-          console.info("Success: ", res.message);
+          this.logger.printLogs('i', "Saving Success", res.message);
 
           Swal.fire('Saved', res.message, 'success');
           this.api.showToast(res.message, 'Saved!', 'success');
@@ -463,7 +461,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           this.resetForm();
         },
         error: (err: any) => {
-          console.log('Error response:', err);
+          this.logger.printLogs('w', 'Saving Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -474,14 +472,9 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.currentEditId = userAccount.userID;
     // this.hidePassword(true);
 
-    // console.log("Retreive User Account: ", userAccount);
-
     this.api.searchUserGroups(userAccount.userGroupName!)
       .subscribe({
         next: (res) => {
-
-          // console.log("Fetching User Group:", res);
-          // console.log("Fetching User Group:", res[0].ugid);
 
           this.userAccountForm.patchValue({
             username: userAccount.userName,
@@ -493,7 +486,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           });
         },
         error: (err: any) => {
-          console.log("Error Fetching User Group by ID:", err);
+          this.logger.printLogs('w', "Fetching User Group by ID Denied", err);
         }
       });
 
@@ -516,7 +509,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         this.api.updateUserAccount(this.currentEditId!, userAccount)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Updating Success", res.message);
               Swal.fire('Updated!', res.message, 'success');
               this.api.showToast(res.message, 'Updated!', 'success');
 
@@ -525,7 +518,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Updating Denied', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -549,8 +542,6 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         this.api.deleteUserAccount(id)
           .subscribe({
             next: (res) => {
-              // console.info("Success: ", res.message);
-
 
               Swal.fire('Deleted', res.message, 'success');
               this.api.showToast(res.message, 'Deleted!', 'success');
@@ -558,7 +549,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
               this.getAllUserAccounts();
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Deleting Denied', err);
               Swal.fire('Deleting Denied', err, 'warning');
             }
           });
@@ -569,7 +560,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
   onSubmitProfile() {
 
-    console.log("Submit Profile", this.userProfileForm.value);
+    this.logger.printLogs('i', "User Profile Form", this.userProfileForm.value);
 
     if (this.userProfileForm.valid) {
 
@@ -586,17 +577,17 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       }
 
 
-      console.log("currentEditId: " + this.currentEditId);
-      console.log("EditMode: " + this.isEditMode);
+      this.logger.printLogs('i', 'User Profile', "currentEditId: " + this.currentEditId);
+      this.logger.printLogs('i', "EditMode: ", this.isEditMode);
 
       if (this.isEditMode && this.currentEditId) {
-        console.log("Update Profile", this.userProfileForm.value);
+        this.logger.printLogs('i', "User Profile Form", this.userProfileForm.value);
         this.UpdateProfile(userProfile)
       } else {
         if (this.userAccount) {
-          console.log("Create Profile for UserID ", this.userAccount.userID);
+          this.logger.printLogs('i', "User Account ID", this.userAccount.userID);
         }
-        console.log("Save Profile ", this.userProfileForm.value);
+        this.logger.printLogs('i', "User Profile Form ", this.userProfileForm.value);
         this.SaveProfile(userProfile);
       }
 
@@ -611,7 +602,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.api.createProfile(userProfile)
       .subscribe({
         next: (res) => {
-          console.info("Success: ", res.message);
+          this.logger.printLogs('i', "Saving Success", res.message);
 
           this.resetForm();
 
@@ -623,7 +614,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           this.resetForm();
         },
         error: (err: any) => {
-          console.log('Error response:', err);
+          this.logger.printLogs('w', 'Saving Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -643,7 +634,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
         this.api.updateProfile(this.currentEditId!, userProfile)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Updating Success", res.message);
 
               // Swal.fire('Success', res.message, 'success');
               Swal.fire('Updated!', res.message, 'success');
@@ -653,7 +644,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
               this.resetForm();
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Updating Denied', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -702,7 +693,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
 
               },
               error: (err: any) => {
-                this.logger.printLogs('e', 'Error Verifying User', err);
+                this.logger.printLogs('w', 'Verifying User Denied', err);
                 Swal.fire('Verifying Denied', err, 'warning');
               }
             });
@@ -742,7 +733,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
           this.api.UpdatePassword(this.userAccount.userID!, ChangePassDto)
             .subscribe({
               next: (res) => {
-                console.info("Success: ", res.message)
+                this.logger.printLogs('i', "Updatin Password Success: ", res.message)
 
                 Swal.fire('Password Changed', res.message, 'success');
                 this.api.showToast(res.message, 'Password Changed!', 'success');
@@ -750,7 +741,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
                 this.getAllUserAccounts();
               },
               error: (err: any) => {
-                console.log('Error response:', err);
+                this.logger.printLogs('w', 'Updating Password Denied', err);
                 Swal.fire('Updating Denied', err, 'warning');
               }
             });

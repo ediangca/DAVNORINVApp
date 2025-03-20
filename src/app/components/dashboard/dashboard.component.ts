@@ -298,7 +298,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
               });
           },
           error: (err: any) => {
-            this.logger.printLogs('e', 'Error Fetching Account ID', err);
+            this.logger.printLogs('w', 'Fetching Account ID Denied', err);
           }
         });
 
@@ -368,7 +368,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     this.fn = fn;
 
-    console.log(`fn : ${fn}`)
+    this.logger.printLogs('i', 'Scanner', `fn : ${fn}`)
 
     this.onScanQR(); // Show the scanner modal
 
@@ -381,12 +381,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // Start or stop the scanning action
     if (fn === 'start') {
       scannerAction[fn](playDeviceFacingBack).subscribe(
-        (r: any) => console.log(`SCANNING START ${fn}`, r),
+        (r: any) => this.logger.printLogs('i', `SCANNING START ${fn}`, r),
         alert
       );
       this.cdr.detectChanges();     // Trigger change detection to update button state
     } else {
-      scannerAction[fn]().subscribe((r: any) => console.log(fn, r), alert);
+      scannerAction[fn]().subscribe((r: any) => this.logger.printLogs('i', fn, r), alert);
       this.cdr.detectChanges();     // Trigger change detection to update button state
     }
   }
@@ -414,17 +414,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   // Event handler when QR code is scanned
   public onEvent(event: ScannerQRCodeResult[], action?: any): void {
 
-    // console.log('QR Event:', results, action);
-
-    console.log('helllo motherfuckaaaaaa');
-
     this.onItemFound = false;
     if (event && event.length) {
       if (event) {
         action.pause(); // Pause scanning if needed
 
-        console.log('QR value', event[0].value);
-        console.log('Scanned Data:', event); // Handle scanned results here
+        this.logger.printLogs('i', 'QR value', event[0].value);
+        this.logger.printLogs('i', 'Scanned Data:', event); // Handle scanned results here
 
         this.qrCode = event[0].value
         this.validateQR(this.qrCode);
@@ -436,11 +432,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   // public onScanSuccess(event: ScannerQRCodeResult[]): void {
   //   if (event.length > 0) {
-  //     console.log('Scanned QR Code:', event[0].value); // Access the scanned result
+  //     this.logger.printLogs('i', 'Scanned QR Code:', event[0].value); // Access the scanned result
   //   }
   // }
   public onScanSuccess(event: any): void {
-    console.log('Scan Event Data:', event);
+    this.logger.printLogs('i', 'Scan Event Data:', event);
   }
   // get itemKeys(): string[] {
   //   return this.item ? Object.keys(this.item) : [];
@@ -450,14 +446,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // Add any conditions or user prompts if needed before resuming
 
     scannerAction.play().subscribe(
-      (r: any) => console.log('Resuming Scan:', r),
-      (error: any) => console.error('Error while resuming scan:', error)
+      (r: any) => this.logger.printLogs('i', 'Resuming Scan:', r),
+      (error: any) => this.logger.printLogs('w', 'Resuming Scan Denied', error)
     );
   }
 
   // onEnter(event: KeyboardEvent): void {
   //   const inputValue = (event.target as HTMLInputElement).value; // Get the input value
-  //   console.log('Enter key pressed. Value:', inputValue);
+  //   this.logger.printLogs('i', 'Enter key pressed. Value:', inputValue);
 
   //   // Add your logic here
   //   if (inputValue.trim() !== '') {
@@ -466,12 +462,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   //   }
   // }
   onEnter(): void {
-    console.log('Enter key pressed. QR Value:', this.qrCode);
+    this.logger.printLogs('i', 'Enter key pressed. QR Value:', this.qrCode);
 
     // Add your logic here
     if (this.qrCode.trim() !== '') {
       // Example: Perform a search action
-      console.log('Performing search for:', this.qrCode);
+      this.logger.printLogs('i', 'Performing search for:', this.qrCode);
       this.validateQR(this.qrCode)
     }
   }
@@ -482,7 +478,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.api.retrieveITEMByQRCode(qr)
       .subscribe({
         next: (res) => {
-          console.log('Retrieve ITEMS', res);
+          this.logger.printLogs('i', 'Retrieve ITEMS', res);
           this.item = res[0];
           this.itemKeys = Object.keys(this.item || {});
 

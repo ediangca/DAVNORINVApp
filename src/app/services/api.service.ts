@@ -8,6 +8,7 @@ import { ICSItem } from '../models/ICSItem';
 import { OPRItem } from '../models/OPRItem';
 import { ToastrService } from 'ngx-toastr';
 import { NgToastService } from 'ng-angular-popup';
+import { LogsService } from './logs.service';
 
 
 @Injectable({
@@ -19,7 +20,8 @@ export class ApiService {
   private apiUrl: string = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router,
-    private toast: NgToastService, private toastr: ToastrService) { }
+    private toast: NgToastService, private toastr: ToastrService,
+    private logger: LogsService) { }
 
 
   showToast(msg: string, title: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
@@ -107,7 +109,7 @@ export class ApiService {
 
   //Update
   updateCompany(id: number, company: any): Observable<any> {
-    console.log("Update Company: ", company);
+    this.logger.printLogs('i', "Update Company: ", company);
     return this.http.put<any>(`${this.apiUrl}Branch/Update?id=` + id, company)
       .pipe(
         catchError(this.handleError)
@@ -149,7 +151,7 @@ export class ApiService {
 
   //Update
   updateDepartment(id: number, department: any): Observable<any> {
-    console.log("Update Company: ", department);
+    this.logger.printLogs('i', "Update Company: ", department);
     return this.http.put<any>(`${this.apiUrl}Department/Update?id=` + id, department)
       .pipe(
         catchError(this.handleError)
@@ -192,7 +194,7 @@ export class ApiService {
 
   //Update
   updateSection(id: number, department: any): Observable<any> {
-    console.log("Update Company: ", department);
+    this.logger.printLogs('i', "Update Company: ", department);
     return this.http.put<any>(`${this.apiUrl}Section/Update?id=` + id, department)
       .pipe(
         catchError(this.handleError)
@@ -226,7 +228,7 @@ export class ApiService {
 
   //Create
   createItemGroup(userGroup: any): Observable<any> {
-    console.log("Create UserGroup: ", userGroup);
+    this.logger.printLogs('i', "Create UserGroup: ", userGroup);
     return this.http.post<any>(`${this.apiUrl}ItemGroup/Create/`, userGroup)
       .pipe(
         catchError(this.handleError)
@@ -235,7 +237,7 @@ export class ApiService {
 
   //Retrieve
   retrieveItemGroup(id: number): Observable<any> {
-    console.log("Retrieve Item Group: ", id);
+    this.logger.printLogs('i', "Retrieve Item Group: ", id);
     return this.http.get<any>(`${this.apiUrl}ItemGroup/` + id)
       .pipe(
         catchError(this.handleError)
@@ -244,7 +246,7 @@ export class ApiService {
 
   //Update
   updateItemGroup(id: number, userGroup: any): Observable<any> {
-    console.log("Update Item Group: ", userGroup);
+    this.logger.printLogs('i', "Update Item Group: ", userGroup);
     return this.http.put<any>(`${this.apiUrl}ItemGroup/Update?id=` + id, userGroup)
       .pipe(
         catchError(this.handleError)
@@ -252,7 +254,7 @@ export class ApiService {
   }
 
   deleteItemGroup(id: number): Observable<any> {
-    console.log("Delete UserGroup: ", id);
+    this.logger.printLogs('i', "Delete UserGroup: ", id);
     return this.http.delete<any>(`${this.apiUrl}ItemGroup/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -280,7 +282,7 @@ export class ApiService {
 
   //Create
   createUserGroup(userGroup: any): Observable<any> {
-    console.log("Create UserGroup: ", userGroup);
+    this.logger.printLogs('i', "Create UserGroup: ", userGroup);
     return this.http.post<any>(`${this.apiUrl}UserGroup/Create/`, userGroup)
       .pipe(
         catchError(this.handleError)
@@ -297,7 +299,7 @@ export class ApiService {
 
   //Update
   updateUserGroup(id: number, userGroup: any): Observable<any> {
-    console.log("Update UserGroup: ", userGroup);
+    this.logger.printLogs('i', "Update UserGroup: ", userGroup);
     return this.http.put<any>(`${this.apiUrl}UserGroup/Update?id=` + id, userGroup)
       .pipe(
         catchError(this.handleError)
@@ -305,7 +307,7 @@ export class ApiService {
   }
 
   deleteUserGroup(id: number): Observable<any> {
-    console.log("Delete UserGroup: ", id);
+    this.logger.printLogs('i', "Delete UserGroup: ", id);
     return this.http.delete<any>(`${this.apiUrl}UserGroup/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -332,7 +334,7 @@ export class ApiService {
 
   // Get Account ID by userename
   getAccIDByUsername(userame: string): Observable<any> {
-    // console.log("Fetching Account...");;
+    // this.logger.printLogs('i', "Fetching Account...");;
     //https://localhost:7289/api/UserAccount/GetAccountbyUsername?key=admin
     return this.http.get<any>(`${this.apiUrl}UserAccount/GetAccountbyUsername?username=` + userame)
       .pipe(
@@ -341,7 +343,7 @@ export class ApiService {
   }
 
   updateUserAccount(id: number, userAccount: any): Observable<any> {
-    // console.log("Update Account: ", userAccount);
+    // this.logger.printLogs('i', "Update Account: ", userAccount);
     return this.http.put<any>(`${this.apiUrl}UserAccount/Update?id=` + id, userAccount)
       .pipe(
         catchError(this.handleError)
@@ -349,7 +351,7 @@ export class ApiService {
   }
 
   ForgetPassword(id: string, Details: any): Observable<any> {
-    console.log("ForgetPassword Password: ", id);
+    this.logger.printLogs('i', "ForgetPassword Password: ", id);
     return this.http.put<any>(`${this.apiUrl}UserAccount/Update/ForgetPassword?id=` + id, Details)
       .pipe(
         catchError(this.handleError)
@@ -357,7 +359,7 @@ export class ApiService {
   }
 
   UpdatePassword(id: string, Details: any): Observable<any> {
-    console.log("Update Password: ", id);
+    this.logger.printLogs('i', "Update Password: ", id);
     return this.http.put<any>(`${this.apiUrl}UserAccount/Update/Password?id=` + id, Details)
       .pipe(
         catchError(this.handleError)
@@ -367,7 +369,7 @@ export class ApiService {
 
 
   deleteUserAccount(id: number): Observable<any> {
-    // console.log("Delete UserAccount: ", id);
+    // this.logger.printLogs('i', "Delete UserAccount: ", id);
     return this.http.delete<any>(`${this.apiUrl}UserAccount/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -375,7 +377,7 @@ export class ApiService {
   }
 
   verifyUserAccount(id: number): Observable<any> {
-    // console.log("Delete UserAccount: ", id);
+    // this.logger.printLogs('i', "Delete UserAccount: ", id);
     return this.http.put<any>(`${this.apiUrl}UserAccount/Update/Verification?id=` + id, id)
       .pipe(
         catchError(this.handleError)
@@ -405,7 +407,7 @@ export class ApiService {
 
   //Create
   createPosition(position: any): Observable<any> {
-    console.log("Create Position: ", position);
+    this.logger.printLogs('i', "Create Position: ", position);
     return this.http.post<any>(`${this.apiUrl}Position/Create/`, position)
       .pipe(
         catchError(this.handleError)
@@ -413,7 +415,7 @@ export class ApiService {
   }
 
   updatePosition(id: number, positionName: any): Observable<any> {
-    console.log("Update Position: ", positionName);
+    this.logger.printLogs('i', "Update Position: ", positionName);
     return this.http.put<any>(`${this.apiUrl}Position/Update?id=` + id, positionName)
       .pipe(
         catchError(this.handleError)
@@ -421,7 +423,7 @@ export class ApiService {
   }
 
   deletePosition(id: number): Observable<any> {
-    // console.log("Delete UserAccount: ", id);
+    // this.logger.printLogs('i', "Delete UserAccount: ", id);
     return this.http.delete<any>(`${this.apiUrl}Position/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -431,7 +433,7 @@ export class ApiService {
   /*----------------------- PROFILE -----------------------*/
   //Profile List
   getAllProfile(): Observable<any> {
-    // console.log("Get User Profile: ", userID);
+    // this.logger.printLogs('i', "Get User Profile: ", userID);
     return this.http.get<any>(`${this.apiUrl}UserProfile/`)
       .pipe(
         catchError(this.handleError)
@@ -440,7 +442,7 @@ export class ApiService {
 
   //Profile by userID
   getProfile(userID: string): Observable<any> {
-    // console.log("Get User Profile: ", userID);
+    // this.logger.printLogs('i', "Get User Profile: ", userID);
     return this.http.get<any>(`${this.apiUrl}UserProfile/UserID/` + userID)
       .pipe(
         catchError(this.handleError)
@@ -448,7 +450,7 @@ export class ApiService {
   }
   //Profile by userID
   getProfileByUserID(userID: string): Observable<any> {
-    // console.log("Get User Profile by userID: ", userID);
+    // this.logger.printLogs('i', "Get User Profile by userID: ", userID);
     return this.http.get<any>(`${this.apiUrl}UserProfile/SearchByUserID?UserID=` + userID)
       .pipe(
         catchError(this.handleError)
@@ -457,7 +459,7 @@ export class ApiService {
 
   //Search
   searchProfile(key: string): Observable<any> {
-    console.log("Search User Profile by key: ", key);
+    this.logger.printLogs('i', "Search User Profile by key: ", key);
     return this.http.get<any>(`${this.apiUrl}UserProfile/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -466,7 +468,7 @@ export class ApiService {
 
   //Create
   createProfile(userProfile: any): Observable<any> {
-    console.log("Create User Profile: ", userProfile);
+    this.logger.printLogs('i', "Create User Profile: ", userProfile);
     return this.http.post<any>(`${this.apiUrl}UserProfile/${userProfile.userID ? 'Create/' : 'Create/GenratedAccount/'} `, userProfile)
       .pipe(
         catchError(this.handleError)
@@ -475,7 +477,7 @@ export class ApiService {
 
   //Create/GenratedAccount
   createProfileGenAccount(userProfile: any): Observable<any> {
-    console.log("Create User Profile: ", userProfile);
+    this.logger.printLogs('i', "Create User Profile: ", userProfile);
     return this.http.post<any>(`${this.apiUrl}UserProfile/Create/GenratedAccount/`, userProfile)
       .pipe(
         catchError(this.handleError)
@@ -484,7 +486,7 @@ export class ApiService {
 
   //Update
   updateProfile(id: number, userProfile: any): Observable<any> {
-    console.log("Update User Profile: ", userProfile);
+    this.logger.printLogs('i', "Update User Profile: ", userProfile);
     return this.http.put<any>(`${this.apiUrl}UserProfile/Update?id=` + id, userProfile)
       .pipe(
         catchError(this.handleError)
@@ -493,7 +495,7 @@ export class ApiService {
 
   //Delete
   deleteProfile(id: number): Observable<any> {
-    console.log("Delete User Profile: ", id);
+    this.logger.printLogs('i', "Delete User Profile: ", id);
     return this.http.delete<any>(`${this.apiUrl}UserProfile/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -513,7 +515,7 @@ export class ApiService {
 
   // https://localhost:7289/api/Item/generateID/
   getGenID(type: string): Observable<any> {
-    console.log("Generate ID for item type: ", type);
+    this.logger.printLogs('i', "Generate ID for item type: ", type);
     return this.http.get<any>(`${this.apiUrl}Item/generateID/${type}`)
       .pipe(
         catchError(this.handleError)
@@ -522,7 +524,7 @@ export class ApiService {
 
   //Seach
   searchItem(key: string): Observable<any> {
-    // console.log("Search Item by key: ", key);
+    // this.logger.printLogs('i', "Search Item by key: ", key);
     return this.http.get<any>(`${this.apiUrl}Item/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -531,7 +533,7 @@ export class ApiService {
 
   //Search
   searchItemByDescription(key: string): Observable<any> {
-    console.log("Search Item by Description: ", key);
+    this.logger.printLogs('i', "Search Item by Description: ", key);
     // https://localhost:7289/api/Item/Description?description=laptop
     return this.http.get<any>(`${this.apiUrl}Item/Description?description=` + key)
       .pipe(
@@ -542,7 +544,7 @@ export class ApiService {
 
   //Create
   createItem(item: any): Observable<any> {
-    console.log("Create Item: ", item);
+    this.logger.printLogs('i', "Create Item: ", item);
     return this.http.post<any>(`${this.apiUrl}Item/Create/`, item)
       .pipe(
         catchError(this.handleError)
@@ -560,7 +562,7 @@ export class ApiService {
 
   //Update
   updateItem(id: string, item: any): Observable<any> {
-    console.log("Update Item: ", item);
+    this.logger.printLogs('i', "Update Item: ", item);
     return this.http.put<any>(`${this.apiUrl}Item/Update?id=` + id, item)
       .pipe(
         catchError(this.handleError)
@@ -569,7 +571,7 @@ export class ApiService {
 
   //Delete
   deleteItem(id: string): Observable<any> {
-    console.log("Delete Item: ", id);
+    this.logger.printLogs('i', "Delete Item: ", id);
     return this.http.delete<any>(`${this.apiUrl}Item/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -587,7 +589,7 @@ export class ApiService {
   }
   //Search
   searchPAR(key: string): Observable<any> {
-    // console.log("Search PAR by key: ", key);
+    // this.logger.printLogs('i', "Search PAR by key: ", key);
     return this.http.get<any>(`${this.apiUrl}PAR/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -600,7 +602,7 @@ export class ApiService {
   }
   //Create
   // createPAR(PAR: any): Observable<any> {
-  //   console.log("Create PAR: ", PAR);
+  //   this.logger.printLogs('i', "Create PAR: ", PAR);
   //   return this.http.post<any>(`${this.apiUrl}PAR/Create/`, PAR)
   //     .pipe(
   //       catchError(this.handleError)
@@ -614,7 +616,7 @@ export class ApiService {
       parItems: items
     };
 
-    console.log("Create PAR Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create PAR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}PAR/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -623,7 +625,7 @@ export class ApiService {
 
   //Retrieve
   retrievePAR(parNo: string): Observable<any> {
-    console.log("Retrieve PAR No.: ", parNo);
+    this.logger.printLogs('i', "Retrieve PAR No.: ", parNo);
     return this.http.get<any>(`${this.apiUrl}PAR/` + parNo)
       .pipe(
         catchError(this.handleError)
@@ -632,7 +634,7 @@ export class ApiService {
 
   //Update
   // updatePAR(id: string, PAR: any): Observable<any> {
-  //   console.log("Update PAR: ", PAR);
+  //   this.logger.printLogs('i', "Update PAR: ", PAR);
   //   return this.http.put<any>(`${this.apiUrl}PAR/Update?id=` + id, PAR)
   //     .pipe(
   //       catchError(this.handleError)
@@ -640,12 +642,12 @@ export class ApiService {
   // }
 
   updatePAR(parNo: string, par: any, items: Item[]): Observable<any> {
-    console.log("Update PAR Details: ", par);
+    this.logger.printLogs('i', "Update PAR Details: ", par);
     const requestPayload = {
       details: par,
       parItems: items
     };
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     // https://localhost:7289/api/PAR/Update?id=123
     return this.http.put<any>(`${this.apiUrl}PAR/Update?id=` + parNo, requestPayload)
       .pipe(
@@ -655,7 +657,7 @@ export class ApiService {
 
   //Delete
   deletePAR(id: string): Observable<any> {
-    console.log("Delete PAR: ", id);
+    this.logger.printLogs('i', "Delete PAR: ", id);
     return this.http.delete<any>(`${this.apiUrl}PAR/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -665,8 +667,8 @@ export class ApiService {
   // https://localhost:7289/api/PAR/Post?id=PAR012312412&postVal=true
   //Update Post Flag
   postPAR(parNo: string, postVal: boolean): Observable<any> {
-    console.log("Update PAR No. >>> : ", parNo);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update PAR No. >>> : ", parNo);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}PAR/Post?id=${parNo}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -683,7 +685,7 @@ export class ApiService {
   }
   //Search
   searchREPAR(key: string): Observable<any> {
-    // console.log("Search PAR by key: ", key);
+    // this.logger.printLogs('i', "Search PAR by key: ", key);
     return this.http.get<any>(`${this.apiUrl}REPAR/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -697,7 +699,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create REPAR Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create REPAR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}REPAR/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -711,7 +713,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create PTR Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create PTR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}REPAR/Transfer/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -720,7 +722,7 @@ export class ApiService {
 
   //Retrieve
   retrieveREPAR(reparNo: string): Observable<any> {
-    console.log("Retrieve REPAR No.: ", reparNo);
+    this.logger.printLogs('i', "Retrieve REPAR No.: ", reparNo);
     return this.http.get<Item[]>(`${this.apiUrl}REPAR/` + reparNo)
       .pipe(
         catchError(this.handleError)
@@ -734,8 +736,8 @@ export class ApiService {
       details: details,
       updatedItems: updatedItems
     };
-    console.log("Update REPAR: ", details);
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update REPAR: ", details);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     return this.http.put<any>(`${this.apiUrl}REPAR/Update?id=` + details.reparNo, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -744,7 +746,7 @@ export class ApiService {
 
   //Delete
   deleteREPAR(id: string): Observable<any> {
-    console.log("Delete REPAR: ", id);
+    this.logger.printLogs('i', "Delete REPAR: ", id);
     return this.http.delete<any>(`${this.apiUrl}REPAR/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -755,8 +757,8 @@ export class ApiService {
   // https://localhost:7289/api/REPAR/Post?id=PAR012312412-0001&postVal=true
   //Update Post Flag
   postREPAR(reparNo: string, postVal: boolean): Observable<any> {
-    console.log("Update REPAR No. >>> : ", reparNo);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update REPAR No. >>> : ", reparNo);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}REPAR/Post?id=${reparNo}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -800,7 +802,7 @@ export class ApiService {
 
   //Create
   createPARItem(parItems: Item[]): Observable<any> {
-    console.log("Create PAR Item: ", parItems);
+    this.logger.printLogs('i', "Create PAR Item: ", parItems);
     return this.http.post<any>(`${this.apiUrl}PARITEM/Create/`, parItems)
       .pipe(
         catchError(this.handleError)
@@ -809,7 +811,7 @@ export class ApiService {
 
   //Retrieve
   retrievePARItem(parINo: number): Observable<Item[]> {
-    console.log("Retrieve PAR Item PARINO.: ", parINo);
+    this.logger.printLogs('i', "Retrieve PAR Item PARINO.: ", parINo);
     return this.http.get<Item[]>(`${this.apiUrl}PARITEM/` + parINo)
       .pipe(
         catchError(this.handleError)
@@ -818,7 +820,7 @@ export class ApiService {
 
   //Retrieve By PAR No.
   retrievePARItemByParNo(parNo: string): Observable<Item[]> {
-    console.log("Retrieve PAR Item by PAR No.: ", parNo);
+    this.logger.printLogs('i', "Retrieve PAR Item by PAR No.: ", parNo);
     return this.http.get<Item[]>(`${this.apiUrl}PARITEM/PARNO/` + parNo)
       .pipe(
         catchError(this.handleError)
@@ -827,7 +829,7 @@ export class ApiService {
 
   //Retrieve By PAR No.
   retrievePARItemByPTRNo(ptrNo: string): Observable<Item[]> {
-    console.log("Retrieve PAR Item by PTR No.: ", ptrNo);
+    this.logger.printLogs('i', "Retrieve PAR Item by PTR No.: ", ptrNo);
 
     return this.http.get<Item[]>(`${this.apiUrl}PARITEM/PTRNO/` + ptrNo)
       .pipe(
@@ -845,8 +847,8 @@ export class ApiService {
 
   //Update
   updatePARItem(parNo: string, updatedItems: Item[]): Observable<any> {
-    console.log("Update PAR No. >>> : ", parNo);
-    console.log("Update PAR Item >>> : ", updatedItems);
+    this.logger.printLogs('i', "Update PAR No. >>> : ", parNo);
+    this.logger.printLogs('i', "Update PAR Item >>> : ", updatedItems);
     return this.http.put<any>(`${this.apiUrl}PARITEM/Update?parNo=` + parNo, updatedItems)
       .pipe(
         catchError(this.handleError)
@@ -857,7 +859,7 @@ export class ApiService {
   // https://localhost:7289/api/PARITEM/Scan?parNo=PAR012312412&key=6742378-65432
   //Scan Key
   scanUniquePARItem(key: string,): Observable<any> {
-    console.log("Update PAR Item Key >>> : ", key);
+    this.logger.printLogs('i', "Update PAR Item Key >>> : ", key);
     return this.http.get<any>(`${this.apiUrl}PARITEM/ScanUnique?key=${key}`)
       .pipe(
         catchError(this.handleError)
@@ -866,8 +868,8 @@ export class ApiService {
   // https://localhost:7289/api/PARITEM/Scan?parNo=PAR012312412&key=6742378-65432
   //Scan Key
   scanExistingUniquePARItem(parINo: number, key: string): Observable<any> {
-    console.log("Update PAR Item No. >>> : ", parINo);
-    console.log("Update PAR Item Key >>> : ", key);
+    this.logger.printLogs('i', "Update PAR Item No. >>> : ", parINo);
+    this.logger.printLogs('i', "Update PAR Item Key >>> : ", key);
     return this.http.get<any>(`${this.apiUrl}PARITEM/ScanExistingUnique?parino=${parINo}&key=${key}`)
       .pipe(
         catchError(this.handleError)
@@ -887,7 +889,7 @@ export class ApiService {
   }
   //Search
   searchICS(key: string): Observable<any> {
-    // console.log("Search PAR by key: ", key);
+    // this.logger.printLogs('i', "Search PAR by key: ", key);
     return this.http.get<any>(`${this.apiUrl}ICS/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -901,7 +903,7 @@ export class ApiService {
       icsItems: icsItems
     };
 
-    console.log("Create ICS Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create ICS Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}ICS/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -910,7 +912,7 @@ export class ApiService {
 
   //Retrieve
   retrieveICS(icsNo: string): Observable<any> {
-    console.log("Retrieve ICS No.: ", icsNo);
+    this.logger.printLogs('i', "Retrieve ICS No.: ", icsNo);
     return this.http.get<any>(`${this.apiUrl}ICS/` + icsNo)
       .pipe(
         catchError(this.handleError)
@@ -925,7 +927,7 @@ export class ApiService {
 
   //Update
   // updateICS(id: string, ICS: any): Observable<any> {
-  //   console.log("Update ICS: ", ICS);
+  //   this.logger.printLogs('i', "Update ICS: ", ICS);
   //   return this.http.put<any>(`${this.apiUrl}ICS/Update?id=` + id, ICS)
   //     .pipe(
   //       catchError(this.handleError)
@@ -933,12 +935,12 @@ export class ApiService {
   // }
 
   updateICS(icsNo: string, ics: any, items: ICSItem[]): Observable<any> {
-    console.log("Update ICS Details: ", ics);
+    this.logger.printLogs('i', "Update ICS Details: ", ics);
     const requestPayload = {
       details: ics,
       icsItems: items
     };
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     // https://localhost:7289/api/ICS/Update?id=123
     return this.http.put<any>(`${this.apiUrl}ICS/Update?id=` + icsNo, requestPayload)
       .pipe(
@@ -948,7 +950,7 @@ export class ApiService {
 
   //Delete
   deleteICS(id: string): Observable<any> {
-    console.log("Delete ICS: ", id);
+    this.logger.printLogs('i', "Delete ICS: ", id);
     return this.http.delete<any>(`${this.apiUrl}ICS/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -958,8 +960,8 @@ export class ApiService {
   // https://localhost:7289/api/PAR/Post?id=PAR012312412&postVal=true
   //Update Post Flag
   postICS(icsNo: string, postVal: boolean): Observable<any> {
-    console.log("Update ICS No. >>> : ", icsNo);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update ICS No. >>> : ", icsNo);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}ICS/Post?id=${icsNo}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -1003,7 +1005,7 @@ export class ApiService {
 
   //Create ICS Item
   createICStem(icsItems: ICSItem[]): Observable<any> {
-    console.log("Create ICS Item: ", icsItems);
+    this.logger.printLogs('i', "Create ICS Item: ", icsItems);
     return this.http.post<any>(`${this.apiUrl}ICSItem/Create/`, icsItems)
       .pipe(
         catchError(this.handleError)
@@ -1012,7 +1014,7 @@ export class ApiService {
 
   //Retrieve By ICS No.
   retrieveICSItemByICSNo(icsNo: string): Observable<ICSItem[]> {
-    console.log("Retrieve ICS Item by ICS No.: ", icsNo);
+    this.logger.printLogs('i', "Retrieve ICS Item by ICS No.: ", icsNo);
 
     return this.http.get<ICSItem[]>(`${this.apiUrl}ICSITEM/ICSNO/` + icsNo)
       .pipe(
@@ -1022,7 +1024,7 @@ export class ApiService {
 
   //Retrieve By ICS No.
   retrieveICSItemByITRNo(itrNo: string): Observable<ICSItem[]> {
-    console.log("Retrieve ICS Item by ITR No.: ", itrNo);
+    this.logger.printLogs('i', "Retrieve ICS Item by ITR No.: ", itrNo);
 
     return this.http.get<ICSItem[]>(`${this.apiUrl}ICSITEM/ITRNO/` + itrNo)
       .pipe(
@@ -1039,7 +1041,7 @@ export class ApiService {
   }
 
   scanUniqueICSItem(key: string,): Observable<any> {
-    console.log("Update ICS Item Key >>> : ", key);
+    this.logger.printLogs('i', "Update ICS Item Key >>> : ", key);
     return this.http.get<any>(`${this.apiUrl}ICSITEM/ScanUnique?key=${key}`)
       .pipe(
         catchError(this.handleError)
@@ -1047,8 +1049,8 @@ export class ApiService {
   }
 
   scanExistingUniqueICSItem(icsItemNo: number, key: string): Observable<any> {
-    console.log("Update ICS Item No. >>> : ", icsItemNo);
-    console.log("Update ICS Item Key >>> : ", key);
+    this.logger.printLogs('i', "Update ICS Item No. >>> : ", icsItemNo);
+    this.logger.printLogs('i', "Update ICS Item Key >>> : ", key);
     return this.http.get<any>(`${this.apiUrl}ICSItem/ScanExistingUnique?icsItemNo=${icsItemNo}&key=${key}`)
       .pipe(
         catchError(this.handleError)
@@ -1058,8 +1060,8 @@ export class ApiService {
 
   //Update
   updateICSItem(icsNo: string, icsItems: ICSItem[]): Observable<any> {
-    console.log("Update ICS No. >>> : ", icsNo);
-    console.log("Update ICS Item >>> : ", icsItems);
+    this.logger.printLogs('i', "Update ICS No. >>> : ", icsNo);
+    this.logger.printLogs('i', "Update ICS Item >>> : ", icsItems);
     return this.http.put<any>(`${this.apiUrl}ICSItem/Update?icsNo=` + icsNo, icsItems)
       .pipe(
         catchError(this.handleError)
@@ -1079,7 +1081,7 @@ export class ApiService {
   }
   //Search
   searchITR(key: string): Observable<any> {
-    // console.log("Search ITR by key: ", key);
+    // this.logger.printLogs('i', "Search ITR by key: ", key);
     return this.http.get<any>(`${this.apiUrl}ITR/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -1092,7 +1094,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create ITR Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create ITR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}ITR/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1100,7 +1102,7 @@ export class ApiService {
   }
 
   retrieveITR(itrNo: string): Observable<any> {
-    console.log("Retrieve ITR No.: ", itrNo);
+    this.logger.printLogs('i', "Retrieve ITR No.: ", itrNo);
     return this.http.get<ICSItem[]>(`${this.apiUrl}ITR/` + itrNo)
       .pipe(
         catchError(this.handleError)
@@ -1114,8 +1116,8 @@ export class ApiService {
       details: details,
       updatedItems: updatedItems
     };
-    console.log("Update ITR: ", details);
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update ITR: ", details);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     return this.http.put<any>(`${this.apiUrl}ITR/Update?id=` + details.itrNo, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1124,7 +1126,7 @@ export class ApiService {
 
   //Delete
   deleteITR(id: string): Observable<any> {
-    console.log("Delete ITR: ", id);
+    this.logger.printLogs('i', "Delete ITR: ", id);
     return this.http.delete<any>(`${this.apiUrl}ITR/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -1133,8 +1135,8 @@ export class ApiService {
 
   //Update Post Flag
   postITR(itrNo: string, postVal: boolean): Observable<any> {
-    console.log("Update ITR No. >>> : ", itrNo);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update ITR No. >>> : ", itrNo);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}ITR/Post?id=${itrNo}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -1148,7 +1150,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create ITR Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create ITR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}ITR/Transfer/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1166,7 +1168,7 @@ export class ApiService {
   }
   //Search
   searchPRS(key: string): Observable<any> {
-    // console.log("Search PRS by key: ", key);
+    // this.logger.printLogs('i', "Search PRS by key: ", key);
     return this.http.get<any>(`${this.apiUrl}PRS/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -1180,7 +1182,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create PRS Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create PRS Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}PRS/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1189,7 +1191,7 @@ export class ApiService {
 
   //Retrieve
   retrievePRS(prsNo: string): Observable<any> {
-    console.log("Retrieve PRS No.: ", prsNo);
+    this.logger.printLogs('i', "Retrieve PRS No.: ", prsNo);
     return this.http.get<Item[]>(`${this.apiUrl}PRS/` + prsNo)
       .pipe(
         catchError(this.handleError)
@@ -1203,8 +1205,8 @@ export class ApiService {
       details: details,
       updatedItems: updatedItems
     };
-    console.log("Update PRS: ", details);
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update PRS: ", details);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     return this.http.put<any>(`${this.apiUrl}PRS/Update?id=` + details.prsNo, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1213,7 +1215,7 @@ export class ApiService {
 
   //Delete
   deletePRS(id: string): Observable<any> {
-    console.log("Delete PRS: ", id);
+    this.logger.printLogs('i', "Delete PRS: ", id);
     return this.http.delete<any>(`${this.apiUrl}PRS/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -1222,8 +1224,8 @@ export class ApiService {
 
   //Update Post Flag
   postPRS(prsNo: string, postVal: boolean): Observable<any> {
-    console.log("Update PRS No. >>> : ", prsNo);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update PRS No. >>> : ", prsNo);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}PRS/Post?id=${prsNo}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -1239,7 +1241,7 @@ export class ApiService {
       );
   }
   searchRRSEP(key: string): Observable<any> {
-    // console.log("Search PRS by key: ", key);
+    // this.logger.printLogs('i', "Search PRS by key: ", key);
     return this.http.get<any>(`${this.apiUrl}RRSEP/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -1252,7 +1254,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create RRSEP Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create RRSEP Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}RRSEP/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1260,7 +1262,7 @@ export class ApiService {
   }
 
   retrieveRRSEP(rrsepNo: string): Observable<any> {
-    console.log("Retrieve RRSEP No.: ", rrsepNo);
+    this.logger.printLogs('i', "Retrieve RRSEP No.: ", rrsepNo);
     return this.http.get<Item[]>(`${this.apiUrl}RRSEP/` + rrsepNo)
       .pipe(
         catchError(this.handleError)
@@ -1274,8 +1276,8 @@ export class ApiService {
       details: details,
       updatedItems: updatedItems
     };
-    console.log("Update RRSEP: ", details);
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update RRSEP: ", details);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     return this.http.put<any>(`${this.apiUrl}RRSEP/Update?id=` + details.rrsepNo, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1284,7 +1286,7 @@ export class ApiService {
 
   //Delete
   deleteRRSEP(id: string): Observable<any> {
-    console.log("Delete RRSEP: ", id);
+    this.logger.printLogs('i', "Delete RRSEP: ", id);
     return this.http.delete<any>(`${this.apiUrl}RRSEP/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -1293,8 +1295,8 @@ export class ApiService {
 
   //Update Post Flag
   postPRRSEP(rrsepNo: string, postVal: boolean): Observable<any> {
-    console.log("Update RRSEP No. >>> : ", rrsepNo);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update RRSEP No. >>> : ", rrsepNo);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}RRSEP/Post?id=${rrsepNo}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -1311,7 +1313,7 @@ export class ApiService {
   }
   //Search
   searchOPR(key: string): Observable<any> {
-    // console.log("Search OPR by key: ", key);
+    // this.logger.printLogs('i', "Search OPR by key: ", key);
     return this.http.get<any>(`${this.apiUrl}OPR/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -1324,7 +1326,7 @@ export class ApiService {
       details: details,
       oprItems: updatedItems
     };
-    console.log("Create OPR: ", requestPayload);
+    this.logger.printLogs('i', "Create OPR: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}OPR/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1332,7 +1334,7 @@ export class ApiService {
   }
   //Create
   // createOPR(OPR: any): Observable<any> {
-  //   console.log("Create OPR: ", OPR);
+  //   this.logger.printLogs('i', "Create OPR: ", OPR);
   //   return this.http.post<any>(`${this.apiUrl}OPR/Create/`, OPR)
   //     .pipe(
   //       catchError(this.handleError)
@@ -1341,7 +1343,7 @@ export class ApiService {
 
   //Retrieve
   retrieveOPR(oprNo: number): Observable<any> {
-    console.log("Retrieve OPR No.: ", oprNo);
+    this.logger.printLogs('i', "Retrieve OPR No.: ", oprNo);
     return this.http.get<any>(`${this.apiUrl}OPR/` + oprNo)
       .pipe(
         catchError(this.handleError)
@@ -1350,7 +1352,7 @@ export class ApiService {
 
   //Update
   // updateOPR(id: number, OPR: any): Observable<any> {
-  //   console.log("Update OPR: ", OPR);
+  //   this.logger.printLogs('i', "Update OPR: ", OPR);
   //   return this.http.put<any>(`${this.apiUrl}OPR/Update?id=` + id, OPR)
   //     .pipe(
   //       catchError(this.handleError)
@@ -1358,12 +1360,12 @@ export class ApiService {
   // }
 
   updateOPR(oprNo: number, par: any, items: OPRItem[]): Observable<any> {
-    console.log("Update OPR Details: ", par);
+    this.logger.printLogs('i', "Update OPR Details: ", par);
     const requestPayload = {
       details: par,
       oprItems: items
     };
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     // https://localhost:7289/api/OPR/Update?id=123
     return this.http.put<any>(`${this.apiUrl}OPR/Update?id=` + oprNo, requestPayload)
       .pipe(
@@ -1373,7 +1375,7 @@ export class ApiService {
 
   //Delete
   deleteOPR(id: number): Observable<any> {
-    console.log("Delete OPR: ", id);
+    this.logger.printLogs('i', "Delete OPR: ", id);
     return this.http.delete<any>(`${this.apiUrl}OPR/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -1383,8 +1385,8 @@ export class ApiService {
   // https://localhost:7289/api/OPR/Post?id=PAR012312412&postVal=true
   //Update Post Flag
   postOPR(oprNo: number, postVal: boolean): Observable<any> {
-    console.log("Update OPR No. >>> : ", oprNo);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update OPR No. >>> : ", oprNo);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}OPR/Post?id=${oprNo}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -1401,7 +1403,7 @@ export class ApiService {
   }
   //Search
   searchOPTR(key: string): Observable<any> {
-    // console.log("Search PAR by key: ", key);
+    // this.logger.printLogs('i', "Search PAR by key: ", key);
     return this.http.get<any>(`${this.apiUrl}OPTR/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -1415,7 +1417,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create OPTR Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create OPTR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}OPTR/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1429,7 +1431,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create OPTR Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create OPTR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}OPTR/Transfer/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1438,7 +1440,7 @@ export class ApiService {
 
   //Retrieve
   retrieveOPTR(optrNo: string): Observable<any> {
-    console.log("Retrieve OPTR No.: ", optrNo);
+    this.logger.printLogs('i', "Retrieve OPTR No.: ", optrNo);
     return this.http.get<any[]>(`${this.apiUrl}OPTR/` + optrNo)
       .pipe(
         catchError(this.handleError)
@@ -1452,8 +1454,8 @@ export class ApiService {
       details: details,
       updatedItems: updatedItems
     };
-    console.log("Update OPTR: ", details);
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update OPTR: ", details);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     return this.http.put<any>(`${this.apiUrl}OPTR/Update?id=` + details.optrNo, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1462,7 +1464,7 @@ export class ApiService {
 
   //Delete
   deleteOPTR(id: string): Observable<any> {
-    console.log("Delete OPTR: ", id);
+    this.logger.printLogs('i', "Delete OPTR: ", id);
     return this.http.delete<any>(`${this.apiUrl}OPTR/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -1473,8 +1475,8 @@ export class ApiService {
   // https://localhost:7289/api/REPAR/Post?id=PAR012312412-0001&postVal=true
   //Update Post Flag
   postOPTR(optr: string, postVal: boolean): Observable<any> {
-    console.log("Update OPTR No. >>> : ", optr);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update OPTR No. >>> : ", optr);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}OPTR/Post?id=${optr}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -1491,7 +1493,7 @@ export class ApiService {
   }
   //Search
   searchOPRR(key: string): Observable<any> {
-    // console.log("Search OPRR by key: ", key);
+    // this.logger.printLogs('i', "Search OPRR by key: ", key);
     return this.http.get<any>(`${this.apiUrl}OPRR/Search?key=` + key)
       .pipe(
         catchError(this.handleError)
@@ -1505,7 +1507,7 @@ export class ApiService {
       updatedItems: updatedItems
     };
 
-    console.log("Create OPRR Payload: ", requestPayload);
+    this.logger.printLogs('i', "Create OPRR Payload: ", requestPayload);
     return this.http.post<any>(`${this.apiUrl}OPRR/Create/`, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1514,7 +1516,7 @@ export class ApiService {
 
   //Retrieve
   retrieveOPRR(oprrNo: string): Observable<any> {
-    console.log("Retrieve OPRR No.: ", oprrNo);
+    this.logger.printLogs('i', "Retrieve OPRR No.: ", oprrNo);
     return this.http.get<Item[]>(`${this.apiUrl}OPRR/` + oprrNo)
       .pipe(
         catchError(this.handleError)
@@ -1528,8 +1530,8 @@ export class ApiService {
       details: details,
       updatedItems: updatedItems
     };
-    console.log("Update OPRR: ", details);
-    console.log("Update request Payload: ", requestPayload);
+    this.logger.printLogs('i', "Update OPRR: ", details);
+    this.logger.printLogs('i', "Update request Payload: ", requestPayload);
     return this.http.put<any>(`${this.apiUrl}OPRR/Update?id=` + details.oprrNo, requestPayload)
       .pipe(
         catchError(this.handleError)
@@ -1538,7 +1540,7 @@ export class ApiService {
 
   //Delete
   deleteOPRR(id: string): Observable<any> {
-    console.log("Delete OPRR: ", id);
+    this.logger.printLogs('i', "Delete OPRR: ", id);
     return this.http.delete<any>(`${this.apiUrl}OPRR/Delete?id=` + id)
       .pipe(
         catchError(this.handleError)
@@ -1547,8 +1549,8 @@ export class ApiService {
 
   //Update Post Flag
   postOPRR(oprrNo: string, postVal: boolean): Observable<any> {
-    console.log("Update OPRR No. >>> : ", oprrNo);
-    console.log("Update Post flag >>> : ", postVal);
+    this.logger.printLogs('i', "Update OPRR No. >>> : ", oprrNo);
+    this.logger.printLogs('i', "Update Post flag >>> : ", postVal);
     return this.http.put<any>(`${this.apiUrl}OPRR/Post?id=${oprrNo}`, postVal)
       .pipe(
         catchError(this.handleError)
@@ -1592,7 +1594,7 @@ export class ApiService {
 
   //Create
   createOPRItem(oprItems: OPRItem[]): Observable<any> {
-    console.log("Create PAR Item: ", oprItems);
+    this.logger.printLogs('i', "Create PAR Item: ", oprItems);
     return this.http.post<any>(`${this.apiUrl}OPRITEM/Create/`, oprItems)
       .pipe(
         catchError(this.handleError)
@@ -1601,7 +1603,7 @@ export class ApiService {
 
   //Retrieve
   retrieveOPRItem(oprINo: number): Observable<any[]> {
-    console.log("Retrieve PAR Item OPRINO.: ", oprINo);
+    this.logger.printLogs('i', "Retrieve PAR Item OPRINO.: ", oprINo);
     return this.http.get<Item[]>(`${this.apiUrl}OPRITEM/` + oprINo)
       .pipe(
         catchError(this.handleError)
@@ -1610,7 +1612,7 @@ export class ApiService {
 
   //Retrieve By OPR No.
   retrieveOPRItemByOPRNo(oprNo: number): Observable<Item[]> {
-    console.log("Retrieve OPR Item by OPR No.: ", oprNo);
+    this.logger.printLogs('i', "Retrieve OPR Item by OPR No.: ", oprNo);
     return this.http.get<any[]>(`${this.apiUrl}OPRITEM/OPRNO/` + oprNo)
       .pipe(
         catchError(this.handleError)
@@ -1619,7 +1621,7 @@ export class ApiService {
 
   //Retrieve By OPTR No.
   retrieveOPRItemByOPTRNo(optrNo: string): Observable<Item[]> {
-    console.log("Retrieve OPR Item by OPTRNO No.: ", optrNo);
+    this.logger.printLogs('i', "Retrieve OPR Item by OPTRNO No.: ", optrNo);
     return this.http.get<any[]>(`${this.apiUrl}OPRITEM/OPTRNO/` + optrNo)
       .pipe(
         catchError(this.handleError)
@@ -1636,8 +1638,8 @@ export class ApiService {
 
   //Update
   updateOPRItem(oprNo: number, updatedItems: any[]): Observable<any> {
-    console.log("Update OPR No. >>> : ", oprNo);
-    console.log("Update OPR Item >>> : ", updatedItems);
+    this.logger.printLogs('i', "Update OPR No. >>> : ", oprNo);
+    this.logger.printLogs('i', "Update OPR Item >>> : ", updatedItems);
     return this.http.put<any>(`${this.apiUrl}OPRITEM/Update?oprNo=` + oprNo, updatedItems)
       .pipe(
         catchError(this.handleError)
@@ -1648,7 +1650,7 @@ export class ApiService {
   // https://localhost:7289/api/PARITEM/Scan?parNo=PAR012312412&key=6742378-65432
   //Scan Key
   scanUniqueOPRItem(key: string,): Observable<any> {
-    console.log("Update OPR Item Key >>> : ", key);
+    this.logger.printLogs('i', "Update OPR Item Key >>> : ", key);
     return this.http.get<any>(`${this.apiUrl}OPRITEM/ScanUnique?key=${key}`)
       .pipe(
         catchError(this.handleError)
@@ -1657,8 +1659,8 @@ export class ApiService {
   // https://localhost:7289/api/PARITEM/Scan?parNo=PAR012312412&key=6742378-65432
   //Scan Key
   scanExistingUniqueOPRItem(oprINo: number, key: string): Observable<any> {
-    console.log("Update OPR Item No. >>> : ", oprINo);
-    console.log("Update OPR Item Key >>> : ", key);
+    this.logger.printLogs('i', "Update OPR Item No. >>> : ", oprINo);
+    this.logger.printLogs('i', "Update OPR Item Key >>> : ", key);
     return this.http.get<any>(`${this.apiUrl}OPRITEM/ScanExistingUnique?oprINo=${oprINo}&key=${key}`)
       .pipe(
         catchError(this.handleError)
@@ -1669,7 +1671,7 @@ export class ApiService {
   /*----------------------- Privilege -----------------------*/
 
   retrievePrivilegByUG(ugid: any) {
-    console.log("Retrieve Privilege By UGID.: ", ugid);
+    this.logger.printLogs('i', "Retrieve Privilege By UGID.: ", ugid);
     return this.http.get<any[]>(`${this.apiUrl}Privilege/UGID/` + ugid)
       .pipe(
         catchError(this.handleError)
@@ -1677,7 +1679,6 @@ export class ApiService {
   }
 
   retrieveModules() {
-    console.log("Retrieve Modules");
     return this.http.get<any[]>(`${this.apiUrl}Privilege/Modules/`)
       .pipe(
         catchError(this.handleError)
@@ -1687,7 +1688,7 @@ export class ApiService {
 
   // Create Privilege API
   createPrivilege(privileges: any[]): Observable<any> {
-    console.log('Create Privilege: ', privileges);
+    this.logger.printLogs('i', 'Create Privilege: ', privileges);
     return this.http.post<any>(`${this.apiUrl}Privilege/Create/`, privileges).pipe(
       catchError(this.handleError) // Proper error handling
     );
@@ -1695,7 +1696,7 @@ export class ApiService {
 
   // Update Privilege API
   updatePrivilege(ugid: number, privileges: any[]): Observable<any> {
-    console.log('Update Privilege: ', privileges);
+    this.logger.printLogs('i', 'Update Privilege: ', privileges);
 
     return this.http.put<any>(`${this.apiUrl}Privilege/Update?ugid=${ugid}`, privileges).pipe(
       catchError(this.handleError) // Proper error handling
@@ -1709,7 +1710,7 @@ export class ApiService {
 
   //https://localhost:7289/api/Report/Offices?module={?}
   getAllOffices(module: string): Observable<any> {
-    console.log("Retrieve all Office under module : ", module);
+    this.logger.printLogs('i', "Retrieve all Office under module : ", module);
     return this.http.get<any>(`${this.apiUrl}Report/Offices?module=` + module)
       .pipe(
         catchError(this.handleError)
@@ -1719,7 +1720,7 @@ export class ApiService {
 
   //https://localhost:7289/api/Report/{Module}?office={?}
   getAllItemByOffice(module: string, office: string): Observable<any> {
-    console.log("Run Report: ", `${this.apiUrl}Report/${module.toUpperCase()}?office=` + office);
+    this.logger.printLogs('i', "Run Report: ", `${this.apiUrl}Report/${module.toUpperCase()}?office=` + office);
     return this.http.get<any>(`${this.apiUrl}Report/${module.toUpperCase()}?office=` + office)
       .pipe(
         catchError(this.handleError)
@@ -1727,7 +1728,7 @@ export class ApiService {
   }
 
   retrieveITEMByQRCode(qrcode: string): Observable<any> {
-    console.log("Scan Item: ", `${this.apiUrl}Report/GetItemsByQRCode?qrcode=` + qrcode);
+    this.logger.printLogs('i', "Scan Item: ", `${this.apiUrl}Report/GetItemsByQRCode?qrcode=` + qrcode);
     return this.http.get<any>(`${this.apiUrl}Report/GetItemsByQRCode?qrcode=` + qrcode)
       .pipe(
         catchError(this.handleError)
@@ -1738,7 +1739,7 @@ export class ApiService {
 
   //Search
   searchProperty(category: string, key: string): Observable<any> {
-    console.log("Search: ", `Category -> ${category} itemID -> ${key}`);
+    this.logger.printLogs('i', "Search: ", `Category -> ${category} itemID -> ${key}`);
     return this.http.get<any>(`${this.apiUrl}PropertyCard/PropertyList?category=${category}&key=${key}`)
       .pipe(
         catchError(this.handleError)
@@ -1747,7 +1748,7 @@ export class ApiService {
 
   //Search
   retreivePropertyCard(category: string, key: string): Observable<any> {
-    console.log("Search: ", `Category -> ${category} itemID -> ${key}`);
+    this.logger.printLogs('i', "Search: ", `Category -> ${category} itemID -> ${key}`);
     return this.http.get<any>(`${this.apiUrl}PropertyCard/SearchByCategoryAndID?category=${category}&key=${key}`)
       .pipe(
         catchError(this.handleError)

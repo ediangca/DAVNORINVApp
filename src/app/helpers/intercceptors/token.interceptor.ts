@@ -4,19 +4,21 @@ import { AuthService } from '../../services/auth.service';
 import { catchError, Observable, throwError } from 'rxjs';
 import { NgToastService } from 'ng-angular-popup';
 import { Router } from '@angular/router';
+import { LogsService } from '../../services/logs.service';
 
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const toast = inject(NgToastService);
+  const logger = inject(LogsService);
 
   const myToken = authService.getToken();
 
 
 
   if (myToken) {
-    // console.log("Token: ", myToken);
+    // this.logger.printLogs('i', "Token: ", myToken);
     req = req.clone({
       setHeaders: {
         // Authorization: `Charrot ${myToken}`
@@ -30,10 +32,10 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
       let messages: any | null = null;
 
-      console.log("Error Status: " + err.status);
+      logger.printLogs('i', 'Pipe Error', `Status: " ${err.status}`);
       if (err instanceof HttpErrorResponse) {
-        console.log("Pipe Error Status: " + err.status);
-        console.log(err);
+        logger.printLogs('i', 'Pipe Error', err);
+        logger.printLogs('i', 'Pipe Error', `Status: " ${err.status}`);
         if (err.status == 0) {
           messages = "Failed to establish connection!";
           toast.warning("Failed to establish connection!", "Error!", 5000);

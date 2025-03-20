@@ -130,15 +130,12 @@ export class CompanyComponent implements OnInit {
     const modal = document.getElementById('AddEditModalForm')!;
     if (modal) {
       modal.addEventListener('hidden.bs.modal', () => {
-        // console.log('Branch Modal is closed');
         this.resetForm();
       });
     }
     const Deptmodal = document.getElementById('DeptAddEditModalForm')!;
     if (Deptmodal) {
       Deptmodal.addEventListener('hidden.bs.modal', () => {
-        // console.log('Department Modal is closed>>>>>');
-        // removeAllModalBackdrops();
         this.resetForm();
       });
     }
@@ -147,7 +144,6 @@ export class CompanyComponent implements OnInit {
     if (Sectmodal) {
 
       Sectmodal.addEventListener('hidden.bs.modal', () => {
-        console.log('Section Modal is closed......');
         this.resetForm();
       });
     }
@@ -181,12 +177,12 @@ export class CompanyComponent implements OnInit {
         this.api.searchCompanyTypes(this.typeKey)
           .subscribe({
             next: (res) => {
-              console.log("Fetching Company Type: ", res);
+              this.logger.printLogs('i', "Fetching Company Type", res);
               if (res)
                 this.companiestype = res;
             },
             error: (err: any) => {
-              console.log("Error Fetching Company: ", err);
+              this.logger.printLogs('w', "Fetching Company Denied", err);
             }
           });
       }
@@ -213,11 +209,11 @@ export class CompanyComponent implements OnInit {
         this.api.searchCompanies(this.searchKey)
           .subscribe({
             next: (res) => {
-              console.log("Fetching Company: ", res);
+              this.logger.printLogs('i', "Fetching Company", res);
               this.companies = res;
             },
             error: (err: any) => {
-              console.log("Error Fetching Company: ", err);
+              this.logger.printLogs('w', "Denied Fetching Company", err);
             }
           });
       }
@@ -234,7 +230,7 @@ export class CompanyComponent implements OnInit {
           this.logger.printLogs('i', 'LIST OF COMPANY', this.companies);
         },
         error: (err: any) => {
-          console.log("Error Fetching Company: ", err);
+          this.logger.printLogs('w', "Fetching Company Denied", err);
         }
       });
   }
@@ -247,7 +243,7 @@ export class CompanyComponent implements OnInit {
           this.departments = res;
         },
         error: (err: any) => {
-          console.log("Error Fetching Departments: ", err);
+          this.logger.printLogs('w', "Fetching Departments Denied", err);
         }
       });
     this.openDeptAddEditModal();
@@ -261,7 +257,7 @@ export class CompanyComponent implements OnInit {
           this.sections = res;
         },
         error: (err: any) => {
-          console.log("Error Fetching Sections: ", err);
+          this.logger.printLogs('w', "Fetching Sections Denied", err);
         }
       });
     this.closeModal(this.DeptAddEditModal);
@@ -272,7 +268,7 @@ export class CompanyComponent implements OnInit {
     // const now = new Date();
 
     if (this.companyForm.valid) {
-      console.log(this.companyForm.value);
+      this.logger.printLogs('i', 'Company Form', this.companyForm.value);
 
       const itemGroup = {
         "branchName": this.companyForm.value['branchName'],
@@ -293,7 +289,7 @@ export class CompanyComponent implements OnInit {
     this.api.createCompany(company)
       .subscribe({
         next: (res) => {
-          console.info("Success: ", res.message);
+          this.logger.printLogs('i', "Success", res.message);
 
           // this.closeModal()
           this.getCompanies();
@@ -303,7 +299,7 @@ export class CompanyComponent implements OnInit {
           this.api.showToast(res.message, 'Saved!', 'success');
         },
         error: (err: any) => {
-          console.log('Error response:', err);
+          this.logger.printLogs('w', 'Saving Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -323,7 +319,7 @@ export class CompanyComponent implements OnInit {
         this.api.updateCompany(this.currentEditId!, company)
           .subscribe({
             next: (res) => {
-              // console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Updating Success", res.message);
 
               // this.closeModal()
               this.getCompanies();
@@ -334,7 +330,7 @@ export class CompanyComponent implements OnInit {
 
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Updating Denied', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -347,8 +343,6 @@ export class CompanyComponent implements OnInit {
     this.company = company;
     this.currentEditId = company.branchID;
 
-    // console.log("Retreive BranchID: ", this.currentEditId);
-    // console.log("Retreive Item Group: ", company);
     this.companyForm.patchValue({
       branchName: company.branchName,
       type: company.type
@@ -363,7 +357,7 @@ export class CompanyComponent implements OnInit {
     // const now = new Date();
 
     if (this.departmentForm.valid) {
-      console.log(this.departmentForm.value);
+      this.logger.printLogs('i', 'Department Form', this.departmentForm.value);
 
       const department = {
         "departmentName": this.departmentForm.value['departmentName'],
@@ -385,14 +379,14 @@ export class CompanyComponent implements OnInit {
     this.api.createDepartment(deparment)
       .subscribe({
         next: (res) => {
-          console.info("Dept Save Success: ", res.message);
+          this.logger.printLogs('i', "Saving Success: ", res.message);
           this.getDepartmentsByCompanyID(this.company.branchID);
           this.departmentForm.reset();
           
           Swal.fire('Saved!', res.message, 'success');
         },
         error: (err: any) => {
-          console.log('Error response:', err);
+          this.logger.printLogs('w', 'Saving Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -413,7 +407,7 @@ export class CompanyComponent implements OnInit {
           .subscribe({
             next: (res) => {
 
-              console.info("Dept Update Success: ", res.message);
+              this.logger.printLogs('i', "Updating Success", res.message);
               this.getDepartmentsByCompanyID(this.company.branchID);
               this.departmentForm.reset();
 
@@ -421,7 +415,7 @@ export class CompanyComponent implements OnInit {
 
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Updating Denied', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -440,7 +434,7 @@ export class CompanyComponent implements OnInit {
     // const now = new Date();
 
     if (this.sectionForm.valid) {
-      console.log(this.sectionForm.value);
+      this.logger.printLogs('i', 'Section Form',this.sectionForm.value);
 
       const section = {
         "sectionName": this.sectionForm.value['sectionName'],
@@ -462,13 +456,13 @@ export class CompanyComponent implements OnInit {
     this.api.createSection(section)
       .subscribe({
         next: (res) => {
-          console.info("Sect Save Success: ", res.message);
+          this.logger.printLogs('i', "Sect Saving Success", res.message);
           this.getSectionsByDepID(this.deparment.depID);
           this.sectionForm.reset();
           Swal.fire('Saved!', res.message, 'success');
         },
         error: (err: any) => {
-          console.log('Error response:', err);
+          this.logger.printLogs('w', 'Saving Denied', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -489,7 +483,7 @@ export class CompanyComponent implements OnInit {
           .subscribe({
             next: (res) => {
 
-              console.info("Sect Update Success: ", res.message);
+              this.logger.printLogs('i', "Sect Updating Success", res.message);
               this.getSectionsByDepID(this.deparment.depID);
               this.sectionForm.reset();
 
@@ -497,7 +491,7 @@ export class CompanyComponent implements OnInit {
 
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Updating Denied', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -587,7 +581,7 @@ export class CompanyComponent implements OnInit {
         this.api.deleteCompany(id)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
+              this.logger.printLogs('i', "Deleting Success", res.message);
 
               this.getCompanies();
 
@@ -596,7 +590,7 @@ export class CompanyComponent implements OnInit {
 
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Deleting Denied', err);
               Swal.fire('Deleting Denied', err, 'warning');
             }
           });
@@ -620,14 +614,14 @@ export class CompanyComponent implements OnInit {
           .subscribe({
             next: (res) => {
 
-              console.info("Dept Delete Success: ", res.message);
+              this.logger.printLogs('i', "Dept Deleting Success", res.message);
               this.getDepartmentsByCompanyID(this.company.branchID);
 
               Swal.fire('Deleted', res.message, 'success');
               this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Deleting Denied', err);
               Swal.fire('Deleting Denied', err, 'warning');
             }
           });
@@ -651,14 +645,14 @@ export class CompanyComponent implements OnInit {
           .subscribe({
             next: (res) => {
 
-              console.info("Sect Delete Success: ", res.message);
+              this.logger.printLogs('i', "Sect Deleting Success", res.message);
               this.getDepartmentsByCompanyID(this.deparment.depID);
 
               Swal.fire('Deleted', res.message, 'success');
               this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs('w', 'Deleting Denied', err);
               Swal.fire('Deleting Denied', err, 'warning');
             }
           });
