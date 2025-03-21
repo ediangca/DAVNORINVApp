@@ -200,7 +200,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         this.logger.printLogs('i', 'Scanner is ready:', res);
       });
     } else {
-      this.logger.printLogs('i', 'Action or isReady','Scanner is not defined when ngOnInit is called.');
+      this.logger.printLogs('i', 'Action or isReady', 'Scanner is not defined when ngOnInit is called.');
     }
   }
 
@@ -670,6 +670,7 @@ export class ParComponent implements OnInit, AfterViewInit {
         return;
       }
 
+      this.resetItemForm();
       this.openModal(this.ItemModal);
     });
 
@@ -1393,6 +1394,8 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   onCopyItem(item: Item) {
     this.logger.printLogs('i', 'Copy Item', [item]);
+
+    this.resetItemForm();
 
     this.api.retrieveItem(item.iid!)
       .subscribe({

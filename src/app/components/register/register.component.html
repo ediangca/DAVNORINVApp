@@ -201,16 +201,16 @@
                   <small class="text-danger">* Password must contain upper and lower case letters, a number, and a special character.</small>
                 } -->
                 <div class="form-field d-flex align-items-center"
-                  [class.error]="registerForm.controls['password'].invalid &&
-              registerForm.hasError('required', 'password') &&  registerForm.get('password')?.touched || (registerForm.controls['password'].dirty &&
-              registerForm.hasError('required', 'password')) || registerForm.hasError('minlength', 'password') || passwordMismatch">
+                  [class.error]="registerForm.controls['password'].invalid && 
+                  registerForm.hasError('required', 'password') &&  registerForm.get('password')?.touched || (registerForm.controls['password'].dirty &&
+                  registerForm.hasError('required', 'password')) || registerForm.hasError('minlength', 'password') || passwordMismatch">
                   <span class="fas fa-key"></span>
                   <input type="password" formControlName="password"
                     name="password"
                     id="password"
                     placeholder="Password">
                 </div>
-
+            
                 @if (registerForm.controls['confirmPassword'].invalid &&
                 registerForm.hasError('required', 'confirmPassword') &&
                 registerForm.get('confirmPassword')?.touched ||
@@ -224,8 +224,8 @@
                 }
                 <div class="form-field d-flex align-items-center"
                   [class.error]="registerForm.controls['confirmPassword'].invalid &&
-              registerForm.hasError('required', 'confirmPassword') &&  registerForm.get('confirmPassword')?.touched || (registerForm.controls['confirmPassword'].dirty &&
-              registerForm.hasError('required', 'confirmPassword') || passwordMismatch)">
+                  registerForm.hasError('required', 'confirmPassword') &&  registerForm.get('confirmPassword')?.touched || 
+                  (registerForm.controls['confirmPassword'].dirty && registerForm.hasError('required', 'confirmPassword') || passwordMismatch)">
                   <span class="fas fa-key"></span>
                   <input type="password" formControlName="confirmPassword"
                     name="confirmPassword"
@@ -233,6 +233,7 @@
                     placeholder="Confirm Password">
                 </div>
 
+              <!--
                 @if (registerForm.controls['ug'].invalid &&
                 registerForm.hasError('required', 'ug') &&
                 registerForm.get('ug')?.touched ||
@@ -251,7 +252,7 @@
                       [value]="group.ugid">{{ group.userGroupName }}</option>
                   </select>
                 </div>
-
+              -->
               </div>
 
             </div>

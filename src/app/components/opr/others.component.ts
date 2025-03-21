@@ -616,6 +616,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
       Swal.fire('INFORMATION!', 'Please input OPR No. first before adding item', 'warning');
       return;
     }
+    
+    this.resetItemForm();
     this.openModal(this.ItemModal);
   }
 
@@ -1381,6 +1383,7 @@ export class OthersComponent implements OnInit, AfterViewInit {
             date_Acquired: this.formatDate(item.date_Acquired),
           });
 
+          this.resetItemForm();
           this.openModal(this.ItemModal)
         },
         error: (err: any) => {

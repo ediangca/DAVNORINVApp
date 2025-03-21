@@ -628,6 +628,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
         return;
       }
 
+      this.resetItemForm();
       this.openModal(this.ItemModal);
     });
 
@@ -1341,6 +1342,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   onCopyItem(item: ICSItem) {
     this.logger.printLogs('i', 'Copy Item', [item]);
+
+    this.resetItemForm();
 
     this.api.retrieveItem(item.iid!)
       .subscribe({

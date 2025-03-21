@@ -207,7 +207,7 @@
                     <input type="text" formControlName="fund" name="fund" id="fund" placeholder="FUND">
                   </div>
                 </div>
-                <div class="col-12 col-lg-6" *ngIf="!isEditMode">
+                <div class="col-12 col-lg-6">
 
                   @if(!(parForm.controls['parNo'].invalid &&
                   parForm.hasError('required', 'parNo') &&
@@ -229,7 +229,7 @@
                     (parForm.controls['parNo'].dirty && parForm.hasError('required', 'parNo'))"></i>
 
                     <input class="form-control is-invalid" type="text" formControlName="parNo" name="parNo" id="parNo"
-                      placeholder="PAR No.">
+                      placeholder="PAR No." [readOnly]="isEditMode">
                   </div>
                 </div>
               </div>

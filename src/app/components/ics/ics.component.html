@@ -170,7 +170,7 @@
                 </div>
               </div>
               <div class="row d-flex flex-row">
-                <div class="col">
+                <div class="col-12 col-lg-6">
                   @if(!(icsForm.controls['fund'].invalid &&
                   icsForm.hasError('required', 'fund') &&
                   icsForm.get('fund')?.touched ||
@@ -193,7 +193,7 @@
                     <input type="text" formControlName="fund" name="fund" id="fund" placeholder="FUND">
                   </div>
                 </div>
-                <div class="col">
+                <div class="col-12 col-lg-6"  >
 
                   @if(!(icsForm.controls['icsNo'].invalid &&
                   icsForm.hasError('required', 'icsNo') &&
@@ -215,7 +215,7 @@
                     (icsForm.controls['icsNo'].dirty && icsForm.hasError('required', 'icsNo'))"></i>
 
                     <input class="form-control is-invalid" type="text" formControlName="icsNo" name="icsNo" id="icsNo"
-                      placeholder="ICS No.">
+                      placeholder="ICS No." [readOnly]="isEditMode">
                   </div>
                 </div>
               </div>

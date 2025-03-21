@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit {
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
-      ug: ['', Validators.required]
+      // ug: ['', Validators.required]
     }, { validators: validatePasswordMatch('password', 'confirmPassword') });
 
 
@@ -98,7 +98,7 @@ export class RegisterComponent implements OnInit {
       const userAccount = {
         "userName": this.registerForm.value['username'],
         "password": this.registerForm.value['password'],
-        "ugid": this.registerForm.value['ug']
+        "ugid": 2 //Test User //this.registerForm.value['ug']
       }
 
       this.auth.register(userAccount)
@@ -111,7 +111,7 @@ export class RegisterComponent implements OnInit {
               title: 'Access Granted!',
               text: res.message,
               icon: 'success',
-              html: `${res.message} <br> Please wait for the verification from Admin.`,
+              html: `${res.message} <br> Please contact System Administrator and wait for the verification.`,
               confirmButtonText: 'OK'
             }).then((result) => {
               if (result.isConfirmed) {
