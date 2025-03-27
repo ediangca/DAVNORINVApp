@@ -22,6 +22,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   @ViewChild('FilterBranch') filterModal!: ElementRef;
   @ViewChild('PropertyCard') PropertyCardModal!: ElementRef;
+  @ViewChild('PropertyCardOwner') PropertyCardOwnerModal!: ElementRef;
+  @ViewChild('PropertyOwner') PropertyOwnerModal!: ElementRef;
 
   reportsMap: { [key: string]: string } = {
     PAR: 'Property Acknowledgement Receipt',
@@ -46,6 +48,10 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   propertyCards: any = []
   typeOptions: string[] = ['Above50k', 'Below50k', 'Others'];
   activeInput: 'card' | 'issued' | 'approved' | null = null;
+
+  propertyOwnerForm!: FormGroup;
+  propertyOwner: any = []
+
   office: string | null = null;
   category: string | null = null;
   itemID: string | null = null;
@@ -55,7 +61,11 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   isLoading: boolean = false;
   file: string | null = null;
-  propertyDescription: string | null = null;
+  propertyKey: string | null = null;
+
+  accountKey: string | null = null;
+  account: any | null = null;
+  accounts: any = []
 
   // Privilege Action Access
   canCreate: boolean = false;
@@ -83,6 +93,12 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       category: ['', Validators.required],
       item: ['', Validators.required]
     });
+
+
+    this.propertyOwnerForm = this.fb.group({
+      item: ['', Validators.required]
+    });
+
     this.loadUser()
   }
 
@@ -145,11 +161,50 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  resetForms() {
+
+    this.filterForm = this.fb.group({
+      office: ['', Validators.required]
+    });
+
+    this.propertyCardForm = this.fb.group({
+      category: ['', Validators.required],
+      item: ['', Validators.required]
+    });
+
+
+    this.propertyOwnerForm = this.fb.group({
+      item: ['', Validators.required]
+    });
+    this.propertyKey = '';
+    this.propertyCards = [];
+
+    this.accountKey = '';
+    this.accounts = [];
+  }
+
+
+
   onViewReport(reportName: string) {
+    this.resetForms();
+
+    this.logger.printLogs('i', 'Run Report', reportName);
     switch (reportName) {
       case "propertyLogs":
 
         this.openModal(this.PropertyCardModal);
+
+        break;
+
+      case "propertyLogsOwner":
+
+        this.openModal(this.PropertyCardOwnerModal);
+
+        break;
+
+      case "propertyOwner":
+
+        this.openModal(this.PropertyOwnerModal);
 
         break;
 
@@ -416,14 +471,14 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.itemID = null;
     if (!this.propertyCardForm.value['category']) {
       Swal.fire('INFORMATION!', 'Select Category first.', 'info');
-      this.propertyDescription = null
+      this.propertyKey = null
     } else {
       if (this.propertyCardForm.value['item'] == "") {
         this.items = [];
       } else {
         this.activeInput = 'card';
-        if (this.propertyDescription !== null) {
-          this.api.searchProperty(this.propertyCardForm.value['category'], this.propertyDescription)
+        if (this.propertyKey !== null) {
+          this.api.searchPropertyCard(this.propertyCardForm.value['category'], this.propertyKey)
             .subscribe({
               next: (res) => {
                 this.items = res;
@@ -459,14 +514,100 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.items = [];  // Clear the suggestion list after selection
   }
 
+  onAutoSuggestPropertyCardOwner() {
+    this.accounts = null;
+    if (this.propertyOwnerForm.value['item'] == "") {
+      this.accounts = [];
+    } else {
+      if (this.accountKey !== null) {
+        this.api.searchPropertyCardOwner(this.accountKey)
+          .subscribe({
+            next: (res) => {
+              this.accounts = res;
+              // this.items = res.slice(0, 20);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Property Card by Owners', err);
+              this.accounts = [];
+            }
+          });
+      }
+    }
+  }
+
+  onAutoSuggestPropertyOwner() {
+    this.account = null;
+    if (this.propertyOwnerForm.value['item'] == "") {
+      this.accounts = [];
+    } else {
+      if (this.accountKey !== null) {
+        this.api.searchPropertyOwner(this.accountKey)
+          .subscribe({
+            next: (res) => {
+              this.accounts = res;
+              // this.items = res.slice(0, 20);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Property Owners', err);
+              this.accounts = [];
+            }
+          });
+      }
+    }
+  }
+
+  onAutoSuggestAccount() {
+    this.itemID = null;
+    if (this.propertyOwnerForm.value['item'] == "") {
+      this.items = [];
+    } else {
+      if (this.accountKey !== null) {
+        this.api.searchPropertyOwner(this.accountKey)
+          .subscribe({
+            next: (res) => {
+              this.accounts = res;
+              // this.items = res.slice(0, 20);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Property Owners', err);
+              this.accounts = [];
+            }
+          });
+      }
+    }
+  }
+  selectedAccount(account: any): void {
+
+    this.account = account;
+    this.logger.printLogs('i', 'Selected to Account', account);
+
+    this.propertyOwnerForm.patchValue({
+      item: account.accountID + " (" +  account.accountName + ")"  // Patch the selected property description to the form
+    });
+
+    this.accounts = [];  // Clear the suggestion list after selection
+  }
+
+  selectedCardAccount(account: any): void {
+
+    this.account = account;
+    this.logger.printLogs('i', 'Selected to Account', account);
+
+    this.propertyOwnerForm.patchValue({
+      item: account.receivedBy + " (" + account.received + ")"  // Patch the selected property description to the form
+    });
+
+    this.accounts = [];  // Clear the suggestion list after selection
+  }
+
   onViewPropertyCard() {
-    if (!this.propertyCardForm.valid) {
-      this.vf.validateFormFields(this.propertyCardForm);
+    if (!this.propertyOwnerForm.valid) {
+      this.vf.validateFormFields(this.propertyOwnerForm);
       Swal.fire('Warning!', 'Required filter must be fill!', 'warning');
       return;
     }
 
-    if (this.propertyDescription !== null) {
+    if (this.propertyKey !== null) {
 
       const key = (this.item.propertyNo !== null && this.item.propertyNo.toString().toLowerCase() !== "n/a")
         ? this.item.propertyNo
@@ -491,10 +632,69 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         });
 
     }
+  }
 
+  onViewPropertyCardByOwners() {
+    if (!this.propertyOwnerForm.valid) {
+      this.vf.validateFormFields(this.propertyOwnerForm);
+      Swal.fire('Warning!', 'Required filter must be fill!', 'warning');
+      return;
+    }
 
+    if (this.accountKey !== null) {
+
+      this.api.retreivePropertyCardOwners(this.account.receivedBy)
+        .subscribe({
+          next: (res) => {
+            this.isLoading = true;
+
+            // Add a delay before setting isLoading to false
+            setTimeout(() => {
+              this.isLoading = false;
+              this.propertyCards = res;
+              this.logger.printLogs('i', 'Fetching Property Logs by Owners', this.propertyCards);
+            }, 2000); // 2-second delay (adjust as needed)
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Fetching Property Logs by Owners', err);
+            this.items = [];
+          }
+        });
+
+    }
+  }
+
+  onViewPropertyOwner() {
+    if (!this.propertyOwnerForm.valid) {
+      this.vf.validateFormFields(this.propertyOwnerForm);
+      Swal.fire('Warning!', 'Please select an account first.', 'warning');
+      return;
+    }
+
+    if (this.accountKey !== null) {
+
+      this.api.retreivePropertyOwner(this.account.accountID)
+        .subscribe({
+          next: (res) => {
+            this.isLoading = true;
+
+            // Add a delay before setting isLoading to false
+            setTimeout(() => {
+              this.isLoading = false;
+              this.propertyCards = res;
+              this.logger.printLogs('i', 'Fetching Property Items by Owner', this.propertyCards);
+            }, 2000); // 2-second delay (adjust as needed)
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Fetching Property Items', err);
+            this.items = [];
+          }
+        });
+
+    }
 
   }
+
 
 
   //Common Method - Advice to add in Helpers

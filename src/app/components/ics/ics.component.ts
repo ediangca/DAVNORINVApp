@@ -635,16 +635,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   }
 
-  toast(title: string, msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {
-    const options = {
-      enableHtml: true,
-      progressBar: true,
-      timeOut: 2000,
-      closeButton: true,
-    };
-    this.toastr[type](msg, title, options);
-  }
-
   onSubmit() {
 
     if (!this.icsForm.valid) {
@@ -718,7 +708,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
             this.logger.printLogs('i', 'Saved Success', ics);
             this.logger.printLogs('i', 'Saved Success', this.icsItems);
 
-            this.toast('Saved!', res.message, 'success');
+            this.api.showToast(res.message, 'Saved!', 'success');
             Swal.fire({
               title: 'Saved',
               text: 'Do you want to add new ICS?',
@@ -774,7 +764,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
               next: (res) => {
                 this.logger.printLogs('i', 'Saved Success', res);
                 Swal.fire('Saved', res.message, 'success');
-                this.toast('Saved!', res.message, 'success');
+                this.api.showToast(res.message, 'Saved!', 'success');
                 this.logger.printLogs('i', 'Saved Success', res.details);
 
                 this.closeModal(this.ViewModal);
@@ -800,7 +790,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.logger.printLogs('i', 'Updated Success', ics);
           Swal.fire('Updated!', res.message, 'success');
-          this.toast('Updated!', res.message, 'success');
+          this.api.showToast(res.message, 'Updated!', 'success');
           this.getAllICS();
 
         },
@@ -844,7 +834,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
                 this.getAllICS();
                 this.logger.printLogs('i', 'Posted Success', res);
                 Swal.fire('Success', res.message, 'success');
-                this.toast('Success!', res.message, 'success');
+                this.api.showToast(res.message, (ics.postFlag ? 'Unposted' : 'Posted'), 'success');
               },
               error: (err: any) => {
                 this.logger.printLogs('e', 'Error', ['Retrieving ICS Item!']);
@@ -1003,7 +993,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
             next: (res) => {
               this.getAllICS();
               Swal.fire('Success', res.message, 'success');
-              this.toast('Success!', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
             },
             error: (err: any) => {
               this.logger.printLogs('e', 'Error on Deleting ICS', err);

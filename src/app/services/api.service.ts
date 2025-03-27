@@ -1737,24 +1737,57 @@ export class ApiService {
 
   /*----------------------- PROPERTY CARD -----------------------*/
 
-  //Search
-  searchProperty(category: string, key: string): Observable<any> {
+  //Search Property from Property Card
+  searchPropertyCard(category: string, key: string): Observable<any> {
     this.logger.printLogs('i', "Search: ", `Category -> ${category} itemID -> ${key}`);
-    return this.http.get<any>(`${this.apiUrl}PropertyCard/PropertyList?category=${category}&key=${key}`)
+    return this.http.get<any>(`${this.apiUrl}PropertyCard/PropertyCardList?category=${category}&key=${key}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  //Search Property from Property Card by Owner
+  searchPropertyCardOwner(key: string): Observable<any> {
+    this.logger.printLogs('i', "Search: ", `Property Owner -> ${key}`);
+    return this.http.get<any>(`${this.apiUrl}PropertyCard/PropertyCardOwnerList?key=${key}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  //Search by Owner
+  searchPropertyOwner(key: string): Observable<any> {
+    this.logger.printLogs('i', "Search: ", `Property Owner -> ${key}`);
+    return this.http.get<any>(`${this.apiUrl}PropertyCard/PropertyOwnerList?key=${key}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  //Search
   retreivePropertyCard(category: string, key: string): Observable<any> {
-    this.logger.printLogs('i', "Search: ", `Category -> ${category} itemID -> ${key}`);
+    this.logger.printLogs('i', "Search Property Card: ", `Category -> ${category} itemID -> ${key}`);
     return this.http.get<any>(`${this.apiUrl}PropertyCard/SearchByCategoryAndID?category=${category}&key=${key}`)
       .pipe(
         catchError(this.handleError)
       );
   }
+  
+  //Search
+  retreivePropertyCardOwners(accountID: string): Observable<any> {
+    this.logger.printLogs('i', "Search Property Card Owners: ", `accountID-> ${accountID}`);
+    return this.http.get<any>(`${this.apiUrl}PropertyCard/SearchByLogAccount?accountID=${accountID}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
 
+  //Search
+  retreivePropertyOwner(accountID: string): Observable<any> {
+    this.logger.printLogs('i', "Search Property Owners: ", `accountID -> ${accountID}`);
+    return this.http.get<any>(`${this.apiUrl}PropertyCard/SearchByAccount?accountID=${accountID}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
   /*----------------------- ERROR HANDLING -----------------------*/
 

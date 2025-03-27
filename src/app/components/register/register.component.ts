@@ -118,18 +118,18 @@ export class RegisterComponent implements OnInit {
                 this.router.navigate(['login']);
                 this.onReset();
 
-
-                this.toastr.success(
-                  // <img src="${this.ac.logoPath}" style="width:20px; height:20px;"> 
-                  res.message,
-                  'REGISTERED',
-                  {
-                    enableHtml: true, // Required for rendering HTML content
-                    progressBar: true,
-                    timeOut: 3000, // Auto-close after 5 seconds
-                    closeButton: true,
-                  }
-                );
+                this.api.showToast(res.message, 'REGISTERED', 'success');
+                // this.toastr.success(
+                //   // <img src="${this.ac.logoPath}" style="width:20px; height:20px;"> 
+                //   res.message,
+                //   'REGISTERED',
+                //   {
+                //     enableHtml: true, // Required for rendering HTML content
+                //     progressBar: true,
+                //     timeOut: 3000, // Auto-close after 5 seconds
+                //     closeButton: true,
+                //   }
+                // );
               }
             });
           },

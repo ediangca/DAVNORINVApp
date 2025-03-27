@@ -5,6 +5,8 @@ import { AuthService } from '../services/auth.service';
 import { NgToastService } from 'ng-angular-popup';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
+import { ApiService } from '../services/api.service';
 
 /*
 export const authGuard: CanActivateFn = (route, state) => {
@@ -29,6 +31,9 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const toast = inject(NgToastService);
+  const toastr = inject(ToastrService);
+  const api = inject(ApiService);
+
 
   return authService.getUsernameFromToken().pipe(
     map(username => {
@@ -39,14 +44,15 @@ export const authGuard: CanActivateFn = (route, state) => {
       } else {
         // User is not authenticated
         router.navigate(['login']);
-        toast.info("Hi, Welcome to AEINV System, Please login your Account!", "Inforamtion", 5000);
+        api.showToast(`Hi, Welcome to AEINV App, Please login your Account!`, "Greetings", "info");
         return false;
       }
     }),
     catchError(() => {
       // Handle any errors that occur during the authentication check
       router.navigate(['login']);
-      toast.danger("An error occurred while checking authentication!", "Error!!!", 5000);
+      api.showToast(`An error occurred while checking authentication!`, "Error", "warning");
+      // toast.danger("An error occurred while checking authentication!", "Error!!!", 5000);
       return of(false);
     })
   );
