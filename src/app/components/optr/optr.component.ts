@@ -529,7 +529,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: (res) => {
               if (res.length == 1 && res[0].fullName == this.approvedByID) {
-                this.selectReceived(res[0]);
+                this.selectApproved(res[0]);
                 this.logger.printLogs('i', 'Fetch Specific Approved By', res[0]);
               } else {
                 this.userProfiles = res;

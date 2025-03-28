@@ -896,7 +896,6 @@ export class RrspComponent {
     this.userProfiles = [];  // Clear the suggestion list after selection
   }
 
-
   onAutoSuggestApproved() {
     this.approvedID = null;
     if (!this.approvedByID) {

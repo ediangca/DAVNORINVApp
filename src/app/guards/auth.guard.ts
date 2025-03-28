@@ -44,7 +44,7 @@ export const authGuard: CanActivateFn = (route, state) => {
       } else {
         // User is not authenticated
         router.navigate(['login']);
-        api.showToast(`Hi, Welcome to AEINV App, Please login your Account!`, "Greetings", "info");
+        api.showToast(`Hi, Welcome to AEINV App, Please login your Account!`, "Greetings!", "info");
         return false;
       }
     }),

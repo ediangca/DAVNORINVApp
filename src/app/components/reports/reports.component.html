@@ -68,17 +68,19 @@
                                             all Transaction by Property</em></label>
                                 </td>
                             </tr>
-                            
+
                             <tr>
                                 <td>
                                     <i class="fa-solid fa-folder text-primary" data-toggle="tooltip"
                                         title="View Print"></i>
 
-                                    <input type="button" class="bg-transparent border-0" id="propertyLogsOwners" type="button"
-                                        (click)="onViewReport('propertyLogsOwner')" data-toggle="tooltip" title="View Print">
+                                    <input type="button" class="bg-transparent border-0" id="propertyLogsOwners"
+                                        type="button" (click)="onViewReport('propertyLogsOwner')" data-toggle="tooltip"
+                                        title="View Print">
 
 
-                                    <label class="form-viewPrint-label" for="propertyLogsOwners">Property Logs by Owners- <em>List of
+                                    <label class="form-viewPrint-label" for="propertyLogsOwners">Property Logs by
+                                        Owners- <em>List of
                                             all Property Transaction by Owners</em></label>
                                 </td>
                             </tr>
@@ -188,8 +190,8 @@
                                     propertyOwnerForm.hasError('required', 'item'))">
                                 </i>
                             </div>
-                            <div class="recent-searches scrollable" style="max-height: 250px;" *ngIf="accounts.length > 0"
-                                (blur)="activeInput = null">
+                            <div class="recent-searches scrollable" style="max-height: 250px;"
+                                *ngIf="accounts.length > 0" (blur)="activeInput = null">
                                 <ul class="list-group list-group-flush py-3">
                                     <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
                                         *ngFor="let i of accounts" (click)="selectedAccount(i)">
@@ -384,11 +386,15 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-lg-2 d-flex just justify-content-center align-items-center">
+                        <div class="col-12 col-lg-2 d-flex justify-content-evenly align-items-center">
 
-                            <button type="button"
-                                class="btn btn-primary rounded-pill d-flex justify-content-center align-items-center"
+                            <button type="button" class="btn btn-primary rounded-pill"
                                 (click)="onViewPropertyCard()">View</button>
+
+                            <!-- data-bs-dismiss="modal" -->
+                            <button type="button" class="btn btn-secondary rounded-pill"
+                                (click)="onPrintPropertyLogs('item')">Print</button>
+
                         </div>
                     </div>
 
@@ -439,8 +445,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
-                        (click)="closeModal(filterModal)">Close</button>
+                    <!-- <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+                        (click)="closeModal(filterModal)">Close</button> -->
                     <!-- <button type="button" class="btn btn-primary rounded-pill" (click)="onPrint()">Print
                         Preview</button> -->
                 </div>
@@ -505,21 +511,24 @@
                                     propertyOwnerForm.hasError('required', 'item'))">
                                 </i>
                             </div>
-                            <div class="recent-searches scrollable" style="max-height: 250px;" *ngIf="accounts.length > 0"
+                            <div class="recent-searches scrollable" style="max-height: 250px;"*ngIf="accounts.length > 0"
                                 (blur)="activeInput = null">
                                 <ul class="list-group list-group-flush py-3">
                                     <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
                                         *ngFor="let i of accounts" (click)="selectedCardAccount(i)">
-                                        {{ i.receivedBy+" - "+i.received }}</li>
+                                        {{ i.items[0]?.receivedBy + " - " + i.received }}</li>
                                 </ul>
                             </div>
                         </div>
 
-                        <div class="col-12 col-lg-2 d-flex just justify-content-center align-items-center">
+                        <div class="col-12 col-lg-2 d-flex just justify-content-evenly align-items-center">
 
                             <button type="button"
-                                class="btn btn-primary rounded-pill d-flex justify-content-center align-items-center"
+                                class="btn btn-primary rounded-pill"
                                 (click)="onViewPropertyCardByOwners()">View</button>
+                            <!-- data-bs-dismiss="modal" -->
+                            <button type="button" class="btn btn-secondary rounded-pill"
+                                (click)="onPrintPropertyLogs('account')">Print</button>
                         </div>
                     </div>
 
@@ -541,8 +550,8 @@
                                     <thead>
                                         <tr>
                                             <th>Date Created</th>
-                                            <th>Transaction</th>
                                             <th>Property</th>
+                                            <th>Transaction</th>
                                             <th>REF. No. From</th>
                                             <th>REF. No. To</th>
                                             <th>Issued By</th>
@@ -554,7 +563,7 @@
                                     <tbody>
                                         <tr *ngFor="let p of propertyCards">
                                             <td>{{formatDateTime(p.date_Created)}}</td>
-                                            <td>{{p.description}}</td>
+                                            <td>{{p.propertyNo}}<br>{{p.description}}</td>
                                             <td>{{p.ref}}</td>
                                             <td>{{p.ref == 'OPR' || p.ref == 'OPTR' || p.ref == 'OPRR'?
                                                 'OPR-000'+p.refNoFrom: p.refNoFrom}}</td>
@@ -572,8 +581,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
-                        (click)="closeModal(filterModal)">Close</button>
+                    <!-- <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+                        (click)="closeModal(filterModal)">Close</button> -->
                     <!-- <button type="button" class="btn btn-primary rounded-pill" (click)="onPrint()">Print
                         Preview</button> -->
                 </div>

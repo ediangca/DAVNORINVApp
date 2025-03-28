@@ -400,16 +400,102 @@ export class ReportsComponent implements OnInit, AfterViewInit {
                       </table>`;
 
           // Print the report
-          this.printService.printReport(this.file ? `S${this.file}` : '', reportContent);
+          this.printService.printReport(this.file ? `${this.file}` : '', reportContent);
           //PRINT
         },
         error: (err: any) => {
-          this.logger.printLogs('e', `Error Fetching PAR Items under Offices ${this.office}`, err);
+          this.logger.printLogs('e', `Error Fetching ${this.file} under Offices ${this.office}`, err);
           // Optionally, show an error message to the user
         }
       });
 
     }
+
+  }
+
+  onPrintPropertyLogs(type: string) {
+    let title = 'Property Logs';
+    let rows;
+    let reportContent;
+
+    switch (type) {
+      case 'item':
+        this.logger.printLogs('i', `PRINT ${type}`, this.propertyCards);
+
+
+
+        break;
+
+      default:
+        ''
+    }
+
+    rows = this.propertyCards.map((item: any, index: number) => {
+
+      return type == 'item' ?
+        `<tr class="report-row ${item.pcNo}">
+          <td>${this.formatDateTime(item.date_Created)}</td>
+          <td>${item.ref || 'N/A'}</td>
+          <td>${(item.ref == 'OPR' || item.ref == 'OPTR' || item.ref == 'OPRR' ?
+          'OPR-000' + item.refNoFrom : item.refNoFrom) || 'N/A'}</td>
+          <td>${((item.ref == 'OPR' || item.ref == 'OPTR') && item.refNoTo ?
+          'OPR-000' + item.refNoTo : item.refNoTo) || '-'}</td>
+          <td>${item.issued || 'N/A'}</td>
+          <td>${item.received || 'N/A'}</td>
+          <td>${item.approved || '-'}</td>
+          <td>${item.created || 'N/A'}</td>
+        </tr>`
+        :
+        `<tr>
+          <td>${this.formatDateTime(item.date_Created)}</td>
+          <td>${item.description}</td>
+          <td>${item.ref}</td>
+          <td>${item.ref == 'OPR' || item.ref == 'OPTR' || item.ref == 'OPRR' ?
+          'OPR-000' + item.refNoFrom : item.refNoFrom}</td>
+          <td>${((item.ref == 'OPR' || item.ref == 'OPTR') && item.refNoTo ?
+          'OPR-000' + item.refNoTo : item.refNoTo) || "-"}</td>
+          <td>${item.issued}</td>
+          <td>${item.received}</td>
+          <td>${item.approved || "-"}</td>
+          <td>${item.created}</td>
+        </rt>`
+        ;
+    }).join('');
+
+    if (rows == null || rows == '') {
+      Swal.fire('INFORMATION!', 'No Data to print!', 'info');
+      return;
+    }
+
+    reportContent = `
+    <div class="row mb-3">
+      <div class="col">
+        <h5>${type == 'item' ? this.item.description : this.account.receivedBy + " (" + this.account.received + ")"}</h5>
+      </div>
+    </div>
+    
+      <!-- Table with List of Items -->
+          <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Date Created</th>
+                  ${type == 'account' ? '<th>Description</th>' : ''}
+                  <th>Transaction</th>
+                  <th>REF. No. From</th>
+                  <th>REF. No. To</th>
+                  <th>Issued By</th>
+                  <th>Recieved By</th>
+                  <th>Approved By</th>
+                  <th>Created By</th>
+                </tr>
+              </thead>
+              <tbody>
+                  ${rows}
+              </tbody>
+          </table>`
+
+
+    this.printService.printReport(title, reportContent);
 
   }
 
@@ -582,7 +668,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.logger.printLogs('i', 'Selected to Account', account);
 
     this.propertyOwnerForm.patchValue({
-      item: account.accountID + " (" +  account.accountName + ")"  // Patch the selected property description to the form
+      item: account.accountID + " (" + account.accountName + ")"  // Patch the selected property description to the form
     });
 
     this.accounts = [];  // Clear the suggestion list after selection
@@ -590,19 +676,25 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   selectedCardAccount(account: any): void {
 
-    this.account = account;
     this.logger.printLogs('i', 'Selected to Account', account);
 
-    this.propertyOwnerForm.patchValue({
-      item: account.receivedBy + " (" + account.received + ")"  // Patch the selected property description to the form
-    });
+    const receivedBy = account.items.length > 0 ? account.items[0].receivedBy : 'Unknown';
 
-    this.accounts = [];  // Clear the suggestion list after selection
+    if (account.items.length > 0) {
+      this.account = account.items[0];
+
+      this.propertyOwnerForm.patchValue({
+        item: this.account.receivedBy + " (" + this.account.received + ")"  // Patch the selected property description to the form
+      });
+
+      this.accounts = [];  // Clear the suggestion list after selection
+
+    }
   }
 
   onViewPropertyCard() {
-    if (!this.propertyOwnerForm.valid) {
-      this.vf.validateFormFields(this.propertyOwnerForm);
+    if (!this.propertyCardForm.valid) {
+      this.vf.validateFormFields(this.propertyCardForm);
       Swal.fire('Warning!', 'Required filter must be fill!', 'warning');
       return;
     }
