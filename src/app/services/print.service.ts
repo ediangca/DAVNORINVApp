@@ -324,7 +324,7 @@ export class PrintService {
               </h6>
             </div>
             <img src="https://davnorsystems.gov.ph/DDNAEINV/assets/images/logo/logo-lg.png" alt="Logo Right" style="height: 80px;">
-            <img src="https://davnorsystems.gov.ph/DDNAEINV/assets/images/logo/logo-lg1.png" alt="Logo Right" style="height: 80px;">
+            <!-- <img src="https://davnorsystems.gov.ph/DDNAEINV/assets/images/logo/logo-lg1.png" alt="Logo Right" style="height: 80px;"> -->
           </div>
          
           <hr>
