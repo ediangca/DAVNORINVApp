@@ -284,6 +284,22 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
 
+  leave() {
+    Swal.fire({
+      title: 'LEAVE?',
+      text: 'Asa nmn pud ka mo ad2, mag bibiga napud ka?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire('IGAT JUD','', 'info');
+      }
+    });
+
+  }
+
   logout() {
     this.store.clearStore();
     this.auth.logout();

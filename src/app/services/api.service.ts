@@ -387,6 +387,14 @@ export class ApiService {
   //   return !!localStorage.getItem('token');
   // }
 
+  
+  onLeave(id: string, leave: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}UserAccount/leave?id=` + id, leave)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
   /*----------------------- POSITION -----------------------*/
 
 

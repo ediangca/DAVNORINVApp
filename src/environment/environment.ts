@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   appName: "DDNAEINV",
   // apiUrl: "https://localhost:7289/api/", //For Development
   // apiUrl: "http:///localhost/ddnaeinv/api/", //Local Live
