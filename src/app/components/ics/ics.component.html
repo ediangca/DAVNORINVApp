@@ -867,7 +867,7 @@
               }@else {
               <small class="text-danger" *ngIf="itemForm.controls['description'].invalid && itemForm.hasError('required', 'description') && itemForm.get('description')?.touched ||
                     (itemForm.controls['description'].dirty && itemForm.hasError('required', 'description'))">*
-                Description No. is required</small>
+                Description is required</small>
               }
               <div class="form-field d-flex align-items-center" [class.error]="itemForm.controls['description'].invalid && itemForm.hasError('required', 'description') &&  itemForm.get('description')?.touched ||
                 (itemForm.controls['description'].dirty && itemForm.hasError('required', 'description'))">

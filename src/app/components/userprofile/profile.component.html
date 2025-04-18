@@ -22,25 +22,36 @@
             </div>
             }
 
-            <h5 class="my-3">{{ userProfile!=null? userProfile.fullName:
+            <h5 class="my-3 fw-bold">{{ userProfile!=null? userProfile.fullName:
               'UNKNOWN'}}</h5>
             <hr class="hr-horizontal">
             <p class="text-muted mb-1">{{ userAccount!=null? userAccount.userID
               : ''}}</p>
             <p class="text-muted mb-1">{{ userAccount!=null?
               userAccount.userGroupName : ''}}</p>
-            <p class="text-muted mb-4">Status?</p>
-            <div class="d-flex justify-content-center mb-2">
-              <button type="button" (click)="openForgotPassword()"
-                class="btn btn-primary">Change Password</button>
-              <button type="button" class="btn btn-outline-primary ms-1"
-                (click)="logout()">Logout</button>
-            </div>
-            <button type="button" class="btn btn-outline-primary ms-1"
-              (click)="leave()">Leave</button>
+
+            <div class="form-check form-switch form-check-inline mb-4"
+             [ngClass]="{
+              'text-success': !userAccount.isLeave,
+              'text-danger': userAccount.isLeave }">
+
+              <input class=" form-check-input" type="checkbox" id="leave" [checked]="!userAccount.isLeave" 
+              [ngClass]="{
+                'bg-success-important': !userAccount.isLeave,
+                'bg-danger-important': userAccount.isLeave }"
+              (change)="toggleLeave($event, userAccount.userID)" />
+            <!-- [disabled]="userAccount.userName === 'admin'" -->
+            <label for="leave">
+              {{!userAccount.isLeave ? 'Active': 'Inactive'}}</label>
+          </div>
+
+          <div class="d-flex justify-content-center mb-2">
+            <button type="button" (click)="openForgotPassword()" class="btn btn-primary">Change Password</button>
+            <button type="button" class="btn btn-outline-primary ms-1" (click)="logout()">Logout</button>
           </div>
         </div>
-        <!--
+      </div>
+      <!--
         <div class="card mb-4 mb-lg-0">
           <div class="card-body p-0">
             <ul class="list-group list-group-flush rounded-3">
@@ -68,80 +79,87 @@
           </div>
         </div> -->
 
-      </div>
-      <div class="col-lg-8">
-        <div class="card mb-4">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Full Name</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
-                  userProfile.fullName: ''}}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Username</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0 fw-bold">{{ userAccount!=null?
-                  userAccount.userName : ''}}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Company/ Bramch</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
-                  userProfile.branch: ''}}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Department</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
-                  userProfile.department : ''}}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Section</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
-                  userProfile.section : ''}}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Position</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
-                  userProfile.position : ''}}</p>
-              </div>
-            </div>
+        <p class="text-muted mb-4" *ngIf="userAccount.isLeave" >
+          In absence of your presence,
+          <span class="text-info px-1" >{{ leave!=null?
+                leave.careOfUser: ''}}</span>
+          will take over your properties.
+        </p>
 
-
-            <div class="d-flex justify-content-end mt-5">
-              <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary"
-                (click)="checkProfile()">Edit Profile</button>
+    </div>
+    <div class="col-lg-8">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-3">
+              <p class="mb-0">Full Name</p>
             </div>
-
-
+            <div class="col-sm-9">
+              <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
+                userProfile.fullName: ''}}</p>
+            </div>
           </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-3">
+              <p class="mb-0">Username</p>
+            </div>
+            <div class="col-sm-9">
+              <p class="text-muted mb-0 fw-bold">{{ userAccount!=null?
+                userAccount.userName : ''}}</p>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-3">
+              <p class="mb-0">Company/ Bramch</p>
+            </div>
+            <div class="col-sm-9">
+              <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
+                userProfile.branch: ''}}</p>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-3">
+              <p class="mb-0">Department</p>
+            </div>
+            <div class="col-sm-9">
+              <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
+                userProfile.department : ''}}</p>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-3">
+              <p class="mb-0">Section</p>
+            </div>
+            <div class="col-sm-9">
+              <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
+                userProfile.section : ''}}</p>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-3">
+              <p class="mb-0">Position</p>
+            </div>
+            <div class="col-sm-9">
+              <p class="text-muted mb-0 fw-bold">{{ userProfile!=null?
+                userProfile.position : ''}}</p>
+            </div>
+          </div>
+
+
+          <div class="d-flex justify-content-end mt-5">
+            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary"
+              (click)="checkProfile()">Edit Profile</button>
+          </div>
+
+
         </div>
-        <!--
+      </div>
+      <!--
         <div class="row">
           <div class="col-md-6">
             <div class="card mb-4 mb-md-0">
@@ -211,8 +229,8 @@
           </div>
         </div>
          -->
-      </div>
     </div>
+  </div>
   </div>
 </section>
 
@@ -433,6 +451,116 @@
           <button type="button" class="btn btn-primary rounded-pill" (click)="onSubmitProfile()">{{ isEditMode ?
             'Update' :
             'Save' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- LEAVE -->
+<div #LeaveModalForm class="modal fade" id="LeaveModalForm">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form class [formGroup]="leaveForm" ng-reflect-form="[object Object]" class="ng-untouched ng-pristine ng-invalid">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Inactive Form</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="resetForm()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="formGroup row">
+
+            <div class="col-lg">
+
+              <div class="row">
+                <div class="col">
+
+                  <!-- REMARKS -->
+                  @if(!(leaveForm.controls['remarks'].invalid &&
+                  leaveForm.hasError('required', 'remarks') &&
+                  leaveForm.get('remarks')?.touched ||
+                  (leaveForm.controls['remarks'].dirty &&
+                  leaveForm.hasError('required', 'remarks')))){
+                  <small class="text-info">*
+                    Remarks</small>
+                  }@else {
+                  <small class="text-danger" *ngIf="leaveForm.controls['remarks'].invalid && leaveForm.hasError('required', 'remarks') && leaveForm.get('remarks')?.touched ||
+                    (leaveForm.controls['remarks'].dirty && leaveForm.hasError('required', 'remarks'))">*
+                    Remarks is required</small>
+                  }
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="leaveForm.controls['remarks'].invalid && leaveForm.hasError('required', 'remarks') && 
+                  leaveForm.get('remarks')?.touched || (leaveForm.controls['remarks'].dirty && leaveForm.hasError('required', 'remarks'))">
+
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="leaveForm.controls['remarks'].invalid && 
+                    leaveForm.hasError('required', 'remarks') &&  leaveForm.get('remarks')?.touched || (leaveForm.controls['remarks'].dirty && 
+                    leaveForm.hasError('required', 'remarks'))"></i>
+
+                    <textarea type="text" formControlName="remarks" name="remarks" id="remarks"
+                      placeholder="Enter the details of your reason of inactive status."></textarea>
+                  </div>
+
+
+
+                  @if(!(leaveForm.controls['careOfUser'].invalid &&
+                  leaveForm.hasError('required', 'careOfUser') &&
+                  leaveForm.get('careOfUser')?.touched ||
+                  (leaveForm.controls['careOfUser'].dirty &&
+                  leaveForm.hasError('required', 'careOfUser')))){
+                  <small class="text-info">*
+                    Care of By</small>
+                  }@else {
+                  <small class="text-danger"
+                    *ngIf="leaveForm.controls['careOfUser'].invalid &&
+                    leaveForm.hasError('required', 'careOfUser') &&
+                    leaveForm.get('careOfUser')?.touched ||
+                    (leaveForm.controls['careOfUser'].dirty &&
+                    leaveForm.hasError('required', 'careOfUser')) || (leaveForm.get('careOfUser')?.touched && careOfUserID === null)">*
+                    Care of By is
+                    required</small>
+                  }
+
+                  <div class="form-field d-flex align-items-center"
+                    [class.error]="leaveForm.controls['careOfUser'].invalid && leaveForm.hasError('required', 'careOfUser')  && leaveForm.get('careOfUser')?.touched
+                    || (leaveForm.controls['careOfUser'].dirty && leaveForm.hasError('required', 'careOfUser') || (leaveForm.get('careOfUser')?.touched && careOfUserID === null))">
+                    <i class="fa-sharp-duotone fa-solid fa-caret-down"
+                      *ngIf="!(leaveForm.controls['careOfUser'].invalid &&
+                      leaveForm.hasError('required', 'careOfUser') &&
+                      leaveForm.get('careOfUser')?.touched ||
+                      (leaveForm.controls['careOfUser'].dirty &&
+                      leaveForm.hasError('required', 'careOfUser')) || (leaveForm.get('careOfUser')?.touched && careOfUserID === null))"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger"
+                      *ngIf="leaveForm.controls['careOfUser'].invalid && leaveForm.hasError('required', 'careOfUser') &&  leaveForm.get('careOfUser')?.touched
+                      || (leaveForm.controls['careOfUser'].dirty && leaveForm.hasError('required', 'careOfUser')) || (leaveForm.get('careOfUser')?.touched && careOfUserID === null)"></i>
+
+                    <input type="text" class="form-control" id="navbarDropdown" formControlName="careOfUser"
+                      name="careOfUser" [(ngModel)]="careOfUser" placeholder="Enter the name you want to assign"
+                      (keyup)="onAutoSuggestReceived()" role="textbox">
+
+                  </div>
+
+                  <div class="recent-searches" *ngIf="userProfiles.length > 0">
+                    <ul class="list-group list-group-flush py-3">
+                      <li type="button" class="list-group-item list-group-item-action px-3 rounded-pill"
+                        *ngFor="let up of userProfiles" (click)="selectCareOf(up)">
+                        {{ up.fullName }}</li>
+                    </ul>
+                  </div>
+
+
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button id="closeBut" type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
+            (click)="resetForm()">Close</button>
+          <button type="button" class="btn btn-primary rounded-pill" (click)="onSubmitLeave()">Save</button>
         </div>
       </form>
     </div>

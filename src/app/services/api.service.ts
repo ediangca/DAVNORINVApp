@@ -342,6 +342,13 @@ export class ApiService {
       );
   }
 
+  retrieveUserAccount(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}UserAccount/${id}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
   updateUserAccount(id: number, userAccount: any): Observable<any> {
     // this.logger.printLogs('i', "Update Account: ", userAccount);
     return this.http.put<any>(`${this.apiUrl}UserAccount/Update?id=` + id, userAccount)
@@ -376,9 +383,9 @@ export class ApiService {
       );
   }
 
-  verifyUserAccount(id: number): Observable<any> {
+  verifyUserAccount(id: string): Observable<any> {
     // this.logger.printLogs('i', "Delete UserAccount: ", id);
-    return this.http.put<any>(`${this.apiUrl}UserAccount/Update/Verification?id=` + id, id)
+    return this.http.put<any>(`${this.apiUrl}UserAccount/leave/Verification?id=` + id, id)
       .pipe(
         catchError(this.handleError)
       );
@@ -387,9 +394,23 @@ export class ApiService {
   //   return !!localStorage.getItem('token');
   // }
 
+  onActiveStatus(id: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}UserAccount/status/Update?id=` + id, id)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
   
   onLeave(id: string, leave: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}UserAccount/leave?id=` + id, leave)
+    return this.http.put<any>(`${this.apiUrl}UserAccount/leave/Update?id=` + id, leave)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  retrieveLeave(userID: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}UserAccount/leave/${userID}`)
       .pipe(
         catchError(this.handleError)
       );

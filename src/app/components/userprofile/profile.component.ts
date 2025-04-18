@@ -25,6 +25,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   @ViewChild('ForgetPassModalForm') ForgetPassModal!: ElementRef;
   @ViewChild('ProfileModalForm') ProfileModal!: ElementRef;
+  @ViewChild('LeaveModalForm') LeaveModal!: ElementRef;
+
 
   public userAccount: any | null;
   public userProfile: any | null;
@@ -50,6 +52,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   showProfileForm = false;
   isModalOpen = false;
+
+  userProfiles: any = [];
+  careOfUserID: string | null = null;
+  careOfUser: string | null = null;
+  leaveForm!: FormGroup
+  leave: any = null;
 
   constructor(private fb: FormBuilder, private vf: ValidateForm,
     private auth: AuthService, private api: ApiService,
@@ -80,40 +88,23 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       positionID: ['']
     });
 
+    this.leaveForm = this.fb.group({
+      remarks: ['', Validators.required],
+      careOfUser: ['', Validators.required],
+    });
+
+
     this.loadUserGroups();
     this.loadBranches();
     this.loadPositions();
 
     this.addModalHiddenListener('ForgetPassModalForm');
     this.addModalHiddenListener('ProfileModalForm');
+    this.addModalHiddenListener('LeaveModalForm');
 
 
-    // Subscribe to get the user account
-    this.store.getUserAccount().subscribe(account => {
-      this.userAccount = account;
-      console.log('Get User Account from Observable: ', this.userAccount);
-    });
-
-
-
-    this.store.getUserProfile().subscribe(profile => {
-
-      console.log('Get User Profile from Observable: ', profile);
-      if (profile) {
-        this.userProfile = profile;
-        this.profileID = this.userProfile.profileID;
-      } else {
-        console.log('Show Profile Form');
-
-        this.route.queryParams.subscribe(params => {
-          if (params['showProfileForm'] === 'true') { // Query params are strings, so compare as strings
-            console.log('Show Extra');
-            this.checkProfile();
-          }
-        });
-      }
-
-    });
+    this.getUserAccount()
+    this.getUserProfile()
   }
 
   ngAfterViewInit() {
@@ -122,9 +113,80 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   addModalHiddenListener(modalId: string) {
     const modal = document.getElementById(modalId);
-    modal?.addEventListener('hidden.bs.modal', () => this.resetForm());
+
+    modal?.addEventListener('hidden.bs.modal', () => {
+
+      this.resetForm()
+      if (modalId == "LeaveModalForm") {
+        const checkbox = document.getElementById('leave') as HTMLInputElement;
+
+        if (checkbox) {
+          checkbox.checked = !this.userAccount.isLeave;
+        }
+      }
+    });
   }
 
+  getUserAccount() {
+    this.store.getUserAccount().subscribe(account => {
+      this.userAccount = account;
+      this.logger.printLogs("i", 'Load Account', this.userAccount);
+      this.getCareOfByProfile()
+    });
+
+  }
+
+
+  getCareOfByProfile() {
+    if (this.userAccount.isLeave) {
+      this.api.retrieveLeave(this.userAccount.userID)
+        .subscribe({
+          next: (res: any) => {
+            this.logger.printLogs('i', 'Retrieve Leave', res);
+            this.leave = res;
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Fetching Leave Denied', err);
+          }
+        });
+    }
+  }
+
+  refreshUserAccount() {
+
+    this.api.getAccIDByUsername(this.userAccount.userName)
+      .subscribe({
+        next: (res: any) => {
+          this.logger.printLogs('w', 'Refresh Account', res[0]);
+          this.userAccount = res[0];
+          this.store.setUserAccount(this.userAccount);
+          this.getUserAccount();
+          this.getUserProfile();
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Fetching Account ID Denied', err);
+        }
+      });
+  }
+
+  getUserProfile() {
+    this.store.getUserProfile().subscribe(profile => {
+
+      this.logger.printLogs("i", 'Load Profile', profile);
+      if (profile) {
+        this.userProfile = profile;
+        this.profileID = this.userProfile.profileID;
+      } else {
+
+        this.route.queryParams.subscribe(params => {
+          if (params['showProfileForm'] === 'true') { // Query params are strings, so compare as strings
+            this.checkProfile();
+          }
+        });
+      }
+
+    });
+  }
   // setupModalClose() {
   //   const modal = document.getElementById('ForgetPassModalForm')!;
   //   if (modal) {
@@ -138,14 +200,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   loadUserGroups(): void {
     this.api.getAllUserGroups(this.roleNoFromToken).subscribe(
       data => {
-        console.log('USE ROLE : ', this.roleNoFromToken);
-        console.log('USE GROUPS : ', data);
         this.userGroups = data;
+        this.logger.printLogs("i", 'Load positions', this.userGroups);
         this.userGroups = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*' ? this.userGroups
           : this.userGroups.filter(ug => ug.userGroupName != 'System Administrator' && ug.userGroupName != 'System Generated');
       },
       err => {
-        console.error('Error: loading user groups => ', err);
+        this.logger.printLogs("e", 'Error loading user groups', err);
       }
     );
   }
@@ -154,13 +215,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   loadPositions(): void {
     this.api.getAllPositions().subscribe(
       data => {
-        console.log('POSITION : ', data);
         this.positions = data;
+        this.logger.printLogs("i", 'Load positions', this.positions);
         this.positions = this.roleNoFromToken === 'System Administrator' || this.roleNoFromToken === '*' ? this.positions
           : this.positions.filter(ug => ug.positionName != 'System Administrator' && ug.positionName != 'Test');
       },
       err => {
-        console.error('Error: loading Positions => ', err);
+        this.logger.printLogs("e", 'Error loading Positions', err);
       }
     );
   }
@@ -170,9 +231,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.api.getCompanies().subscribe(
       data => {
         this.branches = data;
+        this.logger.printLogs("i", 'Load Department', this.branches);
       },
       err => {
-        console.error('Error: loading Companies => ', err);
+        this.logger.printLogs("e", 'Error loading Branch', err);
       }
     );
   }
@@ -187,7 +249,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     });
     const target = event.target as HTMLSelectElement;
     const branchID = target.value;
-    console.log("Selected Branch: " + branchID);
+    this.logger.printLogs("i", 'Selected Branch', branchID);
     if (branchID) {
       this.loadDepartments(branchID);
     } else {
@@ -201,13 +263,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.api.getDepartmentsByCompanyID(branchID).subscribe(
       data => {
         this.departments = data;
-        console.log("Load Department", this.departments);
+        this.logger.printLogs("i", 'Load Department', this.departments);
         if (this.profile) {
           this.loadSections(this.profile.depID);
         }
       },
       err => {
-        console.error('Error: loading Departments => ', err);
+        this.logger.printLogs("e", 'Error loading Departments', err);
       }
     );
   }
@@ -219,7 +281,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     // });
     const target = event.target as HTMLSelectElement;
     const depID = target.value;
-    console.log("Selected Department: " + depID);
+    this.logger.printLogs("i", 'Selected Department', depID);
     if (depID) {
       this.loadSections(depID);
     } else {
@@ -233,7 +295,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.api.getSectionsByDepID(depID).subscribe(
       data => {
         this.sections = data;
-        console.log("Load Section", this.sections);
+        this.logger.printLogs("i", 'Load Section', this.sections);
 
         if (!this.isModalOpen && this.profile) {
           this.userProfileForm.patchValue({
@@ -247,14 +309,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             positionID: this.profile.positionID ?? null,
           });
 
-          console.log("Submit Profile", this.userProfileForm.value);
           this.isModalOpen = true;
 
           this.openModal(this.ProfileModal);
         }
       },
       err => {
-        console.error('Error: loading Sections => ', err);
+        this.logger.printLogs("e", 'Error loading Sections', err);
       }
     );
   }
@@ -264,7 +325,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       const modal = new bootstrap.Modal(modalElement.nativeElement);
       modal.show();
     } else {
-      console.error('Modal element is not available');
+      this.logger.printLogs("w", 'Modal', 'Not Available');
     }
   }
 
@@ -273,6 +334,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
       if (modal) {
         modal.hide();
+
+        const checkbox = document.getElementById('leave') as HTMLInputElement;
+
+        if (checkbox) {
+          checkbox.checked = !this.userAccount;
+        }
       }
     }
   }
@@ -284,17 +351,63 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
 
-  leave() {
+
+  toggleLeave(event: Event, id: string) {
+
+    const input = event.target as HTMLInputElement;
+    const isLeave: boolean = input.checked;
+
+
     Swal.fire({
-      title: 'LEAVE?',
-      text: 'Asa nmn pud ka mo ad2, mag bibiga napud ka?',
+      title: 'Confirmation',
+      text: `Do you really want to ${!this.userAccount.isLeave ? 'Inactive' : 'Active'} your status?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire('IGAT JUD','', 'info');
+        if (!this.userAccount.isLeave) {
+          this.openModal(this.LeaveModal);
+        } else {
+
+          this.api.onActiveStatus(this.userAccount.userID)
+            .subscribe({
+              next: (res) => {
+                this.logger.printLogs("i", "Success: ", res.message);
+
+                Swal.fire('Saved', res.message, 'success');
+                this.api.showToast(res.message, 'Saved!', 'success');
+                this.resetForm();
+              },
+              error: (err: any) => {
+                this.logger.printLogs("e", 'Error response:', err,);
+                input.checked = !isLeave;
+                Swal.fire('Saving Denied', err, 'warning');
+              }
+            });
+        }
+
+        // // Execute Update Verification
+        // Swal.fire('IGAT JUD', '', 'info');
+        // this.api.leaveStatusUserAccount(id)
+        //   .subscribe({
+        //     next: (res) => {
+
+        //       Swal.fire(res.message, '', 'success');
+        //       this.api.showToast(res.message, 'Status', 'success');
+
+        //       this.getUserAccount()
+
+        //     },
+        //     error: (err: any) => {
+        //       this.logger.printLogs('w', 'Update Leave status Denied', err);
+        //       Swal.fire('Update Leave status Denied', err, 'warning');
+        //     }
+        //   });
+
+      } else {
+        input.checked = !isLeave;
       }
     });
 
@@ -326,12 +439,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           this.api.UpdatePassword(this.userAccount.userID!, ChangePassDto)
             .subscribe({
               next: (res) => {
-                console.info("Success: ", res.message);
+                this.logger.printLogs("i", 'Success:', res.message);
                 Swal.fire('Updated', res.message, 'success');
                 this.api.showToast(res.message, 'Updated!', 'success');
               },
               error: (err: any) => {
-                console.log('Error response:', err);
+                this.logger.printLogs("e", 'Error response:', err);
                 Swal.fire('Updating Denied', err, 'warning');
 
               }
@@ -355,12 +468,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         next: (res) => {
           if (res[0]) {
             this.profile = res[0];
-            console.log("Show Profile", this.profile);
+            this.logger.printLogs("i", 'Show Profile', this.profile.value);
             this.isEditMode = true;
             this.profileID = this.profile.profileID;
             if (this.profile.branchID!) {
 
-              console.log("With Branch", this.profile);
+              this.logger.printLogs("i", 'Profile', this.profile);
               this.loadDepartments(this.profile.branchID);
 
             } else {
@@ -376,7 +489,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
                   positionID: this.profile.positionID || ''
                 });
 
-                console.log("Submit Profile", this.profile.value);
+                this.logger.printLogs("i", 'Profile', this.profile.value);
 
                 this.isModalOpen = true;
                 this.openModal(this.ProfileModal);
@@ -385,19 +498,19 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
           } else {
             this.isEditMode = false;
-            console.log("No Profile found!");
+            this.logger.printLogs("i", 'Profile', "Not Found");
             this.openModal(this.ProfileModal);
           }
         },
         error: (err: any) => {
-          console.log('Error Fetching Profile:', err);
+          this.logger.printLogs("e", 'Error Fetching Profile :', err);
         }
       });
   }
 
   onSubmitProfile() {
 
-    console.log("Submit Profile", this.userProfileForm.value);
+    this.logger.printLogs("i", 'Profile Form', this.profile.value);
 
     if (this.userProfileForm.valid) {
 
@@ -414,16 +527,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       }
 
 
-      console.log("profile ID: " + this.profileID);
+      this.logger.printLogs("i", 'Profile ID : ', this.profileID);
 
       if (this.profileID) {
-        console.log("Update Profile", this.userProfileForm.value);
+        this.logger.printLogs("i", 'Update Profile : ', this.userProfileForm.value);
         this.UpdateProfile(userProfile)
       } else {
         if (this.userAccount) {
-          console.log("Create Profile for UserID ", this.userAccount.userID);
+          this.logger.printLogs("i", 'User ID : ', this.userAccount.userID);
         }
-        console.log("Save Profile ", this.userProfileForm.value);
+        this.logger.printLogs("i", 'Save Profile : ', this.userProfileForm.value);
         this.SaveProfile(userProfile);
       }
 
@@ -431,6 +544,96 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.validateFormFields(this.userProfileForm);
 
 
+
+  }
+
+  onAutoSuggestReceived() {
+    this.careOfUserID = null;
+    if (!this.careOfUser) {
+      // this.getAllUserProfile();//Populate all userProfiles
+      this.userProfiles = [];
+    } else {
+      if (this.careOfUser.trim()) {
+        this.api.searchProfile(this.careOfUser)
+          .subscribe({
+            next: (res) => {
+              if (res.length == 1 && res[0].fullName == this.careOfUser && res[0].userID != this.userAccount.userID) {
+                this.selectCareOf(res[0]);
+                this.logger.printLogs('i', 'Fetch Specific Received By', res[0]);
+              } else {
+                this.userProfiles = res;
+                this.logger.printLogs('i', 'Fetching Received By from res', res);
+                this.userProfiles = this.userProfiles.filter((profile: any) => profile.userID !== this.userAccount.userID).slice(0, 5);
+                // this.userProfiles = this.userProfiles.slice(0, 5)
+                this.logger.printLogs('i', 'Fetching Received By from userProfiles', res);
+              }
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Received By', err);
+            }
+          });
+      }
+    }
+  }
+  selectCareOf(userProfile: any): void {
+
+    this.careOfUserID = userProfile.userID;
+    this.logger.printLogs('i', 'Selected to Received', userProfile);
+
+
+    if (this.leaveForm!) {
+      this.leaveForm.patchValue({
+        careOfUser: userProfile.fullName  // Patch the selected IID to the form
+      });
+    }
+
+    this.userProfiles = [];  // Clear the suggestion list after selection
+  }
+
+  onSubmitLeave() {
+
+    this.logger.printLogs("i", 'Submit Leave : ', this.leaveForm.value);
+
+    if (this.leaveForm.valid && this.careOfUserID != null) {
+
+      const leave = {
+        userID: this.userAccount ? this.userAccount.userID : '0',
+        remarks: this.leaveForm.value['remarks'],
+        CareOfUserID: this.careOfUserID,
+      }
+
+
+      Swal.fire({
+        title: 'Inactive Status',
+        text: 'Are you sure?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+          this.api.onLeave(this.userAccount.userID, leave)
+            .subscribe({
+              next: (res) => {
+                this.logger.printLogs("i", 'Success Filling Leave : ', res.message);
+
+                Swal.fire('Saved', res.message, 'success');
+                this.api.showToast(res.message, 'Saved!', 'success');
+
+                this.resetForm();
+              },
+              error: (err: any) => {
+                this.logger.printLogs("e", 'Error Filling Leave : ', err);
+                Swal.fire('Saving Denied', err, 'warning');
+              }
+            });
+        }
+      });
+
+    }
+
+    this.validateFormFields(this.leaveForm);
 
   }
 
@@ -450,8 +653,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.api.createProfile(userProfile)
       .subscribe({
         next: (res) => {
-          console.info("Success: ", res.message);
 
+          this.logger.printLogs("i", 'Success Saving Profile : ', res.message);
           Swal.fire('Saved', res.message, 'success');
           this.api.showToast(res.message, 'Saved!', 'success');
 
@@ -459,7 +662,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           this.resetForm();
         },
         error: (err: any) => {
-          console.log('Error response:', err);
+          this.logger.printLogs("e", 'Error Saving Profile : ', err);
           Swal.fire('Saving Denied', err, 'warning');
         }
       });
@@ -479,8 +682,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         this.api.updateProfile(this.profileID!, userProfile)
           .subscribe({
             next: (res) => {
-              console.info("Success: ", res.message);
 
+              this.logger.printLogs("i", 'Success Updating Profile : ', res.message);
               Swal.fire('Updated!', res.message, 'success');
               this.api.showToast(res.message, 'Updated!', 'success');
 
@@ -488,7 +691,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
               this.resetForm();
             },
             error: (err: any) => {
-              console.log('Error response:', err);
+              this.logger.printLogs("e", 'Error Updating Profile : ', err);
               Swal.fire('Updating Denied', err, 'warning');
             }
           });
@@ -533,8 +736,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       secID: '',
       positionID: ''
     });
+
+    this.leaveForm.reset({
+      remarks: '',
+      careOfID: ''
+    });
     this.closeModal(this.ProfileModal);
     this.closeModal(this.ForgetPassModal);
+    this.closeModal(this.LeaveModal);
+    this.refreshUserAccount();
   }
 
 }
+

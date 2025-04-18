@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, NgZone, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -12,6 +12,7 @@ import { ApiService } from '../../services/api.service';
 import { LogsService } from '../../services/logs.service';
 
 // import * as bootstrap from 'bootstrap';
+import AOS from 'aos';
 declare var bootstrap: any;
 
 @Component({
@@ -22,7 +23,7 @@ declare var bootstrap: any;
   styleUrl: './login.component.css',
 })
 
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterViewInit {
 
 
 
@@ -52,6 +53,10 @@ export class LoginComponent implements OnInit {
     // this.ngZone.run(() => {
     //   this.toastr.success('Toastr is working inside Zone.js!', 'Success');
     // });
+  }
+
+  ngAfterViewInit(): void {
+    AOS.init();
   }
 
   openModal(modalElement: ElementRef) {

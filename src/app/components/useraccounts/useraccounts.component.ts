@@ -653,7 +653,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   }
 
 
-  toggleVerification(event: Event, id: number, name: string) {
+  toggleVerification(event: Event, id: string, name: string) {
 
     const input = event.target as HTMLInputElement;
     const isVerified: boolean = input.checked;
