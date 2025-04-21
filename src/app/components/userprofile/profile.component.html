@@ -485,10 +485,10 @@
                   <small class="text-info">*
                     Remarks</small>
                   }@else {
-                  <small class="text-danger" *ngIf="leaveForm.controls['remarks'].invalid && leaveForm.hasError('required', 'remarks') && leaveForm.get('remarks')?.touched ||
-                    (leaveForm.controls['remarks'].dirty && leaveForm.hasError('required', 'remarks'))">*
+                  <small class="text-danger">*
                     Remarks is required</small>
                   }
+
                   <div class="form-field d-flex align-items-center"
                     [class.error]="leaveForm.controls['remarks'].invalid && leaveForm.hasError('required', 'remarks') && 
                   leaveForm.get('remarks')?.touched || (leaveForm.controls['remarks'].dirty && leaveForm.hasError('required', 'remarks'))">
@@ -501,22 +501,15 @@
                       placeholder="Enter the details of your reason of inactive status."></textarea>
                   </div>
 
-
-
                   @if(!(leaveForm.controls['careOfUser'].invalid &&
                   leaveForm.hasError('required', 'careOfUser') &&
                   leaveForm.get('careOfUser')?.touched ||
                   (leaveForm.controls['careOfUser'].dirty &&
-                  leaveForm.hasError('required', 'careOfUser')))){
+                  leaveForm.hasError('required', 'careOfUser')) || (leaveForm.get('careOfUser')?.touched && careOfUserID === null))){
                   <small class="text-info">*
                     Care of By</small>
                   }@else {
-                  <small class="text-danger"
-                    *ngIf="leaveForm.controls['careOfUser'].invalid &&
-                    leaveForm.hasError('required', 'careOfUser') &&
-                    leaveForm.get('careOfUser')?.touched ||
-                    (leaveForm.controls['careOfUser'].dirty &&
-                    leaveForm.hasError('required', 'careOfUser')) || (leaveForm.get('careOfUser')?.touched && careOfUserID === null)">*
+                  <small class="text-danger">*
                     Care of By is
                     required</small>
                   }

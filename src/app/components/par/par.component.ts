@@ -98,6 +98,8 @@ export class ParComponent implements OnInit, AfterViewInit {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 
@@ -1002,6 +1004,20 @@ export class ParComponent implements OnInit, AfterViewInit {
       userID1: par.receivedBy, // These will now be patched correctly
       userID2: par.issuedBy
     });
+    
+    if (this.par.isReceivedActive) {
+      this.api.retrieveLeave(this.par.receivedBy)
+        .subscribe({
+          next: (res: any) => {
+            this.logger.printLogs('i', 'Retrieve Leave', res);
+            this.leave = res;
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Fetching Leave Denied', err);
+            this.leave = null;
+          }
+        });
+    }
 
     this.api.retrievePARItemByParNo(this.currentEditId!)
       .subscribe({
@@ -1540,7 +1556,10 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.selectedParItems = [];
     this.parItemKey = '';
     this.searchKey = '';
-
+    
+    this.par = null;  
+    this.leave = null;
+    
     this.parForm.reset({
       lgu: '',
       fund: '',

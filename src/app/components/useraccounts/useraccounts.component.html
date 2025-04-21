@@ -61,7 +61,11 @@
                 <label for="checkbox1"></label>
               </span>
             </td> -->
-            <td>{{ua.userID}}</td>
+            <td>
+              <span class="status-dot me-2" [ngClass]="!ua.isLeave? 'active' : 'inactive'"
+                title="{{ !ua.isLeave ? 'Active' : 'Inactive' }}"></span>
+              {{ua.userID}}
+            </td>
             <td>{{ua.userName}}</td>
             <td>{{ua.fullname}}</td>
             <td>{{ua.userGroupName}}</td>
@@ -96,8 +100,8 @@
                     class="fa-sharp-duotone fa-solid fa-id-card" data-toggle="tooltip" title="Profile"></i></a>
 
                 <a *ngIf="roleNoFromToken == 'System Administrator' && canUpdate" class="text-info" type="button"
-                  (click)="openForgotPassword(ua)"><i class="fa-solid fa-user-secret"
-                    data-toggle="tooltip" title="Change Password"></i></a>
+                  (click)="openForgotPassword(ua)"><i class="fa-solid fa-user-secret" data-toggle="tooltip"
+                    title="Change Password"></i></a>
               </form>
             </td>
           </tr>

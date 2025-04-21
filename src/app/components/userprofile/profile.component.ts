@@ -557,14 +557,14 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         this.api.searchProfile(this.careOfUser)
           .subscribe({
             next: (res) => {
-              if (res.length == 1 && res[0].fullName == this.careOfUser && res[0].userID != this.userAccount.userID) {
+              this.logger.printLogs('i', `Fetch Specific Received By ${this.careOfUser}`, res);
+              this.userProfiles = res.filter((profile: any) => profile.isLeave === false && profile.userID !== this.userAccount.userID);
+
+              if (this.userProfiles.length == 1 && this.userProfiles.fullName == this.careOfUser ) {
                 this.selectCareOf(res[0]);
                 this.logger.printLogs('i', 'Fetch Specific Received By', res[0]);
               } else {
-                this.userProfiles = res;
-                this.logger.printLogs('i', 'Fetching Received By from res', res);
-                this.userProfiles = this.userProfiles.filter((profile: any) => profile.userID !== this.userAccount.userID).slice(0, 5);
-                // this.userProfiles = this.userProfiles.slice(0, 5)
+                this.userProfiles = this.userProfiles.slice(0, 5)
                 this.logger.printLogs('i', 'Fetching Received By from userProfiles', res);
               }
             },

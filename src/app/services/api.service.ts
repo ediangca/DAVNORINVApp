@@ -385,17 +385,14 @@ export class ApiService {
 
   verifyUserAccount(id: string): Observable<any> {
     // this.logger.printLogs('i', "Delete UserAccount: ", id);
-    return this.http.put<any>(`${this.apiUrl}UserAccount/leave/Verification?id=` + id, id)
+    return this.http.put<any>(`${this.apiUrl}UserAccount/Update/Verification?id=` + id, id)
       .pipe(
         catchError(this.handleError)
       );
   }
-  // isAuthenticated(): boolean {
-  //   return !!localStorage.getItem('token');
-  // }
-
+  
   onActiveStatus(id: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}UserAccount/status/Update?id=` + id, id)
+    return this.http.put<any>(`${this.apiUrl}UserAccount/Update/Status?id=` + id, id)
       .pipe(
         catchError(this.handleError)
       );

@@ -79,7 +79,11 @@
             <td>{{formatDate(p.date_Created)}}</td>
             <td>{{p.parNo}}</td>
             <td>{{p.issued}}</td>
-            <td>{{p.received}}</td>
+            <td [ngClass]="p.isReceivedActive? 'text-danger' : ''">
+              <!-- <span class="status-dot me-2" [ngClass]="!p.isReceivedActive? 'active' : 'inactive'"
+              title="{{ !p.isReceivedActive ? 'Active' : 'Inactive' }}"></span> -->
+              {{p.received}}
+            </td>
             <td>{{p.created}}</td>
             <td>
               <form class="d-flex justify-content-end align-items-center">
@@ -494,6 +498,7 @@
                             <input type="text" [value]="par?.received" class="form-control" placeholder="RECEIVED"
                               readonly>
                           </div>
+
                         </div>
                         <div class="col">
                           <small class="text-info">ISSUED BY</small>
@@ -515,6 +520,14 @@
               <!-- ITEM TABLE -->
               <div class="row m-0">
                 <div class="col py-0">
+
+                  <p *ngIf="this.par?.isReceivedActive || this.leave != null" class="text-center">
+                    In absence of Mr./Ms. <span class="text-danger fw-bold"> {{par.received}} </span>,
+                    <span class="text-info fw-bold px-1">
+                      {{leave.careOfUser}} </span>
+                    will take over the properties below.
+                  </p>
+
                   <div class="row py-3 bg-primary">
 
                     <div class="col-3 d-flex align-items-center">
@@ -758,6 +771,7 @@
                     TRASFERED.</h6>
                 </div>
               </div>
+
             </div>
             <!-- END OF CARD FOOTER -->
           </div>
@@ -765,12 +779,15 @@
         </div><!-- END OF MODAL BODY -->
 
         <div class="modal-footer">
+
+
           <button type="button" class="btn btn-warning rounded-pill" *ngIf="canUpdate && !par?.postFlag || false"
             (click)="onEditPAR(par)">Edit</button>
           <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"
             (click)="closeModal(ViewModal)">Close</button>
           <button type="button" class="btn btn-primary rounded-pill" *ngIf="isRepar && noOfParItems > 0"
             (click)="onSubmitREPAR()">Save</button>
+
         </div>
       </form>
     </div>
