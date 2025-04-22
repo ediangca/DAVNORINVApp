@@ -100,6 +100,8 @@ export class ItrComponent implements OnInit, AfterViewInit {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 
@@ -928,6 +930,22 @@ export class ItrComponent implements OnInit, AfterViewInit {
       this.item = null;
     }
 
+    if (this.itr.isReceivedActive) {
+      this.api.retrieveLeave(this.itr.receivedBy)
+        .subscribe({
+          next: (res: any) => {
+            this.logger.printLogs('i', 'Retrieve Leave', res);
+            this.leave = res;
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Fetching Leave Denied', err);
+            this.leave = null;
+          }
+        });
+    } else {
+      this.leave = null;
+    }
+    
     this.api.retrieveITR(this.currentEditId!)
       .subscribe({
         next: (res) => {

@@ -96,6 +96,8 @@ export class RrspComponent {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 

@@ -99,6 +99,8 @@ export class OthersComponent implements OnInit, AfterViewInit {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 
@@ -943,6 +945,22 @@ export class OthersComponent implements OnInit, AfterViewInit {
       userID2: opr.issued,
     });
 
+    if (this.opr.isReceivedActive) {
+      this.api.retrieveLeave(this.opr.receivedBy)
+        .subscribe({
+          next: (res: any) => {
+            this.logger.printLogs('i', 'Retrieve Leave', res);
+            this.leave = res;
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Fetching Leave Denied', err);
+            this.leave = null;
+          }
+        });
+    } else {
+      this.leave = null;
+    }
+    
     this.api.retrieveOPRItemByOPRNo(this.currentEditId!)
       .subscribe({
         next: (res) => {

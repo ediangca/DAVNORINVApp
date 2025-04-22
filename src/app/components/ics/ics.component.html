@@ -65,7 +65,9 @@
             <td>{{formatDate(i.date_Created)}}</td>
             <td>{{i.icsNo}}</td>
             <td>{{i.issued}}</td>
-            <td>{{i.received}}</td>
+            <td [ngClass]="i.isReceivedActive? 'text-danger' : ''">
+              {{i.received}}
+            </td>
             <td>{{i.created}}</td>
             <td>
               <form class="d-flex justify-content-end align-items-center">
@@ -193,7 +195,7 @@
                     <input type="text" formControlName="fund" name="fund" id="fund" placeholder="FUND">
                   </div>
                 </div>
-                <div class="col-12 col-lg-6"  >
+                <div class="col-12 col-lg-6">
 
                   @if(!(icsForm.controls['icsNo'].invalid &&
                   icsForm.hasError('required', 'icsNo') &&
@@ -260,7 +262,7 @@
                             <td>{{ (p.amount || 0).toLocaleString('en-US', {
                               minimumFractionDigits: 2, maximumFractionDigits: 2
                               }) }}
-                              </td>
+                            </td>
                             <td>
                               <form class="d-flex justify-content-end">
                                 <a class="edit" type="button"><i class="fa-sharp-duotone fa-solid fa-pen-to-square"
@@ -499,6 +501,14 @@
               <!-- ITEM TABLE -->
               <div class="row m-0">
                 <div class="col py-0">
+                  
+                  <p *ngIf="this.ics?.isReceivedActive || this.leave != null" class="text-center">
+                    In absence of Mr./Ms. <span class="text-danger fw-bold"> {{ics.received}} </span>,
+                    <span class="text-primary fw-bold px-1">
+                      {{leave.careOfUser}} </span>
+                    will take over the properties below.
+                  </p>
+                  
                   <div class="row py-3 bg-primary">
 
                     <div class="col-3 d-flex align-items-center">

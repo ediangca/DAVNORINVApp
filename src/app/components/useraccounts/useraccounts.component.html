@@ -16,7 +16,7 @@
               <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
                 (click)="searchUserAccount()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
-            <a *ngIf="canCreate" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+            <a *ngIf="canCreate && canPost" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
               type="button" (click)="openAddEditModal()">
               <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">ACCOUNT</span></a>
             <a *ngIf="canCreate" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
@@ -91,7 +91,7 @@
                     title="System Default"></i></span>
                 }@else{
 
-                <a *ngIf="canUpdate" class="edit" type="button" (click)="restoreData(ua)"><i
+                <a *ngIf="canUpdate && canPost" class="edit" type="button" (click)="restoreData(ua)"><i
                     class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
                 <a *ngIf="canDelete" class="delete" (click)="onDelete(ua.userID, ua.userName)"><i
                     class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>

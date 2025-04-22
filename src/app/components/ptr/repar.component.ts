@@ -99,6 +99,8 @@ export class ReparComponent implements OnInit, AfterViewInit {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+  
   isLoading: boolean = true;
   onItemFound: boolean = false;
 
@@ -917,6 +919,22 @@ export class ReparComponent implements OnInit, AfterViewInit {
       userID2: par.issuedBy,
       userID3: par.approvedBy
     });
+
+    if (this.par.isReceivedActive) {
+      this.api.retrieveLeave(this.par.receivedBy)
+        .subscribe({
+          next: (res: any) => {
+            this.logger.printLogs('i', 'Retrieve Leave', res);
+            this.leave = res;
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Fetching Leave Denied', err);
+            this.leave = null;
+          }
+        });
+    } else {
+      this.leave = null;
+    }
 
     this.api.retrieveREPAR(this.currentEditId!)
       .subscribe({

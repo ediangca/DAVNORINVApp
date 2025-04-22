@@ -98,6 +98,8 @@ export class OprrComponent implements OnInit, AfterViewInit {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 

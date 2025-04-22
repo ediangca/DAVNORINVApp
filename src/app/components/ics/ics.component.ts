@@ -98,6 +98,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 
@@ -914,6 +916,22 @@ export class IcsComponent implements OnInit, AfterViewInit {
       userID2: ics.issuedBy,
     });
 
+    if (this.ics.isReceivedActive) {
+      this.api.retrieveLeave(this.ics.receivedBy)
+        .subscribe({
+          next: (res: any) => {
+            this.logger.printLogs('i', 'Retrieve Leave', res);
+            this.leave = res;
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Fetching Leave Denied', err);
+            this.leave = null;
+          }
+        });
+    } else {
+      this.leave = null;
+    }
+    
     this.api.retrieveICSItemByICSNo(this.currentEditId!)
       .subscribe({
         next: (res) => {

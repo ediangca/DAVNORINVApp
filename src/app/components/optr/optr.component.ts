@@ -99,6 +99,8 @@ export class OptrComponent implements OnInit, AfterViewInit {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 
@@ -190,7 +192,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
         this.logger.printLogs('i', 'Scanner is ready:', res);
       });
     } else {
-      this.logger.printLogs('i', 'Action or isReady','Scanner is not defined when ngOnInit is called.');
+      this.logger.printLogs('i', 'Action or isReady', 'Scanner is not defined when ngOnInit is called.');
     }
   }
 
@@ -382,7 +384,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
   searchPARItem() {
     this.parItemKey = this.optrForm.value['searchPARItemKey'];
-    this.logger.printLogs('i', 'OPTR Item key',this.parItemKey);
+    this.logger.printLogs('i', 'OPTR Item key', this.parItemKey);
 
     // Populate all items if the search key is empty
     if (!this.parItemKey || this.parItemKey.trim() === "") {
@@ -823,6 +825,21 @@ export class OptrComponent implements OnInit, AfterViewInit {
       userID3: opr.approvedBy
     });
 
+    if (this.opr.isReceivedActive) {
+      this.api.retrieveLeave(this.opr.receivedBy)
+        .subscribe({
+          next: (res: any) => {
+            this.logger.printLogs('i', 'Retrieve Leave', res);
+            this.leave = res;
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Fetching Leave Denied', err);
+            this.leave = null;
+          }
+        });
+    } else {
+      this.leave = null;
+    }
 
     this.api.retrieveOPTR(this.currentEditId! + "")
       .subscribe({
@@ -1466,7 +1483,7 @@ export class OptrComponent implements OnInit, AfterViewInit {
 
     scannerAction.play().subscribe(
       (r: any) => this.logger.printLogs('i', 'Resuming Scan:', r),
-      (error: any) =>this.logger.printLogs('e', 'Error while resuming scan:', error)
+      (error: any) => this.logger.printLogs('e', 'Error while resuming scan:', error)
     );
   }
 

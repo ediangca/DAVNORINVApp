@@ -333,7 +333,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     if (modalElement) {
       const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
       if (modal) {
-        modal.hide();
+        // modal.hide();
+        modal.dispose();
 
         const checkbox = document.getElementById('leave') as HTMLInputElement;
 
@@ -463,6 +464,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   checkProfile() {
+    if(this.ProfileModal !== null) {
+      this.closeModal(this.ProfileModal);
+    }
+
     this.api.getProfile(this.userAccount.userID!)
       .subscribe({
         next: (res) => {
@@ -510,7 +515,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   onSubmitProfile() {
 
-    this.logger.printLogs("i", 'Profile Form', this.profile.value);
+    this.logger.printLogs("i", 'Profile Form', this.userProfileForm.value);
 
     if (this.userProfileForm.valid) {
 
@@ -716,9 +721,14 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       });
   }
 
+
   resetForm() {
+    this.closeModal(this.ProfileModal);
+    this.closeModal(this.ForgetPassModal);
+    this.closeModal(this.LeaveModal);
     this.isModalOpen = false;
     this.isEditMode = false;
+    this.showProfileForm = false;
     this.userAccountForm.reset(
       {
         oldpassword: '',
@@ -741,9 +751,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       remarks: '',
       careOfID: ''
     });
-    this.closeModal(this.ProfileModal);
-    this.closeModal(this.ForgetPassModal);
-    this.closeModal(this.LeaveModal);
     this.refreshUserAccount();
   }
 

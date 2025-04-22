@@ -60,7 +60,9 @@
             <td>{{formatDate(i.date_Created)}}</td>
             <td>{{i.itrNo}}</td>
             <td>{{i.issued}}</td>
-            <td>{{i.received}}</td>
+            <td [ngClass]="i.isReceivedActive? 'text-danger' : ''">
+              {{i.received}}
+            </td>
             <td>{{i.approved}}</td>
             <td>{{i.created}}</td>
             <td>
@@ -636,6 +638,14 @@
               <!-- ITEM TABLE -->
               <div class="row m-0">
                 <div class="col py-0">
+                  
+                  <p *ngIf="this.itr?.isReceivedActive || this.leave != null" class="text-center">
+                    In absence of Mr./Ms. <span class="text-danger fw-bold"> {{itr.received}} </span>,
+                    <span class="text-primary fw-bold px-1">
+                      {{leave.careOfUser}} </span>
+                    will take over the properties below.
+                  </p>
+                  
                   <div class="row py-3 bg-primary">
 
                     <div class="col-3 d-flex align-items-center">

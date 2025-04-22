@@ -97,8 +97,8 @@
             <li class="nav-item dropdown">
               <a class="py-0 nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="status-dot me-2" [ngClass]="!userAccount.isLeave? 'active' : 'inactive'"
-                  title="{{ !userAccount.isLeave ? 'Active' : 'Inactive' }}"></span>
+                <span class="status-dot me-2" [ngClass]="!userAccount?.isLeave? 'active' : 'inactive'"
+                  title="{{ !userAccount?.isLeave ? 'Active' : 'Inactive' }}"></span>
                 <i class="fa-duotone fa-solid fa-user"></i>
                 <div class="caption ms-3 d-none d-md-block ">
                   <h6 class="mb-0 caption-title">{{fullname}}</h6>

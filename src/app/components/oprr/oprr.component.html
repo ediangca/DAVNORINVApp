@@ -63,7 +63,9 @@
             </td>
             <td>{{formatDate(p.date_Created)}}</td>
             <td>{{p.oprrNo}}</td>
-            <td>{{p.issued}}</td>
+            <td [ngClass]="p.isIssuedActive? 'text-danger' : ''">
+              {{p.issued}}
+            </td>
             <td>{{p.received}}</td>
             <td>{{p.approved}}</td>
             <td>{{p.created}}</td>

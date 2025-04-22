@@ -60,7 +60,9 @@
             <td>{{formatDate(p.date_Created)}}</td>
             <td>{{'OPR-000'+p.optrNo}}</td>
             <td>{{p.issued}}</td>
-            <td>{{p.received}}</td>
+            <td [ngClass]="p.isReceivedActive? 'text-danger' : ''">
+              {{p.received}}
+            </td>
             <td>{{p.approved}}</td>
             <td>{{p.created}}</td>
             <td>
@@ -590,6 +592,14 @@
               <!-- ITEM TABLE -->
               <div class="row m-0">
                 <div class="col py-0">
+
+                  <p *ngIf="this.opr?.isReceivedActive || this.leave != null" class="text-center">
+                    In absence of Mr./Ms. <span class="text-danger fw-bold"> {{opr.received}} </span>,
+                    <span class="text-primary fw-bold px-1">
+                      {{leave.careOfUser}} </span>
+                    will take over the properties below.
+                  </p>
+
                   <div class="row py-3 bg-primary">
 
                     <div class="col-3 d-flex align-items-center">

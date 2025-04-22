@@ -83,7 +83,9 @@
             <td>{{p.itemSource}}</td>
             <td>{{p.ownership}}</td>
             <td>{{p.issued}}</td>
-            <td>{{p.received}}</td>
+            <td [ngClass]="p.isReceivedActive? 'text-danger' : ''">
+              {{p.received}}
+            </td>
             <td>{{p.created}}</td>
             <td>
               <form class="d-flex justify-content-end align-items-center">
@@ -326,9 +328,9 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="card-body py-0" *ngIf="isEditMode">
-            <!-- <div class="card-body py-0"> -->
+              <!-- <div class="card-body py-0"> -->
               <div class="row m-0">
                 <div class="col py-0">
 
@@ -394,14 +396,14 @@
                 </div>
               </div>
             </div>
-             
+
             <div class="card-footer py-2" *ngIf="isEditMode">
               <!-- <div class="card-footer py-2" > -->
               <a class="btn btn-success rounded-pill d-flex justify-content-center align-items-center " type="button"
                 (click)="onAddPARItem()">
                 <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">NEW</span></a>
-            </div> 
-            
+            </div>
+
           </div>
 
         </div>
@@ -432,7 +434,7 @@
             <h1 class="modal-title fs-5" id="staticBackdropLabel">
               {{(isOPTR? 'OPTR' : 'OPR') }}
             </h1>
-            <span><em>  Other Property {{(isOPTR? 'Transfer Report' :
+            <span><em> Other Property {{(isOPTR? 'Transfer Report' :
                 ' Receipt') }}
               </em></span>
           </div>
@@ -460,14 +462,16 @@
                           <small class="text-info">Source of Property</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source" readonly>
+                            <input type="text" [value]="opr?.itemSource" class="form-control" placeholder="Item Source"
+                              readonly>
                           </div>
                         </div>
                         <div class="col">
                           <small class="text-info">Owner/Source From</small>
                           <div class="form-field d-flex align-items-center">
                             <i class="fa-sharp-duotone fa-solid fa-circle-exclamation text-danger" *ngIf="false"></i>
-                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership" readonly>
+                            <input type="text" [value]="opr?.ownership" class="form-control" placeholder="Ownership"
+                              readonly>
                           </div>
                         </div>
                       </div>
@@ -501,6 +505,14 @@
               <!-- ITEM TABLE -->
               <div class="row m-0">
                 <div class="col py-0">
+                  
+                  <p *ngIf="this.opr?.isReceivedActive || this.leave != null" class="text-center">
+                    In absence of Mr./Ms. <span class="text-danger fw-bold"> {{opr.received}} </span>,
+                    <span class="text-primary fw-bold px-1">
+                      {{leave.careOfUser}} </span>
+                    will take over the properties below.
+                  </p>
+                  
                   <div class="row py-3 bg-primary">
 
                     <div class="col-3 d-flex align-items-center">
@@ -568,7 +580,7 @@
                                 <a class="success" type="button" (click)="onViewItem(p)">
                                   <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
                                 </a>
-                               
+
                               </td>
                             </tr>
                           </ng-container>

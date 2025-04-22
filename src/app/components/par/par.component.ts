@@ -1017,6 +1017,8 @@ export class ParComponent implements OnInit, AfterViewInit {
             this.leave = null;
           }
         });
+    } else {
+      this.leave = null;
     }
 
     this.api.retrievePARItemByParNo(this.currentEditId!)

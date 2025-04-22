@@ -98,6 +98,8 @@ export class PrsComponent implements OnInit, AfterViewInit {
   brand: string = '';
   model: string = '';
 
+  leave: any = null;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 
@@ -676,6 +678,23 @@ export class PrsComponent implements OnInit, AfterViewInit {
       userID1: prs.receivedBy,
       userID2: prs.issuedBy,
     });
+
+
+    if (this.prs.isIssuedActive) {
+      this.api.retrieveLeave(this.prs.issuedBy)
+        .subscribe({
+          next: (res: any) => {
+            this.logger.printLogs('i', 'Retrieve Leave', res);
+            this.leave = res;
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Fetching Leave Denied', err);
+            this.leave = null;
+          }
+        });
+    } else {
+      this.leave = null;
+    }
 
     this.api.retrievePRS(this.currentEditId!)
       .subscribe({
