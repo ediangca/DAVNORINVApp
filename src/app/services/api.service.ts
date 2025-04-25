@@ -1830,7 +1830,7 @@ export class ApiService {
         errorMessage = error.message;
       }
     }
-    return throwError(errorMessage);
+    return throwError(`${errorMessage}\nPlease contact the system administrator.`);
   }
 
 }

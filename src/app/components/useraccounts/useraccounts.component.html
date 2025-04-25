@@ -96,7 +96,7 @@
                 <a *ngIf="canDelete" class="delete" (click)="onDelete(ua.userID, ua.userName)"><i
                     class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
                 }
-                <a *ngIf="canRetrieve" class="info" type="button" (click)="getProfileByUserID(ua)"><i
+                <a *ngIf="canRetrieve && (ua.userGroupName !== 'System Administrator' && ua.userGroupName !== 'Test')" class="info" type="button" (click)="getProfileByUserID(ua)"><i
                     class="fa-sharp-duotone fa-solid fa-id-card" data-toggle="tooltip" title="Profile"></i></a>
 
                 <a *ngIf="roleNoFromToken == 'System Administrator' && canUpdate" class="text-info" type="button"

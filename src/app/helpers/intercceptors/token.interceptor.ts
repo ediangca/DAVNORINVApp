@@ -3,14 +3,17 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpInterce
 import { AuthService } from '../../services/auth.service';
 import { catchError, Observable, throwError } from 'rxjs';
 import { NgToastService } from 'ng-angular-popup';
+import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { LogsService } from '../../services/logs.service';
+import Swal from 'sweetalert2';
 
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const toast = inject(NgToastService);
+  const toastr = inject(ToastrService);
   const logger = inject(LogsService);
 
   const myToken = authService.getToken();
@@ -38,7 +41,25 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         logger.printLogs('i', 'Pipe Error', `Status: " ${err.status}`);
         if (err.status == 0) {
           messages = "Failed to establish connection!";
-          toast.warning("Failed to establish connection!", "Error!", 5000);
+          // toast.warning("Failed to establish connection!\nPlease contact the system administrator.", "Connectivity Error!", 5000);
+          toastr.error(
+            'Failed to establish connection!<br/>Please contact the system administrator.',
+            'Connectivity Error!',
+            {
+              // timeOut: 5000,
+              timeOut: 0,
+              enableHtml: true,
+              tapToDismiss: false,
+              disableTimeOut: true,
+              positionClass: 'toast-bottom-right',
+              // closeButton: true,
+              // progressBar: true 
+              // progressAnimation: 'increasing',
+            }
+
+          );
+          Swal.fire('Connectivity Error!', "Failed to establish connection!<br>Please contact the system administrator.", 'error');
+          // this.toastr.success('Hello world!', 'Toastr fun!');
           // authService.exit();
         } else if (err.status == 400) {// Check if the error response has a message property
           if (err.error && err.error.message) {
@@ -80,7 +101,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
           toast.warning(err.error.message, "Not Found!", 5000);
         }
       }
-      return throwError(() => new Error(messages! || err?.message || err.error?.message || "Something went wrong."));
+      return throwError(() => new Error(`${messages! || err?.message || err.error?.message}\nPlease contact the system administrator.`));
     })
   );
 };
