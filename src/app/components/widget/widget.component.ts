@@ -3,6 +3,9 @@ import { ApiService } from '../../services/api.service';
 import AOS from 'aos';
 import { LogsService } from '../../services/logs.service';
 import { CommonModule } from '@angular/common';
+import { StoreService } from '../../services/store.service';
+import { AuthService } from '../../services/auth.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-widget',
@@ -20,14 +23,54 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
 
   cards!: HTMLElement[];
   currentIndex = 0;
+  today: Date = new Date();
 
   census: any | null = null;
   activities: any = [];
   totalItemsByOffice: any = [];
 
-  constructor(private api: ApiService, private logger: LogsService) {
+  
+  username: string = "";
+  role: string = "";
+
+  usernameFromToken: string = 'User Account';
+  roleNoFromToken: string = "Role";
+
+  constructor(private api: ApiService, private logger: LogsService,
+      private route: ActivatedRoute,
+    private auth: AuthService, private store: StoreService) {
     this.ngOnInit()
+    // this.today = new Date().toISOString().split('T')[0];
+    // this.getUserProfile();
   }
+
+  public getUserProfile() {
+
+    this.roleNoFromToken = this.auth.getRoleFromToken();
+    this.logger.printLogs('i', 'Retrieve Role', [this.roleNoFromToken]);
+    this.route.data.subscribe(data => {
+      this.logger.printLogs('i', 'Retrieve Username', [data['username']]);
+      this.usernameFromToken = data['username'];
+      if (!this.usernameFromToken) {
+        this.logger.printLogs('w', 'Not Found Username', ['No username available.']);
+      }
+    });
+
+    // Get Decoded unique_name from token
+
+    this.store.getFullnameForStore()
+      .subscribe(res => {
+        this.username = res || this.usernameFromToken;
+      });
+
+    // Get Decoded role from token
+    this.store.getRoleFromStore()
+      .subscribe(res => {
+        this.role = res || this.roleNoFromToken;
+      });
+
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     this.getTotalParCencus();
   }
@@ -38,6 +81,7 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.getActivityLogs();
     this.getTotalAbove50ItemsByOffice();
     window.addEventListener('resize', () => this.updateCarousel());
+
   }
 
   ngAfterViewInit(): void {
@@ -101,7 +145,7 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   getActivityLogs() {
     this.api.getActivityLogs().subscribe({
       next: (res) => {
-        this.activities = res.slice(0, 4);
+        this.activities = res.slice(0, 5);
         this.logger.printLogs('i', 'ActivityLog : ', this.activities);
       },
       error: (err: any) => {
@@ -197,6 +241,39 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
       this.logger.printLogs('w', 'Invalid Date Format', [date]);
       return null;
     }
+  }
+
+  public formatTime(date: Date | string | null): string | null {
+    if (!date) return null;
+
+    // If the date is a string, convert it to a Date object
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
+
+    // Ensure it's a valid Date object
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      const hours = date.getHours();
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+      return `${formattedHours}:${minutes} ${period}`;
+    } else {
+      // Handle invalid date
+      this.logger.printLogs('w', 'Invalid Date Format', [date]);
+      return null;
+    }
+  }
+
+  public AddNewAnnouncement() {
+    alert("Add New Announcement");
+  }
+
+  public UpdateAnnouncement(id: number) {
+    alert("Update Announcement");
+  }
+  public DeleteAnnouncement(id: number) {
+    alert("Delete Announcement");
   }
 
 }
