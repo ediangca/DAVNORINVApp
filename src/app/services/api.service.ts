@@ -52,7 +52,7 @@ export class ApiService {
       );
   }
 
-  //Cencus List
+  //Activity List
   getActivityLogs(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}Cencus/ActivityLog`)
       .pipe(
@@ -63,6 +63,25 @@ export class ApiService {
   //TotalAbove50ItemsByOffice List
   getTotalAbove50ItemsByOffice(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}Cencus/TotalAbove50ItemsByOffice`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+
+  //Activity List
+  getActivityLogsByID(id: string): Observable<any> {
+    this.logger.printLogs('i', "Get Activity By ID: ", id);
+    return this.http.get<any>(`${this.apiUrl}Cencus/ActivityLog/${id}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  //Cencus List
+  getCencusByID(id: string): Observable<any> {
+    this.logger.printLogs('i', "Get Census By ID: ", id);
+    return this.http.get<any>(`${this.apiUrl}Cencus/${id}`)
       .pipe(
         catchError(this.handleError)
       );

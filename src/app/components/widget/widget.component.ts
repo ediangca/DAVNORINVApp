@@ -29,7 +29,7 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   activities: any = [];
   totalItemsByOffice: any = [];
 
-  
+  userAccount: any;
   username: string = "";
   role: string = "";
 
@@ -37,11 +37,22 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   roleNoFromToken: string = "Role";
 
   constructor(private api: ApiService, private logger: LogsService,
-      private route: ActivatedRoute,
+    private route: ActivatedRoute,
     private auth: AuthService, private store: StoreService) {
     this.ngOnInit()
     // this.today = new Date().toISOString().split('T')[0];
     // this.getUserProfile();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.getTotalParCencus();
+  }
+
+  ngOnInit(): void {
+    this.getUserProfile()
+    // Fetch data from API 
+    window.addEventListener('resize', () => this.updateCarousel());
+
   }
 
   public getUserProfile() {
@@ -56,31 +67,19 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
       }
     });
 
-    // Get Decoded unique_name from token
-
-    this.store.getFullnameForStore()
-      .subscribe(res => {
-        this.username = res || this.usernameFromToken;
-      });
+    this.logger.printLogs('i', 'Retrieve Role -------------', this.roleNoFromToken);
 
     // Get Decoded role from token
-    this.store.getRoleFromStore()
+    this.store.getUserAccount()
       .subscribe(res => {
-        this.role = res || this.roleNoFromToken;
+        this.userAccount = res;
+
+        this.getTotalParCencus();
+        this.getActivityLogs();
+        this.getTotalAbove50ItemsByOffice();
+        this.logger.printLogs('i', 'Retrieve UserAccount -------------', this.userAccount);
       });
 
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    this.getTotalParCencus();
-  }
-
-  ngOnInit(): void {
-    // Fetch data from API 
-    this.getTotalParCencus();
-    this.getActivityLogs();
-    this.getTotalAbove50ItemsByOffice();
-    window.addEventListener('resize', () => this.updateCarousel());
 
   }
 
@@ -131,10 +130,26 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   }
 
   getTotalParCencus() {
-    this.api.getCencus().subscribe({
+    if (this.userAccount == null) {
+      return
+    }
+    if (this.roleNoFromToken == 'System Administrator') {
+      this.api.getCencus().subscribe({
+        next: (res) => {
+          this.logger.printLogs('i', 'Cencus ......... : ', res);
+          this.census = res[0];
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Fetching Cencus Denied', err);
+        },
+      });
+      return
+    }
+
+    this.api.getCencusByID(this.userAccount.userID).subscribe({
       next: (res) => {
-        this.logger.printLogs('i', 'Cencus : ', res);
-        this.census = res[0];
+        this.logger.printLogs('i', 'Cencus >>>>>>>>> : ', res);
+        this.census = res;
       },
       error: (err: any) => {
         this.logger.printLogs('w', 'Fetching Cencus Denied', err);
@@ -143,8 +158,25 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   }
 
   getActivityLogs() {
-    this.api.getActivityLogs().subscribe({
+    if (this.userAccount == null) {
+      return
+    }
+    if (this.roleNoFromToken == 'System Administrator') {
+      this.api.getActivityLogs().subscribe({
+        next: (res) => {
+          this.activities = res.slice(0, 5);
+          this.logger.printLogs('i', 'ActivityLog ......... : ', this.activities);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('w', 'Error Fetching Activity Log:', err);
+        },
+      });
+      return
+    }
+
+    this.api.getActivityLogsByID(this.userAccount.userID).subscribe({
       next: (res) => {
+        this.logger.printLogs('i', 'ActivityLog >>>>>>>>> : ', res);
         this.activities = res.slice(0, 5);
         this.logger.printLogs('i', 'ActivityLog : ', this.activities);
       },

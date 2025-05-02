@@ -141,7 +141,7 @@
                 class="text-danger">!!!</span></h2>
           </div>
 
-          <a *ngIf="true" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
+          <a *ngIf="this.roleNoFromToken == 'System Administrator'" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
             type="button" (click)="AddNewAnnouncement()">
             <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">NEW</span></a>
         </div>
@@ -149,7 +149,7 @@
       <hr class="border border-secodary border-1 opacity-75">
       <div class="card-body">
 
-        <ng-container *ngFor="let i of [1, 2, 3]">
+        <ng-container *ngFor="let i of [1]">
           <div class="card" data-aos="fade-up" data-aos-easing="ease-out-cubic" data-aos-duration="500">
 
             <div class="card-header d-flex flex-column">
@@ -178,9 +178,9 @@
               </div>
             </div>
             <div class="card-footer flex-row d-flex justify-content-end align-items-center">
-              <a *ngIf="true" class="text-warning pe-3" type="button" (click)="UpdateAnnouncement(1)">
+              <a *ngIf="this.roleNoFromToken == 'System Administrator'" class="text-warning pe-3" type="button" (click)="UpdateAnnouncement(1)">
                 <i class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i> Edit</a>
-              <a *ngIf="true" class="text-danger pe-2" type="button" (click)="DeleteAnnouncement(1)"><i
+              <a *ngIf="this.roleNoFromToken == 'System Administrator'" class="text-danger pe-2" type="button" (click)="DeleteAnnouncement(1)"><i
                   class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i> Delete</a>
             </div>
 
@@ -191,7 +191,7 @@
     </div>
 
     <!-- HORIZONTAL GRAPH -->
-    <div class="card" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="500">
+    <div class="card" *ngIf="this.roleNoFromToken == 'System Administrator'" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="500">
       <div class="card-body">
         <h2 class="counter mb-3">Current Inventory by Office</h2>
         <!-- Vertical Divider -->
