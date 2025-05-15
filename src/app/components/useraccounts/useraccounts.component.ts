@@ -31,7 +31,6 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   public userAccounts: any = [];
-  totalItems: number = 0;
   public userProfiles: any = [];
   searchKey: string = '';
 
@@ -50,6 +49,12 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   isEditMode: boolean = false;
   isChangePass: boolean = false;
   currentEditId: number | null = null;
+
+  // Pagination
+  Math = Math;
+  pageNumber = 1;
+  pageSize = 20;
+  totalItems = 0;
 
   isLoading: boolean = true;
 
@@ -75,6 +80,28 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     this.roleNoFromToken = this.auth.getRoleFromToken();
     this.checkPrivileges();
 
+  }
+
+  setupModalClose() {
+    this.closeModal(this.AddEditModal);
+    this.closeModal(this.ProfileModal);
+  }
+
+  ngAfterViewInit(): void {
+    window.addEventListener('load', () => {
+      this.checkPrivileges();
+    });
+  }
+
+  private checkPrivileges(): void {
+    this.store.loadPrivileges();
+    this.canCreate = this.store.isAllowedAction('USER ACCOUNTS', 'create');
+    this.canRetrieve = this.store.isAllowedAction('USER ACCOUNTS', 'retrieve');
+    this.canUpdate = this.store.isAllowedAction('USER ACCOUNTS', 'update');
+    this.canDelete = this.store.isAllowedAction('USER ACCOUNTS', 'delete');
+    this.canPost = this.store.isAllowedAction('USER ACCOUNTS', 'post');
+    this.canUnpost = this.store.isAllowedAction('USER ACCOUNTS', 'unpost');
+
     this.userAccountForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -98,32 +125,12 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
       secID: [''],
       positionID: ['']
     });
+
     this.getAllUserAccounts();
     this.loadUserGroups();
     this.loadBranches();
     this.loadPositions();
     this.setupModalClose();
-  }
-
-  setupModalClose() {
-    this.closeModal(this.AddEditModal);
-    this.closeModal(this.ProfileModal);
-  }
-
-  ngAfterViewInit(): void {
-    window.addEventListener('load', () => {
-      this.checkPrivileges();
-    });
-  }
-
-  private checkPrivileges(): void {
-    this.store.loadPrivileges();
-    this.canCreate = this.store.isAllowedAction('USER ACCOUNTS', 'create');
-    this.canRetrieve = this.store.isAllowedAction('USER ACCOUNTS', 'retrieve');
-    this.canUpdate = this.store.isAllowedAction('USER ACCOUNTS', 'update');
-    this.canDelete = this.store.isAllowedAction('USER ACCOUNTS', 'delete');
-    this.canPost = this.store.isAllowedAction('USER ACCOUNTS', 'post');
-    this.canUnpost = this.store.isAllowedAction('USER ACCOUNTS', 'unpost');
   }
 
   openAddEditModal() {
@@ -286,26 +293,51 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // getAllUserAccounts() {
+  //   this.isLoading = true; // Stop showing the loading spinner
+  //   // Simulate an API call with a delay
+  //   setTimeout(() => {
+  //     //Populate all User Groups
+  //     this.api.getAllUserAccounts()
+  //       .subscribe({
+  //         next: (res) => {
+  //           this.totalItems = res.length;
+  //           this.userAccounts = res;
+  //           this.logger.printLogs('i', 'LIST OF USERT ACCOUTNS', this.userAccounts);
+  //           this.userAccounts = res.slice(0, 20);
+  //           this.isLoading = false; // Stop showing the loading spinner
+  //         },
+  //         error: (err: any) => {
+  //           this.logger.printLogs('w', "Fetching User Group Denied", err);
+  //         }
+  //       });
+
+  //   }, 3000); // Simulate a 2-second delay
+  // }
+
   getAllUserAccounts() {
-    this.isLoading = true; // Stop showing the loading spinner
-    // Simulate an API call with a delay
+    this.isLoading = true;
     setTimeout(() => {
-      //Populate all User Groups
-      this.api.getAllUserAccounts()
+      this.api.getPaginatedUserAccounts(this.pageNumber, this.pageSize)
         .subscribe({
           next: (res) => {
-            this.totalItems = res.length;
-            this.userAccounts = res;
-            this.logger.printLogs('i', 'LIST OF USERT ACCOUTNS', this.userAccounts);
-            this.userAccounts = res.slice(0, 20);
-            this.isLoading = false; // Stop showing the loading spinner
+            this.userAccounts = res.items;
+            this.totalItems = res.totalCount;
+            this.isLoading = false;
           },
-          error: (err: any) => {
-            this.logger.printLogs('w', "Fetching User Group Denied", err);
+          error: (err) => {
+            this.logger.printLogs('w', "Fetching Paginated User Accounts Failed", err);
+            this.isLoading = false;
           }
         });
+        this.searchKey = "";
+    }, 2000); // Simulate a 2-second delay
+  }
 
-    }, 3000); // Simulate a 2-second delay
+  changePage(page: number) {
+    if (page < 1 || page > Math.ceil(this.totalItems / this.pageSize)) return;
+    this.pageNumber = page;
+    this.getAllUserAccounts();
   }
 
   getProfileByUserID(userAccount: any) {

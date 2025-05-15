@@ -37,7 +37,6 @@ export class ParComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   pars: any = [];
-  totalItems: number = 0;
   par!: any;
   parItems: Item[] = [];
   selectedParItems: Item[] = []; // Array to track selected items from repar
@@ -99,6 +98,12 @@ export class ParComponent implements OnInit, AfterViewInit {
   model: string = '';
 
   leave: any = null;
+
+  // Pagination
+  Math = Math;
+  pageNumber = 1;
+  pageSize = 20;
+  totalItems = 0;
 
   isLoading: boolean = true;
   onItemFound: boolean = false;
@@ -299,42 +304,89 @@ export class ParComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // getAllPAR() {
+  //   this.isLoading = true; // Start spinner
+  //   this.api.getAllPAR()
+  //     .pipe(
+  //       delay(3000), // Add delay using RxJS operators (simulated for testing)
+  //       map((res) => {
+  //         // Filter results based on `createdBy` and slice for pagination
+  //         this.logger.printLogs('i', 'Show PARS only for Administrator || User Account :', this.userAccount.userID);
+  //         this.logger.printLogs('i', 'List of Originated PARs', res);
+
+  //         this.totalItems = res.length;
+  //         if (this.userAccount.userGroupName === 'System Administrator') {
+  //           return res.slice(0, 20); // For administrators, show all records, limited to 10
+  //         }
+
+  //         // For regular users, filter data based on `receivedBy` or relevant fields
+  //         const filteredPARs = res.filter((par: any) =>
+  //           par.createdBy === this.userAccount.userID ||
+  //           par.issuedBy === this.userAccount.userID ||
+  //           par.receivedBy === this.userAccount.userID
+  //         );
+  //         this.totalItems = filteredPARs.length;
+  //         return filteredPARs.slice(0, 20); // Limit to 10 results
+
+  //       }),
+  //       finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+  //     )
+  //     .subscribe({
+  //       next: (filteredPARs) => {
+  //         this.pars = filteredPARs;
+  //         this.logger.printLogs('i', 'List of PARs', this.pars);
+  //       },
+  //       error: (err: any) => {
+  //         this.logger.printLogs('e', 'Error Fetching PARs', err);
+  //       }
+  //     });
+  // }
+
   getAllPAR() {
-    this.isLoading = true; // Start spinner
-    this.api.getAllPAR()
-      .pipe(
-        delay(3000), // Add delay using RxJS operators (simulated for testing)
-        map((res) => {
-          // Filter results based on `createdBy` and slice for pagination
-          this.logger.printLogs('i', 'Show PARS only for Administrator || User Account :', this.userAccount.userID);
-          this.logger.printLogs('i', 'List of Originated PARs', res);
+    this.isLoading = true;
 
-          this.totalItems = res.length;
-          if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 20); // For administrators, show all records, limited to 10
+      this.api.getPaginatedPAR(this.pageNumber, this.pageSize)
+        .pipe(
+          delay(2000), // Add delay using RxJS operators (simulated for testing)
+          map((res) => {
+            // Filter results based on `createdBy` and slice for pagination
+            this.logger.printLogs('i', 'Show PARS only for Administrator || User Account :', this.userAccount.userID);
+            this.logger.printLogs('i', 'List of Originated PARs', res.items);
+
+
+            if (this.userAccount.userGroupName === 'System Administrator') {
+              this.totalItems = res.totalCount;
+              return res.items; // For administrators, show all records, limited to 10
+            }
+
+            // For regular users, filter data based on `receivedBy` or relevant fields
+            const filteredPARs = res.items.filter((par: any) =>
+              par.createdBy === this.userAccount.userID ||
+              par.issuedBy === this.userAccount.userID ||
+              par.receivedBy === this.userAccount.userID
+            );
+            this.totalItems = filteredPARs.length;
+            return filteredPARs;
+
+          }),
+          finalize(() => this.isLoading = false) // Ensure spinner stops after processing
+        )
+        .subscribe({
+          next: (filteredPARs) => {
+            this.pars = filteredPARs;
+            this.logger.printLogs('i', 'List of PARs', this.pars);
+          },
+          error: (err: any) => {
+            this.logger.printLogs('e', 'Error Fetching PARs', err);
           }
+        });
 
-          // For regular users, filter data based on `receivedBy` or relevant fields
-          const filteredPARs = res.filter((par: any) =>
-            par.createdBy === this.userAccount.userID ||
-            par.issuedBy === this.userAccount.userID ||
-            par.receivedBy === this.userAccount.userID
-          );
-          this.totalItems = filteredPARs.length;
-          return filteredPARs.slice(0, 20); // Limit to 10 results
+  }
 
-        }),
-        finalize(() => this.isLoading = false) // Ensure spinner stops after processing
-      )
-      .subscribe({
-        next: (filteredPARs) => {
-          this.pars = filteredPARs;
-          this.logger.printLogs('i', 'List of PARs', this.pars);
-        },
-        error: (err: any) => {
-          this.logger.printLogs('e', 'Error Fetching PARs', err);
-        }
-      });
+  changePage(page: number) {
+    if (page < 1 || page > Math.ceil(this.totalItems / this.pageSize)) return;
+    this.pageNumber = page;
+    this.getAllPAR();
   }
 
   // onSearchPAR() {
@@ -1004,7 +1056,7 @@ export class ParComponent implements OnInit, AfterViewInit {
       userID1: par.receivedBy, // These will now be patched correctly
       userID2: par.issuedBy
     });
-    
+
     if (this.par.isReceivedActive) {
       this.api.retrieveLeave(this.par.receivedBy)
         .subscribe({
@@ -1558,10 +1610,10 @@ export class ParComponent implements OnInit, AfterViewInit {
     this.selectedParItems = [];
     this.parItemKey = '';
     this.searchKey = '';
-    
-    this.par = null;  
+
+    this.par = null;
     this.leave = null;
-    
+
     this.parForm.reset({
       lgu: '',
       fund: '',

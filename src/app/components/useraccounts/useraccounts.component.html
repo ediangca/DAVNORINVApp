@@ -7,17 +7,18 @@
 
         <div class="row d-flex align-items-center">
 
-          <!-- <div class="col-12 col-sm-12 col-md-8 col-lg-8"> -->
-          <div class="col-12 d-flex just justify-content-center align-items-center">
-            <div class="search" style="width: 100%;">
+          <!-- <div class="col-12 col-sm-12 col-md-8 col-lg-8 justify-content-center align-items-center"> -->
+          <div class="col-12 d-flex search-col">
+            <div class="search">
               <i class="fa-sharp-duotone fa-solid fa-magnifying-glass fa-search"></i>
               <input type="text" class="form-control rounded-pill" type="search" [(ngModel)]="searchKey"
                 (keyup)="onKeyUp($event)" placeholder="Search here.." aria-label="Search">
               <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-pill" type="button"
                 (click)="searchUserAccount()"><i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i></a>
             </div>
-            <a *ngIf="canCreate && canPost" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
-              type="button" (click)="openAddEditModal()">
+            <a *ngIf="canCreate && canPost"
+              class="btn btn-success rounded-pill d-flex justify-content-center align-items-center " type="button"
+              (click)="openAddEditModal()">
               <i class="fa-sharp-duotone fa-solid fa-plus"></i><span class="fs-6">ACCOUNT</span></a>
             <a *ngIf="canCreate" class="btn btn-success rounded-pill d-flex justify-content-center align-items-center "
               type="button" (click)="openAProfileModal()">
@@ -35,46 +36,52 @@
 
       </div>
 
-      <table class="table table-striped table-hover" *ngIf="!isLoading">
-        <thead>
-          <tr>
-            <!-- <th>
+
+
+      <div class="d-flex flex-column" *ngIf="!isLoading">
+
+        <div class="col p-0 m-0 scrollable main-table-body  ">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <!-- <th>
               <span class="custom-checkbox">
                 <input type="checkbox" id="selectAll">
                 <label for="selectAll"></label>
               </span>
             </th> -->
-            <th>ACCOUNT ID</th>
-            <th>Username</th>
-            <th>Fullname</th>
-            <th>User Group</th>
-            <th *ngIf="canPost">Verified</th>
-            <th *ngIf="canCreate || canRetrieve">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ua of userAccounts">
-            <!-- <td>
+                <th>ACCOUNT ID</th>
+                <th>Username</th>
+                <th>Fullname</th>
+                <th>User Group</th>
+                <th *ngIf="canPost">Verified</th>
+                <th *ngIf="canCreate || canRetrieve">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ua of userAccounts">
+                <!-- <td>
               <span class="custom-checkbox">
                 <input type="checkbox" id="checkbox1" name="options[]"
                   [value]="ua.userID">
                 <label for="checkbox1"></label>
               </span>
             </td> -->
-            <td>
-              <span class="status-dot me-2" [ngClass]="!ua.isLeave? 'active' : 'inactive'"
-                title="{{ !ua.isLeave ? 'Active' : 'Inactive' }}"></span>
-              {{ua.userID}}
-            </td>
-            <td>{{ua.userName}}</td>
-            <td>{{ua.fullname}}</td>
-            <td>{{ua.userGroupName}}</td>
-            <td *ngIf="canPost">
-              <div class="form-check form-switch form-check-inline">
-                <input class="form-check-input" type="checkbox" id="switch2" [checked]="ua.isVerified"
-                  (change)="toggleVerification($event, ua.userID, ua.userName)" [disabled]="ua.userName === 'admin'" />
-              </div>
-              <!-- @if (ua.isVerified) {
+                <td>
+                  <span class="status-dot me-2" [ngClass]="!ua.isLeave? 'active' : 'inactive'"
+                    title="{{ !ua.isLeave ? 'Active' : 'Inactive' }}"></span>
+                  {{ua.userID}}
+                </td>
+                <td>{{ua.userName}}</td>
+                <td>{{ua.fullname}}</td>
+                <td>{{ua.userGroupName}}</td>
+                <td *ngIf="canPost">
+                  <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="switch2" [checked]="ua.isVerified"
+                      (change)="toggleVerification($event, ua.userID, ua.userName)"
+                      [disabled]="ua.userName === 'admin'" />
+                  </div>
+                  <!-- @if (ua.isVerified) {
               <svg class="me-2 text-primary icon-24" width="24"
                 viewBox="0 0 24 24">
                 <path fill="currentColor"
@@ -83,30 +90,55 @@
               }@else{
               <span class="fw-bold text-danger">X</span>
               } -->
-            </td>
-            <td *ngIf="canCreate || canRetrieve">
-              <form class="d-flex justify-content-end">
-                @if(ua.userName == "admin"){
-                <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
-                    title="System Default"></i></span>
-                }@else{
+                </td>
+                <td *ngIf="canCreate || canRetrieve">
+                  <form class="d-flex justify-content-end">
+                    @if(ua.userName == "admin"){
+                    <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
+                        title="System Default"></i></span>
+                    }@else{
 
-                <a *ngIf="canUpdate && canPost" class="edit" type="button" (click)="restoreData(ua)"><i
-                    class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
-                <a *ngIf="canDelete" class="delete" (click)="onDelete(ua.userID, ua.userName)"><i
-                    class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
-                }
-                <a *ngIf="canRetrieve && (ua.userGroupName !== 'System Administrator' && ua.userGroupName !== 'Test')" class="info" type="button" (click)="getProfileByUserID(ua)"><i
-                    class="fa-sharp-duotone fa-solid fa-id-card" data-toggle="tooltip" title="Profile"></i></a>
+                    <a *ngIf="canUpdate && canPost" class="edit" type="button" (click)="restoreData(ua)"><i
+                        class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
+                    <a *ngIf="canDelete" class="delete" (click)="onDelete(ua.userID, ua.userName)"><i
+                        class="fa-sharp-duotone fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i></a>
+                    }
+                    <a *ngIf="canRetrieve && (ua.userGroupName !== 'System Administrator' && ua.userGroupName !== 'Test')"
+                      class="info" type="button" (click)="getProfileByUserID(ua)"><i
+                        class="fa-sharp-duotone fa-solid fa-id-card" data-toggle="tooltip" title="Profile"></i></a>
 
-                <a *ngIf="roleNoFromToken == 'System Administrator' && canUpdate" class="text-info" type="button"
-                  (click)="openForgotPassword(ua)"><i class="fa-solid fa-user-secret" data-toggle="tooltip"
-                    title="Change Password"></i></a>
-              </form>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                    <a *ngIf="roleNoFromToken == 'System Administrator' && canUpdate" class="text-info" type="button"
+                      (click)="openForgotPassword(ua)"><i class="fa-solid fa-user-secret" data-toggle="tooltip"
+                        title="Change Password"></i></a>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <nav *ngIf="totalItems > pageSize" aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" *ngIf="!(pageNumber === 1)" [class.disabled]="pageNumber === 1">
+            <a class="nav-link" (click)="changePage(pageNumber - 1)">Previous</a>
+          </li>
+
+          <li class="page-item" *ngFor="let page of [].constructor(Math.ceil(totalItems / pageSize)); let i = index"
+            [class.active]="pageNumber === i + 1">
+            <a class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</a>
+          </li>
+
+          <li class="page-item" *ngIf="!(pageNumber === Math.ceil(totalItems / pageSize))"
+            [class.disabled]="pageNumber === Math.ceil(totalItems / pageSize)">
+            <a class="nav-link" (click)="changePage(pageNumber + 1)">Next</a>
+          </li>
+          <!-- <li class="page-item" *ngIf="!(pageNumber === Math.ceil(totalItems / pageSize))"
+              [class.disabled]="pageNumber === Math.ceil(totalItems / pageSize)">
+              <a class="nav-link" (click)="changePage(Math.ceil(totalItems / pageSize))">LastPage</a>
+            </li> -->
+        </ul>
+      </nav>
+
 
       <div class="clearfix" *ngIf="!isLoading">
         <div class="hint-text">Showing {{userAccounts.length}} out of

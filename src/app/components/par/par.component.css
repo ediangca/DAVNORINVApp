@@ -65,6 +65,10 @@ td {
   max-height: 250px;
 }
 
+.main-table-body {
+    max-height: 65vh;
+}
+
 th {
   position: sticky;
   top: 0;
@@ -306,3 +310,89 @@ table tbody tr:nth-child(even) {
   /* Set a reasonable max-height or adjust as needed */
   padding: 15px;
 }
+
+
+/* ############### PAGINATION ############### */
+
+.pagination {
+    float: none;
+}
+
+.page-item {
+    cursor: pointer;
+    margin: 0 0.1rem;
+}
+
+/* Base style for all page links */
+.page-item.active .page-link {
+    border: 1px solid #007bff;
+    border-radius: 100px !important;
+    color: #007bff;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Apply hover effect only on the active page */
+ .page-item .nav-link:hover, .page-item.active .page-link:hover {
+    background-color: white;
+    color: #007bff;
+}
+
+.page-item .page-link {
+    border-radius: 100px !important;
+    color: #007bff;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.page-item .page-link:hover {
+    border: 1px solid #007bff;
+    background-color: white;
+    color: #007bff;
+}
+
+/* Apply hover effect only on the active page */
+.page-item.active .page-link:hover {
+    background-color: white;
+    color: #007bff;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+}
+
+.page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+}
+
+.page-item .nav-link {
+    border: 1px solid #007bff;
+    border-radius: 100px !important;
+    padding: 0 1rem 0 1rem;
+    color: #007bff;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ############### SEARCH ############### */
+.search {
+    width: 100%;
+    ;
+}
+
+/* 
+@media screen and (max-width: 768px) {
+    .search-col .search, .search-col .btn {
+        width: 40%;
+        margin-bottom: 10px;
+    }
+    .search-col{
+        display: flex;
+        flex-direction: column;
+    }
+
+} 
+*/

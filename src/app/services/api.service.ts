@@ -9,6 +9,7 @@ import { OPRItem } from '../models/OPRItem';
 import { ToastrService } from 'ngx-toastr';
 import { NgToastService } from 'ng-angular-popup';
 import { LogsService } from './logs.service';
+import { PaginatedResult } from './PaginatedResult.spec';
 
 
 @Injectable({
@@ -336,6 +337,14 @@ export class ApiService {
 
   /*----------------------- USER ACCOUNTS -----------------------*/
 
+  getPaginatedUserAccounts(pageNumber: number, pageSize: number): Observable<PaginatedResult<any>> {
+    return this.http.get<PaginatedResult<any>>(
+      // https://localhost:7289/api//UserAccount/paginated?pageNumber=1&pageSize=10
+      `${this.apiUrl}UserAccount/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    );
+  }
+
+
   // User Account List
   getAllUserAccounts(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}UserAccount/`)
@@ -409,7 +418,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   onActiveStatus(id: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}UserAccount/Update/Status?id=` + id, id)
       .pipe(
@@ -417,7 +426,7 @@ export class ApiService {
       );
   }
 
-  
+
   onLeave(id: string, leave: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}UserAccount/leave/Update?id=` + id, leave)
       .pipe(
@@ -625,6 +634,14 @@ export class ApiService {
 
 
   /*----------------------- PARS -----------------------*/
+
+  getPaginatedPAR(pageNumber: number, pageSize: number): Observable<PaginatedResult<any>> {
+    return this.http.get<PaginatedResult<any>>(
+      // https://localhost:7289/api/PAR/paginated?pageNumber=1&pageSize=10
+      `${this.apiUrl}PAR/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    );
+  }
+
   //PAR List
   getAllPAR(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}PAR/`)
@@ -1814,7 +1831,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
   //Search
   retreivePropertyCardOwners(accountID: string): Observable<any> {
     this.logger.printLogs('i', "Search Property Card Owners: ", `accountID-> ${accountID}`);
@@ -1823,7 +1840,7 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
-  
+
 
   //Search
   retreivePropertyOwner(accountID: string): Observable<any> {
