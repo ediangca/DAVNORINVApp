@@ -54,71 +54,66 @@
             fill="currentColor"></path> </svg>
       </i> -->
 
-      <div class="d-flex flex-column" *ngIf="!isLoading">
 
-        <div class="col p-0 m-0 scrollable main-table-body  ">
-          <table class="table table-striped table-hover" *ngIf="!isLoading">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Date Created</th>
-                <th>PAR No.</th>
-                <th>Issued By</th>
-                <th>Recieved By</th>
-                <th>Created By</th>
-                <th class="text-center">Actions
+      <table class="table table-striped table-hover" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Date Created</th>
+            <th>PAR No.</th>
+            <th>Issued By</th>
+            <th>Recieved By</th>
+            <th>Created By</th>
+            <th class="text-center">Actions
 
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let p of pars">
-                <td>
-                  <a [ngClass]="p.postFlag ? 'primary' : 'secondary'" type="button" (click)="onPostPAR(p)">
-                    <i class="fa-sharp-duotone fa-solid fa-thumbtack" data-toggle="tooltip"
-                      [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
-                  </a>
-                </td>
-                <td>{{formatDate(p.date_Created)}}</td>
-                <td>{{p.parNo}}</td>
-                <td>{{p.issued}}</td>
-                <td [ngClass]="p.isReceivedActive? 'text-danger' : ''">
-                  <!-- <span class="status-dot me-2" [ngClass]="!p.isReceivedActive? 'active' : 'inactive'"
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of pars">
+            <td>
+              <a [ngClass]="p.postFlag ? 'primary' : 'secondary'" type="button" (click)="onPostPAR(p)">
+                <i class="fa-sharp-duotone fa-solid fa-thumbtack" data-toggle="tooltip"
+                  [title]="p.postFlag ? 'Posted' : 'Not yet Posted'"></i>
+              </a>
+            </td>
+            <td>{{formatDate(p.date_Created)}}</td>
+            <td>{{p.parNo}}</td>
+            <td>{{p.issued}}</td>
+            <td [ngClass]="p.isReceivedActive? 'text-danger' : ''">
+              <!-- <span class="status-dot me-2" [ngClass]="!p.isReceivedActive? 'active' : 'inactive'"
               title="{{ !p.isReceivedActive ? 'Active' : 'Inactive' }}"></span> -->
-                  {{p.received}}
-                </td>
-                <td>{{p.created}}</td>
-                <td>
-                  <form class="d-flex justify-content-end align-items-center">
-                    @if(p.userName == "admin"){
-                    <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
-                        title="System Default"></i></span>
-                    }@else{
-                    <a *ngIf="canUpdate  && (p.createdBy === userAccount.userID || userAccount.userGroupName === 'System Administrator')"
-                      class="edit" type="button" (click)="onEditPAR(p)"><i
-                        class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
-                    <a *ngIf="canDelete  && (p.createdBy === userAccount.userID || userAccount.userGroupName === 'System Administrator')"
-                      class="delete" type="button" (click)="onDelete(p)"><i class="fa-sharp-duotone fa-solid fa-trash"
-                        data-toggle="tooltip" title="Delete"></i></a>
-                    <a *ngIf="canRetrieve" class="success" type="button" (click)="onViewPAR(p)">
-                      <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
-                    </a>
-                    <a class="seconadry" type="button" (click)="onPrintPAR(p.parNo!)">
-                      <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
-                    </a>
-                    <a *ngIf="canPTR  && (p.receivedBy=== userAccount.userID || p.createdBy== userAccount.userID ||
+              {{p.received}}
+            </td>
+            <td>{{p.created}}</td>
+            <td>
+              <form class="d-flex justify-content-end align-items-center">
+                @if(p.userName == "admin"){
+                <span><i class="fa-sharp-duotone fa-solid fa-asterisk" data-toggle="tooltip"
+                    title="System Default"></i></span>
+                }@else{
+                <a *ngIf="canUpdate  && (p.createdBy === userAccount.userID || userAccount.userGroupName === 'System Administrator')"
+                  class="edit" type="button" (click)="onEditPAR(p)"><i
+                    class="fa-sharp-duotone fa-solid fa-pen-to-square" data-toggle="tooltip" title="Edit"></i></a>
+                <a *ngIf="canDelete  && (p.createdBy === userAccount.userID || userAccount.userGroupName === 'System Administrator')"
+                  class="delete" type="button" (click)="onDelete(p)"><i class="fa-sharp-duotone fa-solid fa-trash"
+                    data-toggle="tooltip" title="Delete"></i></a>
+                <a *ngIf="canRetrieve" class="success" type="button" (click)="onViewPAR(p)">
+                  <i class="fa-sharp-duotone fa-solid fa-eye" data-toggle="tooltip" title="View"></i>
+                </a>
+                <a class="seconadry" type="button" (click)="onPrintPAR(p.parNo!)">
+                  <i class="fa-sharp-duotone fa-solid fa-print" data-toggle="tooltip" title="Print"></i>
+                </a>
+                <a *ngIf="canPTR  && (p.receivedBy=== userAccount.userID || p.createdBy== userAccount.userID ||
                   userAccount.userGroupName === 'System Administrator'
                 )" class="primary" type="button" (click)="onRepar(p)"><i class="fa-solid fa-share-from-square"
-                        data-toggle="tooltip" title="PTR"></i></a>
-                    }
-                  </form>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+                    data-toggle="tooltip" title="PTR"></i></a>
+                }
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <nav *ngIf="totalItems > pageSize" aria-label="Page navigation example">
         <ul class="pagination justify-content-center">

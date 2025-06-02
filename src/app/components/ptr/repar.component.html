@@ -92,6 +92,24 @@
         </tbody>
       </table>
 
+      <nav *ngIf="totalItems > pageSize" aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" *ngIf="!(pageNumber === 1)" [class.disabled]="pageNumber === 1">
+            <a class="nav-link" (click)="changePage(pageNumber - 1)">Previous</a>
+          </li>
+
+          <li class="page-item" *ngFor="let page of [].constructor(Math.ceil(totalItems / pageSize)); let i = index"
+            [class.active]="pageNumber === i + 1">
+            <a class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</a>
+          </li>
+
+          <li class="page-item" *ngIf="!(pageNumber === Math.ceil(totalItems / pageSize))"
+            [class.disabled]="pageNumber === Math.ceil(totalItems / pageSize)">
+            <a class="nav-link" (click)="changePage(pageNumber + 1)">Next</a>
+          </li>
+        </ul>
+      </nav>
+      
       <div class="clearfix" *ngIf="!isLoading">
         <div class="hint-text">Showing <b>{{ptrs.length}}</b> out of
           <b>{{totalItems}}</b> entries

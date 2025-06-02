@@ -40,7 +40,6 @@ export class ReparComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   ptrs: any = [];
-  totalItems: number = 0;
   par!: any | null;
   parItems: Item[] = [];
   ptrItems: Item[] = [];
@@ -100,7 +99,13 @@ export class ReparComponent implements OnInit, AfterViewInit {
   model: string = '';
 
   leave: any = null;
-  
+
+  // Pagination
+  Math = Math;
+  pageNumber = 1;
+  pageSize = 2;
+  totalItems = 0;
+
   isLoading: boolean = true;
   onItemFound: boolean = false;
 
@@ -194,7 +199,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
         this.logger.printLogs('i', 'Scanner is ready:', res);
       });
     } else {
-      this.logger.printLogs('i', 'Action or isReady','Scanner is not defined when ngOnInit is called.');
+      this.logger.printLogs('i', 'Action or isReady', 'Scanner is not defined when ngOnInit is called.');
     }
   }
 
@@ -277,28 +282,29 @@ export class ReparComponent implements OnInit, AfterViewInit {
         }
       });
   }
-
   getAllPTR() {
     this.isLoading = true; // Start spinner
-    this.api.getAllREPAR()
+    this.api.getPaginatedPTR(this.pageNumber, this.pageSize)
       .pipe(
-        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        delay(2000), // Add delay using RxJS operators (simulated for testing)
         map((res) => {
           // Filter results based on `createdBy` and slice for pagination
           this.logger.printLogs('i', 'Show PTRs only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated PTRs', res);
-          this.totalItems = res.length;
+
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 20); // For administrators, show all records, limited to 10
+            this.totalItems = res.totalCount;
+            return res.items;
           }
-          const filteredPTRs = res.filter((ptr: any) =>
+
+          const filteredPTRs = res.items.filter((ptr: any) =>
             ptr.createdBy === this.userAccount.userID ||
             ptr.issuedBy === this.userAccount.userID ||
             ptr.receivedBy === this.userAccount.userID ||
             ptr.approvedBy === this.userAccount.userID
           );
           this.totalItems = filteredPTRs.length;
-          return filteredPTRs.slice(0, 20); // Limit to the first 10 items
+          return filteredPTRs; // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
       )
@@ -311,6 +317,12 @@ export class ReparComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('e', 'Error Fetching PTRs', err);
         }
       });
+  }
+
+  changePage(page: number) {
+    if (page < 1 || page > Math.ceil(this.totalItems / this.pageSize)) return;
+    this.pageNumber = page;
+    this.getAllPTR();
   }
 
   onSearchPTR() {

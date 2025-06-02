@@ -344,7 +344,6 @@ export class ParComponent implements OnInit, AfterViewInit {
 
   getAllPAR() {
     this.isLoading = true;
-
       this.api.getPaginatedPAR(this.pageNumber, this.pageSize)
         .pipe(
           delay(2000), // Add delay using RxJS operators (simulated for testing)

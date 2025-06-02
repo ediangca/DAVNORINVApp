@@ -738,6 +738,13 @@ export class ApiService {
   }
 
   /*----------------------- REPARS -----------------------*/
+  
+  getPaginatedPTR(pageNumber: number, pageSize: number): Observable<PaginatedResult<any>> {
+    return this.http.get<PaginatedResult<any>>(
+      // https://localhost:7289/api/REPAR/paginated?pageNumber=1&pageSize=10
+      `${this.apiUrl}REPAR/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    );
+  }
   //REPAR List
   getAllREPAR(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}REPAR/`)
@@ -941,6 +948,12 @@ export class ApiService {
 
 
   /*----------------------- ICS  -----------------------*/
+  getPaginatedICS(pageNumber: number, pageSize: number): Observable<PaginatedResult<any>> {
+    return this.http.get<PaginatedResult<any>>(
+      // https://localhost:7289/api/ICS/paginated?pageNumber=1&pageSize=10
+      `${this.apiUrl}ICS/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    );
+  }
 
   //ICS List
   getAllICS(): Observable<any> {

@@ -42,7 +42,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
   isModalOpen = false;
 
   icss: any = [];
-  totalItems: number = 0;
   ics!: any;
   icsItems: ICSItem[] = [];
   selectedICSItems: ICSItem[] = []; // Array to track selected items from repar
@@ -81,10 +80,8 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   ICSItemNo: number | null = null;
 
-
   typeOptions: string[] = ['Donation', 'Reassignment', 'Relocation'];
   isCustomType = false;
-
 
   isITR: boolean = false;
   itrForm!: FormGroup;
@@ -99,6 +96,12 @@ export class IcsComponent implements OnInit, AfterViewInit {
   model: string = '';
 
   leave: any = null;
+
+  // Pagination
+  Math = Math;
+  pageNumber = 1;
+  pageSize = 20;
+  totalItems = 0;
 
   isLoading: boolean = true;
   onItemFound: boolean = false;
@@ -286,24 +289,27 @@ export class IcsComponent implements OnInit, AfterViewInit {
 
   getAllICS() {
     this.isLoading = true; // Start spinner
-    this.api.getAllICS()
+    this.api.getPaginatedICS(this.pageNumber, this.pageSize)
       .pipe(
-        delay(3000), // Add delay using RxJS operators (simulated for testing)
+        delay(2000), // Add delay using RxJS operators (simulated for testing)
         map((res) => {
           // Filter results based on `createdBy` and slice for pagination
           this.logger.printLogs('i', 'Show ICSs only for Administrator || User Account :', this.userAccount.userID);
           this.logger.printLogs('i', 'List of Originated ICSs', res);
-          this.totalItems = res.length;
+
           if (this.userAccount.userGroupName === 'System Administrator') {
-            return res.slice(0, 20); // For administrators, show all records, limited to 10
+            this.totalItems = res.totalCount;
+            return res.items; // For administrators, show all records, limited to 10
           }
-          const filteredICSs = res.filter((ics: any) =>
+
+          const filteredICSs = res.items.filter((ics: any) =>
             ics.createdBy === this.userAccount.userID ||
             ics.issuedBy === this.userAccount.userID ||
             ics.receivedBy === this.userAccount.userID
           );
+
           this.totalItems = filteredICSs.length;
-          return filteredICSs.slice(0, 20); // Limit to the first 10 items
+          return filteredICSs; // Limit to the first 10 items
         }),
         finalize(() => this.isLoading = false) // Ensure spinner stops after processing
       )
@@ -316,6 +322,12 @@ export class IcsComponent implements OnInit, AfterViewInit {
           this.logger.printLogs('e', 'Error Fetching ICSs', err);
         }
       });
+  }
+
+  changePage(page: number) {
+    if (page < 1 || page > Math.ceil(this.totalItems / this.pageSize)) return;
+    this.pageNumber = page;
+    this.getAllICS();
   }
 
   onSearchICS() {
@@ -390,7 +402,6 @@ export class IcsComponent implements OnInit, AfterViewInit {
     this.iid = null;
     this.searchItem();
   }
-
 
   onAutoSuggestReceived() {
     this.receivedID = null;
@@ -931,7 +942,7 @@ export class IcsComponent implements OnInit, AfterViewInit {
     } else {
       this.leave = null;
     }
-    
+
     this.api.retrieveICSItemByICSNo(this.currentEditId!)
       .subscribe({
         next: (res) => {
