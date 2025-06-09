@@ -1,9 +1,25 @@
+.profile-menu {
+  top: 145% !important;
+}
+
+.notification-menu {
+  top: 300% !important;
+}
+
+@media (max-width: 1024px) {
+  .navbar-nav {
+    flex-direction: row !important;
+    /* align-items: stretch !important; */
+    flex-direction: row;
+  }
+}
 
 .data-scrollbar {
-  height: 100vh ;
+  height: 100vh;
   overflow-y: hidden;
   /* Hide overflow initially */
 }
+
 /* .main-content .content-inner {
   min-height: calc(100vh - 17.6rem);
 } */
@@ -18,9 +34,12 @@
 
 .table td,
 .table th {
-  white-space: normal; /* Allows the text to wrap */
-  word-wrap: break-word; /* Breaks long words to fit within the cell */
-  max-width: 200px; /* Optional: Sets a maximum width for the columns */
+  white-space: normal;
+  /* Allows the text to wrap */
+  word-wrap: break-word;
+  /* Breaks long words to fit within the cell */
+  max-width: 200px;
+  /* Optional: Sets a maximum width for the columns */
 }
 
 /* When focused, allow scrolling */
@@ -125,7 +144,7 @@
 */
 
 @media (max-width: 768px) {
-  .iq-banner:not(.hide) + .content-inner {
-      margin-top: 0px !important;
+  .iq-banner:not(.hide)+.content-inner {
+    margin-top: 0px !important;
   }
 }

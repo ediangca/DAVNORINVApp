@@ -101,6 +101,59 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   qrCode = ''
   currentDevice = 'environment'; // Back camera
 
+  notifications = [
+    {
+      title: 'System Update',
+      time: '2024-06-01 09:30',
+      message: 'The system will undergo maintenance at 10:00 PM tonight.'
+    },
+    {
+      title: 'New Message',
+      time: '2024-06-01 08:15',
+      message: 'You have received a new message from the admin.'
+    },
+    {
+      title: 'Inventory Alert',
+      time: '2024-05-31 17:45',
+      message: 'A new item has been added to your inventory.'
+    },
+    {
+      title: 'Password Expiry',
+      time: '2024-05-30 12:00',
+      message: 'Your password will expire in 5 days. Please update it soon.'
+    },
+    {
+      title: 'Approval Needed',
+      time: '2024-05-29 16:20',
+      message: 'A request is pending your approval.'
+    },
+    {
+      title: 'Backup Completed',
+      time: '2024-05-28 22:10',
+      message: 'The scheduled backup was completed successfully.'
+    },
+    {
+      title: 'Login Alert',
+      time: '2024-05-28 07:55',
+      message: 'A new login to your account was detected.'
+    },
+    {
+      title: 'Policy Update',
+      time: '2024-05-27 14:30',
+      message: 'The privacy policy has been updated. Please review the changes.'
+    },
+    {
+      title: 'Low Stock Warning',
+      time: '2024-05-26 11:40',
+      message: 'Some items in your inventory are running low.'
+    },
+    {
+      title: 'Event Reminder',
+      time: '2024-05-25 09:00',
+      message: 'Don\'t forget the team meeting scheduled for tomorrow.'
+    }
+  ];
+
   constructor(
     public ac: AppComponent, private titleService: Title,
     private route: ActivatedRoute, private router: Router,
@@ -517,6 +570,28 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           Swal.fire('Item not Found', `QR Code ${qr} not found`, 'info');
         }
       });
+  }
+
+  openNotification(notif: any) {
+    Swal.fire({
+      title: notif.title,
+      html: `<small>${notif.time}</small><br>${notif.message}`,
+      icon: 'info',
+      confirmButtonText: 'Close'
+    });
+    
+  }
+  seeMoreNotifications() {
+    Swal.fire({
+      title: 'Notifications',
+      html: '<div style="text-align:left;max-height:300px;overflow:auto;">' +
+        this.notifications.map(n =>
+          `<b>${n.title}</b><br><small>${n.time}</small><br>${n.message}<hr>`
+        ).join('') +
+        '</div>',
+      width: 500,
+      confirmButtonText: 'Close'
+    });
   }
 }
 

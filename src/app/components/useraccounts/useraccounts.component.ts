@@ -53,7 +53,7 @@ export class UseraccountsComponent implements OnInit, AfterViewInit {
   // Pagination
   Math = Math;
   pageNumber = 1;
-  pageSize = 20;
+  pageSize = 15;
   totalItems = 0;
 
   isLoading: boolean = true;

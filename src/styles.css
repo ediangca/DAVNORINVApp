@@ -325,7 +325,7 @@ body {
 table.table tr th,
 table.table tr td {
   border-color: #e9e9e9;
-  padding: 12px 15px;
+  padding: 7px 15px !important;
   vertical-align: middle;
 }
 
@@ -355,6 +355,10 @@ table.table td:last-child i {
   opacity: 0.9;
   font-size: 22px;
   margin: 0 5px;
+}
+
+table thead tr th, tbody tr td {
+  font-size: small;
 }
 
 table.table td a {
@@ -388,6 +392,7 @@ table.table td a.secondary {
 table.table td i {
   font-size: 19px;
 }
+
 
 table.table .avatar {
   border-radius: 50%;

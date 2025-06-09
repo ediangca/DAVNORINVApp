@@ -20079,7 +20079,8 @@ body {
 
 .main-content .content-inner {
   min-height: -webkit-calc(100vh - 6.6rem);
-  min-height: calc(100vh - 6.6rem);
+  min-height: calc(100vh - 3.3rem);
+  /* min-height: calc(100vh - 6.6rem); */
 }
 
 .sidebar + .main-content {

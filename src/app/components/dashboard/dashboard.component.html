@@ -95,23 +95,58 @@
         <div class="navbar" id="navbarSupportedContent" style>
           <ul class="mb-2 navbar-nav ms-auto align-items-center navbar-list mb-lg-0">
             <li class="nav-item dropdown">
-              <a class="py-0 nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button"
+              <a class="py-0 nav-link d-flex align-items-center" id="navbarDropdown" role="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="status-dot me-2" [ngClass]="!userAccount?.isLeave? 'active' : 'inactive'"
                   title="{{ !userAccount?.isLeave ? 'Active' : 'Inactive' }}"></span>
-                <i class="fa-duotone fa-solid fa-user"></i>
+                <i class="fa-solid fa-user"></i>
                 <div class="caption ms-3 d-none d-md-block ">
                   <h6 class="mb-0 caption-title">{{fullname}}</h6>
-                  <p class="mb-0 caption-sub-title">{{role}}</p>
+                  <small class="mb-0 caption-sub-title">{{role}}</small>
                 </div>
               </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <ul class="dropdown-menu dropdown-menu-end profile-menu" aria-labelledby="navbarDropdown">
                 <li><a class="dropdown-item" [routerLink]="['profile']"
                     routerLinkActive="router-link-active">Profile</a></li>
                 <li>
                   <hr class="hr-horizontal">
                 </li>
                 <li><a class="dropdown-item" type="button" (click)="logout()">Logout</a></li>
+              </ul>
+            </li>
+            
+            <li class="nav-item dropdown">
+              <!-- py-0 nav-link d-flex align-items-center -->
+              <a class="py-0 nav-link d-flex align-items-center ms-2" href="#" id="notificationDropdown" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false" title="View your notifications">
+                <i class="fa-solid fa-bell"></i>
+                <span class="position-absolute top-150 start-100 translate-middle badge rounded-pill bg-danger"
+                  title="You have {{ 10 //notificationCount }} notifications">
+                  {{ 10 //notificationCount }}
+                </span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="notificationDropdown">
+                <li *ngFor="let notif of notifications | slice:0:5">
+                  <a class="dropdown-item" role="button" (click)="openNotification(notif)">
+                    <div class="d-flex align-items-start">
+                      <i class="fa-solid fa-circle-dot text-primary me-2 mt-1"></i>
+                      <div>
+                        <div class="fw-bold">{{  notif.title }}</div>
+                        <div class="small text-muted">{{ notif.time }}</div>
+                        <div class="small">{{ notif.message }}</div>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li *ngIf="10 > 5">
+                  <hr class="dropdown-divider">
+                  <a class="dropdown-item text-center text-primary" role="button" (click)="seeMoreNotifications()">
+                    See more
+                  </a>
+                </li>
+                <li *ngIf="!notifications || notifications.length === 0">
+                  <span class="dropdown-item text-muted text-center">No notifications</span>
+                </li>
               </ul>
             </li>
           </ul>
