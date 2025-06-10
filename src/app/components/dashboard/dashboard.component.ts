@@ -103,6 +103,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   notifications = [
     {
+      title: 'Welcome Greetings',
+      time: '2024-03-01 09:30',
+      message: 'Introducing the app titled \'DDNAEINV - Asset and Equipment Inventory\''
+    },
+    {
       title: 'System Update',
       time: '2024-06-01 09:30',
       message: 'The system will undergo maintenance at 10:00 PM tonight.'
