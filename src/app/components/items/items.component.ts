@@ -6,10 +6,8 @@ import * as bootstrap from 'bootstrap';
 
 import Swal from 'sweetalert2';
 import ValidateForm from '../../helpers/validateForm';
-import { catchError, defaultIfEmpty, firstValueFrom, of } from 'rxjs';
 import { StoreService } from '../../services/store.service';
 import { LogsService } from '../../services/logs.service';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-items',

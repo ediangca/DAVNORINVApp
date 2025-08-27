@@ -41,24 +41,24 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         logger.printLogs('i', 'Pipe Error', `Status: " ${err.status}`);
         if (err.status == 0) {
           messages = "Failed to establish connection!";
-          // toast.warning("Failed to establish connection!\nPlease contact the system administrator.", "Connectivity Error!", 5000);
+          // toast.warning("Failed to establish connection!\nPlease contact the system administrator.", "Connectivity Error!", 10000);
+          Swal.fire('Connectivity Error!', "Failed to establish connection!<br>Please contact the system administrator.", 'error');
           toastr.error(
             'Failed to establish connection!<br/>Please contact the system administrator.',
             'Connectivity Error!',
             {
               // timeOut: 5000,
-              timeOut: 0,
+              // timeOut: 0,
               enableHtml: true,
-              tapToDismiss: false,
+              // tapToDismiss: true,
               disableTimeOut: true,
               positionClass: 'toast-bottom-right',
-              // closeButton: true,
+              closeButton: true,
               // progressBar: true 
               // progressAnimation: 'increasing',
             }
 
           );
-          Swal.fire('Connectivity Error!', "Failed to establish connection!<br>Please contact the system administrator.", 'error');
           // this.toastr.success('Hello world!', 'Toastr fun!');
           // authService.exit();
         } else if (err.status == 400) {// Check if the error response has a message property

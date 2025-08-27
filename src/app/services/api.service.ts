@@ -738,7 +738,7 @@ export class ApiService {
   }
 
   /*----------------------- REPARS -----------------------*/
-  
+
   getPaginatedPTR(pageNumber: number, pageSize: number): Observable<PaginatedResult<any>> {
     return this.http.get<PaginatedResult<any>>(
       // https://localhost:7289/api/REPAR/paginated?pageNumber=1&pageSize=10
@@ -1859,6 +1859,67 @@ export class ApiService {
   retreivePropertyOwner(accountID: string): Observable<any> {
     this.logger.printLogs('i', "Search Property Owners: ", `accountID -> ${accountID}`);
     return this.http.get<any>(`${this.apiUrl}PropertyCard/SearchByAccount?accountID=${accountID}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  /*----------------------- ANNOUNCEMENT -----------------------*/
+  getPaginatedAnnouncements(pageNumber: number, pageSize: number): Observable<PaginatedResult<any>> {
+    return this.http.get<PaginatedResult<any>>(
+      `${this.apiUrl}Announcement/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    );
+  }
+
+  //Search
+  searchAnnouncement(key: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}Announcement/Search?key=` + key)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+
+  createAnnouncement(details: any): Observable<any> {
+    this.logger.printLogs('i', "Create Announcement: ", details);
+    return this.http.post<any>(`${this.apiUrl}Announcement/Create/`, details)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  updateAnnouncement(id: string, details: any): Observable<any> {
+    this.logger.printLogs('i', "Update Announcement: ", details);
+    return this.http.put<any>(`${this.apiUrl}Announcement/Update?id=` + id, details)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  deleteAnnouncement(id: string): Observable<any> {
+    this.logger.printLogs('i', "Delete Announcement: ", id);
+    // https://localhost:7289/api/Announcement/ANN0006
+    return this.http.delete<any>(`${this.apiUrl}Announcement/Delete?id=` + id)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  getAllAnnouncement(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}Announcement/`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  retrieveAnnouncement(aid: string): Observable<Item[]> {
+    this.logger.printLogs('i', "Retrieve Announcement by AID: ", aid);
+    return this.http.get<Item[]>(`${this.apiUrl}PARITEM/PARNO/` + aid)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  getActiveAnnouncement(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}Announcement/active`)
       .pipe(
         catchError(this.handleError)
       );

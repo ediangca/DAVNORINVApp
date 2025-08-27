@@ -1,16 +1,22 @@
 import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import ValidateForm from '../../helpers/validateForm';
 import { ApiService } from '../../services/api.service';
 import AOS from 'aos';
 import { LogsService } from '../../services/logs.service';
 import { CommonModule } from '@angular/common';
+import * as bootstrap from 'bootstrap';
+
 import { StoreService } from '../../services/store.service';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { delay, finalize, map } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-widget',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './widget.component.html',
   styleUrls: ['./widget.component.css']
 })
@@ -20,6 +26,7 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   @ViewChild('prev') prev!: ElementRef<HTMLButtonElement>;
   @ViewChild('next') next!: ElementRef<HTMLButtonElement>;
   @ViewChild('carouseltrack') track!: HTMLElement;
+  @ViewChild('AddEditModalForm') AddEditModal!: ElementRef;
 
   cards!: HTMLElement[];
   currentIndex = 0;
@@ -36,24 +43,73 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   usernameFromToken: string = 'User Account';
   roleNoFromToken: string = "Role";
 
-  constructor(private api: ApiService, private logger: LogsService,
-    private route: ActivatedRoute,
-    private auth: AuthService, private store: StoreService) {
+  isLoading = false;
+  // Pagination
+  Math = Math;
+  pageNumber = 1;
+  pageSize = 2;
+  totalItems = 0;
+
+  announcements: any = [];
+  announcement!: any;
+  announcementForm!: FormGroup;
+
+  searchKey: string = '';
+  isEditMode: boolean = false;
+  generatedId: string | null | undefined;
+  currentEditId: string | null | undefined;
+
+
+  constructor(private fb: FormBuilder, private api: ApiService,
+    public vf: ValidateForm, private logger: LogsService,
+    private route: ActivatedRoute, private auth: AuthService,
+    private store: StoreService) {
     this.ngOnInit()
     // this.today = new Date().toISOString().split('T')[0];
     // this.getUserProfile();
+  }
+
+  ngOnInit(): void {
+    this.announcementForm = this.fb.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required]
+    });
+    this.getUserProfile()
+    // Fetch data from API 
+    window.addEventListener('resize', () => this.updateCarousel());
+    this.getAllAnnouncement();
+
+    const modal = document.getElementById('AddEditModalForm');
+    modal?.addEventListener('hidden.bs.modal', () => this.closeModal(this.AddEditModal));
+  }
+
+  getAllAnnouncement() {
+    this.isLoading = true;
+    this.api.getPaginatedAnnouncements(this.pageNumber, this.pageSize)
+      .pipe(
+        delay(2000),
+        map((res) => {
+          this.logger.printLogs('i', 'List of Originated Announcements', res.items);
+          this.totalItems = res.totalCount;
+          return res.items;
+        }),
+        finalize(() => this.isLoading = false)
+      )
+      .subscribe({
+        next: (filtered) => {
+          this.announcements = filtered;
+          this.logger.printLogs('i', 'List of Announcements', this.announcements);
+        },
+        error: (err: any) => {
+          this.logger.printLogs('e', 'Error Fetching Announcements', err);
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.getTotalParCencus();
   }
 
-  ngOnInit(): void {
-    this.getUserProfile()
-    // Fetch data from API 
-    window.addEventListener('resize', () => this.updateCarousel());
-
-  }
 
   public getUserProfile() {
 
@@ -209,8 +265,6 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     });
   }
 
-
-
   updateCarousel() {
     // Get the width of a single card, including margin (adjust the 20 if your margin is different)
     const cardWidth = this.cards[0].offsetWidth + 30;
@@ -252,6 +306,11 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     }
   }
 
+  changePage(page: number) {
+    if (page < 1 || page > Math.ceil(this.totalItems / this.pageSize)) return;
+    this.pageNumber = page;
+    this.getAllAnnouncement();
+  }
 
   // Helper function to format the date
   public formatDate(date: Date | string | null): string | null {
@@ -298,14 +357,171 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   }
 
   public AddNewAnnouncement() {
-    alert("Add New Announcement");
+    // alert("Add New Announcement");
+    this.isEditMode = false;
+    this.currentEditId = null;
+    this.announcementForm.reset(
+      {
+        type: '',
+        description: ''
+      });
+
+    const modal = new bootstrap.Modal(this.AddEditModal.nativeElement);
+    modal.show();
   }
 
-  public UpdateAnnouncement(id: number) {
-    alert("Update Announcement");
+  public onEditAnnouncement(a: any) {
+    // if (a.postFlag) {
+    //   Swal.fire('Information!', 'Cannot edit posted PAR.', 'warning');
+    //   return;
+    // }
+
+    this.isEditMode = true;
+    this.announcement = a;
+    this.currentEditId = a.aid;
+
+    this.logger.printLogs('i', 'Restoring ANNOUNCEMENT', a);
+
+    this.announcementForm.patchValue({
+      title: a.aid,
+      description: a.content
+    });
+
+    const modal = new bootstrap.Modal(this.AddEditModal.nativeElement);
+    modal.show();
   }
-  public DeleteAnnouncement(id: number) {
-    alert("Delete Announcement");
+
+
+  public onDeleteAnnouncement(a: any) {
+    if (a.postFlag) {
+      Swal.fire('Information!', 'Cannot delete posted Announcement.', 'warning');
+      return;
+    }
+
+    let aid = a.aid;
+    Swal.fire({
+      title: 'Remove AID #' + (aid + '-' + a.title) + "",
+      text: 'Are you sure?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.api.deleteAnnouncement(aid)
+          .subscribe({
+            next: (res) => {
+              this.getAllAnnouncement();
+              Swal.fire('Deleted', res.message, 'success');
+              this.api.showToast(res.message, 'Deleted!', 'success');
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error on Deleting Announcement', err);
+              Swal.fire('Denied', err, 'warning');
+            }
+          });
+      }
+    });
+  }
+  closeModal(modalElement: ElementRef) {
+    const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
+    if (modal) {
+      modal.hide();
+    }
+  }
+
+  resetForm(): void {
+    this.isEditMode = false;
+    this.currentEditId = null;
+    this.announcementForm.reset(
+      {
+        type: '',
+        description: ''
+      });
+    this.getAllAnnouncement();
+  }
+
+
+  onKeyUp(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.onSearchAnnouncement();
+    } else {
+      this.onSearchAnnouncement();
+    }
+  }
+
+  onSearchAnnouncement() {
+    if (!this.searchKey) {
+      this.getAllAnnouncement(); // Call existing function to populate all PARs when no search key is entered
+    } else {
+      if (this.searchKey.trim()) {
+        this.isLoading = true; // Start spinner
+        this.api.searchAnnouncement(this.searchKey.trim()) // Trim search key to avoid leading/trailing spaces
+          .pipe(
+            map((res) => {
+              this.logger.printLogs('i', 'SEARCH Announcement', res);
+              return res
+            }),
+            finalize(() => this.isLoading = false) // Ensure spinner stops
+          )
+          .subscribe({
+            next: (filtered) => {
+              this.announcements = filtered; // Assign the processed result to the component variable
+              this.logger.printLogs('i', 'SEARCH Announcement', this.announcements);
+            },
+            error: (err: any) => {
+              this.logger.printLogs('e', 'Error Fetching Announcement on Search', err);
+            }
+          });
+      }
+    }
+  }
+
+  onSubmit() {
+    if (this.announcementForm.invalid) {
+      this.logger.printLogs('w', 'Invalid Form Submission', 'Please fill in all required fields.');
+      this.vf.validateFormFields(this.announcementForm);
+      return;
+    }
+
+    this.announcement = {
+      title: this.announcementForm.value['title'],
+      content: this.announcementForm.value['description'],
+      userID: this.userAccount.userID,
+    }
+    this.logger.printLogs('i', 'Announcement Form Data', this.announcement);
+
+    if (this.isEditMode && this.currentEditId) {
+      // Update existing announcement
+      this.api.updateAnnouncement(this.currentEditId, this.announcement)
+        .subscribe({
+          next: (res) => {
+            this.logger.printLogs('w', 'Success Updating Announcement', res.message);
+            // Swal.fire('Updated!', res.message, 'success');
+            this.api.showToast(res.message, 'Updated!', 'success');
+            this.resetForm();
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Problem Updating Announcement', err);
+            // Swal.fire('Updating Denied!', err, 'warning');
+          }
+        });
+    } else {
+      // Create new announcement
+      this.api.createAnnouncement(this.announcement)
+        .subscribe({
+          next: (res) => {
+            this.logger.printLogs('w', 'Success Creating Announcement', res.message);
+            // Swal.fire('Created!', res.message, 'success');
+            this.api.showToast(res.message, 'Created!', 'success');
+            this.resetForm();
+          },
+          error: (err: any) => {
+            this.logger.printLogs('w', 'Problem Creating Announcement', err);
+            // Swal.fire('Creation Denied!', err, 'warning');
+          }
+        });
+    }
   }
 
 }

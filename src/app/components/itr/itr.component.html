@@ -269,7 +269,9 @@
                             </td>
                             <td>{{i+1}}</td>
                             <td>{{p.unit}}</td>
-                            <td>{{p.amount}}</td>
+                            <td>{{(p.amount || 0).toLocaleString('en-US', {
+                              minimumFractionDigits: 2, maximumFractionDigits: 2
+                              }) }}</td>
                             <td>{{p.description}}</td>
                             <td>{{ formatDate(p.date_Acquired) }}</td>
                             <td>{{ p.propertyNo }}</td>
@@ -638,14 +640,14 @@
               <!-- ITEM TABLE -->
               <div class="row m-0">
                 <div class="col py-0">
-                  
+
                   <p *ngIf="this.itr?.isReceivedActive || this.leave != null" class="text-center">
                     In absence of Mr./Ms. <span class="text-danger fw-bold"> {{itr.received}} </span>,
                     <span class="text-primary fw-bold px-1">
                       {{leave.careOfUser}} </span>
                     will take over the properties below.
                   </p>
-                  
+
                   <div class="row py-3 bg-primary">
 
                     <div class="col-3 d-flex align-items-center">
@@ -693,7 +695,9 @@
                               <td>{{i + 1}}</td>
                               <td>{{p.qty}}</td>
                               <td>{{p.unit}}</td>
-                              <td>{{p.amount}}</td>
+                              <td>{{(p.amount || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2, maximumFractionDigits: 2
+                                }) }} </td>
                               <td>{{p.description}}</td>
                               <td>{{ formatDate(p.date_Acquired) }}</td>
                               <td>{{ p.propertyNo }}</td>
@@ -1447,11 +1451,15 @@
                 </tr>
                 <tr>
                   <td class="fw-bold">Cost/Amount:</td>
-                  <td>{{ item?.amount || 'N/A' }}</td>
+                  <td>{{ (item?.amount || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 2, maximumFractionDigits: 2
+                    }) }}</td>
                 </tr>
                 <tr>
                   <td class="fw-bold">Total:</td>
-                  <td>{{ (item?.qty || 0) * (item?.amount || 0 )}}</td>
+                  <td>{{ ((item?.qty || 0) * (item?.amount || 0 )).toLocaleString('en-US', {
+                    minimumFractionDigits: 2, maximumFractionDigits: 2
+                    }) }}</td>
                 </tr>
                 <tr>
                   <td class="fw-bold">Brand:</td>
@@ -1525,7 +1533,9 @@
                     <td>{{ii.icsNo}}</td>
                     <td>{{ii.description}}</td>
                     <td>{{ii.qty}}</td>
-                    <td>{{ii.amount}}</td>
+                    <td>{{ (ii.amount || 0).toLocaleString('en-US', {
+                      minimumFractionDigits: 2, maximumFractionDigits: 2
+                      }) }}</td>
                     <td>
                       <a class="delete" type="button" (click)="onAddItem(ii)"><i
                           class="fa-sharp-duotone  fa-solid fa-plus" data-toggle="tooltip" title="Delete"></i></a>
