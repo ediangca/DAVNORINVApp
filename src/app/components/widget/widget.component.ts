@@ -383,7 +383,7 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.logger.printLogs('i', 'Restoring ANNOUNCEMENT', a);
 
     this.announcementForm.patchValue({
-      title: a.aid,
+      title: a.title,
       description: a.content
     });
 
@@ -499,7 +499,6 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
             this.logger.printLogs('w', 'Success Updating Announcement', res.message);
             // Swal.fire('Updated!', res.message, 'success');
             this.api.showToast(res.message, 'Updated!', 'success');
-            this.resetForm();
           },
           error: (err: any) => {
             this.logger.printLogs('w', 'Problem Updating Announcement', err);
@@ -514,7 +513,6 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
             this.logger.printLogs('w', 'Success Creating Announcement', res.message);
             // Swal.fire('Created!', res.message, 'success');
             this.api.showToast(res.message, 'Created!', 'success');
-            this.resetForm();
           },
           error: (err: any) => {
             this.logger.printLogs('w', 'Problem Creating Announcement', err);
@@ -522,6 +520,8 @@ export class WidgetComponent implements OnInit, AfterViewInit, OnChanges, OnDest
           }
         });
     }
+    this.closeModal(this.AddEditModal);
+    this.resetForm();
   }
 
 }

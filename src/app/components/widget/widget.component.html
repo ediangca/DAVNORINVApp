@@ -174,8 +174,11 @@
             <h2 class="counter"><i class="fa-solid fa-bullhorn me-2 text-warning"></i>Announcement and Updates <span
                 class="text-danger">!!!</span></h2>
           </div>
-          <div class="clearfix" *ngIf="!isLoading">
+          <div class="clearfix nav-announce" *ngIf="!isLoading">
 
+            <div class="hint-text">Showing <b>{{announcements.length}}</b> out of
+              <b>{{totalItems}}</b>entries
+            </div>
             <nav *ngIf="totalItems > pageSize" aria-label="Page navigation example">
               <ul class="pagination justify-content-center">
                 <li class="page-item" *ngIf="!(pageNumber === 1)" [class.disabled]="pageNumber === 1">
@@ -194,9 +197,6 @@
                 </li>
               </ul>
             </nav>
-            <div class="hint-text">Showing <b>{{announcements.length}}</b> out of
-              <b>{{totalItems}}</b>entries
-            </div>
           </div>
         </div>
       </div>
@@ -213,7 +213,8 @@
 
             <div class="card-header d-flex flex-column text-center">
 
-              <h5 class="mb-0 text-primary" *ngIf="this.roleNoFromToken == 'System Administrator'">{{ a.aid }}</h5> <!--Welcome Greetings -->
+              <h5 class="mb-0 text-primary" *ngIf="this.roleNoFromToken == 'System Administrator'">{{ a.aid }}</h5>
+              <!--Welcome Greetings -->
               <h3 class="mb-0">{{ a.title }}</h3> <!--Welcome Greetings -->
               <div class="d-flex align-items-center justify-content-center my-2">
                 <hr class="border border-secodary border-3 border-primary opacity-75 m-0" width="10%">
@@ -315,8 +316,8 @@
       </div>
     </div>
     <!-- HORIZONTAL GRAPH -->
-    <div class="card" *ngIf="this.roleNoFromToken == 'System Administrator'" data-aos="fade-right"
-      data-aos-easing="linear" data-aos-duration="500">
+    <div class="card" *ngIf="this.roleNoFromToken == 'System Administrator'" data-aos="fade-up" data-aos-easing="linear"
+      data-aos-duration="500">
       <div class="card-body">
         <h2 class="counter mb-3">Current Inventory by Office</h2>
         <!-- Vertical Divider -->
@@ -350,7 +351,8 @@
       </div>
     </div>
     <!-- TOTAL CENSUS -->
-    <div class="card user-census" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="500">
+    <div class="card user-census" *ngIf="this.roleNoFromToken == 'System Administrator'" data-aos="fade-up"
+      data-aos-easing="linear" data-aos-duration="500">
       <div class="card-body d-flex justify-content-around align-items-center text-center">
         <!-- Items Section -->
         <div class="d-flex flex-column align-items-center">
@@ -429,8 +431,8 @@
                 <i class="fa-sharp-duotone fa-solid fa-pen"></i>
 
                 <!-- oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" -->
-                <textarea type="text" formControlName="description" name="description" id="description"
-                  placeholder="Announcement Detail"></textarea>
+                <textarea style="height:300px;" type="text" formControlName="description" name="description"
+                  id="description" placeholder="Announcement Detail"></textarea>
               </div>
 
             </div>

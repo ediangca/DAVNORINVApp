@@ -940,11 +940,11 @@
               (itemForm.controls['serialNo'].dirty &&
               itemForm.hasError('required', 'serialNo')))){
               <small class="text-info">*
-                Serial No.</small>
+                Serial No. <span class="text-danger">(User Property no. if no Serial no.)</span> </small>
               }@else {
               <small class="text-danger" *ngIf="itemForm.controls['serialNo'].invalid && itemForm.hasError('required', 'serialNo') && itemForm.get('serialNo')?.touched ||
                    (itemForm.controls['serialNo'].dirty && itemForm.hasError('required', 'serialNo'))">*
-                Serial No. is required</small>
+                Serial No. is required (User Property no. if no Serial no.)</small>
               }
               <div class="form-field d-flex align-items-center" [class.error]="itemForm.controls['serialNo'].invalid && itemForm.hasError('required', 'serialNo') &&  itemForm.get('serialNo')?.touched ||
                (itemForm.controls['serialNo'].dirty && itemForm.hasError('required', 'serialNo'))">

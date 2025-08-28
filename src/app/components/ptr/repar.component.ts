@@ -103,7 +103,7 @@ export class ReparComponent implements OnInit, AfterViewInit {
   // Pagination
   Math = Math;
   pageNumber = 1;
-  pageSize = 2;
+  pageSize = 15;
   totalItems = 0;
 
   isLoading: boolean = true;
