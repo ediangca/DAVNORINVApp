@@ -333,8 +333,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     if (modalElement) {
       const modal = bootstrap.Modal.getInstance(modalElement.nativeElement);
       if (modal) {
-        // modal.hide();
-        modal.dispose();
+        modal.hide();
+        // modal.dispose();
 
         const checkbox = document.getElementById('leave') as HTMLInputElement;
 

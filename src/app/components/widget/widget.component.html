@@ -176,27 +176,29 @@
           </div>
           <div class="clearfix nav-announce" *ngIf="!isLoading">
 
-            <div class="hint-text">Showing <b>{{announcements.length}}</b> out of
+            <div class="float-end hint-text">Showing <b>{{announcements.length}}</b> out of
               <b>{{totalItems}}</b>entries
             </div>
-            <nav *ngIf="totalItems > pageSize" aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">
-                <li class="page-item" *ngIf="!(pageNumber === 1)" [class.disabled]="pageNumber === 1">
-                  <a class="nav-link" (click)="changePage(pageNumber - 1)">Previous</a>
-                </li>
+            <div class="float-end">
+              <nav *ngIf="totalItems > pageSize" aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item" *ngIf="!(pageNumber === 1)" [class.disabled]="pageNumber === 1">
+                    <a class="nav-link" (click)="changePage(pageNumber - 1)">Previous</a>
+                  </li>
 
-                <li class="page-item"
-                  *ngFor="let page of [].constructor(Math.ceil(totalItems / pageSize)); let i = index"
-                  [class.active]="pageNumber === i + 1">
-                  <a class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</a>
-                </li>
+                  <li class="page-item"
+                    *ngFor="let page of [].constructor(Math.ceil(totalItems / pageSize)); let i = index"
+                    [class.active]="pageNumber === i + 1">
+                    <a class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</a>
+                  </li>
 
-                <li class="page-item" *ngIf="!(pageNumber === Math.ceil(totalItems / pageSize))"
-                  [class.disabled]="pageNumber === Math.ceil(totalItems / pageSize)">
-                  <a class="nav-link" (click)="changePage(pageNumber + 1)">Next</a>
-                </li>
-              </ul>
-            </nav>
+                  <li class="page-item" *ngIf="!(pageNumber === Math.ceil(totalItems / pageSize))"
+                    [class.disabled]="pageNumber === Math.ceil(totalItems / pageSize)">
+                    <a class="nav-link" (click)="changePage(pageNumber + 1)">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
         </div>
       </div>
@@ -319,7 +321,7 @@
     <div class="card" *ngIf="this.roleNoFromToken == 'System Administrator'" data-aos="fade-up" data-aos-easing="linear"
       data-aos-duration="500">
       <div class="card-body">
-        <h2 class="counter mb-3">Current Inventory by Office</h2>
+        <h4 class="counter mb-3">Current Inventory by Office</h4>
         <!-- Vertical Divider -->
         <hr class="border border-secodary border-1 opacity-75">
         <!-- <p class="mb-2">By Office</p>  -->

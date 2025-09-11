@@ -442,7 +442,7 @@ table.table .avatar {
 
 .hint-text {
   float: left;
-  margin-top: 10px;
+  margin: 10px 0;
   font-size: 13px;
 }
 
