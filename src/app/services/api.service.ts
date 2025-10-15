@@ -21,8 +21,7 @@ export class ApiService {
   private apiUrl: string = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router,
-    private toast: NgToastService, private toastr: ToastrService,
-    private logger: LogsService) { }
+    private toast: NgToastService, private logger: LogsService) { }
 
 
   showToast(msg: string, title: string, type: 'success' | 'warning' | 'error' | 'info' = 'info') {

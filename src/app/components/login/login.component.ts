@@ -1,42 +1,39 @@
-import { AfterViewInit, Component, ElementRef, inject, NgZone, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { HttpClientModule } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { NgToastModule, NgToastService } from 'ng-angular-popup' // to be added
-import { AppComponent } from '../../app.component';
 import ValidateForm from '../../helpers/validateForm';
-import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '../../services/api.service';
 import { LogsService } from '../../services/logs.service';
 
 // import * as bootstrap from 'bootstrap';
 import AOS from 'aos';
+import { AppComponent } from '../../app.component';
+import { CommonModule } from '@angular/common';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, HttpClientModule, NgToastModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, NgToastModule, ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 
 export class LoginComponent implements OnInit, AfterViewInit {
 
-
-
   @ViewChild('loadingModal') loadingModal!: ElementRef;
-  @ViewChild('usernameInput') usernameInput!: ElementRef; // Reference to the username input field
+  @ViewChild('usernameInput') usernameInput!: ElementRef;
 
   loginForm!: FormGroup;
   errorMessage: string = '';
 
 
   constructor(private fb: FormBuilder, private auth: AuthService,
-    private router: Router, private api: ApiService,
-    public ac: AppComponent, private vf: ValidateForm, private logger: LogsService) {
+    private router: Router, private api: ApiService, public ac: AppComponent,
+    private vf: ValidateForm, private logger: LogsService) {
 
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
@@ -110,7 +107,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                   this.auth.storeLocal(res);
                   this.loginForm.reset();
                   this.router.navigate(['dashboard']);
-                  
+
                   // this.toast.success(res.message, "ACCESS GRANTED", 5000);
                   // this.toastr.success('Hello world!', 'Toastr fun!');
 
@@ -136,8 +133,5 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     }
     this.vf.validateFormFields(this.loginForm);
-
-
-
   }
 }

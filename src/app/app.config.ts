@@ -17,7 +17,8 @@ export const appConfig: ApplicationConfig = {
       preventDuplicates: true,
     }),
     // provideToastr(), // Ensure Toastr is provided
-    provideHttpClient(withInterceptors([tokenInterceptor]))]
+    provideHttpClient(withInterceptors([tokenInterceptor]))
+  ]
 };
 
 // Test inside a function

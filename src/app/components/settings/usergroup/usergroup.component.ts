@@ -478,7 +478,7 @@ export class UsergroupComponent implements OnInit, AfterViewInit {
           item.d = isChecked;
         }
         if (
-          ['PAR', 'ICS', 'PTR', 'ITR', 'PRS', 'RRSEP', 'USER ACCOUNTS'].includes(item.moduleName)
+          ['PAR', 'ICS', 'OPR', 'PTR', 'ITR', 'OPTR', 'PRS', 'RRSEP', 'OPRR', 'USER ACCOUNTS'].includes(item.moduleName)
         ) {
           item.post = isChecked;
           item.unpost = isChecked;

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -6,7 +6,7 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-import { NgToastModule, NgToastService, ToasterPosition } from 'ng-angular-popup' // to be added
+import { NgToastModule, NgToastService, ToasterPosition } from 'ng-angular-popup'
 import { NgxScannerQrcodeModule } from 'ngx-scanner-qrcode';
 
 
@@ -58,6 +58,4 @@ export class AppComponent implements OnInit {
     AOS.refresh();//refresh method is called on window resize and so on, as it doesn't require to build new store with AOS elements and should be as light as possible.
   
   }
-
-
 }

@@ -16,11 +16,12 @@
         <form class="p-3 mt-3" [formGroup]="loginForm" ng-reflect-form="[object Object]"
           class="ng-untouched ng-pristine ng-invalid">
 
-
           @if (loginForm.controls['username'].dirty &&
           loginForm.hasError('required', 'username')) {
           <!-- *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')" -->
-          <small class="text-danger">* Username is required</small>
+          <div class="form-field d-flex align-items-center">
+            <small class="block">* Username is required</small>
+          </div>
           }
           <div class="form-field d-flex align-items-center"
             [class.error]="loginForm.controls['username'].dirty && loginForm.hasError('required', 'username')">

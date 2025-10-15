@@ -20,7 +20,7 @@ export class LogsService {
           logType = "WARNING"
           console.warn(label, log);
           break;
-        case 'e':
+        case 'e': 
           logType = "ERROR"
           console.error(label, log);
           break;
